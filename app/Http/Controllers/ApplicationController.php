@@ -27,6 +27,15 @@ class ApplicationController extends Controller
             return false;
         }
     }
+    public function home($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+
+            return view('application.dashboard.home');
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
     public function monitoring_mcu($akses)
     {
         if ($this->url_akses($akses) == true) {
@@ -108,6 +117,9 @@ class ApplicationController extends Controller
             ]);
             return redirect()->back()->withSuccess('Great! Berhasil Check In Peserta MCU');
         }
+    }
+    public function medical_check_up_summary(Request $request){
+        return view('application.menu.mcu.form-summary-mcu');
     }
 
     // MENU SERVICE

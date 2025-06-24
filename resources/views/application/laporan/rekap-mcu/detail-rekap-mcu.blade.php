@@ -137,8 +137,8 @@
                              <tr>
                                  <th class="sort" data-sort="name">Nama Cabang</th>
                                  <th class="sort" data-sort="email">Peserta Check In</th>
-                                 <th class="sort" data-sort="age">Persentasi</th>
                                  <th class="sort" data-sort="age">Executive</th>
+                                 <th class="sort" data-sort="age">Persentasi</th>
                                  <th class="sort" data-sort="age">Healty Talk</th>
                              </tr>
                          </thead>

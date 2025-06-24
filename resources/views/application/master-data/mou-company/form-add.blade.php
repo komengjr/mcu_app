@@ -15,7 +15,7 @@
             </select>
         </div>
         <div class="col-6">
-            <label class="form-label" for="inputAddress">Nama Perusahaan MOU</label>
+            <label class="form-label" for="inputAddress">MOU</label>
             <input class="form-control form-control-lg" id="inputAddress" type="text" name="nama" placeholder="Calon Karyawan 2025"
                 required />
         </div>

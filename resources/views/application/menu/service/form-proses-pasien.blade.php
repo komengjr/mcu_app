@@ -65,35 +65,81 @@
             @php
                 $no = 0;
             @endphp
-            @foreach ($pemeriksaan as $item)
-                @php
-                    $check = DB::table('log_pemeriksaan_pasien')
-                        ->where('mou_peserta_code', $data->mou_peserta_code)
-                        ->where('master_pemeriksaan_code', $item->master_pemeriksaan_code)
-                        ->first();
-                @endphp
-                @if (!$check)
-                    <div class="col-md-4">
-                        <label class="form-label text-warning"
-                            for="inputAddress">{{ $item->master_pemeriksaan_name }}</label>
-                        <div class="form-check">
-                            <input class="form-check-input" id="{{ $item->master_pemeriksaan_code }}1" type="radio"
-                                name="{{ $item->master_pemeriksaan_code }}" checked="checked" value="0" />
-                            <label class="form-check-label mb-0" for="{{ $item->master_pemeriksaan_code }}1">Belum
-                                Melakukan MCU</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" id="{{ $item->master_pemeriksaan_code }}2" type="radio"
-                                name="{{ $item->master_pemeriksaan_code }}" value="1" />
-                            <label class="form-check-label mb-0" for="{{ $item->master_pemeriksaan_code }}2">Sudah
-                                Melakukan MCU</label>
-                        </div>
-                    </div>
-                    <div class="col-md-8">Deskripsi</label>
-                        <textarea name="desc{{ $item->master_pemeriksaan_code }}" class="form-control" id="{{ $no++ }}"></textarea>
-                    </div>
-                @endif
-            @endforeach
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nama Pemeriksaan</th>
+                        <th>Belum</th>
+                        <th>Sudah</th>
+                        <th>Deskripsi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($pemeriksaan as $item)
+                        @php
+                            $check = DB::table('log_pemeriksaan_pasien')
+                                ->where('mou_peserta_code', $data->mou_peserta_code)
+                                ->where('master_pemeriksaan_code', $item->master_pemeriksaan_code)
+                                ->first();
+                        @endphp
+
+                        @if (!$check)
+                            <tr>
+                                <td>
+                                    <label class="form-label text-warning"
+                                        for="inputAddress">{{ $item->master_pemeriksaan_name }}</label>
+                                </td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" id="{{ $item->master_pemeriksaan_code }}1"
+                                            type="radio" name="{{ $item->master_pemeriksaan_code }}"
+                                             value="0" />
+                                        <label class="form-check-label mb-0"
+                                            for="{{ $item->master_pemeriksaan_code }}1"></label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" id="{{ $item->master_pemeriksaan_code }}2"
+                                            type="radio" name="{{ $item->master_pemeriksaan_code }}"
+                                            value="1" />
+                                        <label class="form-check-label mb-0"
+                                            for="{{ $item->master_pemeriksaan_code }}2"></label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <textarea name="desc{{ $item->master_pemeriksaan_code }}" class="form-control" id="{{ $no++ }}"></textarea>
+                                </td>
+                            </tr>
+                        @endif
+
+                        {{-- @if (!$check)
+                            <div class="col-md-4">
+                                <label class="form-label text-warning"
+                                    for="inputAddress">{{ $item->master_pemeriksaan_name }}</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" id="{{ $item->master_pemeriksaan_code }}1"
+                                        type="radio" name="{{ $item->master_pemeriksaan_code }}" checked="checked"
+                                        value="0" />
+                                    <label class="form-check-label mb-0"
+                                        for="{{ $item->master_pemeriksaan_code }}1">Belum
+                                        Melakukan MCU</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" id="{{ $item->master_pemeriksaan_code }}2"
+                                        type="radio" name="{{ $item->master_pemeriksaan_code }}" value="1" />
+                                    <label class="form-check-label mb-0"
+                                        for="{{ $item->master_pemeriksaan_code }}2">Sudah
+                                        Melakukan MCU</label>
+                                </div>
+                            </div>
+                            <div class="col-md-8">Deskripsi</label>
+                                <textarea name="desc{{ $item->master_pemeriksaan_code }}" class="form-control" id="{{ $no++ }}"></textarea>
+                            </div>
+                        @endif --}}
+                    @endforeach
+                </tbody>
+            </table>
             @if ($no == 0)
                 <div class="col-md-12">
                     <button class="btn btn-success btn-sm float-end disabled">Proses Selesai</button>
@@ -196,7 +242,10 @@
                         <label class="form-check-label mb-0" for="pengiriman2">Sudah Terkirim</label>
                     </div>
                 </div>
-                <div class="col-md-8">Deskripsi</label>
+                <div class="col-md-3">Tanggal</label>
+                    <input type="date" class="form-control" name="" id="">
+                </div>
+                <div class="col-md-5">Deskripsi</label>
                     <textarea name="desc_pengiriman" class="form-control" id=""></textarea>
                 </div>
                 <div class="col-md-12">

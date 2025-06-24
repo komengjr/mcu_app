@@ -82,18 +82,20 @@
                                             - {{ date('d-m-Y', strtotime($datas->company_mou_end)) }}
                                         </strong>
                                     </p>
-                                </div>
-                            </div>
-                            <div class="d-flex flex-between-center px-3">
-                                <div>
-                                    <p class="fs--1 mb-1">
+                                     <p class="fs--1 mb-1">
                                         Status : <strong class="text-success">Available</strong>
                                     </p>
                                 </div>
+                            </div>
+                            <div class="d-flex flex-between-center px-3">
+
                                 <div>
                                     {{-- <a class="btn btn-sm btn-falcon-default me-2" href="#!" data-bs-toggle="tooltip"
                                         data-bs-placement="top" title="Add to Wish List"><span
                                             class="far fa-heart"></span></a> --}}
+                                    <a class="btn btn-sm btn-falcon-default fs--2 text-warning" href="#!" data-bs-toggle="modal"
+                                        data-bs-target="#modal-mcu-xl" id="button-proses-summary-check-up" data-code="{{$datas->company_mou_code}}" title="Proses Check Up"><span
+                                            class="fas fa-file"></span> Summary</a>
                                     <a class="btn btn-sm btn-falcon-default fs--2 text-primary" href="#!" data-bs-toggle="modal"
                                         data-bs-target="#modal-mcu" id="button-proses-check-up" data-code="{{$datas->company_mou_code}}" title="Proses Check Up"><span
                                             class="fas fa-user-check"></span> Prosess</a>
@@ -187,6 +189,27 @@
             );
             $.ajax({
                 url: "{{ route('medical_check_up_prosess') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-mcu-xl').html(data);
+            }).fail(function() {
+                $('#menu-mcu-xl').html('eror');
+            });
+        });
+        $(document).on("click", "#button-proses-summary-check-up", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-mcu-xl').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('medical_check_up_summary') }}",
                 type: "POST",
                 cache: false,
                 data: {

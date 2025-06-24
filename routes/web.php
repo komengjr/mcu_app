@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 */
 Route::get('log-eror', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
 Route::controller(AuthController::class)->group(function () {
-    Route::get('/', 'fisrt')->name('/');
+    Route::get('/', 'index');
     Route::get('login', 'index')->name('login');
     Route::get('registration', 'registration')->name('register');
     Route::get('confrim_user', 'confrim_user')->name('confrim_user');
@@ -30,9 +30,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('post-login', 'postLogin')->name('login.post');
     // Route::get('dashboard', [AuthController::class, 'dashboard']);
 });
-Route::get('/', function () {
-    return view('welcome');
-});
+
 Route::prefix('dashboard')->group(function () {
     Route::get('home', [dashboardController::class, 'index'])->name('dashboard.home');
     Route::get('news', [dashboardController::class, 'news'])->name('dashboard.news');
@@ -41,6 +39,7 @@ Route::prefix('dashboard')->group(function () {
     Route::get('setting', [dashboardController::class, 'setting'])->name('dashboard.setting');
 });
 Route::prefix('{akses}/application')->group(function () {
+    Route::get('home', [ApplicationController::class, 'home'])->name('home');
     Route::get('monitoring-mcu', [ApplicationController::class, 'monitoring_mcu'])->name('monitoring_mcu');
     Route::get('medical-check-up', [ApplicationController::class, 'medical_check_up'])->name('medical_check_up');
     Route::get('menu-service', [ApplicationController::class, 'menu_service'])->name('menu_service');
@@ -59,6 +58,7 @@ Route::prefix('application')->group(function () {
     Route::post('medical-check-up/detail', [ApplicationController::class, 'medical_check_up_detail'])->name('medical_check_up_detail');
     Route::post('medical-check-up/prosess', [ApplicationController::class, 'medical_check_up_prosess'])->name('medical_check_up_prosess');
     Route::post('medical-check-up/prosess-save', [ApplicationController::class, 'medical_check_up_prosess_save'])->name('medical_check_up_prosess_save');
+    Route::post('medical-check-up/summary', [ApplicationController::class, 'medical_check_up_summary'])->name('medical_check_up_summary');
     Route::post('menu-service/proses', [ApplicationController::class, 'menu_service_proses'])->name('menu_service_proses');
     Route::post('menu-service/proses-pemeriksaan-save', [ApplicationController::class, 'menu_service_proses_pemeriksaan_save'])->name('menu_service_proses_pemeriksaan_save');
     Route::post('menu-service/proses-konsultasi-save', [ApplicationController::class, 'menu_service_proses_konsultasi_save'])->name('menu_service_proses_konsultasi_save');

@@ -230,8 +230,8 @@
                                          <th>NIK</th>
                                          <th>Jenis Kelamin</th>
                                          <th>Status Pemeriksaan</th>
-                                         <th>Status Konsultasi</th>
                                          <th>Status Pengiriman Hasil</th>
+                                         <th>Status Konsultasi</th>
                                      </tr>
                                  </thead>
                                  <tbody class="fs--2">
@@ -243,16 +243,16 @@
                                              <td>{{ $pesertas->mou_peserta_jk }}</td>
                                              <td>
                                                  @php
-                                                     $pemeriksaan = DB::table('company_mou_pemeriksaan')
+                                                     $pemeriksaan = DB::table('company_mou_agreement_sub')
                                                          ->join(
                                                              'master_pemeriksaan',
                                                              'master_pemeriksaan.master_pemeriksaan_code',
                                                              '=',
-                                                             'company_mou_pemeriksaan.master_pemeriksaan_code',
+                                                             'company_mou_agreement_sub.master_pemeriksaan_code',
                                                          )
                                                          ->where(
-                                                             'company_mou_pemeriksaan.company_mou_code',
-                                                             $pesertas->company_mou_code,
+                                                             'company_mou_agreement_sub.mou_agreement_code',
+                                                             $pesertas->mou_agreement_code,
                                                          )
                                                          ->get();
                                                  @endphp
@@ -267,8 +267,15 @@
                                                              ->first();
                                                      @endphp
                                                      @if ($check)
-                                                         <li>{{ $pem->master_pemeriksaan_name }} <span
-                                                                 class="fas fa-check-square text-success"></span></li>
+                                                         @if ($check->log_pemeriksaan_status == 1)
+                                                             <li>{{ $pem->master_pemeriksaan_name }} <span
+                                                                     class="fas fa-check-square text-success"></span>
+                                                             </li>
+                                                         @else
+                                                             <li>{{ $pem->master_pemeriksaan_name }} <span
+                                                                     class="fas fa-exclamation-circle text-warning"></span>
+                                                             </li>
+                                                         @endif
                                                      @else
                                                          <li>{{ $pem->master_pemeriksaan_name }} <span
                                                                  class="fas fa-window-close text-danger"></span></li>
@@ -277,11 +284,11 @@
                                              </td>
                                              <td>
                                                  @php
-                                                     $konsul = DB::table('log_konsultasi_pasien')
+                                                     $pengiriman = DB::table('log_pengiriman_pasien')
                                                          ->where('mou_peserta_code', $pesertas->mou_peserta_code)
                                                          ->first();
                                                  @endphp
-                                                 @if ($konsul)
+                                                 @if ($pengiriman)
                                                      <span class="badge bg-primary">Selesai</span>
                                                  @else
                                                      <span class="badge bg-danger">Belum Selesai</span>
@@ -289,11 +296,11 @@
                                              </td>
                                              <td>
                                                  @php
-                                                     $pengiriman = DB::table('log_pengiriman_pasien')
+                                                     $konsul = DB::table('log_konsultasi_pasien')
                                                          ->where('mou_peserta_code', $pesertas->mou_peserta_code)
                                                          ->first();
                                                  @endphp
-                                                 @if ($pengiriman)
+                                                 @if ($konsul)
                                                      <span class="badge bg-primary">Selesai</span>
                                                  @else
                                                      <span class="badge bg-danger">Belum Selesai</span>

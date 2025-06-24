@@ -31,6 +31,7 @@ class PesertaImport implements ToModel , WithHeadingRow
             'mou_peserta_jk' => $row['jk'],
             'mou_peserta_departemen' => $row['departemen'],
             'mou_agreement_code' => $this->ids,
+            'mou_peserta_status' => 0,
             'created_at' => now(),
         ]);
     }

@@ -17,6 +17,7 @@ class CreateLogPengirimanPasienTable extends Migration
             $table->id('id_pengiriman_pasien');
             $table->string('mou_peserta_code');
             $table->string('log_pengiriman_status');
+            $table->timestamp('log_pengiriman_date');
             $table->text('log_pengiriman_deskripsi')->nullable();
             $table->timestamps();
         });

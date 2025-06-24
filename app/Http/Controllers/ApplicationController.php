@@ -98,8 +98,8 @@ class ApplicationController extends Controller
     {
         $data = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->first();
         $pemeriksaan = DB::table('company_mou_agreement_sub')
-        ->join('master_pemeriksaan','master_pemeriksaan.master_pemeriksaan_code','=','company_mou_agreement_sub.master_pemeriksaan_code')
-        ->where('company_mou_agreement_sub.mou_agreement_code',$data->mou_agreement_code)->get();
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+            ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)->get();
         return view('application.menu.mcu.form-proses-mcu', ['data' => $data, 'pemeriksaan' => $pemeriksaan]);
     }
     public function medical_check_up_prosess_save(Request $request)
@@ -129,7 +129,9 @@ class ApplicationController extends Controller
             $data = DB::table('company_mou_peserta')
                 ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
                 ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
-                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)->orderBy('log_lokasi_pasien.id_log_lokasi_pasien','DESC')->get();
+                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+                ->where('company_mou_peserta.mou_peserta_status','!=',1)
+                ->orderBy('log_lokasi_pasien.id_log_lokasi_pasien', 'DESC')->get();
             return view('application.menu.menu-service', ['data' => $data]);
         } else {
             return Redirect::to('dashboard/home');
@@ -139,34 +141,61 @@ class ApplicationController extends Controller
     public function menu_service_proses(Request $request)
     {
         $data = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->first();
-        $pemeriksaan = DB::table('company_mou_pemeriksaan')->join(
-            'master_pemeriksaan',
-            'master_pemeriksaan.master_pemeriksaan_code',
-            '=',
-            'company_mou_pemeriksaan.master_pemeriksaan_code',
-        )->where('company_mou_pemeriksaan.company_mou_code', $data->company_mou_code)->get();
+        $pemeriksaan = DB::table('company_mou_agreement_sub')
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+            ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)->get();
         return view('application.menu.service.form-proses-pasien', ['data' => $data, 'pemeriksaan' => $pemeriksaan]);
     }
     public function menu_service_proses_pemeriksaan_save(Request $request)
     {
-        $check = DB::table('company_mou_pemeriksaan')
-            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_pemeriksaan.company_mou_code')
-            ->join('company_mou_peserta', 'company_mou_peserta.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
-            ->where('company_mou_peserta.mou_peserta_code', $request->code)->get();
+        $data = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->first();
+        $check = DB::table('company_mou_agreement_sub')
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+            ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)->get();
         foreach ($check as $value) {
-            // dd($request[$value->master_pemeriksaan_code]);
-            if ($request[$value->master_pemeriksaan_code] == 1) {
-                DB::table('log_pemeriksaan_pasien')->insert([
-                    'mou_peserta_code' => $request->code,
-                    'master_pemeriksaan_code' => $value->master_pemeriksaan_code,
-                    'log_pemeriksaan_status' => 1,
-                    'log_pemeriksaan_deskripsi' => $request['desc' . $value->master_pemeriksaan_code],
-                    'created_at' => now()
-                ]);
-            } else {
-                # code...
-            }
+            $cek = DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->code)
+                ->where('master_pemeriksaan_code', $value->master_pemeriksaan_code)->where('log_pemeriksaan_status', 1)->first();
+            if (!$cek) {
+                if ($request[$value->master_pemeriksaan_code] == 1) {
+                    $tes = DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->code)
+                        ->where('master_pemeriksaan_code', $value->master_pemeriksaan_code)->first();
+                    if ($tes) {
+                        DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->code)
+                            ->where('master_pemeriksaan_code', $value->master_pemeriksaan_code)->update([
+                                    'log_pemeriksaan_status' => 1,
+                                    'log_pemeriksaan_deskripsi' => $request['desc' . $value->master_pemeriksaan_code],
+                                ]);
+                    } else {
+                        DB::table('log_pemeriksaan_pasien')->insert([
+                            'mou_peserta_code' => $request->code,
+                            'master_pemeriksaan_code' => $value->master_pemeriksaan_code,
+                            'log_pemeriksaan_status' => 1,
+                            'log_pemeriksaan_deskripsi' => $request['desc' . $value->master_pemeriksaan_code],
+                            'created_at' => now()
+                        ]);
 
+                    }
+                } elseif ($request[$value->master_pemeriksaan_code] == 0) {
+                    $tes = DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->code)
+                        ->where('master_pemeriksaan_code', $value->master_pemeriksaan_code)->first();
+                    if ($tes) {
+                        DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->code)
+                            ->where('master_pemeriksaan_code', $value->master_pemeriksaan_code)->update([
+                                    'log_pemeriksaan_status' => 0,
+                                    'log_pemeriksaan_deskripsi' => $request['desc' . $value->master_pemeriksaan_code],
+                                ]);
+                    } else {
+                        DB::table('log_pemeriksaan_pasien')->insert([
+                            'mou_peserta_code' => $request->code,
+                            'master_pemeriksaan_code' => $value->master_pemeriksaan_code,
+                            'log_pemeriksaan_status' => 0,
+                            'log_pemeriksaan_deskripsi' => $request['desc' . $value->master_pemeriksaan_code],
+                            'created_at' => now()
+                        ]);
+
+                    }
+                }
+            }
         }
         return redirect()->back()->withSuccess('Great! Berhasil Update Chcklis Pemeriksaan');
     }
@@ -185,10 +214,17 @@ class ApplicationController extends Controller
         DB::table('log_pengiriman_pasien')->insert([
             'mou_peserta_code' => $request->code,
             'log_pengiriman_status' => $request->pengiriman,
+            'log_pengiriman_date' => $request->tanggal_kirim.' '.$request->time_kirim,
             'log_pengiriman_deskripsi' => $request->desc_pengiriman,
             'created_at' => now()
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Update Pengiriman Hasil');
+    }
+    public function menu_service_proses_penyelesaian_peserta_mcu(Request $request){
+        DB::table('company_mou_peserta')->where('mou_peserta_code',$request->code)->update([
+            'mou_peserta_status'=>1
+        ]);
+        return 'sukses';
     }
 
     // COMPANY MASTER
@@ -230,7 +266,7 @@ class ApplicationController extends Controller
         if ($this->url_akses($akses) == true) {
             $data = DB::table('company_mou')
                 ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
-                ->orderBy('id_company_mou','DESC')->get();
+                ->orderBy('id_company_mou', 'DESC')->get();
             return view('application.master-data.mou-company', ['data' => $data]);
         } else {
             return Redirect::to('dashboard/home');
@@ -290,6 +326,7 @@ class ApplicationController extends Controller
             'mou_peserta_email' => $request->email,
             'mou_peserta_departemen' => $request->departemen,
             'mou_agreement_code' => $request->agreement,
+            'mou_peserta_status' => 0,
             'created_at' => now(),
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data MOU Perusahaan');

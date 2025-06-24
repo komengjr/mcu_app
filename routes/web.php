@@ -64,6 +64,8 @@ Route::prefix('application')->group(function () {
     Route::post('menu-service/proses-pemeriksaan-save', [ApplicationController::class, 'menu_service_proses_pemeriksaan_save'])->name('menu_service_proses_pemeriksaan_save');
     Route::post('menu-service/proses-konsultasi-save', [ApplicationController::class, 'menu_service_proses_konsultasi_save'])->name('menu_service_proses_konsultasi_save');
     Route::post('menu-service/proses-pengiriman-save', [ApplicationController::class, 'menu_service_proses_pengiriman_save'])->name('menu_service_proses_pengiriman_save');
+    Route::post('menu-service/proses-penyelesaian-peserta-mcu', [ApplicationController::class, 'menu_service_proses_penyelesaian_peserta_mcu'])->name('menu_service_proses_penyelesaian_peserta_mcu');
+
     Route::post('master-company/add-company', [ApplicationController::class, 'master_company_add_company'])->name('master_company_add_company');
     Route::post('master-company/add-company/save', [ApplicationController::class, 'master_company_add_company_save'])->name('master_company_add_company_save');
     // MOU COMPANY

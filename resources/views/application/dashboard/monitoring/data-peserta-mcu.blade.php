@@ -45,14 +45,14 @@
                         <td>{{ $pesertas->mou_peserta_departemen }}</td>
                         <td>
                             @php
-                                $pemeriksaan = DB::table('company_mou_pemeriksaan')
+                                $pemeriksaan = DB::table('company_mou_agreement_sub')
                                     ->join(
                                         'master_pemeriksaan',
                                         'master_pemeriksaan.master_pemeriksaan_code',
                                         '=',
-                                        'company_mou_pemeriksaan.master_pemeriksaan_code',
+                                        'company_mou_agreement_sub.master_pemeriksaan_code',
                                     )
-                                    ->where('company_mou_pemeriksaan.company_mou_code', $pesertas->company_mou_code)
+                                    ->where('company_mou_agreement_sub.mou_agreement_code', $pesertas->mou_agreement_code)
                                     ->get();
                             @endphp
                             @foreach ($pemeriksaan as $pem)
@@ -63,8 +63,13 @@
                                         ->first();
                                 @endphp
                                 @if ($check)
-                                    <li>{{ $pem->master_pemeriksaan_name }} <span
-                                            class="fas fa-check-square text-success"></span></li>
+                                    @if ($check->log_pemeriksaan_status == 1)
+                                        <li>{{ $pem->master_pemeriksaan_name }} <span
+                                                class="fas fa-check-square text-success"></span></li>
+                                    @else
+                                        <li>{{ $pem->master_pemeriksaan_name }} <span
+                                                class="fas fa-exclamation-circle text-warning"></span></li>
+                                    @endif
                                 @else
                                     <li>{{ $pem->master_pemeriksaan_name }} <span
                                             class="fas fa-window-close text-danger"></span></li>

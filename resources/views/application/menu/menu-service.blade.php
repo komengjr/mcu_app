@@ -128,8 +128,13 @@
                                             ->first();
                                     @endphp
                                     @if ($check)
-                                        <li>{{ $pem->master_pemeriksaan_name }} <span
-                                                class="fas fa-check-square text-success"></span></li>
+                                        @if ($check->log_pemeriksaan_status == 1)
+                                            <li>{{ $pem->master_pemeriksaan_name }} <span
+                                                    class="fas fa-check-square text-success"></span></li>
+                                        @else
+                                            <li>{{ $pem->master_pemeriksaan_name }} <span
+                                                    class="fas fa-exclamation-circle text-warning"></span></li>
+                                        @endif
                                     @else
                                         <li>{{ $pem->master_pemeriksaan_name }} <span
                                                 class="fas fa-window-close text-danger"></span></li>
@@ -149,7 +154,8 @@
                                         ->first();
                                 @endphp
                                 @if ($pengiriman)
-                                    <span class="badge bg-primary">Terkirim</span>
+                                    <span class="badge bg-primary">Terkirim</span><br>
+                                    {{$pengiriman->log_pengiriman_date}}
                                 @else
                                     <span class="badge bg-danger">Belum Terkirim</span>
                                 @endif
@@ -175,8 +181,8 @@
                                         aria-expanded="false"><span class="fas fa-align-left me-1"
                                             data-fa-transform="shrink-3"></span>Option</button>
                                     <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
-                                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
-                                            id="button-proses-peserta-mcu"
+                                        <button class="dropdown-item" data-bs-toggle="modal"
+                                            data-bs-target="#modal-mcu-xl" id="button-proses-peserta-mcu"
                                             data-code="{{ $datas->mou_peserta_code }}"><span
                                                 class="far fa-folder-open"></span>
                                             Proses Service</button>
@@ -266,6 +272,28 @@
                 $('#menu-mcu-xl').html(data);
             }).fail(function() {
                 $('#menu-mcu-xl').html('eror');
+            });
+        });
+        $(document).on("click", "#button-penyelesaian-peserta-mcu", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#button-penyelesaian-peserta-mcu').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('menu_service_proses_penyelesaian_peserta_mcu') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#button-penyelesaian-peserta-mcu').html(data);
+                location.reload();
+            }).fail(function() {
+                $('#button-penyelesaian-peserta-mcu').html('eror');
             });
         });
     </script>

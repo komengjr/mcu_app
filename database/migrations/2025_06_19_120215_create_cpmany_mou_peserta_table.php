@@ -26,6 +26,7 @@ class CreateCpmanyMouPesertaTable extends Migration
             $table->string('mou_peserta_jk');
             $table->string('mou_peserta_departemen');
             $table->string('mou_agreement_code')->nullable();
+            $table->integer('mou_peserta_status')->nullable();
             $table->timestamps();
         });
     }

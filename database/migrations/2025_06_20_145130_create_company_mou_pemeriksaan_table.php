@@ -15,7 +15,7 @@ class CreateCompanyMouPemeriksaanTable extends Migration
     {
         Schema::create('company_mou_pemeriksaan', function (Blueprint $table) {
             $table->id('id_mou_pemeriksaan');
-            $table->text('mou_pemeriksaan_code')->unique();
+            $table->string('mou_pemeriksaan_code')->unique();
             $table->string('company_mou_code');
             $table->string('master_pemeriksaan_code');
             $table->timestamps();

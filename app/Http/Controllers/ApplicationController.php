@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
+use League\CommonMark\Extension\CommonMark\Node\Inline\Code;
 use Maatwebsite\Excel\Facades\Excel;
 use Session;
 
@@ -78,6 +79,7 @@ class ApplicationController extends Controller
         if ($this->url_akses($akses) == true) {
             $data = DB::table('company_mou')
                 ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+                ->where('company_mou_status', 1)
                 ->where('company_mou_start', '<=', date('Y-m-d'))->get();
             return view('application.menu.medical-check-up', ['data' => $data]);
         } else {
@@ -95,12 +97,9 @@ class ApplicationController extends Controller
     public function medical_check_up_prosess(Request $request)
     {
         $data = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->first();
-        $pemeriksaan = DB::table('company_mou_pemeriksaan')->join(
-            'master_pemeriksaan',
-            'master_pemeriksaan.master_pemeriksaan_code',
-            '=',
-            'company_mou_pemeriksaan.master_pemeriksaan_code',
-        )->where('company_mou_pemeriksaan.company_mou_code', $data->company_mou_code)->get();
+        $pemeriksaan = DB::table('company_mou_agreement_sub')
+        ->join('master_pemeriksaan','master_pemeriksaan.master_pemeriksaan_code','=','company_mou_agreement_sub.master_pemeriksaan_code')
+        ->where('company_mou_agreement_sub.mou_agreement_code',$data->mou_agreement_code)->get();
         return view('application.menu.mcu.form-proses-mcu', ['data' => $data, 'pemeriksaan' => $pemeriksaan]);
     }
     public function medical_check_up_prosess_save(Request $request)
@@ -118,7 +117,8 @@ class ApplicationController extends Controller
             return redirect()->back()->withSuccess('Great! Berhasil Check In Peserta MCU');
         }
     }
-    public function medical_check_up_summary(Request $request){
+    public function medical_check_up_summary(Request $request)
+    {
         return view('application.menu.mcu.form-summary-mcu');
     }
 
@@ -129,7 +129,7 @@ class ApplicationController extends Controller
             $data = DB::table('company_mou_peserta')
                 ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
                 ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
-                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)->get();
+                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)->orderBy('log_lokasi_pasien.id_log_lokasi_pasien','DESC')->get();
             return view('application.menu.menu-service', ['data' => $data]);
         } else {
             return Redirect::to('dashboard/home');
@@ -230,7 +230,7 @@ class ApplicationController extends Controller
         if ($this->url_akses($akses) == true) {
             $data = DB::table('company_mou')
                 ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
-                ->get();
+                ->orderBy('id_company_mou','DESC')->get();
             return view('application.master-data.mou-company', ['data' => $data]);
         } else {
             return Redirect::to('dashboard/home');
@@ -273,30 +273,35 @@ class ApplicationController extends Controller
     }
     public function mou_company_insert_peserta_mcu_manual(Request $request)
     {
-        return view('application.master-data.mou-company.form-add-peserta', ['code' => $request->code]);
+        $data = DB::table('company_mou_agreement')->where('company_mou_code', $request->code)->get();
+        return view('application.master-data.mou-company.form-add-peserta', ['code' => $request->code, 'data' => $data]);
     }
     public function mou_company_insert_peserta_mcu_manual_save(Request $request)
     {
         DB::table('company_mou_peserta')->insert([
-            'mou_peserta_code' => str::uuid(),
+            'mou_peserta_code' => $request->code . mt_rand(1000, 9999),
             'company_mou_code' => $request->code,
             'mou_peserta_nik' => $request->nik,
             'mou_peserta_nip' => $request->nip,
             'mou_peserta_name' => $request->nama,
             'mou_peserta_ttl' => $request->ttl,
             'mou_peserta_jk' => $request->jk,
+            'mou_peserta_no_hp' => $request->no_hp,
+            'mou_peserta_email' => $request->email,
             'mou_peserta_departemen' => $request->departemen,
+            'mou_agreement_code' => $request->agreement,
             'created_at' => now(),
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data MOU Perusahaan');
     }
     public function mou_company_insert_peserta_mcu_upload(Request $request)
     {
-        return view('application.master-data.mou-company.form-upload-excel', ['code' => $request->code]);
+        $data = DB::table('company_mou_agreement')->where('company_mou_code', $request->code)->get();
+        return view('application.master-data.mou-company.form-upload-excel', ['code' => $request->code, 'data' => $data]);
     }
     public function mou_company_insert_peserta_mcu_upload_save(Request $request)
     {
-        Excel::import(new PesertaImport($request->code), request()->file('file'));
+        Excel::import(new PesertaImport($request->code, $request->id), request()->file('file'));
         Session::flash('sukses', 'Upload Data Sukses');
         return redirect()->back();
     }
@@ -317,6 +322,82 @@ class ApplicationController extends Controller
         ]);
         return 'sukses';
     }
+    public function mou_company_activasi_mou(Request $request)
+    {
+        return view('application.master-data.mou-company.form-activasi-mou', ['code' => $request->code]);
+    }
+    public function mou_company_activasi_mou_save(Request $request)
+    {
+        $peserta = DB::table('company_mou_peserta')->where('company_mou_code', $request->code)->first();
+        $paket = DB::table('company_mou_agreement')->where('company_mou_code', $request->code)->first();
+        if ($peserta || $paket) {
+            DB::table('company_mou')->where('company_mou_code', $request->code)->update([
+                'company_mou_status' => 1
+            ]);
+            return redirect()->back()->withSuccess('Great! Berhasil Aktivasi Data MOU Perusahaan');
+        } else {
+            return redirect()->back()->withError('Gagal! Peserta dan Pemilihan Paket TIdak Boleh Kosong');
+        }
+    }
+
+    // AGREEMENT PERUSAHAAN
+    public function agreement_perusahaan($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            $data = DB::table('company_mou_agreement')
+                ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_agreement.company_mou_code')
+                ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+                ->get();
+            return view('application.master-data.agreement-perusahaan', ['data' => $data]);
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
+    public function agreement_perusahaan_add(Request $request)
+    {
+        $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')->get();
+        return view('application.master-data.agreement.form-add', ['data' => $data]);
+    }
+    public function agreement_perusahaan_save(Request $request)
+    {
+        DB::table('company_mou_agreement')->insert([
+            'mou_agreement_code' => str::uuid(),
+            'company_mou_code' => $request->code,
+            'mou_agreement_name' => $request->nama,
+            'mou_agreement_status' => 1,
+            'created_at' => now()
+        ]);
+        return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data MOU Perusahaan');
+    }
+    public function agreement_perusahaan_add_pemeriksaan(Request $request)
+    {
+        $pemeriksaan = DB::table('master_pemeriksaan')->get();
+        $data = DB::table('company_mou_agreement_sub')
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+            ->where('company_mou_agreement_sub.mou_agreement_code', $request->code)->get();
+        return view('application.master-data.agreement.form-add-pemeriksaan', ['pemeriksaan' => $pemeriksaan, 'code' => $request->code, 'data' => $data]);
+    }
+    public function agreement_perusahaan_save_pemeriksaan(Request $request)
+    {
+        DB::table('company_mou_agreement_sub')->insert([
+            'mou_agreement_code' => $request->code,
+            'master_pemeriksaan_code' => $request->id,
+            'created_at' => now()
+        ]);
+        $data = DB::table('company_mou_agreement_sub')
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+            ->where('company_mou_agreement_sub.mou_agreement_code', $request->code)->get();
+        return view('application.master-data.agreement.table-pemeriksaan-mcu', ['data' => $data]);
+    }
+    public function agreement_perusahaan_remove_pemeriksaan(Request $request)
+    {
+        DB::table('company_mou_agreement_sub')->where('id_mou_agreement_sub', $request->id)->delete();
+        $data = DB::table('company_mou_agreement_sub')
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+            ->where('company_mou_agreement_sub.mou_agreement_code', $request->code)->get();
+        return view('application.master-data.agreement.table-pemeriksaan-mcu', ['data' => $data]);
+    }
+
 
     // MASTER PEMERIKSAAN
     public function master_pemeriksaan($akses)
@@ -403,7 +484,7 @@ class ApplicationController extends Controller
             ->get()
             ->unique('lokasi_cabang');
         $totalpeserta = DB::table('company_mou_peserta')->where('company_mou_code', $request->perusahaan)->count();
-        $totalmcu =  DB::table('log_lokasi_pasien')
+        $totalmcu = DB::table('log_lokasi_pasien')
             ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
             ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
             ->where('company_mou_peserta.company_mou_code', $request->perusahaan)

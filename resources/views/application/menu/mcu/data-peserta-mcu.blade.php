@@ -17,6 +17,7 @@
                     <th>No HP</th>
                     <th>NIP</th>
                     <th>Departemen</th>
+                    <th>Paket</th>
                     <th>Lokasi Check In</th>
                     <th>Action</th>
                 </tr>
@@ -44,12 +45,30 @@
                         <td>{{ $pesertas->mou_peserta_departemen }}</td>
                         <td>
                             @php
+                                $paket = DB::table('company_mou_agreement')
+                                    ->where('mou_agreement_code', $pesertas->mou_agreement_code)
+                                    ->first();
+                            @endphp
+                            @if ($paket)
+                                {{ $paket->mou_agreement_name }}
+                            @else
+                                <span class="badge bg-danger">Belum Memilih Paket</span>
+                            @endif
+                        </td>
+                        <td>
+                            @php
                                 $log = DB::table('log_lokasi_pasien')
-                                ->join('master_cabang','master_cabang.master_cabang_code','=','log_lokasi_pasien.lokasi_cabang')
-                                ->where('log_lokasi_pasien.mou_peserta_code', $pesertas->mou_peserta_code)->first();
+                                    ->join(
+                                        'master_cabang',
+                                        'master_cabang.master_cabang_code',
+                                        '=',
+                                        'log_lokasi_pasien.lokasi_cabang',
+                                    )
+                                    ->where('log_lokasi_pasien.mou_peserta_code', $pesertas->mou_peserta_code)
+                                    ->first();
                             @endphp
                             @if ($log)
-                                <span class="text-primary">{{$log->master_cabang_name}}</span>
+                                <span class="text-primary">{{ $log->master_cabang_name }}</span>
                             @else
                                 <span class="badge bg-danger">Belum Check in</span>
                             @endif
@@ -61,7 +80,8 @@
                                         class="fas fa-align-left me-1"
                                         data-fa-transform="shrink-3"></span>Option</button>
                                 <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
-                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl" id="button-proses-peserta-mcu" data-code="{{$pesertas->mou_peserta_code}}">
+                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
+                                        id="button-proses-peserta-mcu" data-code="{{ $pesertas->mou_peserta_code }}">
                                         <span class="fas fa-folder-plus"></span> Proses MCU</button>
                                     {{-- <button class="dropdown-item" data-bs-toggle="modal"
                                         data-bs-target="#modal-peminjaman" id="button-add-request-peminjaman">

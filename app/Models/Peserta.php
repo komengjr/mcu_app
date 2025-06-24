@@ -20,5 +20,6 @@ class Peserta extends Model
         'mou_peserta_ttl',
         'mou_peserta_jk',
         'mou_peserta_departemen',
+        'mou_agreement_code',
     ];
 }

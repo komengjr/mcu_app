@@ -45,6 +45,7 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('menu-service', [ApplicationController::class, 'menu_service'])->name('menu_service');
     Route::get('master-company', [ApplicationController::class, 'master_company'])->name('master_company');
     Route::get('mou-company', [ApplicationController::class, 'mou_company'])->name('mou_company');
+    Route::get('agreement-perusahaan', [ApplicationController::class, 'agreement_perusahaan'])->name('agreement_perusahaan');
     Route::get('master-pemeriksaan', [ApplicationController::class, 'master_pemeriksaan'])->name('master_pemeriksaan');
     Route::get('master-access-mou', [ApplicationController::class, 'master_access_mou'])->name('master_access_mou');
     Route::get('laporan-rekap-mcu', [ApplicationController::class, 'laporan_rekap_mcu'])->name('laporan_rekap_mcu');
@@ -65,6 +66,7 @@ Route::prefix('application')->group(function () {
     Route::post('menu-service/proses-pengiriman-save', [ApplicationController::class, 'menu_service_proses_pengiriman_save'])->name('menu_service_proses_pengiriman_save');
     Route::post('master-company/add-company', [ApplicationController::class, 'master_company_add_company'])->name('master_company_add_company');
     Route::post('master-company/add-company/save', [ApplicationController::class, 'master_company_add_company_save'])->name('master_company_add_company_save');
+    // MOU COMPANY
     Route::post('mou-company/add', [ApplicationController::class, 'mou_company_add'])->name('mou_company_add');
     Route::post('mou-company/save', [ApplicationController::class, 'mou_company_save'])->name('mou_company_save');
     Route::post('mou-company/peserta-mcu', [ApplicationController::class, 'mou_company_peserta_mcu'])->name('mou_company_peserta_mcu');
@@ -75,6 +77,14 @@ Route::prefix('application')->group(function () {
     Route::post('mou-company/insert-peserta-mcu/upload-save', [ApplicationController::class, 'mou_company_insert_peserta_mcu_upload_save'])->name('mou_company_insert_peserta_mcu_upload_save');
     Route::post('mou-company/insert-pemeriksaan-mcu', [ApplicationController::class, 'mou_company_insert_pemeriksaan_mcu'])->name('mou_company_insert_pemeriksaan_mcu');
     Route::post('mou-company/insert-pemeriksaan-mcu/insert', [ApplicationController::class, 'mou_company_insert_pemeriksaan_mcu_insert'])->name('mou_company_insert_pemeriksaan_mcu_insert');
+    Route::post('mou-company/activasi-mou', [ApplicationController::class, 'mou_company_activasi_mou'])->name('mou_company_activasi_mou');
+    Route::post('mou-company/activasi-mou/save', [ApplicationController::class, 'mou_company_activasi_mou_save'])->name('mou_company_activasi_mou_save');
+    // AGREMENT
+    Route::post('agreement-perusahaan/add', [ApplicationController::class, 'agreement_perusahaan_add'])->name('agreement_perusahaan_add');
+    Route::post('agreement-perusahaan/save', [ApplicationController::class, 'agreement_perusahaan_save'])->name('agreement_perusahaan_save');
+    Route::post('agreement-perusahaan/add-pemeriksaan', [ApplicationController::class, 'agreement_perusahaan_add_pemeriksaan'])->name('agreement_perusahaan_add_pemeriksaan');
+    Route::post('agreement-perusahaan/save-pemeriksaan', [ApplicationController::class, 'agreement_perusahaan_save_pemeriksaan'])->name('agreement_perusahaan_save_pemeriksaan');
+    Route::post('agreement-perusahaan/remove-pemeriksaan', [ApplicationController::class, 'agreement_perusahaan_remove_pemeriksaan'])->name('agreement_perusahaan_remove_pemeriksaan');
     // AKSES MOU
     Route::post('master-access-mou/add-akses', [ApplicationController::class, 'master_access_mou_add_akses'])->name('master_access_mou_add_akses');
     Route::post('master-access-mou/add-akses-pilih', [ApplicationController::class, 'master_access_mou_add_akses_pilih'])->name('master_access_mou_add_akses_pilih');

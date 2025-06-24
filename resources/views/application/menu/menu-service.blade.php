@@ -101,20 +101,23 @@
                         <tr>
                             <td>{{ $no++ }}</td>
                             <td>{{ $datas->mou_peserta_name }}</td>
-                            <td>{{ $datas->company_mou_name }}</td>
+                            <td class="text-primary">{{ $datas->company_mou_name }}</td>
                             <td>{{ $datas->mou_peserta_email }}</td>
                             <td>{{ $datas->mou_peserta_no_hp }}</td>
                             {{-- Pemeriksaan --}}
                             <td>
                                 @php
-                                    $pemeriksaan = DB::table('company_mou_pemeriksaan')
+                                    $pemeriksaan = DB::table('company_mou_agreement_sub')
                                         ->join(
                                             'master_pemeriksaan',
                                             'master_pemeriksaan.master_pemeriksaan_code',
                                             '=',
-                                            'company_mou_pemeriksaan.master_pemeriksaan_code',
+                                            'company_mou_agreement_sub.master_pemeriksaan_code',
                                         )
-                                        ->where('company_mou_pemeriksaan.company_mou_code', $datas->company_mou_code)
+                                        ->where(
+                                            'company_mou_agreement_sub.mou_agreement_code',
+                                            $datas->mou_agreement_code,
+                                        )
                                         ->get();
                                 @endphp
                                 @foreach ($pemeriksaan as $pem)
@@ -125,9 +128,11 @@
                                             ->first();
                                     @endphp
                                     @if ($check)
-                                        <li>{{ $pem->master_pemeriksaan_name }} <span class="fas fa-check-square text-success"></span></li>
+                                        <li>{{ $pem->master_pemeriksaan_name }} <span
+                                                class="fas fa-check-square text-success"></span></li>
                                     @else
-                                        <li>{{ $pem->master_pemeriksaan_name }} <span class="fas fa-window-close text-danger"></span></li>
+                                        <li>{{ $pem->master_pemeriksaan_name }} <span
+                                                class="fas fa-window-close text-danger"></span></li>
                                     @endif
                                 @endforeach
                                 {{-- @if ($konsul)

@@ -51,7 +51,7 @@
     </div>
     <div class="card mb-3">
         <div class="card-body">
-            <div class="row">
+            <div class="row g-3">
                 @foreach ($data as $datas)
                     <div class="mb-4 mb-lg-0 col-md-4 col-lg-3">
                         <div class="border rounded-1 h-100 d-flex flex-column justify-content-between pb-3">

@@ -9,9 +9,10 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class PesertaImport implements ToModel , WithHeadingRow
 {
-    public function __construct(string $keyword)
+    public function __construct(string $code,$ids)
     {
-        $this->nama = $keyword;
+        $this->ids = $ids;
+        $this->code = $code;
     }
     public function model(array $row)
     {
@@ -19,9 +20,8 @@ class PesertaImport implements ToModel , WithHeadingRow
         // $request = request()->all();
         // $data = DB::table('company_mou_peserta')->where('company_mou_code', $request->code)->first();
         return new Peserta([
-            // 'id_inventaris' => $request['kdcabang'] . "" . mt_rand(1000, 9999),
-            'mou_peserta_code' => $this->nama.mt_rand(1000, 9999),
-            'company_mou_code' => $this->nama,
+            'mou_peserta_code' => $this->code.mt_rand(1000, 9999),
+            'company_mou_code' => $this->code,
             'mou_peserta_nik' => $row['nik'],
             'mou_peserta_nip' => $row['nip'],
             'mou_peserta_name' => $row['name'],
@@ -30,6 +30,7 @@ class PesertaImport implements ToModel , WithHeadingRow
             'mou_peserta_ttl' => $row['ttl'],
             'mou_peserta_jk' => $row['jk'],
             'mou_peserta_departemen' => $row['departemen'],
+            'mou_agreement_code' => $this->ids,
             'created_at' => now(),
         ]);
     }

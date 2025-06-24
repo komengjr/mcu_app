@@ -1,32 +1,43 @@
-<form class="row g-3 p-4" action="{{ route('mou_company_insert_peserta_mcu_manual_save') }}" method="post" enctype="multipart/form-data">
+<form class="row g-3 p-4" action="{{ route('mou_company_insert_peserta_mcu_manual_save') }}" method="post"
+    enctype="multipart/form-data">
     @csrf
-    {{-- <div class="col-6">
-            <label class="form-label" for="inputAddress">Nama Perusahaan</label>
-            <select name="perusahaan" class="form-control choices-single-jenis" id="">
-                <option value="">Pilih Perusahaan</option>
-                @foreach ($data as $datas)
-                    <option value="{{$datas->master_company_code }}">{{$datas->master_company_name }}</option>
-                @endforeach
-            </select>
-        </div> --}}
-    <div class="col-6">
+    <div class="col-md-6">
+        <label class="form-label" for="inputAddress">Pilih Agrement</label>
+        <select name="agreement" class="form-control choices-single-jenis" required>
+            <option value="">Pilih Agrement</option>
+            @foreach ($data as $datas)
+                <option value="{{ $datas->mou_agreement_code }}">{{ $datas->mou_agreement_name }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-md-6">
         <label class="form-label" for="inputAddress">Nama Peserta</label>
         <input class="form-control form-control-lg" id="inputAddress" type="text" name="nama"
             placeholder="Jhon Doe" required />
-            <input type="text" name="code" value="{{$code}}" id="" hidden>
+        <input type="text" name="code" value="{{ $code }}" id="" hidden>
     </div>
 
-    <div class="col-6">
+    <div class="col-md-6">
         <label class="form-label" for="inputAddress">NIK</label>
-        <input class="form-control form-control-lg" id="inputAddress" type="text" name="nik" placeholder="00000000"
-            required />
+        <input class="form-control form-control-lg" id="inputAddress" type="text" name="nik"
+            placeholder="00000000" required />
     </div>
-    <div class="col-6">
+    <div class="col-md-6">
         <label class="form-label" for="inputAddress">NIP</label>
-        <input class="form-control form-control-lg" id="inputAddress" type="text" name="nip" placeholder="00000000"
-            required />
+        <input class="form-control form-control-lg" id="inputAddress" type="text" name="nip"
+            placeholder="00000000" required />
     </div>
-    <div class="col-6">
+    <div class="col-md-4">
+        <label class="form-label" for="inputAddress">Email</label>
+        <input class="form-control form-control-lg" id="inputAddress" type="text" name="email"
+            placeholder="00000000" required />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label" for="inputAddress">No Hp</label>
+        <input class="form-control form-control-lg" id="inputAddress" type="text" name="no_hp"
+            placeholder="00000000" required />
+    </div>
+    <div class="col-md-4">
         <label class="form-label" for="inputAddress">Departemen</label>
         <input class="form-control form-control-lg" id="inputAddress" type="text" name="departemen" placeholder="-"
             required />

@@ -6,7 +6,7 @@
     </div>
     <div class="tab-content p-3">
         <table id="data-v3" class="table table-striped nowrap" style="width:100%">
-            <thead class="bg-200 text-700">
+            <thead class="bg-200 text-700 fs--2">
                 <tr>
                     <th>No</th>
                     <th>Nama Peserta</th>
@@ -17,9 +17,10 @@
                     <th>No HP</th>
                     <th>NIP</th>
                     <th>Departemen</th>
+                    <th>Paket</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="fs--2">
                 @php
                     $no = 1;
                 @endphp
@@ -40,6 +41,18 @@
                         <td>{{ $pesertas->mou_peserta_no_hp }}</td>
                         <td>{{ $pesertas->mou_peserta_nip }}</td>
                         <td>{{ $pesertas->mou_peserta_departemen }}</td>
+                        <td>
+                            @php
+                                $paket = DB::table('company_mou_agreement')
+                                    ->where('mou_agreement_code', $pesertas->mou_agreement_code)
+                                    ->first();
+                            @endphp
+                            @if ($paket)
+                                {{ $paket->mou_agreement_name }}
+                            @else
+                            <span class="badge bg-danger">Belum Memilih Paket</span>
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

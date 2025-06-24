@@ -58,7 +58,7 @@
                         <th>Nama Perusahaan</th>
                         <th>Jumlah Peserta</th>
                         <th>Tanggal</th>
-                        <th>Pemeriksaan</th>
+                        <th>Agreement</th>
                         <th>Status MOU</th>
                         <th>Action</th>
                     </tr>
@@ -83,15 +83,10 @@
                             <td>{{ $datas->company_mou_start }} <br>{{ $datas->company_mou_end }}</td>
                             <td>
                                 @php
-                                    $pemeriksaan = DB::table('company_mou_pemeriksaan')->join(
-                                        'master_pemeriksaan',
-                                        'master_pemeriksaan.master_pemeriksaan_code',
-                                        '=',
-                                        'company_mou_pemeriksaan.master_pemeriksaan_code',
-                                    )->where('company_mou_pemeriksaan.company_mou_code',$datas->company_mou_code)->get();
+                                    $agreement = DB::table('company_mou_agreement')->where('company_mou_code',$datas->company_mou_code)->get();
                                 @endphp
-                                @foreach ($pemeriksaan as $item)
-                                    <li>{{$item->master_pemeriksaan_name}}</li>
+                                @foreach ($agreement as $item)
+                                    <li>{{$item->mou_agreement_name}}</li>
                                 @endforeach
                             </td>
                             <td>
@@ -118,16 +113,16 @@
                                             <span class="fas fa-user-friends"></span>
                                             Peserta MCU</button>
                                         <button class="dropdown-item" data-bs-toggle="modal"
-                                            data-bs-target="#modal-company-lg" id="button-data-insert-peserta"
+                                            data-bs-target="#modal-company-xl" id="button-data-insert-peserta"
                                             data-code="{{ $datas->company_mou_code }}">
                                             <span class="fas fa-file-import"></span>
                                             Insert Peserta</button>
                                         <div class="dropdown-divider"></div>
                                         <button class="dropdown-item text-primary" data-bs-toggle="modal"
-                                            data-bs-target="#modal-company" id="button-data-insert-pemeriksaan"
+                                            data-bs-target="#modal-company-sm" id="button-aktifasi-mou"
                                             data-code="{{ $datas->company_mou_code }}">
-                                            <span class="fas fa-syringe"></span>
-                                            Insert Pemeriksaan</button>
+                                            <span class="fab fa-galactic-republic"></span>
+                                            Aktivasi MOU</button>
                                     </div>
                                 </div>
                             </td>
@@ -172,6 +167,18 @@
                         data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div id="menu-company-lg"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-company-sm" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="false">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <div class="modal-content border-0">
+                <div class="position-absolute top-0 end-0 mt-3 me-3 z-index-1">
+                    <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="menu-company-sm"></div>
             </div>
         </div>
     </div>
@@ -231,7 +238,7 @@
         $(document).on("click", "#button-data-insert-peserta", function(e) {
             e.preventDefault();
             var code = $(this).data("code");
-            $('#menu-company-lg').html(
+            $('#menu-company-xl').html(
                 '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
             );
             $.ajax({
@@ -244,9 +251,9 @@
                 },
                 dataType: 'html',
             }).done(function(data) {
-                $('#menu-company-lg').html(data);
+                $('#menu-company-xl').html(data);
             }).fail(function() {
-                $('#menu-company-lg').html('eror');
+                $('#menu-company-xl').html('eror');
             });
         });
         $(document).on("click", "#button-add-form-mou-company", function(e) {
@@ -334,6 +341,27 @@
                 location.reload();
             }).fail(function() {
                 $('#menu-pemeriksaan-mcu').html('eror');
+            });
+        });
+        $(document).on("click", "#button-aktifasi-mou", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-company-sm').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('mou_company_activasi_mou') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-company-sm').html(data);
+            }).fail(function() {
+                $('#menu-company-sm').html('eror');
             });
         });
     </script>

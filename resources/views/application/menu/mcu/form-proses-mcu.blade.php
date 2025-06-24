@@ -14,7 +14,7 @@
                     <label class="form-label" for="inputAddress">Nama Peserta</label>
                     <input class="form-control" id="inputAddress" type="text" name="nama"
                         value="{{ $data->mou_peserta_name }}" disabled />
-                    <input type="text" name="code" id="" value="{{$data->mou_peserta_code}}" hidden>
+                    <input type="text" name="code" id="" value="{{ $data->mou_peserta_code }}" hidden>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label" for="inputAddress">NIK</label>
@@ -42,11 +42,34 @@
                     <input class="form-control" id="inputAddress" type="text" name="start"
                         value="{{ $data->mou_peserta_departemen }}" disabled />
                 </div>
-                <div class="col-12">
-                    <button class="btn btn-primary btn-sm" type="submit"><span class="far fa-chart-bar"></span> Check
+                <div class="col-12 pt-3">
+                    <button class="btn btn-primary btn-sm float-end" type="submit"><span
+                            class="far fa-chart-bar"></span> Check
                         In</button>
                 </div>
             </form>
+            <div class="p-4 pt-0">
+                <table id="data-v3s" class="table table-striped nowrap" style="width:100%">
+                    <thead class="bg-200 text-700 fs--2">
+                        <tr>
+                            <th>No</th>
+                            <th>Pemeriksaaan</th>
+                        </tr>
+                    </thead>
+                    <tbody class="fs--2">
+                        @php
+                            $no = 1;
+                        @endphp
+                        @foreach ($pemeriksaan as $item)
+                            <tr>
+                                <td style="width: 5%;">{{$no++}}</td>
+                                <td>{{$item->master_pemeriksaan_name}}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+            </div>
         </div>
     </div>
 </div>
@@ -124,3 +147,8 @@
 </div> --}}
 
 </div>
+<script>
+    new DataTable('#data-v3s', {
+        responsive: true
+    });
+</script>

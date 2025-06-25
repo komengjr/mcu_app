@@ -29,7 +29,7 @@
                 required />
         </div>
         <div class="col-4">
-            <label class="form-label" for="inputAddress">Telephon Perusahaan</label>
+            <label class="form-label" for="inputAddress">Contact Perusahaan</label>
             <input class="form-control form-control-lg" id="inputAddress" type="text" name="phone" placeholder="021 09283"
                 required />
         </div>

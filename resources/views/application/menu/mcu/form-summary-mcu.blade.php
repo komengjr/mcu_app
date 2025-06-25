@@ -16,29 +16,55 @@
             </div>
         </div>
         <div class="card-body border border-primary">
-            <form class="row g-3 p-2" action="{{ route('menu_service_proses_pengiriman_save') }}" method="post"
+            <form class="row g-3 p-2" action="{{ route('medical_check_up_summary_save_persentasi') }}" method="post"
                 enctype="multipart/form-data">
                 @csrf
-                {{-- <input type="text" name="code" id="" value="{{ $data->mou_peserta_code }}" hidden> --}}
-                <div class="col-md-4">
-                    <label class="form-label text-warning" for="inputAddress">Persentasi Hasil</label>
-                    <div class="form-check">
-                        <input class="form-check-input" id="pengiriman1" type="radio" name="pengiriman" value="0"
-                            required />
-                        <label class="form-check-label mb-0" for="pengiriman1">Tidak diperlukan</label>
+                <input type="text" name="code" id="" value="{{ $code }}" hidden>
+                @if ($data)
+                    @if ($data->summary_cabang_pesentasi == null)
+                        <div class="col-md-4">
+                            <label class="form-label text-warning" for="inputAddress">Persentasi Hasil</label>
+                            <div class="form-check">
+                                <input class="form-check-input" id="pengiriman1" type="radio" name="persentasi"
+                                    value="0" required />
+                                <label class="form-check-label mb-0" for="pengiriman1">Tidak diperlukan</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" id="pengiriman2" type="radio" name="persentasi"
+                                    value="1" required />
+                                <label class="form-check-label mb-0" for="pengiriman2">Sudah Persentasi</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8">Dokumen</label>
+                            <input type="file" name="" id="" class="form-control">
+                        </div>
+                        <div class="col-md-12">
+                            <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
+                        </div>
+                    @else
+                        <span class="badge bg-primary">Selesai</span>
+                    @endif
+                @else
+                    <div class="col-md-4">
+                        <label class="form-label text-warning" for="inputAddress">Persentasi Hasil</label>
+                        <div class="form-check">
+                            <input class="form-check-input" id="pengiriman1" type="radio" name="persentasi"
+                                value="0" required />
+                            <label class="form-check-label mb-0" for="pengiriman1">Tidak diperlukan</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" id="pengiriman2" type="radio" name="persentasi"
+                                value="1" required />
+                            <label class="form-check-label mb-0" for="pengiriman2">Sudah Persentasi</label>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" id="pengiriman2" type="radio" name="pengiriman" value="1"
-                            required />
-                        <label class="form-check-label mb-0" for="pengiriman2">Sudah Persentasi</label>
+                    <div class="col-md-8">Dokumen</label>
+                        <input type="file" name="" id="" class="form-control">
                     </div>
-                </div>
-                <div class="col-md-8">Dokumen</label>
-                    <input type="file" name="" id="" class="form-control">
-                </div>
-                <div class="col-md-12">
-                    <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
-                </div>
+                    <div class="col-md-12">
+                        <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
+                    </div>
+                @endif
             </form>
         </div>
     </div>
@@ -54,29 +80,55 @@
             </div>
         </div>
         <div class="card-body border border-primary">
-            <form class="row g-3 p-2" action="{{ route('menu_service_proses_pengiriman_save') }}" method="post"
+            <form class="row g-3 p-2" action="{{ route('medical_check_up_summary_save_executive') }}" method="post"
                 enctype="multipart/form-data">
                 @csrf
-                {{-- <input type="text" name="code" id="" value="{{ $data->mou_peserta_code }}" hidden> --}}
-                <div class="col-md-4">
-                    <label class="form-label text-warning" for="inputAddress">Executive Hasil</label>
-                    <div class="form-check">
-                        <input class="form-check-input" id="pengiriman1" type="radio" name="pengiriman" value="0"
-                            required />
-                        <label class="form-check-label mb-0" for="pengiriman1">Tidak diperlukan</label>
+                <input type="text" name="code" id="" value="{{ $code }}" hidden>
+                @if ($data)
+                    @if ($data->summary_cabang_executive == null)
+                        <div class="col-md-4">
+                            <label class="form-label text-warning" for="inputAddress">Executive Hasil</label>
+                            <div class="form-check">
+                                <input class="form-check-input" id="pengiriman1" type="radio" name="executive"
+                                    value="0" required />
+                                <label class="form-check-label mb-0" for="pengiriman1">Tidak diperlukan</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" id="pengiriman2" type="radio" name="executive"
+                                    value="1" required />
+                                <label class="form-check-label mb-0" for="pengiriman2">Sudah dilakukan</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8">Dokumen</label>
+                            <input type="file" name="" id="" class="form-control">
+                        </div>
+                        <div class="col-md-12">
+                            <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
+                        </div>
+                    @else
+                        <span class="badge bg-primary">Selesai</span>
+                    @endif
+                @else
+                    <div class="col-md-4">
+                        <label class="form-label text-warning" for="inputAddress">Executive Hasil</label>
+                        <div class="form-check">
+                            <input class="form-check-input" id="pengiriman1" type="radio" name="executive"
+                                value="0" required />
+                            <label class="form-check-label mb-0" for="pengiriman1">Tidak diperlukan</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" id="pengiriman2" type="radio" name="executive"
+                                value="1" required />
+                            <label class="form-check-label mb-0" for="pengiriman2">Sudah dilakukan</label>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" id="pengiriman2" type="radio" name="pengiriman" value="1"
-                            required />
-                        <label class="form-check-label mb-0" for="pengiriman2">Sudah dilakukan</label>
+                    <div class="col-md-8">Dokumen</label>
+                        <input type="file" name="" id="" class="form-control">
                     </div>
-                </div>
-                <div class="col-md-8">Dokumen</label>
-                    <input type="file" name="" id="" class="form-control">
-                </div>
-                <div class="col-md-12">
-                    <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
-                </div>
+                    <div class="col-md-12">
+                        <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
+                    </div>
+                @endif
             </form>
         </div>
     </div>
@@ -92,29 +144,55 @@
             </div>
         </div>
         <div class="card-body border border-primary">
-            <form class="row g-3 p-2" action="{{ route('menu_service_proses_pengiriman_save') }}" method="post"
-                enctype="multipart/form-data">
+            <form class="row g-3 p-2" action="{{ route('medical_check_up_summary_save_healty_talk') }}"
+                method="post" enctype="multipart/form-data">
                 @csrf
-                {{-- <input type="text" name="code" id="" value="{{ $data->mou_peserta_code }}" hidden> --}}
-                <div class="col-md-4">
-                    <label class="form-label text-warning" for="inputAddress">Healty Talk</label>
-                    <div class="form-check">
-                        <input class="form-check-input" id="pengiriman1" type="radio" name="pengiriman" value="0"
-                            required />
-                        <label class="form-check-label mb-0" for="pengiriman1">Tidak diperlukan</label>
+                <input type="text" name="code" id="" value="{{ $code }}" hidden>
+                @if ($data)
+                    @if ($data->summary_cabang_ht == null)
+                        <div class="col-md-4">
+                            <label class="form-label text-warning" for="inputAddress">Healty Talk</label>
+                            <div class="form-check">
+                                <input class="form-check-input" id="pengiriman1" type="radio" name="healty_talk"
+                                    value="0" required />
+                                <label class="form-check-label mb-0" for="pengiriman1">Tidak diperlukan</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" id="pengiriman2" type="radio" name="healty_talk"
+                                    value="1" required />
+                                <label class="form-check-label mb-0" for="pengiriman2">Sudah dilakukan</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8">Dokumen</label>
+                            <input type="file" name="" id="" class="form-control">
+                        </div>
+                        <div class="col-md-12">
+                            <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
+                        </div>
+                    @else
+                        <span class="badge bg-primary">Selesai</span>
+                    @endif
+                @else
+                    <div class="col-md-4">
+                        <label class="form-label text-warning" for="inputAddress">Healty Talk</label>
+                        <div class="form-check">
+                            <input class="form-check-input" id="pengiriman1" type="radio" name="healty_talk"
+                                value="0" required />
+                            <label class="form-check-label mb-0" for="pengiriman1">Tidak diperlukan</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" id="pengiriman2" type="radio" name="healty_talk"
+                                value="1" required />
+                            <label class="form-check-label mb-0" for="pengiriman2">Sudah dilakukan</label>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" id="pengiriman2" type="radio" name="pengiriman" value="1"
-                            required />
-                        <label class="form-check-label mb-0" for="pengiriman2">Sudah dilakukan</label>
+                    <div class="col-md-8">Dokumen</label>
+                        <input type="file" name="" id="" class="form-control">
                     </div>
-                </div>
-                <div class="col-md-8">Dokumen</label>
-                    <input type="file" name="" id="" class="form-control">
-                </div>
-                <div class="col-md-12">
-                    <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
-                </div>
+                    <div class="col-md-12">
+                        <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
+                    </div>
+                @endif
             </form>
         </div>
     </div>

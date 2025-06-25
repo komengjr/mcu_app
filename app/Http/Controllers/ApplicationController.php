@@ -81,7 +81,7 @@ class ApplicationController extends Controller
             $data = DB::table('company_mou')
                 ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
                 ->where('company_mou_status', 1)
-                ->where('company_mou_start', '<=', date('Y-m-d'))->get();
+                ->where('company_mou_start', '<=', date('Y-m-d'))->orderBy('id_company_mou', 'DESC')->get();
             return view('application.menu.medical-check-up', ['data' => $data]);
         } else {
             return Redirect::to('dashboard/home');
@@ -120,7 +120,75 @@ class ApplicationController extends Controller
     }
     public function medical_check_up_summary(Request $request)
     {
-        return view('application.menu.mcu.form-summary-mcu');
+        $data = DB::table('log_summary_cabang')
+            ->where('company_mou_code', $request->code)
+            ->where('master_cabang_code', Auth::user()->access_cabang)
+            ->first();
+        return view('application.menu.mcu.form-summary-mcu', ['code' => $request->code, 'data' => $data]);
+    }
+    public function medical_check_up_summary_save_persentasi(Request $request)
+    {
+        $data = DB::table('log_summary_cabang')->where('company_mou_code', $request->code)->where('master_cabang_code', Auth::user()->access_cabang)->first();
+        if ($data) {
+            DB::table('log_summary_cabang')->where('company_mou_code', $request->code)
+                ->where('master_cabang_code', Auth::user()->access_cabang)->update([
+                        'summary_cabang_pesentasi' => $request->persentasi,
+                        'summary_cabang_pesentasi_date' => now(),
+                    ]);
+        } else {
+            DB::table('log_summary_cabang')->insert([
+                'summary_cabang_code' => str::uuid(),
+                'company_mou_code' => $request->code,
+                'master_cabang_code' => Auth::user()->access_cabang,
+                'summary_cabang_pesentasi' => $request->persentasi,
+                'summary_cabang_pesentasi_date' => now(),
+                'created_at' => now()
+            ]);
+        }
+
+        return redirect()->back()->withSuccess('Great! Berhasil Update Persentasi MCU');
+    }
+    public function medical_check_up_summary_save_executive(Request $request)
+    {
+        $data = DB::table('log_summary_cabang')->where('company_mou_code', $request->code)->where('master_cabang_code', Auth::user()->access_cabang)->first();
+        if ($data) {
+            DB::table('log_summary_cabang')->where('company_mou_code', $request->code)
+                ->where('master_cabang_code', Auth::user()->access_cabang)->update([
+                        'summary_cabang_executive' => $request->executive,
+                        'summary_cabang_executive_date' => now(),
+                    ]);
+        } else {
+            DB::table('log_summary_cabang')->insert([
+                'summary_cabang_code' => str::uuid(),
+                'company_mou_code' => $request->code,
+                'master_cabang_code' => Auth::user()->access_cabang,
+                'summary_cabang_executive' => $request->executive,
+                'summary_cabang_executive_date' => now(),
+                'created_at' => now()
+            ]);
+        }
+        return redirect()->back()->withSuccess('Great! Berhasil Update Executive MCU');
+    }
+    public function medical_check_up_summary_save_healty_talk(Request $request)
+    {
+        $data = DB::table('log_summary_cabang')->where('company_mou_code', $request->code)->where('master_cabang_code', Auth::user()->access_cabang)->first();
+        if ($data) {
+            DB::table('log_summary_cabang')->where('company_mou_code', $request->code)
+                ->where('master_cabang_code', Auth::user()->access_cabang)->update([
+                        'summary_cabang_ht' => $request->healty_talk,
+                        'summary_cabang_ht_date' => now(),
+                    ]);
+        } else {
+            DB::table('log_summary_cabang')->insert([
+                'summary_cabang_code' => str::uuid(),
+                'company_mou_code' => $request->code,
+                'master_cabang_code' => Auth::user()->access_cabang,
+                'summary_cabang_ht' => $request->healty_talk,
+                'summary_cabang_ht_date' => now(),
+                'created_at' => now()
+            ]);
+        }
+        return redirect()->back()->withSuccess('Great! Berhasil Update Executive MCU');
     }
 
     // MENU SERVICE
@@ -511,11 +579,13 @@ class ApplicationController extends Controller
         ]);
         return 123;
     }
-    public function master_access_mou_remove_akses(Request $request){
-        return view('application.master-data.mou-akses.form-remove-akses',['code'=>$request->code]);
+    public function master_access_mou_remove_akses(Request $request)
+    {
+        return view('application.master-data.mou-akses.form-remove-akses', ['code' => $request->code]);
     }
-    public function master_access_mou_remove_akses_save(Request $request){
-        DB::table('company_mou_access')->where('id_mou_access',$request->code)->delete();
+    public function master_access_mou_remove_akses_save(Request $request)
+    {
+        DB::table('company_mou_access')->where('id_mou_access', $request->code)->delete();
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data MOU Perusahaan');
     }
 

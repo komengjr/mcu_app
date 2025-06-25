@@ -57,7 +57,7 @@
                         </td>
                         <td>
                             @php
-                                $log = DB::table('log_lokasi_pasien')
+                                $log = DB::table('log_lokasi_pasien')->select('log_lokasi_pasien.created_at','master_cabang.master_cabang_name')
                                     ->join(
                                         'master_cabang',
                                         'master_cabang.master_cabang_code',
@@ -69,6 +69,7 @@
                             @endphp
                             @if ($log)
                                 <span class="text-primary">{{ $log->master_cabang_name }}</span>
+                                <br>{{$log->created_at}}
                             @else
                                 <span class="badge bg-danger">Belum Check in</span>
                             @endif

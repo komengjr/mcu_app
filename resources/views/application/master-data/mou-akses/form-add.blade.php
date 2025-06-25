@@ -12,17 +12,17 @@
         </div>
         <div class="col-md-4">
             <label class="form-label" for="inputAddress">Email</label>
-            <input class="form-control" id="inputAddress" type="text" name="email" placeholder="dashboard"
+            <input class="form-control" id="inputAddress" type="text" name="email" placeholder="contoh@gmail.com"
                 required />
         </div>
         <div class="col-md-4">
             <label class="form-label" for="inputAddress">No Handphone</label>
-            <input class="form-control" id="inputAddress" type="text" name="no_hp" placeholder="dashboard"
+            <input class="form-control" id="inputAddress" type="text" name="no_hp" placeholder="0812002920"
                 required />
         </div>
         <div class="col-6">
             <label class="form-label" for="inputAddress">Username</label>
-            <input class="form-control" id="inputAddress" type="text" name="username" placeholder="dashboard"
+            <input class="form-control" id="inputAddress" type="text" name="username" placeholder="jhondoe"
                 required />
         </div>
         <div class="col-6">

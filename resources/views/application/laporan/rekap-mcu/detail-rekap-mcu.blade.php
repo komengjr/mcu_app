@@ -167,14 +167,50 @@
                                          @endphp
                                          {{ $jumlah }} Peserta
                                      </td>
+                                     @php
+                                         $sumarry = DB::table('log_summary_cabang')
+                                             ->where('company_mou_code', $data->company_mou_code)
+                                             ->where('master_cabang_code', $cabangs->master_cabang_code)
+                                             ->first();
+                                     @endphp
                                      <td class="age">
-                                         <span class="badge bg-danger">Belum</span>
+                                         @if ($sumarry)
+                                             @if ($sumarry->summary_cabang_executive == 1)
+                                                 <span class="badge bg-primary">Done</span>
+                                             @elseif ($sumarry->summary_cabang_executive == 0)
+                                                 <span class="badge bg-warning">Skip</span>
+                                             @else
+                                                 <span class="badge bg-danger">Belum</span>
+                                             @endif
+                                         @else
+                                             <span class="badge bg-danger">Belum</span>
+                                         @endif
                                      </td>
                                      <td>
-                                         <span class="badge bg-danger">Belum</span>
+                                         @if ($sumarry)
+                                             @if ($sumarry->summary_cabang_pesentasi == 1)
+                                                 <span class="badge bg-primary">Done</span>
+                                             @elseif ($sumarry->summary_cabang_pesentasi == 0)
+                                                 <span class="badge bg-warning">Skip</span>
+                                             @else
+                                                 <span class="badge bg-danger">Belums</span>
+                                             @endif
+                                         @else
+                                             <span class="badge bg-danger">Belum</span>
+                                         @endif
                                      </td>
                                      <td>
-                                         <span class="badge bg-danger">Belum</span>
+                                         @if ($sumarry)
+                                             @if ($sumarry->summary_cabang_ht == 1)
+                                                 <span class="badge bg-primary">Done</span>
+                                             @elseif ($sumarry->summary_cabang_ht == 0)
+                                                 <span class="badge bg-warning">Skip</span>
+                                             @else
+                                                 <span class="badge bg-danger">Belums</span>
+                                             @endif
+                                         @else
+                                             <span class="badge bg-danger">Belum</span>
+                                         @endif
                                      </td>
                                  </tr>
                              @endforeach

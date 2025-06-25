@@ -89,14 +89,14 @@
                         <div class="col-md-4">
                             <label class="form-label text-warning" for="inputAddress">Executive Hasil</label>
                             <div class="form-check">
-                                <input class="form-check-input" id="pengiriman1" type="radio" name="executive"
+                                <input class="form-check-input" id="executive1" type="radio" name="executive"
                                     value="0" required />
-                                <label class="form-check-label mb-0" for="pengiriman1">Tidak diperlukan</label>
+                                <label class="form-check-label mb-0" for="executive1">Tidak diperlukan</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" id="pengiriman2" type="radio" name="executive"
+                                <input class="form-check-input" id="executive2" type="radio" name="executive"
                                     value="1" required />
-                                <label class="form-check-label mb-0" for="pengiriman2">Sudah dilakukan</label>
+                                <label class="form-check-label mb-0" for="executive2">Sudah dilakukan</label>
                             </div>
                         </div>
                         <div class="col-md-8">Dokumen</label>
@@ -112,14 +112,14 @@
                     <div class="col-md-4">
                         <label class="form-label text-warning" for="inputAddress">Executive Hasil</label>
                         <div class="form-check">
-                            <input class="form-check-input" id="pengiriman1" type="radio" name="executive"
+                            <input class="form-check-input" id="executive1" type="radio" name="executive"
                                 value="0" required />
-                            <label class="form-check-label mb-0" for="pengiriman1">Tidak diperlukan</label>
+                            <label class="form-check-label mb-0" for="executive1">Tidak diperlukan</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" id="pengiriman2" type="radio" name="executive"
+                            <input class="form-check-input" id="executive2" type="radio" name="executive"
                                 value="1" required />
-                            <label class="form-check-label mb-0" for="pengiriman2">Sudah dilakukan</label>
+                            <label class="form-check-label mb-0" for="executive2">Sudah dilakukan</label>
                         </div>
                     </div>
                     <div class="col-md-8">Dokumen</label>
@@ -153,14 +153,14 @@
                         <div class="col-md-4">
                             <label class="form-label text-warning" for="inputAddress">Healty Talk</label>
                             <div class="form-check">
-                                <input class="form-check-input" id="pengiriman1" type="radio" name="healty_talk"
+                                <input class="form-check-input" id="healty_talk" type="radio" name="healty_talk"
                                     value="0" required />
-                                <label class="form-check-label mb-0" for="pengiriman1">Tidak diperlukan</label>
+                                <label class="form-check-label mb-0" for="healty_talk">Tidak diperlukan</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" id="pengiriman2" type="radio" name="healty_talk"
+                                <input class="form-check-input" id="healty_talk" type="radio" name="healty_talk"
                                     value="1" required />
-                                <label class="form-check-label mb-0" for="pengiriman2">Sudah dilakukan</label>
+                                <label class="form-check-label mb-0" for="healty_talk">Sudah dilakukan</label>
                             </div>
                         </div>
                         <div class="col-md-8">Dokumen</label>
@@ -176,14 +176,14 @@
                     <div class="col-md-4">
                         <label class="form-label text-warning" for="inputAddress">Healty Talk</label>
                         <div class="form-check">
-                            <input class="form-check-input" id="pengiriman1" type="radio" name="healty_talk"
+                            <input class="form-check-input" id="healty_talk1" type="radio" name="healty_talk"
                                 value="0" required />
-                            <label class="form-check-label mb-0" for="pengiriman1">Tidak diperlukan</label>
+                            <label class="form-check-label mb-0" for="healty_talk1">Tidak diperlukan</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" id="pengiriman2" type="radio" name="healty_talk"
+                            <input class="form-check-input" id="healty_talk2" type="radio" name="healty_talk"
                                 value="1" required />
-                            <label class="form-check-label mb-0" for="pengiriman2">Sudah dilakukan</label>
+                            <label class="form-check-label mb-0" for="healty_talk2">Sudah dilakukan</label>
                         </div>
                     </div>
                     <div class="col-md-8">Dokumen</label>

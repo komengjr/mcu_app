@@ -27,12 +27,12 @@
         </div>
         <div class="col-4">
             <label class="form-label" for="inputAddress">Waktu Mulai</label>
-            <input class="form-control form-control-lg" id="inputAddress" type="date" name="start" placeholder="120"
+            <input class="form-control form-control-lg" id="inputAddress" type="date" name="start"
                 required />
         </div>
         <div class="col-4">
             <label class="form-label" for="inputAddress">Waktu Berakhir</label>
-            <input class="form-control form-control-lg" id="inputAddress" type="date" name="end" placeholder="120"
+            <input class="form-control form-control-lg" id="inputAddress" type="date" name="end"
                 required />
         </div>
 

@@ -16,6 +16,7 @@ class CreateLogSummaryCabangTable extends Migration
         Schema::create('log_summary_cabang', function (Blueprint $table) {
             $table->id('id_summary_cabang');
             $table->string('summary_cabang_code')->unique();
+            $table->string('company_mou_code');
             $table->string('master_cabang_code');
             $table->string('summary_cabang_pesentasi');
             $table->string('summary_cabang_pesentasi_date');

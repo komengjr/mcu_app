@@ -7,6 +7,7 @@ use App\Models\Peserta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use League\CommonMark\Extension\CommonMark\Node\Inline\Code;
@@ -130,7 +131,7 @@ class ApplicationController extends Controller
                 ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
                 ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
                 ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
-                ->where('company_mou_peserta.mou_peserta_status','!=',1)
+                ->where('company_mou_peserta.mou_peserta_status', '!=', 1)
                 ->orderBy('log_lokasi_pasien.id_log_lokasi_pasien', 'DESC')->get();
             return view('application.menu.menu-service', ['data' => $data]);
         } else {
@@ -214,15 +215,16 @@ class ApplicationController extends Controller
         DB::table('log_pengiriman_pasien')->insert([
             'mou_peserta_code' => $request->code,
             'log_pengiriman_status' => $request->pengiriman,
-            'log_pengiriman_date' => $request->tanggal_kirim.' '.$request->time_kirim,
+            'log_pengiriman_date' => $request->tanggal_kirim . ' ' . $request->time_kirim,
             'log_pengiriman_deskripsi' => $request->desc_pengiriman,
             'created_at' => now()
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Update Pengiriman Hasil');
     }
-    public function menu_service_proses_penyelesaian_peserta_mcu(Request $request){
-        DB::table('company_mou_peserta')->where('mou_peserta_code',$request->code)->update([
-            'mou_peserta_status'=>1
+    public function menu_service_proses_penyelesaian_peserta_mcu(Request $request)
+    {
+        DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->update([
+            'mou_peserta_status' => 1
         ]);
         return 'sukses';
     }
@@ -472,6 +474,27 @@ class ApplicationController extends Controller
             return Redirect::to('dashboard/home');
         }
     }
+    public function master_access_mou_add(Request $request)
+    {
+        return view('application.master-data.mou-akses.form-add');
+    }
+    public function master_access_mou_save(Request $request)
+    {
+        DB::table('user_mains')->insert([
+            'userid' => str::uuid(),
+            'fullname' => $request->nama_lengkap,
+            'username' => $request->username,
+            'password' => Hash::make($request['password']),
+            'number_handphone' => $request->no_hp,
+            'email' => $request->email,
+            'access_code' => '2070244a-4f32-4c81-956b-5dd394819b3b',
+            'access_cabang' => 'ALL',
+            'access_status' => 1,
+            'remember_token' => str::uuid(),
+            'created_at' => now()
+        ]);
+        return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data MOU Perusahaan');
+    }
     public function master_access_mou_add_akses(Request $request)
     {
         $data = DB::table('company_mou')
@@ -487,6 +510,13 @@ class ApplicationController extends Controller
             'created_at' => now()
         ]);
         return 123;
+    }
+    public function master_access_mou_remove_akses(Request $request){
+        return view('application.master-data.mou-akses.form-remove-akses',['code'=>$request->code]);
+    }
+    public function master_access_mou_remove_akses_save(Request $request){
+        DB::table('company_mou_access')->where('id_mou_access',$request->code)->delete();
+        return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data MOU Perusahaan');
     }
 
     // LAPORAN REKAP MCU

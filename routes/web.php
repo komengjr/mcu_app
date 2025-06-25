@@ -88,8 +88,12 @@ Route::prefix('application')->group(function () {
     Route::post('agreement-perusahaan/save-pemeriksaan', [ApplicationController::class, 'agreement_perusahaan_save_pemeriksaan'])->name('agreement_perusahaan_save_pemeriksaan');
     Route::post('agreement-perusahaan/remove-pemeriksaan', [ApplicationController::class, 'agreement_perusahaan_remove_pemeriksaan'])->name('agreement_perusahaan_remove_pemeriksaan');
     // AKSES MOU
+    Route::post('master-access-mou/add', [ApplicationController::class, 'master_access_mou_add'])->name('master_access_mou_add');
+    Route::post('master-access-mou/save', [ApplicationController::class, 'master_access_mou_save'])->name('master_access_mou_save');
     Route::post('master-access-mou/add-akses', [ApplicationController::class, 'master_access_mou_add_akses'])->name('master_access_mou_add_akses');
     Route::post('master-access-mou/add-akses-pilih', [ApplicationController::class, 'master_access_mou_add_akses_pilih'])->name('master_access_mou_add_akses_pilih');
+    Route::post('master-access-mou/remove-akses', [ApplicationController::class, 'master_access_mou_remove_akses'])->name('master_access_mou_remove_akses');
+    Route::post('master-access-mou/remove-akses-save', [ApplicationController::class, 'master_access_mou_remove_akses_save'])->name('master_access_mou_remove_akses_save');
     // PEMERIKSAAN
     Route::post('master-pemeriksaan/add', [ApplicationController::class, 'master_pemeriksaan_add'])->name('master_pemeriksaan_add');
     Route::post('master-pemeriksaan/save', [ApplicationController::class, 'master_pemeriksaan_save'])->name('master_pemeriksaan_save');

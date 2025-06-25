@@ -23,7 +23,6 @@
                 <option value="Nasional">Nasional</option>
             </select>
         </div>
-        s
         <div class="col-4">
             <label class="form-label" for="inputAddress">Email Perusahaan</label>
             <input class="form-control form-control-lg" id="inputAddress" type="text" name="email" placeholder="contoh@gmail.com"

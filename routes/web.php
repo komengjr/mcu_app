@@ -4,6 +4,7 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\MasterController;
+use App\Http\Controllers\UploadFileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -122,3 +123,7 @@ Route::prefix('master-data')->group(function () {
     Route::post('menu-access/setting-change', [MasterController::class, 'master_menu_access_setting_change'])->name('master_menu_access_setting_change');
 });
 
+// UPLOAD CHUNK
+Route::post('file-upload/upload-file-persentasi', [UploadFileController::class, 'upload_persentasi'])->name('file-upload.data_persentasi');
+Route::post('file-upload/upload-file-executive', [UploadFileController::class, 'upload_executive'])->name('file-upload.data_executive');
+Route::post('file-upload/upload-file-healty-talk', [UploadFileController::class, 'upload_healty_talk'])->name('file-upload.data_healty_talk');

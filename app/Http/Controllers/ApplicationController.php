@@ -129,10 +129,16 @@ class ApplicationController extends Controller
     public function medical_check_up_summary_save_persentasi(Request $request)
     {
         $data = DB::table('log_summary_cabang')->where('company_mou_code', $request->code)->where('master_cabang_code', Auth::user()->access_cabang)->first();
+        if ($request->link == "") {
+            $img = null;
+        } else {
+            $img = 'public/document/persentasi/' . auth::user()->access_cabang . '/' . $request->link;
+        }
         if ($data) {
             DB::table('log_summary_cabang')->where('company_mou_code', $request->code)
                 ->where('master_cabang_code', Auth::user()->access_cabang)->update([
                         'summary_cabang_pesentasi' => $request->persentasi,
+                        'summary_cabang_pesentasi_r' => $img,
                         'summary_cabang_pesentasi_date' => now(),
                     ]);
         } else {
@@ -141,6 +147,7 @@ class ApplicationController extends Controller
                 'company_mou_code' => $request->code,
                 'master_cabang_code' => Auth::user()->access_cabang,
                 'summary_cabang_pesentasi' => $request->persentasi,
+                'summary_cabang_pesentasi_r' => $img,
                 'summary_cabang_pesentasi_date' => now(),
                 'created_at' => now()
             ]);
@@ -151,10 +158,16 @@ class ApplicationController extends Controller
     public function medical_check_up_summary_save_executive(Request $request)
     {
         $data = DB::table('log_summary_cabang')->where('company_mou_code', $request->code)->where('master_cabang_code', Auth::user()->access_cabang)->first();
+        if ($request->link_executive == "") {
+            $img = null;
+        } else {
+            $img = 'public/document/executive/' . auth::user()->access_cabang . '/' . $request->link_executive;
+        }
         if ($data) {
             DB::table('log_summary_cabang')->where('company_mou_code', $request->code)
                 ->where('master_cabang_code', Auth::user()->access_cabang)->update([
                         'summary_cabang_executive' => $request->executive,
+                        'summary_cabang_executive_r' => $img,
                         'summary_cabang_executive_date' => now(),
                     ]);
         } else {
@@ -163,6 +176,7 @@ class ApplicationController extends Controller
                 'company_mou_code' => $request->code,
                 'master_cabang_code' => Auth::user()->access_cabang,
                 'summary_cabang_executive' => $request->executive,
+                'summary_cabang_executive_r' => $img,
                 'summary_cabang_executive_date' => now(),
                 'created_at' => now()
             ]);
@@ -172,10 +186,16 @@ class ApplicationController extends Controller
     public function medical_check_up_summary_save_healty_talk(Request $request)
     {
         $data = DB::table('log_summary_cabang')->where('company_mou_code', $request->code)->where('master_cabang_code', Auth::user()->access_cabang)->first();
+        if ($request->link_ha == "") {
+            $img = null;
+        } else {
+            $img = 'public/document/healty_talk/' . auth::user()->access_cabang . '/' . $request->link_ha;
+        }
         if ($data) {
             DB::table('log_summary_cabang')->where('company_mou_code', $request->code)
                 ->where('master_cabang_code', Auth::user()->access_cabang)->update([
                         'summary_cabang_ht' => $request->healty_talk,
+                        'summary_cabang_ht_r' => $img,
                         'summary_cabang_ht_date' => now(),
                     ]);
         } else {
@@ -184,6 +204,7 @@ class ApplicationController extends Controller
                 'company_mou_code' => $request->code,
                 'master_cabang_code' => Auth::user()->access_cabang,
                 'summary_cabang_ht' => $request->healty_talk,
+                'summary_cabang_ht_r' => $img,
                 'summary_cabang_ht_date' => now(),
                 'created_at' => now()
             ]);

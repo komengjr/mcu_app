@@ -1,12 +1,10 @@
 @extends('layouts.template')
 @section('base.css')
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.4/css/responsive.bootstrap5.css">
-    <link href="{{ asset('vendors/choices/choices.min.css') }}" rel="stylesheet" />
+
 @endsection
 @section('content')
     <div class="row g-3 mb-3">
-        <div class="col-xl-7 col-lg-12">
+        <div class="col-xl-12 col-lg-12">
             <div class="card h-100">
                 <div class="bg-holder bg-card"
                     style="background-image:url(../asset/img/icons/spot-illustrations/corner-3.png);">
@@ -17,7 +15,7 @@
                     <h5 class="text-primary">Welcome to {{ Auth::user()->fullname }}! </h5>
                     <h6 class="text-600">Here are some quick links for you to start </h6>
                 </div>
-                <div class="card-body z-index-1">
+                {{-- <div class="card-body z-index-1">
                     <div class="row g-2 h-100 align-items-end">
                         <div class="col-sm-6 col-md-5">
                             <div class="d-flex position-relative">
@@ -92,11 +90,11 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
 
-        <div class="col-xl-5 col-md-6">
+        {{-- <div class="col-xl-5 col-md-6">
             <div class="card h-100">
                 <div class="card-header pb-0">
                     <div class="row">
@@ -145,9 +143,9 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
-    <div class="card">
+    {{-- <div class="card">
         <div class="card-header">
             <h5 class="mb-0">Frequently asked questions</h5>
         </div>
@@ -240,74 +238,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 @endsection
 @section('base.js')
-    <div class="modal fade" id="modal-user" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="false">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content border-0">
-                <div class="position-absolute top-0 end-0 mt-3 me-3 z-index-1">
-                    <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base"
-                        data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div id="menu-user"></div>
-            </div>
-        </div>
-    </div>
-    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
-    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
-    <script src="https://cdn.datatables.net/responsive/3.0.4/js/dataTables.responsive.js"></script>
-    <script src="https://cdn.datatables.net/responsive/3.0.4/js/responsive.bootstrap5.js"></script>
-    <script src="{{ asset('vendors/choices/choices.min.js') }}"></script>
-    <script>
-        new DataTable('#example', {
-            responsive: true
-        });
-    </script>
-    {{-- <script>
-        $(document).on("click", "#button-add-data-user", function(e) {
-            e.preventDefault();
-            var code = $(this).data("code");
-            $('#menu-user').html(
-                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
-            );
-            $.ajax({
-                url: "{{ route('masteradmin_user_add') }}",
-                type: "POST",
-                cache: false,
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    "code": code
-                },
-                dataType: 'html',
-            }).done(function(data) {
-                $('#menu-user').html(data);
-            }).fail(function() {
-                $('#menu-user').html('eror');
-            });
-        });
-        $(document).on("click", "#button-edit-data-user", function(e) {
-            e.preventDefault();
-            var code = $(this).data("code");
-            $('#menu-user').html(
-                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
-            );
-            $.ajax({
-                url: "{{ route('masteradmin_user_edit') }}",
-                type: "POST",
-                cache: false,
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    "code": code
-                },
-                dataType: 'html',
-            }).done(function(data) {
-                $('#menu-user').html(data);
-            }).fail(function() {
-                $('#menu-user').html('eror');
-            });
 
-        });
-    </script> --}}
+
 @endsection

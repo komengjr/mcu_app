@@ -461,7 +461,7 @@
         aria-labelledby="settings-offcanvas">
         <div class="offcanvas-header settings-panel-header bg-danger">
             <div class="z-index-1 py-1 light">
-                <h5 class="text-danger"> <span class="fas fa-palette me-2 fs-0"></span>Settings</h5>
+                <h5 class="text-white"> <span class="fas fa-palette me-2 fs-0"></span>Settings</h5>
                 <p class="mb-0 fs--1 text-white opacity-75"> Set your own customized style</p>
             </div>
             <button class="btn-close btn-close-white z-index-1 mt-0" type="button" data-bs-dismiss="offcanvas"

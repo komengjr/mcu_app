@@ -75,7 +75,7 @@
                     // container.classList.add('container-fluid');
                 }
             </script>
-            <div class="row min-vh-100 bg-100">
+            <div class="row min-vh-100 bg-400 bg-shape">
                 <div class="col-6 d-none d-lg-block position-relative">
                     <div class="bg-holder"
                         style="background-image:url(asset/img/generic/14.jpg);background-position: 50% 20%;">
@@ -87,7 +87,7 @@
                     <div class="row justify-content-center g-0">
                         <div class="col-lg-9 col-xl-8 col-xxl-6">
                             <div class="card">
-                                <div class="card-header bg-circle-shape bg-shape text-center p-2"><a
+                                <div class="card-header bg-circle-shape bg-youtube text-center p-2"><a
                                         class="font-sans-serif fw-bolder fs-4 z-index-1 position-relative link-light light"
                                         href="#">MONITORING MCU</a></div>
                                 <div class="card-body p-4">
@@ -96,7 +96,7 @@
                                             <h3>Login</h3>
                                         </div>
                                         <div class="col-auto fs--1 text-600"><span class="mb-0 fw-semi-bold">New
-                                                User?</span> <span><a href="#l">Create
+                                                User?</span> <span><a href="#">Create
                                                     account</a></span></div>
                                     </div>
                                     <form action="{{ route('login.post') }}" method="POST">
@@ -129,11 +129,11 @@
                                                 </div>
                                             </div>
                                             <div class="col-auto"><a class="fs--1"
-                                                    href="../../../pages/authentication/split/forgot-password.html">Forgot
+                                                    href="#">Forgot
                                                     Password?</a></div>
                                         </div>
                                         <div class="mb-3">
-                                            <button class="btn btn-primary d-block w-100 mt-3"id="button-login"
+                                            <button class="btn btn-danger d-block w-100 mt-3"id="button-login"
                                                 type="submit" name="submit">Log in</button>
                                         </div>
                                     </form>

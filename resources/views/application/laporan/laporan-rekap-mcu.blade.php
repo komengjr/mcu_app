@@ -7,21 +7,21 @@
 @section('content')
     <div class="row mb-3">
         <div class="col">
-            <div class="card bg-200 shadow border border-primary">
+            <div class="card bg-200 shadow border border-danger">
                 <div class="row gx-0 flex-between-center">
                     <div class="col-sm-auto d-flex align-items-center border-bottom">
                         <img class="ms-3 mx-3" src="{{ asset('img/company.png') }}" alt="" width="50" />
                         <div>
-                            <h6 class="text-primary fs--1 mb-0 pt-2">Welcome to </h6>
-                            <h4 class="text-primary fw-bold mb-1">MCU <span class="text-info fw-medium">Management
+                            <h6 class="text-danger fs--1 mb-0 pt-2">Welcome to </h6>
+                            <h4 class="text-danger fw-bold mb-1">MCU <span class="text-danger fw-medium">Management
                                     System</span></h4>
                         </div>
                         <img class="ms-n4 d-none d-lg-block "
                             src="{{ asset('asset/img/illustrations/crm-line-chart.png') }}" alt="" width="150" />
                     </div>
                     <div class="col-xl-auto px-3 py-2">
-                        <h6 class="text-primary fs--1 mb-0">Menu : </h6>
-                        <h4 class="text-primary fw-bold mb-0">Laporan <span class="text-info fw-medium">Rekap MCU</span>
+                        <h6 class="text-danger fs--1 mb-0">Menu : </h6>
+                        <h4 class="text-danger fw-bold mb-0">Laporan <span class="text-danger fw-medium">Rekap MCU</span>
                         </h4>
                     </div>
                 </div>
@@ -30,12 +30,12 @@
     </div>
     <div id="menu-detail-rekap">
         <div class="card mb-3">
-            <div class="card-header">
+            <div class="card-header bg-danger">
                 <div class="row align-items-center">
                     <div class="col">
-                        <h5 class="mb-0">Rekap Project</h5>
+                        <h4 class="mb-0"><span class="badge bg-danger">REKAP PROJECT</span></h4>
                     </div>
-                    <div class="col-auto"><a class="btn btn-falcon-warning btn-sm" href="#!" id="button-cari-project"
+                    <div class="col-auto"><a class="btn btn-falcon-danger btn-sm" href="#!" id="button-cari-project"
                             data-bs-toggle="modal" data-bs-target="#modal-laporan-lg"><span class="fas fa-search"></span>
                             Cari Data Project</a></div>
                 </div>

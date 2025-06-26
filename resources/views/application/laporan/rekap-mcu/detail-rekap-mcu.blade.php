@@ -1,10 +1,10 @@
  <div class="card mb-3">
-     <div class="card-header">
+     <div class="card-header bg-danger">
          <div class="row align-items-center">
              <div class="col">
-                 <h5 class="mb-0">Rekap Project</h5>
+                 <h4 class="mb-0"><span class="badge bg-danger">REKAP PROJECT</span></h4>
              </div>
-             <div class="col-auto"><a class="btn btn-falcon-warning btn-sm" href="#!" id="button-cari-project"
+             <div class="col-auto"><a class="btn btn-falcon-danger btn-sm" href="#!" id="button-cari-project"
                      data-bs-toggle="modal" data-bs-target="#modal-laporan-lg"><span class="fas fa-search"></span>
                      Cari Data Project</a></div>
          </div>
@@ -12,7 +12,7 @@
      <div class="card-body bg-light border-top">
          <div class="row g-3 pb-3">
              <div class="col-lg-4 col-xxl-4">
-                 <div class="card p-4">
+                 <div class="card p-4 border border-danger">
                      <h6 class="fw-semi-bold ls mb-3 text-uppercase">Informasi Perusahaan</h6>
                      <div class="row">
                          <div class="col-5 col-sm-4">
@@ -49,11 +49,10 @@
                              {{ $data->master_company_phone }}
                          </div>
                      </div>
-
                  </div>
              </div>
              <div class="col-lg-4 col-xxl-4">
-                 <div class="card p-4">
+                 <div class="card p-4 border border-danger">
                      <h6 class="fw-semi-bold ls mb-3 text-uppercase">Informasi Project</h6>
                      <div class="row">
                          <div class="col-5 col-sm-4">
@@ -86,7 +85,7 @@
                  </div>
              </div>
              <div class="col-lg-4 col-xxl-4">
-                 <div class="card p-4">
+                 <div class="card p-4 border border-danger">
                      <h6 class="fw-semi-bold ls mb-3 text-uppercase">Status Peserta MCU</h6>
 
                      <div class="row">
@@ -122,13 +121,13 @@
          </div>
          <div class="row g-3">
              <div class="col-md-5">
-                 <div class="card">
+                 <div class="card border border-danger">
                      <div class="echart-pie-chart-example p-3" style="min-height: 360px;" data-echart-responsive="true">
                      </div>
                  </div>
              </div>
              <div class="col-md-7">
-                 <div class="card p-2">
+                 <div class="card p-2 border border-danger">
                      <h6 class="fw-semi-bold text-uppercase">Informasi Cabang</h6>
                      <table id="table-cabang"
                          data-list='{"valueNames":["name","email","age"],"page":5,"pagination":true}'

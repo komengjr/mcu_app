@@ -73,6 +73,36 @@ class ApplicationController extends Controller
         $dompdf->get_canvas()->page_text(34, 820, "Print by. " . Auth::user()->fullname, $font1, 10, array(0, 0, 0));
         return base64_encode($pdf->stream());
     }
+    public function monitoring_mcu_rekap_full(Request $request)
+    {
+        $data = DB::table('company_mou')
+            ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou.company_mou_code', $request->code)
+            ->first();
+        $cab = DB::table('log_lokasi_pasien')
+            ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
+            ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+            ->where('company_mou_peserta.company_mou_code', $request->code)->orderBy('master_cabang.id_master_cabang', 'ASC')->get()->unique('master_cabang_city');
+        $cabang = DB::table('log_lokasi_pasien')
+            ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
+            ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+            ->where('company_mou_peserta.company_mou_code', $request->code)
+            ->get()
+            ->unique('lokasi_cabang');
+        $totalpeserta = DB::table('company_mou_peserta')->where('company_mou_code', $request->code)->count();
+        $totalmcu = DB::table('log_lokasi_pasien')
+            ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
+            ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+            ->where('company_mou_peserta.company_mou_code', $request->code)
+            ->count();
+        return view('application.dashboard.monitoring.rekap-full', [
+            'data' => $data,
+            'cabang' => $cabang,
+            'cab' => $cab,
+            'totalpeserta' => $totalpeserta,
+            'totalmcu' => $totalmcu,
+        ]);
+    }
 
     // MCU
     public function medical_check_up($akses)
@@ -366,7 +396,7 @@ class ApplicationController extends Controller
     {
         $data = DB::table('company_mou')
             ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
-            ->where('company_mou.master_company_code',$request->code)
+            ->where('company_mou.master_company_code', $request->code)
             ->orderBy('id_company_mou', 'DESC')->get();
         return view('application.master-data.company.data-mou-company', ['data' => $data]);
     }

@@ -38,7 +38,7 @@
                     <div class="btn-group" role="group">
                         <button class="btn btn-sm btn-falcon-danger dropdown-toggle" id="btnGroupVerticalDrop2"
                             type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
-                                class="fas fa-align-left me-1" data-fa-transform="shrink-3"></span>Menu Perusahaan</button>
+                                class="fas fa-align-left me-1" data-fa-transform="shrink-3"></span>Menu</button>
                         <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
                             <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-company"
                                 id="button-add-company" data-code="123"><span class="far fa-edit"></span>

@@ -5,7 +5,7 @@
     </div>
     <div class="card-body border-top p-3">
         <table id="mou-table" class="table table-striped nowrap" style="width:100%">
-            <thead class="bg-200 text-700 fs--2">
+            <thead class="bg-200 text-700 fs--3">
                 <tr>
                     <th>No</th>
                     <th>MOU Persuahaan</th>
@@ -14,7 +14,6 @@
                     <th>Tanggal</th>
                     <th>Agreement</th>
                     <th>Status MOU</th>
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody class="fs--3">
@@ -52,36 +51,7 @@
                                 <span class="badge bg-primary">Aktif</span>
                             @endif
                         </td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <button class="btn btn-sm btn-falcon-primary dropdown-toggle" id="btnGroupVerticalDrop2"
-                                    type="button" data-bs-toggle="dropdown" aria-haspopup="true"
-                                    aria-expanded="false"><span class="fas fa-align-left me-1"
-                                        data-fa-transform="shrink-3"></span>Option</button>
-                                <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
-                                    <button class="dropdown-item text-warning" data-bs-toggle="modal"
-                                        data-bs-target="#modal-company" id="button-add-companys" data-code="123"><span
-                                            class="far fa-edit"></span>
-                                        Edit Perusahaan</button>
-                                    <div class="dropdown-divider"></div>
-                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-company"
-                                        id="button-data-peserta-mcu" data-code="{{ $datas->company_mou_code }}">
-                                        <span class="fas fa-user-friends"></span>
-                                        Peserta MCU</button>
-                                    <button class="dropdown-item" data-bs-toggle="modal"
-                                        data-bs-target="#modal-company-xl" id="button-data-insert-peserta"
-                                        data-code="{{ $datas->company_mou_code }}">
-                                        <span class="fas fa-file-import"></span>
-                                        Insert Peserta</button>
-                                    <div class="dropdown-divider"></div>
-                                    <button class="dropdown-item text-primary" data-bs-toggle="modal"
-                                        data-bs-target="#modal-company-sm" id="button-aktifasi-mou"
-                                        data-code="{{ $datas->company_mou_code }}">
-                                        <span class="fab fa-galactic-republic"></span>
-                                        Aktivasi MOU</button>
-                                </div>
-                            </div>
-                        </td>
+
                     </tr>
                 @endforeach
             </tbody>

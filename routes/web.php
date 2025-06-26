@@ -56,6 +56,7 @@ Route::prefix('application')->group(function () {
     //MONITORING MCU
     Route::post('monitoring-mcu/detail', [ApplicationController::class, 'monitoring_mcu_detail'])->name('monitoring_mcu_detail');
     Route::post('monitoring-mcu/rekap', [ApplicationController::class, 'monitoring_mcu_rekap'])->name('monitoring_mcu_rekap');
+    Route::post('monitoring-mcu/rekap-full', [ApplicationController::class, 'monitoring_mcu_rekap_full'])->name('monitoring_mcu_rekap_full');
 
     Route::post('medical-check-up/detail', [ApplicationController::class, 'medical_check_up_detail'])->name('medical_check_up_detail');
     Route::post('medical-check-up/prosess', [ApplicationController::class, 'medical_check_up_prosess'])->name('medical_check_up_prosess');

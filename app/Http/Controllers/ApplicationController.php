@@ -121,13 +121,13 @@ class ApplicationController extends Controller
     public function medical_check_up_summary(Request $request)
     {
         $mou = DB::table('company_mou')
-        ->join('master_company','master_company.master_company_code','=','company_mou.master_company_code')
-        ->where('company_mou.company_mou_code', $request->code)->first();
+            ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou.company_mou_code', $request->code)->first();
         $data = DB::table('log_summary_cabang')
             ->where('company_mou_code', $request->code)
             ->where('master_cabang_code', Auth::user()->access_cabang)
             ->first();
-        return view('application.menu.mcu.form-summary-mcu', ['code' => $request->code, 'data' => $data,'mou'=>$mou]);
+        return view('application.menu.mcu.form-summary-mcu', ['code' => $request->code, 'data' => $data, 'mou' => $mou]);
     }
     public function medical_check_up_summary_save_persentasi(Request $request)
     {
@@ -352,6 +352,23 @@ class ApplicationController extends Controller
             'created_at' => now()
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data Perusahaan');
+    }
+    public function master_company_edit_company(Request $request)
+    {
+        $data = DB::table('master_company')->where('master_company_code', $request->code)->first();
+        return view('application.master-data.company.form-edit', ['data' => $data]);
+    }
+    public function master_company_edit_company_save(Request $request)
+    {
+        return redirect()->back()->withSuccess('Great! Berhasil update Data Perusahaan');
+    }
+    public function master_company_data_mou_company(Request $request)
+    {
+        $data = DB::table('company_mou')
+            ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou.master_company_code',$request->code)
+            ->orderBy('id_company_mou', 'DESC')->get();
+        return view('application.master-data.company.data-mou-company', ['data' => $data]);
     }
 
     // COMPANY MOU

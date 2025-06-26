@@ -382,7 +382,7 @@
                             </p>
                         </div>
                         <div class="col-12 col-sm-auto text-center">
-                            <img src="{{ asset('img/logo.png') }}" alt="" width="50">
+                            <img src="{{ asset('img/logo.png') }}" alt="" width="80">
                         </div>
                     </div>
                 </footer>

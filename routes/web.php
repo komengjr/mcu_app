@@ -73,6 +73,9 @@ Route::prefix('application')->group(function () {
 
     Route::post('master-company/add-company', [ApplicationController::class, 'master_company_add_company'])->name('master_company_add_company');
     Route::post('master-company/add-company/save', [ApplicationController::class, 'master_company_add_company_save'])->name('master_company_add_company_save');
+    Route::post('master-company/edit-company', [ApplicationController::class, 'master_company_edit_company'])->name('master_company_edit_company');
+    Route::post('master-company/edit-company/save', [ApplicationController::class, 'master_company_edit_company_save'])->name('master_company_edit_company_save');
+    Route::post('master-company/data-mou-company', [ApplicationController::class, 'master_company_data_mou_company'])->name('master_company_data_mou_company');
     // MOU COMPANY
     Route::post('mou-company/add', [ApplicationController::class, 'mou_company_add'])->name('mou_company_add');
     Route::post('mou-company/save', [ApplicationController::class, 'mou_company_save'])->name('mou_company_save');

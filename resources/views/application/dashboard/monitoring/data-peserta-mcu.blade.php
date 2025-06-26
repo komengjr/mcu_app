@@ -1,5 +1,5 @@
 <div class="modal-body p-0">
-    <div class="bg-secondary rounded-top-lg py-3 ps-4 pe-6">
+    <div class="bg-danger rounded-top-lg py-3 ps-4 pe-6">
         <h4 class="mb-1 text-white" id="staticBackdropLabel">Data Peserta MCU : <strong>{{ $data->master_company_name }} -
                 {{ $data->company_mou_name }}</strong></h4>
         <p class="text-white fs--2 mb-0">Support by <a class="fw-semi-bold text-white" href="#!">Transforma</a></p>

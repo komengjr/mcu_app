@@ -1,6 +1,6 @@
 <div class="modal-body p-0">
     <div class="bg-light rounded-top-lg py-3 ps-4 pe-6">
-        <h4 class="mb-1" id="staticBackdropLabel">Summary MCU : <strong class="text-primary">-</strong></h4>
+        <h4 class="mb-1" id="staticBackdropLabel">Summary MCU : <strong class="text-primary">{{$mou->company_mou_name}}</strong></h4>
         <p class="fs--2 mb-0">Support by <a class="link-600 fw-semi-bold" href="#!">Transforma</a></p>
     </div>
     <div class="p-3">
@@ -52,7 +52,7 @@
                                     style="width: 0%; height: 100%">0%
                                 </div>
                             </div>
-                            <input id="link" type="text" name="link" class="form-control">
+                            <input id="link" type="text" name="link" class="form-control" hidden>
                         </div>
                         <div class="col-md-12">
                             <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
@@ -91,7 +91,7 @@
                                 style="width: 0%; height: 100%">0%
                             </div>
                         </div>
-                        <input id="link" type="text" name="link" class="form-control">
+                        <input id="link" type="text" name="link" class="form-control" hidden>
                     </div>
                     <div class="col-md-12">
                         <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
@@ -139,7 +139,7 @@
                             <iframe src="" frameborder="0" id="videoPreview_executive"
                                 style="display: none;width: 100%; height: 400px;"></iframe>
 
-                            <input id="link_executive" type="text" name="link_executive" class="form-control">
+                            <input id="link_executive" type="text" name="link_executive" class="form-control" hidden>
                         </div>
                         <div class="col-md-12">
                             <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
@@ -172,7 +172,7 @@
                     <div class="col-md-12">
                         <iframe src="" frameborder="0" id="videoPreview_executive"
                             style="display: none;width: 100%; height: 400px;"></iframe>
-                        <input id="link_executive" type="text" name="link_executive" class="form-control">
+                        <input id="link_executive" type="text" name="link_executive" class="form-control" hidden>
                     </div>
                     <div class="col-md-12">
                         <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
@@ -220,7 +220,7 @@
                             <iframe src="" frameborder="0" id="videoPreview_ha"
                                 style="display: none;width: 100%; height: 400px;"></iframe>
 
-                            <input id="link_ha" type="text" name="link_ha" class="form-control">
+                            <input id="link_ha" type="text" name="link_ha" class="form-control" hidden>
                         </div>
                         <div class="col-md-12">
                             <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
@@ -253,7 +253,7 @@
                         <iframe src="" frameborder="0" id="videoPreview_ha"
                             style="display: none;width: 100%; height: 400px;"></iframe>
 
-                        <input id="link_ha" type="text" name="link_ha" class="form-control">
+                        <input id="link_ha" type="text" name="link_ha" class="form-control" hidden>
                     </div>
                     <div class="col-md-12">
                         <button class="btn btn-primary btn-sm float-end">Simpan Data</button>

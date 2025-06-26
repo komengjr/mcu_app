@@ -92,6 +92,7 @@
             </div>
         </div>
     </div>
+
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
     <script src="https://cdn.datatables.net/responsive/3.0.4/js/dataTables.responsive.js"></script>
@@ -139,7 +140,11 @@
             }).done(function(data) {
                 $('#menu-detail-rekap').html(data);
             }).fail(function() {
-                $('#menu-detail-rekap').html('eror');
+                $('#menu-detail-rekap').html(
+                    '<span class="badge bg-warning">Data Belum Lengkap , Reload.. dalam 3 detik</span>');
+                setTimeout(() => {
+                    location.reload();
+                }, 3000);
             });
         });
     </script>

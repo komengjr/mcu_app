@@ -7,21 +7,21 @@
 @section('content')
     <div class="row mb-3">
         <div class="col">
-            <div class="card bg-200 shadow border border-primary">
+            <div class="card bg-200 shadow border border-danger">
                 <div class="row gx-0 flex-between-center">
                     <div class="col-sm-auto d-flex align-items-center border-bottom">
                         <img class="ms-3 mx-3" src="{{ asset('img/company.png') }}" alt="" width="50" />
                         <div>
-                            <h6 class="text-primary fs--1 mb-0 pt-2">Welcome to </h6>
-                            <h4 class="text-primary fw-bold mb-1">MCU <span class="text-info fw-medium">Management
+                            <h6 class="text-danger fs--1 mb-0 pt-2">Welcome to </h6>
+                            <h4 class="text-danger fw-bold mb-1">MCU <span class="text-danger fw-medium">Management
                                     System</span></h4>
                         </div>
                         <img class="ms-n4 d-none d-lg-block "
                             src="{{ asset('asset/img/illustrations/crm-line-chart.png') }}" alt="" width="150" />
                     </div>
                     <div class="col-xl-auto px-3 py-2">
-                        <h6 class="text-primary fs--1 mb-0">Menu : </h6>
-                        <h4 class="text-primary fw-bold mb-0">Service <span class="text-info fw-medium">MCU</span></h4>
+                        <h6 class="text-danger fs--1 mb-0">Menu : </h6>
+                        <h4 class="text-danger fw-bold mb-0">Service <span class="text-danger fw-medium">MCU</span></h4>
                     </div>
                 </div>
             </div>
@@ -31,7 +31,7 @@
         <div class="card-body">
             <div class="row flex-between-center">
                 <div class="col-sm-auto mb-2 mb-sm-0">
-                    <h6 class="mb-0">Showing 1-24 of 205 Products</h6>
+                    <h6 class="mb-0">Showing {{$data->count()}} Data</h6>
                 </div>
                 <div class="col-sm-auto">
                     <div class="row gx-2 align-items-center">
@@ -42,26 +42,25 @@
                                     <select class="form-select form-select-sm" aria-label="Bulk actions">
                                         <option selected="">Best Match</option>
                                         <option value="Refund">Newest</option>
-                                        <option value="Delete">Price</option>
                                     </select>
                                 </div>
                             </form>
                         </div>
-                        <div class="col-auto pe-0">
+                        {{-- <div class="col-auto pe-0">
                             <a class="text-600 px-1" href="../../../app/e-commerce/product/product-list.html"
                                 data-bs-toggle="tooltip" data-bs-placement="top" title="Product List"><span
                                     class="fas fa-list-ul"></span></a>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="card mb-3">
-        <div class="card-header bg-primary">
+        <div class="card-header bg-danger">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="m-0"><span class="badge bg-primary m-0 p-0">Service MCU</span></h3>
+                    <h3 class="m-0"><span class="badge bg-danger m-0 p-0">Service MCU</span></h3>
                 </div>
                 <div class="col-auto">
                     <div class="btn-group" role="group">

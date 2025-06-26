@@ -5,7 +5,7 @@
 @section('content')
     <div class="row g-3 mb-3">
         <div class="col-xl-12 col-lg-12">
-            <div class="card h-100">
+            <div class="card h-100 border border-danger">
                 <div class="bg-holder bg-card"
                     style="background-image:url(../asset/img/icons/spot-illustrations/corner-3.png);">
                 </div>

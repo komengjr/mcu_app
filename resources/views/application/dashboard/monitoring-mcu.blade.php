@@ -7,21 +7,21 @@
 @section('content')
     <div class="row mb-3">
         <div class="col">
-            <div class="card bg-200 shadow border border-primary">
+            <div class="card bg-200 shadow border border-danger">
                 <div class="row gx-0 flex-between-center">
                     <div class="col-sm-auto d-flex align-items-center border-bottom">
                         <img class="ms-3 mx-3" src="{{ asset('img/company.png') }}" alt="" width="50" />
                         <div>
-                            <h6 class="text-primary fs--1 mb-0 pt-2">Welcome to </h6>
-                            <h4 class="text-primary fw-bold mb-1">MCU <span class="text-info fw-medium">Management
+                            <h6 class="text-danger fs--1 mb-0 pt-2">Welcome to </h6>
+                            <h4 class="text-danger fw-bold mb-1">MCU <span class="text-danger fw-medium">Management
                                     System</span></h4>
                         </div>
                         <img class="ms-n4 d-none d-lg-block "
                             src="{{ asset('asset/img/illustrations/crm-line-chart.png') }}" alt="" width="150" />
                     </div>
                     <div class="col-xl-auto px-3 py-2">
-                        <h6 class="text-primary fs--1 mb-0">Menu : </h6>
-                        <h4 class="text-primary fw-bold mb-0">Monitoring <span class="text-info fw-medium">MCU</span></h4>
+                        <h6 class="text-danger fs--1 mb-0">Menu : </h6>
+                        <h4 class="text-danger fw-bold mb-0">Monitoring <span class="text-danger fw-medium">MCU</span></h4>
                     </div>
                 </div>
             </div>
@@ -98,7 +98,7 @@
                                             </a></h5>
                                         <p class="fs--1 mb-2 mb-md-3"><a class="text-500"
                                                 href="#!">{{ $datas->master_company_name }}</a></p>
-                                        <div class="card p-3 my-2 border border-primary">
+                                        <div class="card p-3 my-2 border border-danger">
                                             {{-- <h6 class="fw-semi-bold ls text-uppercase">Informasi Perusahaan</h6> --}}
                                             <div class="row">
                                                 <div class="col-7 col-sm-7">
@@ -132,7 +132,13 @@
                                                     <p class="fs--1 fs-md-1 mb-1 fw-semi-bold">Persentase</p>
                                                 </div>
                                                 <div class="col">
-                                                    <h5 class="fs-1 fs-md-2 text-primary mb-0">{{ round(($totalmcu / $total) * 100, 2) }} %
+                                                    <h5 class="fs-1 fs-md-2 text-primary mb-0">
+                                                        @if ($total == 0)
+                                                            0
+                                                        @else
+                                                            {{ round(($totalmcu / $total) * 100, 2) }}
+                                                        @endif
+                                                        %
                                                     </h5>
                                                 </div>
                                             </div>
@@ -171,8 +177,8 @@
                                             </p>
                                         </div>
 
-                                        <div class="mt-2">
-                                            <a class="btn btn-sm btn-outline-warning border-300 d-lg-block me-2 me-lg-0"href="#!"
+                                        <div class="mt-2 g-4">
+                                            <a class="btn btn-sm btn-warning border-300 d-lg-block me-2 me-lg-0"href="#!"
                                                 id="button-print-peserta" data-bs-toggle="modal"
                                                 data-bs-target="#modal-monitoring"
                                                 data-code="{{ $datas->company_mou_code }}">
@@ -183,7 +189,13 @@
                                                 data-bs-target="#modal-monitoring"
                                                 data-code="{{ $datas->company_mou_code }}">
                                                 <span class="far fa-user"> </span>
-                                                <span class="ms-2 d-md-inline-block">List Peserta</span></a>
+                                                <span class="ms-2 d-md-inline-block">Peserta</span></a>
+                                            <a class="btn btn-sm btn-danger d-lg-block mt-lg-2" href="#!"
+                                                id="button-detail-peserta" data-bs-toggle="modal"
+                                                data-bs-target="#modal-monitoring"
+                                                data-code="{{ $datas->company_mou_code }}">
+                                                <span class="far fa-user"> </span>
+                                                <span class="ms-2 d-md-inline-block">Rekap MCU</span></a>
                                         </div>
                                     </div>
                                 </div>

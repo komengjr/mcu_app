@@ -121,7 +121,7 @@ class ApplicationController extends Controller
     public function medical_check_up_summary(Request $request)
     {
         $mou = DB::table('company_mou')
-        ->join('master_company','master_company.master_company_code','=','company_mou')
+        ->join('master_company','master_company.master_company_code','=','company_mou.master_company_code')
         ->where('company_mou.company_mou_code', $request->code)->first();
         $data = DB::table('log_summary_cabang')
             ->where('company_mou_code', $request->code)

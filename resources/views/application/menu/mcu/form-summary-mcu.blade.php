@@ -1,6 +1,6 @@
 <div class="modal-body p-0">
-    <div class="bg-light rounded-top-lg py-3 ps-4 pe-6">
-        <h4 class="mb-1" id="staticBackdropLabel">Summary MCU : <strong class="text-primary">{{$mou->company_mou_name}}</strong></h4>
+    <div class="bg-youtube rounded-top-lg py-3 ps-4 pe-6">
+        <h4 class="mb-1" id="staticBackdropLabel">Summary MCU : <strong class="text-white">{{$mou->company_mou_name}}</strong></h4>
         <p class="fs--2 mb-0">Support by <a class="link-600 fw-semi-bold" href="#!">Transforma</a></p>
     </div>
     <div class="p-3">
@@ -11,15 +11,15 @@
         </div>
     </div>
     <div class="card-body p-3 pt-0">
-        <div class="card-header bg-primary">
+        <div class="card-header bg-youtube">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="m-0"><span class="badge bg-primary m-0 p-0">Persentasi Hasil</span></h3>
+                    <h3 class="m-0"><span class="badge bg-youtube m-0 p-0">Persentasi Hasil</span></h3>
                 </div>
                 <div class="col-auto"></div>
             </div>
         </div>
-        <div class="card-body border border-primary">
+        <div class="card-body border border-youtube">
             <form class="row g-3 p-2" action="{{ route('medical_check_up_summary_save_persentasi') }}" method="post"
                 enctype="multipart/form-data">
                 @csrf
@@ -101,17 +101,17 @@
         </div>
     </div>
     <div class="card-body p-3 pt-0">
-        <div class="card-header bg-primary">
+        <div class="card-header bg-youtube">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="m-0"><span class="badge bg-primary m-0 p-0">Executive Hasil</span></h3>
+                    <h3 class="m-0"><span class="badge bg-youtube m-0 p-0">Executive Hasil</span></h3>
                 </div>
                 <div class="col-auto">
 
                 </div>
             </div>
         </div>
-        <div class="card-body border border-primary">
+        <div class="card-body border border-youtube">
             <form class="row g-3 p-2" action="{{ route('medical_check_up_summary_save_executive') }}" method="post"
                 enctype="multipart/form-data">
                 @csrf
@@ -182,17 +182,17 @@
         </div>
     </div>
     <div class="card-body p-3 pt-0">
-        <div class="card-header bg-primary">
+        <div class="card-header bg-youtube">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="m-0"><span class="badge bg-primary m-0 p-0">Healty Talk</span></h3>
+                    <h3 class="m-0"><span class="badge bg-youtube m-0 p-0">Healty Talk</span></h3>
                 </div>
                 <div class="col-auto">
 
                 </div>
             </div>
         </div>
-        <div class="card-body border border-primary">
+        <div class="card-body border border-youtube">
             <form class="row g-3 p-2" action="{{ route('medical_check_up_summary_save_healty_talk') }}"
                 method="post" enctype="multipart/form-data">
                 @csrf

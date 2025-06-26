@@ -6,7 +6,7 @@
     </div>
 
     <div class="card-body p-3">
-        <div class="card border border-primary">
+        <div class="card border border-danger">
             <div class="row g-3 p-4">
 
                 <div class="col-md-4">
@@ -47,17 +47,17 @@
     </div>
 </div>
 <div class="card-body p-3 pt-0">
-    <div class="card-header bg-primary">
+    <div class="card-header bg-danger">
         <div class="row align-items-center">
             <div class="col">
-                <h3 class="m-0"><span class="badge bg-primary m-0 p-0">Status Pemeriksaan</span></h3>
+                <h3 class="m-0"><span class="badge bg-danger m-0 p-0">Status Pemeriksaan</span></h3>
             </div>
             <div class="col-auto">
 
             </div>
         </div>
     </div>
-    <div class="card-body border border-primary">
+    <div class="card-body border border-danger">
         <form class="row g-3 p-2" action="{{ route('menu_service_proses_pemeriksaan_save') }}" method="post"
             enctype="multipart/form-data">
             @csrf

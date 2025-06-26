@@ -7,21 +7,21 @@
 @section('content')
     <div class="row mb-3">
         <div class="col">
-            <div class="card bg-200 shadow border border-primary">
+            <div class="card bg-200 shadow border border-danger">
                 <div class="row gx-0 flex-between-center">
                     <div class="col-sm-auto d-flex align-items-center border-bottom">
                         <img class="ms-3 mx-3" src="{{ asset('img/company.png') }}" alt="" width="50" />
                         <div>
-                            <h6 class="text-primary fs--1 mb-0 pt-2">Welcome to </h6>
-                            <h4 class="text-primary fw-bold mb-1">MCU <span class="text-info fw-medium">Management
+                            <h6 class="text-danger fs--1 mb-0 pt-2">Welcome to </h6>
+                            <h4 class="text-danger fw-bold mb-1">MCU <span class="text-danger fw-medium">Management
                                     System</span></h4>
                         </div>
                         <img class="ms-n4 d-none d-lg-block "
                             src="{{ asset('asset/img/illustrations/crm-line-chart.png') }}" alt="" width="150" />
                     </div>
                     <div class="col-xl-auto px-3 py-2">
-                        <h6 class="text-primary fs--1 mb-0">Menu : </h6>
-                        <h4 class="text-primary fw-bold mb-0">Medical <span class="text-info fw-medium">Check Up</span></h4>
+                        <h6 class="text-danger fs--1 mb-0">Menu : </h6>
+                        <h4 class="text-danger fw-bold mb-0">Medical <span class="text-danger fw-medium">Check Up</span></h4>
                     </div>
                 </div>
             </div>
@@ -58,7 +58,7 @@
                             <div class="overflow-hidden">
                                 <div class="position-relative rounded-top overflow-hidden ">
                                     <a class="d-block" href="#">
-                                        <img class="img-fluid rounded-top"  src="{{ asset('img/company/pln.png') }}"
+                                        <img class="img-fluid rounded-top"  src="{{ asset('img/company/mcu.jpg') }}"
                                             alt="" />
                                     </a>
                                 </div>
@@ -92,7 +92,7 @@
                                     {{-- <a class="btn btn-sm btn-falcon-default me-2" href="#!" data-bs-toggle="tooltip"
                                         data-bs-placement="top" title="Add to Wish List"><span
                                             class="far fa-heart"></span></a> --}}
-                                    <a class="btn btn-sm btn-falcon-default fs--2 text-warning " href="#!" data-bs-toggle="modal"
+                                    <a class="btn btn-sm btn-falcon-danger fs--2 text-youtube " href="#!" data-bs-toggle="modal"
                                         data-bs-target="#modal-mcu-xl" id="button-proses-summary-check-up" data-code="{{$datas->company_mou_code}}" title="Proses Check Up"><span
                                             class="fas fa-file"></span> Summary</a>
                                     <a class="btn btn-sm btn-falcon-default fs--2 text-primary" href="#!" data-bs-toggle="modal"

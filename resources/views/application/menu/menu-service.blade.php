@@ -64,7 +64,7 @@
                 </div>
                 <div class="col-auto">
                     <div class="btn-group" role="group">
-                        <button class="btn btn-sm btn-falcon-primary dropdown-toggle" id="btnGroupVerticalDrop2"
+                        <button class="btn btn-sm btn-falcon-danger dropdown-toggle" id="btnGroupVerticalDrop2"
                             type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
                                 class="fas fa-align-left me-1" data-fa-transform="shrink-3"></span>Menu Service</button>
                         <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
@@ -175,7 +175,7 @@
 
                             <td>
                                 <div class="btn-group" role="group">
-                                    <button class="btn btn-sm btn-falcon-primary dropdown-toggle" id="btnGroupVerticalDrop2"
+                                    <button class="btn btn-sm btn-danger dropdown-toggle" id="btnGroupVerticalDrop2"
                                         type="button" data-bs-toggle="dropdown" aria-haspopup="true"
                                         aria-expanded="false"><span class="fas fa-align-left me-1"
                                             data-fa-transform="shrink-3"></span>Option</button>

@@ -94,8 +94,8 @@
 
                     </div><a class="navbar-brand" href="#">
                         <div class="d-flex align-items-center py-3"><img class="me-2"
-                                src="{{ asset('asset/img/icons/spot-illustrations/falcon.png') }}" alt=""
-                                width="25" /><span class="font-sans-serif fs-2 text-danger">MCU</span>
+                                src="{{ asset('img/pram.png') }}" alt=""
+                                width="85" /><span class="font-sans-serif fs-2 text-youtube">MCU</span>
                         </div>
                     </a>
                 </div>
@@ -246,8 +246,8 @@
                                 class="toggle-line"></span></span></button>
                     <a class="navbar-brand me-1 me-sm-3" href="#">
                         <div class="d-flex align-items-center"><img class="me-2"
-                                src="{{ asset('asset/img/icons/spot-illustrations/falcon.png') }}" alt=""
-                                width="40" /><span class="font-sans-serif text-danger">MCU</span>
+                                src="{{ asset('img/pram.png') }}" alt=""
+                                width="80" /><span class="font-sans-serif text-youtube">MCU</span>
                         </div>
                     </a>
                     <ul class="navbar-nav align-items-center d-none d-lg-block">
@@ -294,10 +294,10 @@
                                     value="dark" />
                                 <label class="mb-0 theme-control-toggle-label theme-control-toggle-light"
                                     for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left"
-                                    title="Switch to light theme"><span class="fas fa-sun fs-0"></span></label>
+                                    title="Switch to light theme"><span class="fas fa-sun fs-0 text-danger"></span></label>
                                 <label class="mb-0 theme-control-toggle-label theme-control-toggle-dark"
                                     for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left"
-                                    title="Switch to dark theme"><span class="fas fa-moon fs-0"></span></label>
+                                    title="Switch to dark theme"><span class="fas fa-moon fs-0 text-danger"></span></label>
                             </div>
                         </li>
                         {{-- <li class="nav-item">
@@ -308,7 +308,7 @@
 
                         </li> --}}
                         <li class="nav-item dropdown">
-                            <a class="nav-link notification-indicator notification-indicator-primary px-0 fa-icon-wait"
+                            <a class="nav-link notification-indicator notification-indicator-danger px-0 fa-icon-wait"
                                 id="navbarDropdownNotification" href="#" role="button"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
                                     class="fas fa-bell" data-fa-transform="shrink-6"
@@ -337,7 +337,7 @@
                                 href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false">
                                 <div class="avatar avatar-xl">
-                                    <img class="rounded-circle" src="{{ asset('asset/img/team/avatar.png') }}"
+                                    <img class="rounded-circle" src="{{ asset('img/avatar.png') }}"
                                         alt="" />
 
                                 </div>
@@ -346,7 +346,7 @@
                                 <div class="bg-white dark__bg-1000 rounded-2 py-2">
                                     {{-- <a class="dropdown-item fw-bold text-warning" href="#!"><span
                                             class="fas fa-crown me-1"></span><span>Go Pro</span></a> --}}
-                                    <a class="dropdown-item text-primary text-center">{{ Auth::user()->fullname }}</a>
+                                    <a class="dropdown-item text-youtube text-center">{{ Auth::user()->fullname }}</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="#!" id="button-setup-notification"
                                         data-bs-toggle="modal" data-bs-target="#modal-template-sm"><span

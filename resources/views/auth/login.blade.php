@@ -78,7 +78,7 @@
             <div class="row min-vh-100 bg-400 bg-shape">
                 <div class="col-6 d-none d-lg-block position-relative">
                     <div class="bg-holder"
-                        style="background-image:url(asset/img/generic/14.jpg);background-position: 50% 20%;">
+                        style="background-image:url(img/cover.png);background-position: 50% 70%;">
                     </div>
                     <!--/.bg-holder-->
 
@@ -145,8 +145,8 @@
 
                                         <img src="{{ asset('img/pramita.png') }}" alt="" srcset=""
                                             width="150">
-                                        {{-- <img src="{{ asset('img/sima.jpeg') }}" alt="" srcset=""
-                                            width="150"> --}}
+                                        <img src="{{ asset('img/logo.png') }}" alt="" srcset=""
+                                            width="150">
 
                                     </div>
                                 </div>
@@ -194,7 +194,7 @@
                 </div>
             </div>
             <hr />
-            <div class="d-flex justify-content-between">
+            {{-- <div class="d-flex justify-content-between">
                 <div class="d-flex align-items-start"><img class="me-2"
                         src="{{ asset('asset/img/icons/left-arrow-from-left.svg') }}" width="20"
                         alt="" />
@@ -258,7 +258,7 @@
                                 alt="" /><span class="label-text"> Vibrant</span></label>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
         </div>
     </div>

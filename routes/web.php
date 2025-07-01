@@ -86,6 +86,8 @@ Route::prefix('application')->group(function () {
     Route::post('mou-company/insert-peserta-mcu/manual-save', [ApplicationController::class, 'mou_company_insert_peserta_mcu_manual_save'])->name('mou_company_insert_peserta_mcu_manual_save');
     Route::post('mou-company/insert-peserta-mcu/upload', [ApplicationController::class, 'mou_company_insert_peserta_mcu_upload'])->name('mou_company_insert_peserta_mcu_upload');
     Route::post('mou-company/insert-peserta-mcu/upload-save', [ApplicationController::class, 'mou_company_insert_peserta_mcu_upload_save'])->name('mou_company_insert_peserta_mcu_upload_save');
+    Route::post('mou-company/insert-peserta-mcu/upload-all', [ApplicationController::class, 'mou_company_insert_all_peserta_mcu_upload'])->name('mou_company_insert_all_peserta_mcu_upload');
+    Route::post('mou-company/insert-peserta-mcu/upload-all-save', [ApplicationController::class, 'mou_company_insert_all_peserta_mcu_upload_save'])->name('mou_company_insert_all_peserta_mcu_upload_save');
     Route::post('mou-company/insert-pemeriksaan-mcu', [ApplicationController::class, 'mou_company_insert_pemeriksaan_mcu'])->name('mou_company_insert_pemeriksaan_mcu');
     Route::post('mou-company/insert-pemeriksaan-mcu/insert', [ApplicationController::class, 'mou_company_insert_pemeriksaan_mcu_insert'])->name('mou_company_insert_pemeriksaan_mcu_insert');
     Route::post('mou-company/activasi-mou', [ApplicationController::class, 'mou_company_activasi_mou'])->name('mou_company_activasi_mou');

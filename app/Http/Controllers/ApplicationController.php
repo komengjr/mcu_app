@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\PesertaAllImport;
 use App\Imports\PesertaImport;
 use App\Models\Peserta;
 use Illuminate\Http\Request;
@@ -482,6 +483,17 @@ class ApplicationController extends Controller
         Excel::import(new PesertaImport($request->code, $request->id), request()->file('file'));
         Session::flash('sukses', 'Upload Data Sukses');
         return redirect()->back();
+    }
+    public function mou_company_insert_all_peserta_mcu_upload(Request $request)
+    {
+        $data = DB::table('company_mou_agreement')->where('company_mou_code', $request->code)->get();
+        return view('application.master-data.mou-company.form-upload-excel-all', ['code' => $request->code, 'data' => $data]);
+    }
+    public function mou_company_insert_all_peserta_mcu_upload_save(Request $request)
+    {
+        Excel::import(new PesertaAllImport($request->code), request()->file('file'));
+        Session::flash('sukses', 'Upload Data Sukses');
+        return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data Perusahaan');
     }
     public function mou_company_insert_pemeriksaan_mcu(Request $request)
     {

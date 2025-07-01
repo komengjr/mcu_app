@@ -77,7 +77,7 @@
             </script>
             <div class="row min-vh-100 bg-400 bg-shape">
                 <div class="col-6 d-none d-lg-block position-relative">
-                    <div class="bg-holder"
+                    <div class="bg-holder border border-right-danger"
                         style="background-image:url(img/cover.png);background-position: 50% 70%;">
                     </div>
                     <!--/.bg-holder-->

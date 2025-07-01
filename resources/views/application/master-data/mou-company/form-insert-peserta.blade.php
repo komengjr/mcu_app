@@ -22,8 +22,12 @@
                                 Add Manual
                             </button>
                             <button class="dropdown-item" id="button-add-upload-mou-company"
-                                data-code="{{ $data->company_mou_code }}"><span class="far fa-edit"></span>
-                                Export Excel
+                                data-code="{{ $data->company_mou_code }}"><span class="fas fa-upload"></span>
+                                Export Excel By Agrement
+                            </button>
+                            <button class="dropdown-item" id="button-add-upload-excel-mou-company"
+                                data-code="{{ $data->company_mou_code }}"><span class="fas fa-coins"></span>
+                                Export Excel All Peserta
                             </button>
                         </div>
                     </div>

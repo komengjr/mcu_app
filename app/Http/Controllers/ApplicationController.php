@@ -55,6 +55,20 @@ class ApplicationController extends Controller
             return Redirect::to('dashboard/home');
         }
     }
+    public function monitoring_mcu_cari_nama(Request $request)
+    {
+        if (Auth::user()->access_code == 'master') {
+            $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+                ->join('company_mou_access', 'company_mou_access.company_mou_code', '=', 'company_mou.company_mou_code')
+                ->where('company_mou.company_mou_name', 'like', '%' . $request->code . '%')->get();
+        } else {
+            $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+                ->join('company_mou_access', 'company_mou_access.company_mou_code', '=', 'company_mou.company_mou_code')
+                ->where('company_mou.company_mou_name', 'like', '%' . $request->code . '%')
+                ->where('company_mou_access.userid', Auth::user()->userid)->get();
+        }
+        return view('application.dashboard.hasil-pencarian-mcu', ['data' => $data]);
+    }
     public function monitoring_mcu_detail(Request $request)
     {
         $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')

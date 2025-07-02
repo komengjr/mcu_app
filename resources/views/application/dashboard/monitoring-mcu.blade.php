@@ -40,11 +40,12 @@
                                 <div class="col-auto"><small>Search by name: </small></div>
                                 <div class="col-auto">
                                     <div class="search">
-                                        <form class="position-relative">
+                                        <div class="position-relative">
                                             <input class="form-control search-input fuzzy-search" type="search"
-                                                placeholder="Search..." aria-label="Search" />
+                                                id="carimcu" onkeydown="search(this)" placeholder="Search..."
+                                                aria-label="Search" />
                                             {{-- <span class="fas fa-search search-box-icon"></span> --}}
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                             </form>
@@ -57,7 +58,7 @@
     </div>
     <div class="card" style="font-family: 'Calibri', sans-serif;">
         <div class="card-body p-0 overflow-hidden">
-            <div class="row g-0 p-2">
+            <div class="row g-0 p-2" id="menu-monitoring-mcu">
                 @foreach ($data as $datas)
                     <div class="card border border-danger mb-2">
                         <div class="col-12 p-card border border-bottom ">
@@ -326,5 +327,28 @@
                 }, 2000);
             });
         });
+    </script>
+    <script>
+        function search(ele) {
+            var code = document.getElementById("carimcu").value;
+            $.ajax({
+                    url: "{{ route('monitoring_mcu_cari_nama') }}",
+                    type: "POST",
+                    cache: false,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "code": code
+                    },
+                    dataType: 'html',
+                })
+                .done(function(data) {
+                    $("#menu-monitoring-mcu").html(data);
+                })
+                .fail(function() {
+                    $("#menu-monitoring-mcu").html(
+                        '<i class="fa fa-info-sign"></i> Something went wrong, Please try again...'
+                    );
+                });
+        };
     </script>
 @endsection

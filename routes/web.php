@@ -54,6 +54,7 @@ Route::prefix('{akses}/application')->group(function () {
 });
 Route::prefix('application')->group(function () {
     //MONITORING MCU
+    Route::post('monitoring-mcu/cari-nama', [ApplicationController::class, 'monitoring_mcu_cari_nama'])->name('monitoring_mcu_cari_nama');
     Route::post('monitoring-mcu/detail', [ApplicationController::class, 'monitoring_mcu_detail'])->name('monitoring_mcu_detail');
     Route::post('monitoring-mcu/rekap', [ApplicationController::class, 'monitoring_mcu_rekap'])->name('monitoring_mcu_rekap');
     Route::post('monitoring-mcu/rekap-full', [ApplicationController::class, 'monitoring_mcu_rekap_full'])->name('monitoring_mcu_rekap_full');

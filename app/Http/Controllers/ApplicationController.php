@@ -42,9 +42,14 @@ class ApplicationController extends Controller
     public function monitoring_mcu($akses)
     {
         if ($this->url_akses($akses) == true) {
-            $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
-                ->join('company_mou_access', 'company_mou_access.company_mou_code', '=', 'company_mou.company_mou_code')
-                ->where('company_mou_access.userid', Auth::user()->userid)->get();
+            if (Auth::user()->access_code == 'master') {
+                $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+                    ->join('company_mou_access', 'company_mou_access.company_mou_code', '=', 'company_mou.company_mou_code')->get();
+            } else {
+                $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+                    ->join('company_mou_access', 'company_mou_access.company_mou_code', '=', 'company_mou.company_mou_code')
+                    ->where('company_mou_access.userid', Auth::user()->userid)->get();
+            }
             return view('application.dashboard.monitoring-mcu', ['data' => $data]);
         } else {
             return Redirect::to('dashboard/home');
@@ -638,8 +643,8 @@ class ApplicationController extends Controller
     }
     public function master_pemeriksaan_update_save(Request $request)
     {
-        DB::table('master_pemeriksaan')->where('master_pemeriksaan_code',$request->code)->update([
-            'master_pemeriksaan_name'=>$request->nama
+        DB::table('master_pemeriksaan')->where('master_pemeriksaan_code', $request->code)->update([
+            'master_pemeriksaan_name' => $request->nama
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data Pemeriksaan');
     }

@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 use App\Models\Peserta;
+use DateTime;
 use DB;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Illuminate\Support\Str;
@@ -19,6 +20,7 @@ class PesertaImport implements ToModel , WithHeadingRow
 
         // $request = request()->all();
         // $data = DB::table('company_mou_peserta')->where('company_mou_code', $request->code)->first();
+        $UNIX_DATE = ($row['ttl'] - 25569) * 86400;
         return new Peserta([
             'mou_peserta_code' => $this->code.mt_rand(1000, 9999),
             'company_mou_code' => $this->code,
@@ -27,7 +29,7 @@ class PesertaImport implements ToModel , WithHeadingRow
             'mou_peserta_name' => $row['name'],
             'mou_peserta_no_hp' => $row['no_hp'],
             'mou_peserta_email' => $row['email'],
-            'mou_peserta_ttl' => $row['ttl'],
+            'mou_peserta_ttl' => date('Y-m-d',$UNIX_DATE),
             'mou_peserta_jk' => $row['jk'],
             'mou_peserta_departemen' => $row['departemen'],
             'mou_agreement_code' => $this->ids,

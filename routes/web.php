@@ -95,9 +95,12 @@ Route::prefix('application')->group(function () {
     // AGREMENT
     Route::post('agreement-perusahaan/add', [ApplicationController::class, 'agreement_perusahaan_add'])->name('agreement_perusahaan_add');
     Route::post('agreement-perusahaan/save', [ApplicationController::class, 'agreement_perusahaan_save'])->name('agreement_perusahaan_save');
+    Route::post('agreement-perusahaan/update-save', [ApplicationController::class, 'agreement_perusahaan_update_save'])->name('agreement_perusahaan_update_save');
+    Route::post('agreement-perusahaan/update', [ApplicationController::class, 'agreement_perusahaan_update'])->name('agreement_perusahaan_update');
     Route::post('agreement-perusahaan/add-pemeriksaan', [ApplicationController::class, 'agreement_perusahaan_add_pemeriksaan'])->name('agreement_perusahaan_add_pemeriksaan');
     Route::post('agreement-perusahaan/save-pemeriksaan', [ApplicationController::class, 'agreement_perusahaan_save_pemeriksaan'])->name('agreement_perusahaan_save_pemeriksaan');
     Route::post('agreement-perusahaan/remove-pemeriksaan', [ApplicationController::class, 'agreement_perusahaan_remove_pemeriksaan'])->name('agreement_perusahaan_remove_pemeriksaan');
+    Route::post('agreement-perusahaan/remove-agreement', [ApplicationController::class, 'agreement_perusahaan_remove_agreement'])->name('agreement_perusahaan_remove_agreement');
     // AKSES MOU
     Route::post('master-access-mou/add', [ApplicationController::class, 'master_access_mou_add'])->name('master_access_mou_add');
     Route::post('master-access-mou/save', [ApplicationController::class, 'master_access_mou_save'])->name('master_access_mou_save');
@@ -108,6 +111,8 @@ Route::prefix('application')->group(function () {
     // PEMERIKSAAN
     Route::post('master-pemeriksaan/add', [ApplicationController::class, 'master_pemeriksaan_add'])->name('master_pemeriksaan_add');
     Route::post('master-pemeriksaan/save', [ApplicationController::class, 'master_pemeriksaan_save'])->name('master_pemeriksaan_save');
+    Route::post('master-pemeriksaan/update', [ApplicationController::class, 'master_pemeriksaan_update'])->name('master_pemeriksaan_update');
+    Route::post('master-pemeriksaan/update-save', [ApplicationController::class, 'master_pemeriksaan_update_save'])->name('master_pemeriksaan_update_save');
     // LAPORAN REKAP MCU
     Route::post('laporan-rekap-mcu/cari-data', [ApplicationController::class, 'laporan_rekap_mcu_cari_data'])->name('laporan_rekap_mcu_cari_data');
     Route::post('laporan-rekap-mcu/pilih-data', [ApplicationController::class, 'laporan_rekap_mcu_pilih_data'])->name('laporan_rekap_mcu_pilih_data');

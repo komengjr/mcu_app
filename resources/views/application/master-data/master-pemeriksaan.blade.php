@@ -146,5 +146,26 @@
                 $('#menu-pemeriksaan').html('eror');
             });
         });
+        $(document).on("click", "#button-edit-pemeriksaan", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-pemeriksaan').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('master_pemeriksaan_update') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-pemeriksaan').html(data);
+            }).fail(function() {
+                $('#menu-pemeriksaan').html('eror');
+            });
+        });
     </script>
 @endsection

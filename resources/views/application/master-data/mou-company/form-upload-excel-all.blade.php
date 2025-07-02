@@ -16,6 +16,7 @@
         <button class="btn btn-primary" type="submit"><span class="fas fa-save"></span> Save</button>
     </div>
 </form>
+
 <script>
     new window.Choices(document.querySelector(".choices-single-jenis"));
 </script>

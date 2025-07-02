@@ -559,6 +559,18 @@ class ApplicationController extends Controller
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data MOU Perusahaan');
     }
+    public function agreement_perusahaan_update(Request $request)
+    {
+        $data = DB::table('company_mou_agreement')->where('mou_agreement_code', $request->code)->first();
+        return view('application.master-data.agreement.form-update', ['data' => $data]);
+    }
+    public function agreement_perusahaan_update_save(Request $request)
+    {
+        DB::table('company_mou_agreement')->where('mou_agreement_code', $request->code)->update([
+            'mou_agreement_name' => $request->nama,
+        ]);
+        return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data Perusahaan');
+    }
     public function agreement_perusahaan_add_pemeriksaan(Request $request)
     {
         $pemeriksaan = DB::table('master_pemeriksaan')->get();
@@ -587,7 +599,12 @@ class ApplicationController extends Controller
             ->where('company_mou_agreement_sub.mou_agreement_code', $request->code)->get();
         return view('application.master-data.agreement.table-pemeriksaan-mcu', ['data' => $data]);
     }
-
+    public function agreement_perusahaan_remove_agreement(Request $request)
+    {
+        DB::table('company_mou_agreement')->where('mou_agreement_code', $request->code)->delete();
+        DB::table('company_mou_agreement_sub')->where('mou_agreement_code', $request->code)->delete();
+        return 'Berhasil Remove';
+    }
 
     // MASTER PEMERIKSAAN
     public function master_pemeriksaan($akses)
@@ -611,6 +628,18 @@ class ApplicationController extends Controller
             'master_pemeriksaan_name' => $request->nama,
             'master_pemeriksaan_status' => 1,
             'created_at' => now()
+        ]);
+        return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data Pemeriksaan');
+    }
+    public function master_pemeriksaan_update(Request $request)
+    {
+        $data = DB::table('master_pemeriksaan')->where('master_pemeriksaan_code', $request->code)->first();
+        return view('application.master-data.pemeriksaan.form-update', ['data' => $data]);
+    }
+    public function master_pemeriksaan_update_save(Request $request)
+    {
+        DB::table('master_pemeriksaan')->where('master_pemeriksaan_code',$request->code)->update([
+            'master_pemeriksaan_name'=>$request->nama
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data Pemeriksaan');
     }

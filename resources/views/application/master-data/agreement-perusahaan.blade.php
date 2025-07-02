@@ -73,11 +73,20 @@
                             <td>
                                 @php
                                     $pemeriksaan = DB::table('company_mou_agreement_sub')
-                                    ->join('master_pemeriksaan','master_pemeriksaan.master_pemeriksaan_code','=','company_mou_agreement_sub.master_pemeriksaan_code')
-                                    ->where('company_mou_agreement_sub.mou_agreement_code',$datas->mou_agreement_code)->get();
+                                        ->join(
+                                            'master_pemeriksaan',
+                                            'master_pemeriksaan.master_pemeriksaan_code',
+                                            '=',
+                                            'company_mou_agreement_sub.master_pemeriksaan_code',
+                                        )
+                                        ->where(
+                                            'company_mou_agreement_sub.mou_agreement_code',
+                                            $datas->mou_agreement_code,
+                                        )
+                                        ->get();
                                 @endphp
                                 @foreach ($pemeriksaan as $item)
-                                    <li class="fs--2">{{$item->master_pemeriksaan_name}}</li>
+                                    <li class="fs--2">{{ $item->master_pemeriksaan_name }}</li>
                                 @endforeach
                             </td>
                             <td>
@@ -88,8 +97,15 @@
                                             data-fa-transform="shrink-3"></span>Option</button>
                                     <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
                                         <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-company"
-                                            id="button-insert-pemeriksaan-agreement" data-code="{{$datas->mou_agreement_code}}"><span class="fas fa-syringe"></span>
+                                            id="button-insert-pemeriksaan-agreement"
+                                            data-code="{{ $datas->mou_agreement_code }}"><span
+                                                class="fas fa-syringe"></span>
                                             Insert Pemeriksaan</button>
+                                        <div class="dropdown-divider"></div>
+                                        <button class="dropdown-item text-warning" data-bs-toggle="modal" data-bs-target="#modal-company"
+                                            id="button-update-data-agreement"
+                                            data-code="{{ $datas->mou_agreement_code }}"><span class="fas fa-edit"></span>
+                                            Update Agreement</button>
                                     </div>
                                 </div>
                             </td>
@@ -132,6 +148,27 @@
             );
             $.ajax({
                 url: "{{ route('agreement_perusahaan_add') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-company').html(data);
+            }).fail(function() {
+                $('#menu-company').html('eror');
+            });
+        });
+        $(document).on("click", "#button-update-data-agreement", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-company').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('agreement_perusahaan_update') }}",
                 type: "POST",
                 cache: false,
                 data: {
@@ -207,6 +244,25 @@
                 $('#menu-data-v3').html(data);
             }).fail(function() {
                 $('#menu-data-v3').html('eror');
+            });
+        });
+        $(document).on("click", "#button-remove-agreement", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $.ajax({
+                url: "{{ route('agreement_perusahaan_remove_agreement') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code,
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#button-remove-agreement').html(data);
+                location.reload();
+            }).fail(function() {
+                $('#button-remove-agreement').html('eror');
             });
         });
     </script>

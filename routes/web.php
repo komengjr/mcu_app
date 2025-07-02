@@ -59,6 +59,7 @@ Route::prefix('application')->group(function () {
     Route::post('monitoring-mcu/rekap', [ApplicationController::class, 'monitoring_mcu_rekap'])->name('monitoring_mcu_rekap');
     Route::post('monitoring-mcu/rekap-full', [ApplicationController::class, 'monitoring_mcu_rekap_full'])->name('monitoring_mcu_rekap_full');
 
+
     Route::post('medical-check-up/detail', [ApplicationController::class, 'medical_check_up_detail'])->name('medical_check_up_detail');
     Route::post('medical-check-up/prosess', [ApplicationController::class, 'medical_check_up_prosess'])->name('medical_check_up_prosess');
     Route::post('medical-check-up/prosess-save', [ApplicationController::class, 'medical_check_up_prosess_save'])->name('medical_check_up_prosess_save');
@@ -67,6 +68,7 @@ Route::prefix('application')->group(function () {
     Route::post('medical-check-up/summary-save-executive', [ApplicationController::class, 'medical_check_up_summary_save_executive'])->name('medical_check_up_summary_save_executive');
     Route::post('medical-check-up/summary-save-healty-talk', [ApplicationController::class, 'medical_check_up_summary_save_healty_talk'])->name('medical_check_up_summary_save_healty_talk');
 
+    Route::post('menu-servic/history', [ApplicationController::class, 'menu_service_history'])->name('menu_service_history');
     Route::post('menu-service/proses', [ApplicationController::class, 'menu_service_proses'])->name('menu_service_proses');
     Route::post('menu-service/proses-pemeriksaan-save', [ApplicationController::class, 'menu_service_proses_pemeriksaan_save'])->name('menu_service_proses_pemeriksaan_save');
     Route::post('menu-service/proses-konsultasi-save', [ApplicationController::class, 'menu_service_proses_konsultasi_save'])->name('menu_service_proses_konsultasi_save');

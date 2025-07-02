@@ -4,7 +4,9 @@
                 class="text-primary">{{ $data->mou_peserta_name }}</strong></h4>
         <p class="fs--2 mb-0">Support by <a class="link-600 fw-semi-bold" href="#!">Transforma</a></p>
     </div>
-
+    @php
+        $log = 0;
+    @endphp
     <div class="card-body p-3">
         <div class="card border border-danger">
             <div class="row g-3 p-4">
@@ -172,6 +174,9 @@
                 <div class="col-md-12">
                     <button class="btn btn-success btn-sm float-end disabled">Proses Selesai</button>
                 </div>
+                @php
+                    $log = $log + 1;
+                @endphp
             @else
                 <div class="col-md-12">
                     <button class="btn btn-primary btn-sm float-end">Simpan Data</button>
@@ -203,6 +208,9 @@
                     <button class="btn btn-success btn-sm float-end disabled">Proses Selesai</button>
                 </div>
             </div>
+            @php
+                $log = $log + 1;
+            @endphp
         @else
             <form class="row g-3 p-2" action="{{ route('menu_service_proses_pengiriman_save') }}" method="post"
                 enctype="multipart/form-data">
@@ -258,6 +266,9 @@
                     <button class="btn btn-success btn-sm float-end disabled">Proses Selesai</button>
                 </div>
             </div>
+            @php
+                $log = $log + 1;
+            @endphp
         @else
             <form class="row g-3 p-2" action="{{ route('menu_service_proses_konsultasi_save') }}" method="post"
                 enctype="multipart/form-data">
@@ -289,8 +300,10 @@
 
 
 <div class="card-body p-3 pt-0">
-    <button class="btn btn-falcon-primary btn-sm" id="button-penyelesaian-peserta-mcu"
-        data-code="{{ $data->mou_peserta_code }}">Penyelesaian Proses MCU</button>
+    @if ($log == 3)
+        <button class="btn btn-falcon-primary btn-sm" id="button-penyelesaian-peserta-mcu"
+            data-code="{{ $data->mou_peserta_code }}">Penyelesaian Proses MCU</button>
+    @endif
 </div>
 
 </div>

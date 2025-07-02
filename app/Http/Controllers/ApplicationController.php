@@ -137,6 +137,7 @@ class ApplicationController extends Controller
             return Redirect::to('dashboard/home');
         }
     }
+
     public function medical_check_up_detail(Request $request)
     {
         $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
@@ -280,6 +281,16 @@ class ApplicationController extends Controller
             return Redirect::to('dashboard/home');
         }
 
+    }
+    public function menu_service_history(Request $request)
+    {
+        $data = DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+            ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+            ->where('company_mou_peserta.mou_peserta_status', '=', 1)
+            ->orderBy('log_lokasi_pasien.id_log_lokasi_pasien', 'DESC')->get();
+        return view('application.menu.service.form-history-mcu', ['data' => $data]);
     }
     public function menu_service_proses(Request $request)
     {

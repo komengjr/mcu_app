@@ -31,7 +31,7 @@
         <div class="card-body">
             <div class="row flex-between-center">
                 <div class="col-sm-auto mb-2 mb-sm-0">
-                    <h6 class="mb-0">Showing {{$data->count()}} Data</h6>
+                    <h6 class="mb-0">Showing {{ $data->count() }} Data</h6>
                 </div>
                 <div class="col-sm-auto">
                     <div class="row gx-2 align-items-center">
@@ -66,11 +66,11 @@
                     <div class="btn-group" role="group">
                         <button class="btn btn-sm btn-falcon-danger dropdown-toggle" id="btnGroupVerticalDrop2"
                             type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
-                                class="fas fa-align-left me-1" data-fa-transform="shrink-3"></span>Menu Service</button>
+                                class="fas fa-align-left me-1" data-fa-transform="shrink-3"></span>Menu</button>
                         <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
 
-                            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-cabang"
-                                id="button-data-barang-cabang" data-code="123"><span class="far fa-folder-open"></span>
+                            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu"
+                                id="button-data-history-mcu"><span class="far fa-folder-open"></span>
                                 History</button>
                         </div>
                     </div>
@@ -154,7 +154,7 @@
                                 @endphp
                                 @if ($pengiriman)
                                     <span class="badge bg-primary">Terkirim</span><br>
-                                    {{$pengiriman->log_pengiriman_date}}
+                                    {{ $pengiriman->log_pengiriman_date }}
                                 @else
                                     <span class="badge bg-danger">Belum Terkirim</span>
                                 @endif
@@ -180,9 +180,8 @@
                                         aria-expanded="false"><span class="fas fa-align-left me-1"
                                             data-fa-transform="shrink-3"></span>Option</button>
                                     <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
-                                        <button class="dropdown-item" data-bs-toggle="modal"
-                                            data-bs-target="#modal-mcu-xl" id="button-proses-peserta-mcu"
-                                            data-code="{{ $datas->mou_peserta_code }}"><span
+                                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
+                                            id="button-proses-peserta-mcu" data-code="{{ $datas->mou_peserta_code }}"><span
                                                 class="far fa-folder-open"></span>
                                             Proses Service</button>
                                     </div>
@@ -231,19 +230,18 @@
         });
     </script>
     <script>
-        $(document).on("click", "#button-proses-check-up", function(e) {
+        $(document).on("click", "#button-data-history-mcu", function(e) {
             e.preventDefault();
-            var code = $(this).data("code");
             $('#menu-mcu').html(
                 '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
             );
             $.ajax({
-                url: "{{ route('medical_check_up_detail') }}",
+                url: "{{ route('menu_service_history') }}",
                 type: "POST",
                 cache: false,
                 data: {
                     "_token": "{{ csrf_token() }}",
-                    "code": code
+                    "code": 1
                 },
                 dataType: 'html',
             }).done(function(data) {
@@ -252,6 +250,27 @@
                 $('#menu-mcu').html('eror');
             });
         });
+        // $(document).on("click", "#button-proses-check-up", function(e) {
+        //     e.preventDefault();
+        //     var code = $(this).data("code");
+        //     $('#menu-mcu').html(
+        //         '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        //     );
+        //     $.ajax({
+        //         url: "{{ route('medical_check_up_detail') }}",
+        //         type: "POST",
+        //         cache: false,
+        //         data: {
+        //             "_token": "{{ csrf_token() }}",
+        //             "code": code
+        //         },
+        //         dataType: 'html',
+        //     }).done(function(data) {
+        //         $('#menu-mcu').html(data);
+        //     }).fail(function() {
+        //         $('#menu-mcu').html('eror');
+        //     });
+        // });
         $(document).on("click", "#button-proses-peserta-mcu", function(e) {
             e.preventDefault();
             var code = $(this).data("code");

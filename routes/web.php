@@ -49,6 +49,8 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('agreement-perusahaan', [ApplicationController::class, 'agreement_perusahaan'])->name('agreement_perusahaan');
     Route::get('master-pemeriksaan', [ApplicationController::class, 'master_pemeriksaan'])->name('master_pemeriksaan');
     Route::get('master-access-mou', [ApplicationController::class, 'master_access_mou'])->name('master_access_mou');
+    Route::get('master-user-cabang', [ApplicationController::class, 'master_user_cabang'])->name('master_user_cabang');
+    Route::get('master-group-cabang', [ApplicationController::class, 'master_group_cabang'])->name('master_group_cabang');
     Route::get('laporan-rekap-mcu', [ApplicationController::class, 'laporan_rekap_mcu'])->name('laporan_rekap_mcu');
     Route::get('aplikasi', [ApplicationController::class, 'aplikasi_app'])->name('aplikasi_app');
 });
@@ -116,6 +118,12 @@ Route::prefix('application')->group(function () {
     Route::post('master-pemeriksaan/save', [ApplicationController::class, 'master_pemeriksaan_save'])->name('master_pemeriksaan_save');
     Route::post('master-pemeriksaan/update', [ApplicationController::class, 'master_pemeriksaan_update'])->name('master_pemeriksaan_update');
     Route::post('master-pemeriksaan/update-save', [ApplicationController::class, 'master_pemeriksaan_update_save'])->name('master_pemeriksaan_update_save');
+    //USER CABANG
+    Route::post('master-user-cabang/add', [ApplicationController::class, 'master_user_cabang_add'])->name('master_user_cabang_add');
+    Route::post('master-user-cabang/save', [ApplicationController::class, 'master_user_cabang_save'])->name('master_user_cabang_save');
+    //USER CABANG
+    Route::post('master-group-cabang/add', [ApplicationController::class, 'master_group_cabang_add'])->name('master_group_cabang_add');
+    Route::post('master-group-cabang/save', [ApplicationController::class, 'master_group_cabang_save'])->name('master_group_cabang_save');
     // LAPORAN REKAP MCU
     Route::post('laporan-rekap-mcu/cari-data', [ApplicationController::class, 'laporan_rekap_mcu_cari_data'])->name('laporan_rekap_mcu_cari_data');
     Route::post('laporan-rekap-mcu/pilih-data', [ApplicationController::class, 'laporan_rekap_mcu_pilih_data'])->name('laporan_rekap_mcu_pilih_data');

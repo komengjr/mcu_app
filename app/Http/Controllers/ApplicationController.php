@@ -731,6 +731,68 @@ class ApplicationController extends Controller
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data MOU Perusahaan');
     }
 
+    // MASTER USER CABANG
+    public function master_user_cabang($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            $akses = DB::table('master_access')->where('master_access_name', '=', 'User Cabang')->first();
+            $data = DB::table('user_mains')
+                ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'user_mains.access_cabang')
+                ->where('user_mains.access_code', '=', $akses->master_access_code)->get();
+            return view('application.master-data.master-user-cabang', ['data' => $data]);
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
+    public function master_user_cabang_add(Request $request)
+    {
+        $cabang = DB::table('master_cabang')->get();
+        return view('application.master-data.user-cabang.fotm-add', ['cabang' => $cabang]);
+    }
+    public function master_user_cabang_save(Request $request)
+    {
+        $akses = DB::table('master_access')->where('master_access_name', '=', 'User Cabang')->first();
+        DB::table('user_mains')->insert([
+            'userid' => str::uuid(),
+            'fullname' => $request->nama_lengkap,
+            'username' => $request->username,
+            'password' => Hash::make($request['password']),
+            'number_handphone' => $request->no_hp,
+            'email' => $request->email,
+            'access_code' => $akses->master_access_code,
+            'access_cabang' => $request->cabang,
+            'access_status' => 1,
+            'remember_token' => str::uuid(),
+            'created_at' => now()
+        ]);
+        return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data User Cabang');
+    }
+
+    // MASTER GROUP CABANG
+    public function master_group_cabang($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            $data = DB::table('group_cabang')->get();
+            return view('application.master-data.master-group-cabang', ['data' => $data]);
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
+    public function master_group_cabang_add(Request $request)
+    {
+        return view('application.master-data.group-cabang.form-add');
+    }
+    public function master_group_cabang_save(Request $request)
+    {
+        DB::table('group_cabang')->insert([
+            'group_cabang_code' => Str::uuid(),
+            'group_cabang_name' => $request->nama_group,
+            'created_at' => now()
+        ]);
+        return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data User Cabang');
+    }
+
+
     // LAPORAN REKAP MCU
     public function laporan_rekap_mcu($akses)
     {

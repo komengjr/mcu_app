@@ -66,13 +66,44 @@
                         $no = 1;
                     @endphp
                     @foreach ($data as $datas)
-                    <tr>
-                        <td>{{$no++}}</td>
-                        <td>{{$datas->group_cabang_name}}</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-
+                        <tr>
+                            <td>{{ $no++ }}</td>
+                            <td>{{ $datas->group_cabang_name }}</td>
+                            <td>
+                                @php
+                                    $cabang = DB::table('group_cabang_detail')
+                                        ->join(
+                                            'master_cabang',
+                                            'master_cabang.master_cabang_code',
+                                            '=',
+                                            'group_cabang_detail.master_cabang_code',
+                                        )
+                                        ->where('group_cabang_detail.group_cabang_code', '=', $datas->group_cabang_code)
+                                        ->get();
+                                @endphp
+                                @foreach ($cabang as $item)
+                                    <li>{{ $item->master_cabang_name }} <button class="btn btn-falcon-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal-user"
+                                            id="button-remove-data-cabang"
+                                            data-code="{{ $item->id_group_cabang_detail }}"><span
+                                                class="fas fa-trash"></span></button></li>
+                                @endforeach
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-falcon-primary dropdown-toggle" id="btnGroupVerticalDrop2"
+                                        type="button" data-bs-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false"><span class="fas fa-align-left me-1"
+                                            data-fa-transform="shrink-3"></span>Option</button>
+                                    <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
+                                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-user"
+                                            id="button-tambah-cabang" data-code="{{ $datas->group_cabang_code }}"><span
+                                                class="far fa-edit"></span>
+                                            Tambah Cabang
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
                     @endforeach
                 </tbody>
             </table>
@@ -111,6 +142,48 @@
             );
             $.ajax({
                 url: "{{ route('master_group_cabang_add') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-user').html(data);
+            }).fail(function() {
+                $('#menu-user').html('eror');
+            });
+        });
+        $(document).on("click", "#button-tambah-cabang", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-user').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('master_group_cabang_add_cabang') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-user').html(data);
+            }).fail(function() {
+                $('#menu-user').html('eror');
+            });
+        });
+        $(document).on("click", "#button-remove-data-cabang", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-user').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('master_group_cabang_remove_cabang') }}",
                 type: "POST",
                 cache: false,
                 data: {

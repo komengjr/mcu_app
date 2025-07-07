@@ -124,6 +124,10 @@ Route::prefix('application')->group(function () {
     //USER CABANG
     Route::post('master-group-cabang/add', [ApplicationController::class, 'master_group_cabang_add'])->name('master_group_cabang_add');
     Route::post('master-group-cabang/save', [ApplicationController::class, 'master_group_cabang_save'])->name('master_group_cabang_save');
+    Route::post('master-group-cabang/add-cabang', [ApplicationController::class, 'master_group_cabang_add_cabang'])->name('master_group_cabang_add_cabang');
+    Route::post('master-group-cabang/save-cabang', [ApplicationController::class, 'master_group_cabang_save_cabang'])->name('master_group_cabang_save_cabang');
+    Route::post('master-group-cabang/remove-cabang', [ApplicationController::class, 'master_group_cabang_remove_cabang'])->name('master_group_cabang_remove_cabang');
+    Route::post('master-group-cabang/save-remove-cabang', [ApplicationController::class, 'master_group_cabang_save_remove_cabang'])->name('master_group_cabang_save_remove_cabang');
     // LAPORAN REKAP MCU
     Route::post('laporan-rekap-mcu/cari-data', [ApplicationController::class, 'laporan_rekap_mcu_cari_data'])->name('laporan_rekap_mcu_cari_data');
     Route::post('laporan-rekap-mcu/pilih-data', [ApplicationController::class, 'laporan_rekap_mcu_pilih_data'])->name('laporan_rekap_mcu_pilih_data');

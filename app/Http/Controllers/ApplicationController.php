@@ -791,7 +791,34 @@ class ApplicationController extends Controller
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data User Cabang');
     }
-
+    public function master_group_cabang_add_cabang(Request $request)
+    {
+        $cabang = DB::table('master_cabang')->select('master_cabang_code', 'master_cabang_name')->get();
+        return view('application.master-data.group-cabang.form-add-cabang', ['code' => $request->code, 'cabang' => $cabang]);
+    }
+    public function master_group_cabang_save_cabang(Request $request)
+    {
+        $cek = DB::table('group_cabang_detail')->where('master_cabang_code', $request->cabang)->first();
+        if ($cek) {
+            return redirect()->back()->withError('Failed! Cabang Sudah di dalam Group');
+        } else {
+            DB::table('group_cabang_detail')->insert([
+                'group_cabang_code' => $request->code,
+                'master_cabang_code' => $request->cabang,
+                'created_at' => now()
+            ]);
+            return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data Group Cabang');
+        }
+    }
+    public function master_group_cabang_remove_cabang(Request $request)
+    {
+        return view('application.master-data.group-cabang.form-remove-cabang', ['code' => $request->code]);
+    }
+    public function master_group_cabang_save_remove_cabang(Request $request)
+    {
+        DB::table('group_cabang_detail')->where('id_group_cabang_detail', $request->code)->delete();
+        return redirect()->back()->withSuccess('Great! Berhasil menghapus Data Group Cabang');
+    }
 
     // LAPORAN REKAP MCU
     public function laporan_rekap_mcu($akses)

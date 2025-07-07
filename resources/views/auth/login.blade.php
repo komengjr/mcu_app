@@ -145,8 +145,8 @@
 
                                         <img src="{{ asset('img/pramita.png') }}" alt="" srcset=""
                                             width="150">
-                                        <img src="{{ asset('img/logo.png') }}" alt="" srcset=""
-                                            width="150">
+                                        {{-- <img src="{{ asset('img/logo.png') }}" alt="" srcset=""
+                                            width="150"> --}}
 
                                     </div>
                                 </div>

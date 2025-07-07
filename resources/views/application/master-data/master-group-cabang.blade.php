@@ -82,7 +82,8 @@
                                         ->get();
                                 @endphp
                                 @foreach ($cabang as $item)
-                                    <li>{{ $item->master_cabang_name }} <button class="btn btn-falcon-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal-user"
+                                    <li>{{ $item->master_cabang_name }} <button class="btn btn-falcon-danger btn-sm"
+                                            data-bs-toggle="modal" data-bs-target="#modal-user"
                                             id="button-remove-data-cabang"
                                             data-code="{{ $item->id_group_cabang_detail }}"><span
                                                 class="fas fa-trash"></span></button></li>
@@ -100,6 +101,12 @@
                                                 class="far fa-edit"></span>
                                             Tambah Cabang
                                         </button>
+                                        <div class="dropdown-divider"></div>
+                                        <button class="dropdown-item text-youtube" data-bs-toggle="modal"
+                                            data-bs-target="#modal-user" id="button-remove-full-group"
+                                            data-code="{{ $datas->group_cabang_code }}"><span
+                                                class="far fa-trash-alt"></span>
+                                            Remove Group</button>
                                     </div>
                                 </div>
                             </td>

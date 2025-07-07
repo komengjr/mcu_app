@@ -22,12 +22,12 @@ Route::get('log-eror', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class
 Route::controller(AuthController::class)->group(function () {
     Route::get('/', 'index');
     Route::get('login', 'index')->name('login');
-    Route::get('registration', 'registration')->name('register');
-    Route::get('confrim_user', 'confrim_user')->name('confrim_user');
-    Route::get('register_status', 'register_status')->name('register_status');
-    Route::get('forget_password', 'forget_password')->name('forget_password');
+    // Route::get('registration', 'registration')->name('register');
+    // Route::get('confrim_user', 'confrim_user')->name('confrim_user');
+    // Route::get('register_status', 'register_status')->name('register_status');
+    // Route::get('forget_password', 'forget_password')->name('forget_password');
     Route::get('logout', 'logout')->name('logout');
-    Route::post('post-registration', 'postRegistration')->name('register.post');
+    // Route::post('post-registration', 'postRegistration')->name('register.post');
     Route::post('post-login', 'postLogin')->name('login.post');
     // Route::get('dashboard', [AuthController::class, 'dashboard']);
 });

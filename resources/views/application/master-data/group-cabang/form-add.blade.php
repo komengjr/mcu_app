@@ -7,7 +7,7 @@
         @csrf
         <div class="col-md-12">
             <label class="form-label" for="inputAddress">Nama Gorup</label>
-            <input class="form-control" id="inputAddress" type="text" name="nama_group" placeholder="Jhon Doe"
+            <input class="form-control" id="inputAddress" type="text" name="nama_group" placeholder="Jakarta Barat"
                 required />
         </div>
         <div class="col-12">

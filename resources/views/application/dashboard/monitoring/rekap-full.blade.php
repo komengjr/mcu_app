@@ -392,7 +392,7 @@
                 } else if (id == 5) {
                     return 'info';
                 } else if (id == 6) {
-                    return 'light';
+                    return 'dark';
                 } else if (id == 7) {
                     return 'primary';
                 } else if (id == 8) {

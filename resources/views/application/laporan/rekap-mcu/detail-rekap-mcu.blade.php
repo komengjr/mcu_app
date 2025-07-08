@@ -134,6 +134,7 @@
                          class="table table-bordered table-striped fs--1 mb-0">
                          <thead class="bg-200 text-900">
                              <tr>
+                                 <th class="sort" data-sort="name">Wilayah</th>
                                  <th class="sort" data-sort="name">Nama Cabang</th>
                                  <th class="sort" data-sort="email">Peserta Check In</th>
                                  <th class="sort" data-sort="age">Executive</th>
@@ -144,6 +145,7 @@
                          <tbody class="list">
                              @foreach ($cabang as $cabangs)
                                  <tr>
+                                     <td>{{ $cabangs->group_cabang_name }}</td>
                                      <td class="name">{{ $cabangs->master_cabang_name }}</td>
                                      <td class="email">
                                          @php
@@ -230,7 +232,172 @@
          pageLength: 5,
      });
  </script>
- @foreach ($cab as $cabs)
+ @foreach ($group as $groups)
+     <div class="card mb-3">
+         <div class="card-header">
+             <h5 class="mb-0 text-warning">Wilayah {{ $groups->group_cabang_name }}</h5>
+         </div>
+         @php
+             $data_mcu = DB::table('log_lokasi_pasien')
+                 ->join(
+                     'company_mou_peserta',
+                     'company_mou_peserta.mou_peserta_code',
+                     '=',
+                     'log_lokasi_pasien.mou_peserta_code',
+                 )
+                 ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+                 ->join(
+                     'group_cabang_detail',
+                     'group_cabang_detail.master_cabang_code',
+                     '=',
+                     'master_cabang.master_cabang_code',
+                 )
+                 ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
+                 ->where('company_mou_peserta.company_mou_code', $data->company_mou_code)
+                 ->where('group_cabang.group_cabang_code', $groups->group_cabang_code)
+                 ->get()
+                 ->unique('master_cabang_code');
+         @endphp
+         <div class="card-body border-top p-0 px-1">
+             @foreach ($data_mcu as $data_mcus)
+                 <div class="card-body py-2 px-1">
+                     <div class="card px-3 border">
+                         <h6 class="pt-3">{{ $data_mcus->master_cabang_name }}</h6>
+                         <table id="data-{{ $data_mcus->id_master_cabang }}"
+                             class="table table-striped nowrap border" style="width:100%">
+                             <thead class="bg-200 text-700 fs--2">
+                                 <tr>
+                                     <th>No</th>
+                                     <th>Nama Peserta</th>
+                                     <th>NIK</th>
+                                     <th>Jenis Kelamin</th>
+                                     <th>Status Pemeriksaan</th>
+                                     <th>Status Pengiriman Hasil</th>
+                                     <th>Status Konsultasi</th>
+                                 </tr>
+                             </thead>
+                             <tbody class="fs--2">
+                                 @php
+                                     $no = 1;
+                                     $peserta = DB::table('log_lokasi_pasien')
+                                         ->join(
+                                             'company_mou_peserta',
+                                             'company_mou_peserta.mou_peserta_code',
+                                             '=',
+                                             'log_lokasi_pasien.mou_peserta_code',
+                                         )
+                                         ->join(
+                                             'master_cabang',
+                                             'master_cabang.master_cabang_code',
+                                             '=',
+                                             'log_lokasi_pasien.lokasi_cabang',
+                                         )
+                                         ->join(
+                                             'group_cabang_detail',
+                                             'group_cabang_detail.master_cabang_code',
+                                             '=',
+                                             'master_cabang.master_cabang_code',
+                                         )
+                                         ->join(
+                                             'group_cabang',
+                                             'group_cabang.group_cabang_code',
+                                             '=',
+                                             'group_cabang_detail.group_cabang_code',
+                                         )
+                                         ->where('company_mou_peserta.company_mou_code', $data->company_mou_code)
+                                         ->where('group_cabang.group_cabang_code', $groups->group_cabang_code)
+                                         ->where('master_cabang.master_cabang_code', $data_mcus->master_cabang_code)
+                                         ->get();
+                                 @endphp
+                                 @foreach ($peserta as $pesertas)
+                                     <tr>
+                                         <td>{{ $no++ }}</td>
+                                         <td>{{ $pesertas->mou_peserta_name }}</td>
+                                         <td>{{ $pesertas->mou_peserta_nik }}</td>
+                                         <td>{{ $pesertas->mou_peserta_jk }}</td>
+                                         <td>
+                                             @php
+                                                 $pemeriksaan = DB::table('company_mou_agreement_sub')
+                                                     ->join(
+                                                         'master_pemeriksaan',
+                                                         'master_pemeriksaan.master_pemeriksaan_code',
+                                                         '=',
+                                                         'company_mou_agreement_sub.master_pemeriksaan_code',
+                                                     )
+                                                     ->where(
+                                                         'company_mou_agreement_sub.mou_agreement_code',
+                                                         $pesertas->mou_agreement_code,
+                                                     )
+                                                     ->get();
+                                             @endphp
+                                             @foreach ($pemeriksaan as $pem)
+                                                 @php
+                                                     $check = DB::table('log_pemeriksaan_pasien')
+                                                         ->where(
+                                                             'master_pemeriksaan_code',
+                                                             $pem->master_pemeriksaan_code,
+                                                         )
+                                                         ->where('mou_peserta_code', $pesertas->mou_peserta_code)
+                                                         ->first();
+                                                 @endphp
+                                                 @if ($check)
+                                                     @if ($check->log_pemeriksaan_status == 1)
+                                                         <li>{{ $pem->master_pemeriksaan_name }} <span
+                                                                 class="fas fa-check-square text-success"></span>
+                                                         </li>
+                                                     @else
+                                                         <li>{{ $pem->master_pemeriksaan_name }} <span
+                                                                 class="fas fa-exclamation-circle text-warning"></span>
+                                                         </li>
+                                                     @endif
+                                                 @else
+                                                     <li>{{ $pem->master_pemeriksaan_name }} <span
+                                                             class="fas fa-window-close text-danger"></span></li>
+                                                 @endif
+                                             @endforeach
+                                         </td>
+                                         <td>
+                                             @php
+                                                 $pengiriman = DB::table('log_pengiriman_pasien')
+                                                     ->where('mou_peserta_code', $pesertas->mou_peserta_code)
+                                                     ->first();
+                                             @endphp
+                                             @if ($pengiriman)
+                                                 <span class="badge bg-primary">Selesai</span>
+                                             @else
+                                                 <span class="badge bg-danger">Belum Selesai</span>
+                                             @endif
+                                         </td>
+                                         <td>
+                                             @php
+                                                 $konsul = DB::table('log_konsultasi_pasien')
+                                                     ->where('mou_peserta_code', $pesertas->mou_peserta_code)
+                                                     ->first();
+                                             @endphp
+                                             @if ($konsul)
+                                                 <span class="badge bg-primary">Selesai</span>
+                                             @else
+                                                 <span class="badge bg-danger">Belum Selesai</span>
+                                             @endif
+                                         </td>
+                                     </tr>
+                                 @endforeach
+                             </tbody>
+                         </table>
+                         <script>
+                             new DataTable('#data-{{ $data_mcus->id_master_cabang }}', {
+                                 responsive: true
+                             });
+                         </script>
+
+                     </div>
+                 </div>
+             @endforeach
+         </div>
+
+     </div>
+ @endforeach
+ {{-- @foreach ($cab as $cabs)
      <div class="card mb-3">
          <div class="card-header">
 
@@ -359,7 +526,7 @@
          </div>
 
      </div>
- @endforeach
+ @endforeach --}}
  <script src="{{ asset('vendors/echarts/echarts.min.js') }}"></script>
  @php
      $id = 0;

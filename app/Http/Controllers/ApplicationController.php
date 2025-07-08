@@ -152,7 +152,8 @@ class ApplicationController extends Controller
         $pemeriksaan = DB::table('company_mou_agreement_sub')
             ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
             ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)->get();
-        return view('application.menu.mcu.form-proses-mcu', ['data' => $data, 'pemeriksaan' => $pemeriksaan]);
+        $cabang = DB::table('master_cabang')->get();
+        return view('application.menu.mcu.form-proses-mcu', ['data' => $data, 'pemeriksaan' => $pemeriksaan, 'cabang'=>$cabang]);
     }
     public function medical_check_up_prosess_save(Request $request)
     {
@@ -162,7 +163,7 @@ class ApplicationController extends Controller
         } else {
             DB::table('log_lokasi_pasien')->insert([
                 'mou_peserta_code' => $request->code,
-                'lokasi_cabang' => Auth::user()->access_cabang,
+                'lokasi_cabang' => $request->cabang,
                 'log_lokasi_status' => 1,
                 'created_at' => now()
             ]);
@@ -270,6 +271,7 @@ class ApplicationController extends Controller
     public function menu_service($akses)
     {
         if ($this->url_akses($akses) == true) {
+
             $data = DB::table('company_mou_peserta')
                 ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
                 ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')

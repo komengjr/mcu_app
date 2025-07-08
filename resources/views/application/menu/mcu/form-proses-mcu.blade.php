@@ -16,17 +16,17 @@
                         value="{{ $data->mou_peserta_name }}" disabled />
                     <input type="text" name="code" id="" value="{{ $data->mou_peserta_code }}" hidden>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label" for="inputAddress">NIK</label>
                     <input class="form-control" id="inputAddress" type="text" name="peserta"
                         value="{{ $data->mou_peserta_nik }}" disabled />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label" for="inputAddress">NIP</label>
                     <input class="form-control" id="inputAddress" type="text" name="start"
                         value="{{ $data->mou_peserta_nip }}" disabled />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <label class="form-label" for="inputAddress">No Handphone</label>
                     <input class="form-control" id="inputAddress" type="text" name="nama"
                         value="{{ $data->mou_peserta_no_hp }}" disabled />
@@ -41,6 +41,16 @@
                     <label class="form-label" for="inputAddress">Departemen</label>
                     <input class="form-control" id="inputAddress" type="text" name="start"
                         value="{{ $data->mou_peserta_departemen }}" disabled />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="inputAddress">Lokasi Check In</label>
+                    <select name="cabang" class="form-select choices-single-cabang" id="" required>
+                        <option value="">Pilih Cabang</option>
+                        @foreach ($cabang as $cabangs)
+                            <option value="{{ $cabangs->master_cabang_code }}">{{ $cabangs->master_cabang_name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="col-12 pt-3">
                     <button class="btn btn-primary btn-sm float-end" type="submit"><span
@@ -62,8 +72,8 @@
                         @endphp
                         @foreach ($pemeriksaan as $item)
                             <tr>
-                                <td style="width: 5%;">{{$no++}}</td>
-                                <td>{{$item->master_pemeriksaan_name}}</td>
+                                <td style="width: 5%;">{{ $no++ }}</td>
+                                <td>{{ $item->master_pemeriksaan_name }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -151,4 +161,7 @@
     new DataTable('#data-v3s', {
         responsive: true
     });
+</script>
+<script>
+    new window.Choices(document.querySelector(".choices-single-cabang"));
 </script>

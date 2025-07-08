@@ -290,7 +290,6 @@ class ApplicationController extends Controller
         } else {
             return Redirect::to('dashboard/home');
         }
-
     }
     public function menu_service_history(Request $request)
     {

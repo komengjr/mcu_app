@@ -180,7 +180,8 @@
                                             <td class="age">
                                                 @if ($sumarry)
                                                     @if ($sumarry->summary_cabang_executive == 1)
-                                                        <span class="badge bg-primary">Done</span> <br> {{$sumarry->summary_cabang_executive_date}}
+                                                        <span class="badge bg-primary">Done</span> <br>
+                                                        {{ $sumarry->summary_cabang_executive_date }}
                                                     @elseif ($sumarry->summary_cabang_executive == 0)
                                                         <span class="badge bg-warning">Skip</span>
                                                     @else
@@ -193,7 +194,8 @@
                                             <td>
                                                 @if ($sumarry)
                                                     @if ($sumarry->summary_cabang_pesentasi == 1)
-                                                        <span class="badge bg-primary">Done</span> <br> {{$sumarry->summary_cabang_pesentasi_date}}
+                                                        <span class="badge bg-primary">Done</span> <br>
+                                                        {{ $sumarry->summary_cabang_pesentasi_date }}
                                                     @elseif ($sumarry->summary_cabang_pesentasi == 0)
                                                         <span class="badge bg-warning">Skip</span>
                                                     @else
@@ -206,7 +208,8 @@
                                             <td>
                                                 @if ($sumarry)
                                                     @if ($sumarry->summary_cabang_ht == 1)
-                                                        <span class="badge bg-primary">Done</span> <br> {{$sumarry->summary_cabang_ht_date}}
+                                                        <span class="badge bg-primary">Done</span> <br>
+                                                        {{ $sumarry->summary_cabang_ht_date }}
                                                     @elseif ($sumarry->summary_cabang_ht == 0)
                                                         <span class="badge bg-warning">Skip</span>
                                                     @else
@@ -391,6 +394,20 @@
                 } else if (id == 6) {
                     return 'light';
                 } else if (id == 7) {
+                    return 'primary';
+                } else if (id == 8) {
+                    return 'danger';
+                } else if (id == 9) {
+                    return 'secondary';
+                } else if (id == 10) {
+                    return 'warning';
+                } else if (id == 11) {
+                    return 'success';
+                } else if (id == 12) {
+                    return 'info';
+                } else if (id == 13) {
+                    return 'light';
+                } else if (id == 14) {
                     return 'dark';
                 }
             }

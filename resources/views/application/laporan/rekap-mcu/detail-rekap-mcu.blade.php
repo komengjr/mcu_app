@@ -383,6 +383,20 @@
              return 'light';
          } else if (id == 7) {
              return 'dark';
+         } else if (id == 8) {
+             return 'danger';
+         } else if (id == 9) {
+             return 'secondary';
+         } else if (id == 10) {
+             return 'warning';
+         } else if (id == 11) {
+             return 'success';
+         } else if (id == 12) {
+             return 'info';
+         } else if (id == 13) {
+             return 'light';
+         } else if (id == 14) {
+             return 'dark';
          }
      }
      var echartsPieChartInit = function echartsPieChartInit() {

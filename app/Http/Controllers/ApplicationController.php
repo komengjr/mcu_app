@@ -115,12 +115,20 @@ class ApplicationController extends Controller
             ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
             ->where('company_mou_peserta.company_mou_code', $request->code)
             ->count();
+        $group = DB::table('log_lokasi_pasien')
+            ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
+            ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+            ->join('group_cabang_detail','group_cabang_detail.master_cabang_code','=','master_cabang.master_cabang_code')
+            ->join('group_cabang','group_cabang.group_cabang_code','=','group_cabang_detail.group_cabang_code')
+            ->where('company_mou_peserta.company_mou_code', $request->perusahaan)
+            ->get()->unique('group_cabang_code');
         return view('application.dashboard.monitoring.rekap-full', [
             'data' => $data,
             'cabang' => $cabang,
             'cab' => $cab,
             'totalpeserta' => $totalpeserta,
             'totalmcu' => $totalmcu,
+            'group' => $group,
         ]);
     }
 

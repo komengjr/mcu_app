@@ -21,7 +21,8 @@
                     </div>
                     <div class="col-xl-auto px-3 py-2">
                         <h6 class="text-danger fs--1 mb-0">Menu : </h6>
-                        <h4 class="text-danger fw-bold mb-0">Medical <span class="text-danger fw-medium">Check Up</span></h4>
+                        <h4 class="text-danger fw-bold mb-0">Medical <span class="text-danger fw-medium">Check Up</span>
+                        </h4>
                     </div>
                 </div>
             </div>
@@ -31,7 +32,7 @@
         <div class="card-body">
             <div class="row flex-between-center">
                 <div class="col-sm-auto mb-2 mb-sm-0">
-                    <h6 class="mb-0">Showing {{$data->count()}}  Project</h6>
+                    <h6 class="mb-0">Showing {{ $data->count() }} Project</h6>
                 </div>
                 <div class="col-sm-auto">
                     <div class="row gx-2 align-items-center">
@@ -58,7 +59,7 @@
                             <div class="overflow-hidden">
                                 <div class="position-relative rounded-top overflow-hidden ">
                                     <a class="d-block" href="#">
-                                        <img class="img-fluid rounded-top"  src="{{ asset('img/company/mcu.jpg') }}"
+                                        <img class="img-fluid rounded-top" src="{{ asset('img/company/mcu.jpg') }}"
                                             alt="" />
                                     </a>
                                 </div>
@@ -72,9 +73,11 @@
 
                                     <p class="fs--1 mb-1">
                                         @php
-                                            $total = DB::table('company_mou_peserta')->where('company_mou_code',$datas->company_mou_code)->count();
+                                            $total = DB::table('company_mou_peserta')
+                                                ->where('company_mou_code', $datas->company_mou_code)
+                                                ->count();
                                         @endphp
-                                        Total Peserta: <strong>{{$total}} Peserta</strong>
+                                        Total Peserta: <strong>{{ $total }} Peserta</strong>
                                     </p>
                                     <p class="fs--1 mb-1">
                                         Date : <strong
@@ -82,22 +85,24 @@
                                             - {{ date('d-m-Y', strtotime($datas->company_mou_end)) }}
                                         </strong>
                                     </p>
-                                     <p class="fs--1 mb-1">
+                                    <p class="fs--1 mb-1">
                                         Status : <strong class="text-success">Available</strong>
                                     </p>
                                 </div>
                             </div>
                             <div class="d-flex flex-between-center px-3">
 
-                                    {{-- <a class="btn btn-sm btn-falcon-default me-2" href="#!" data-bs-toggle="tooltip"
+                                {{-- <a class="btn btn-sm btn-falcon-default me-2" href="#!" data-bs-toggle="tooltip"
                                         data-bs-placement="top" title="Add to Wish List"><span
                                             class="far fa-heart"></span></a> --}}
-                                    <a class="btn btn-sm btn-falcon-danger fs--2 text-youtube " href="#!" data-bs-toggle="modal"
-                                        data-bs-target="#modal-mcu-xl" id="button-proses-summary-check-up" data-code="{{$datas->company_mou_code}}" title="Proses Check Up"><span
-                                            class="fas fa-file"></span> Summary</a>
-                                    <a class="btn btn-sm btn-falcon-default fs--2 text-primary" href="#!" data-bs-toggle="modal"
-                                        data-bs-target="#modal-mcu" id="button-proses-check-up" data-code="{{$datas->company_mou_code}}" title="Proses Check Up"><span
-                                            class="fas fa-user-check"></span> Prosess</a>
+                                <a class="btn btn-sm btn-falcon-danger fs--2 text-youtube " href="#!"
+                                    data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
+                                    id="button-proses-summary-check-up" data-code="{{ $datas->company_mou_code }}"
+                                    title="Proses Check Up"><span class="fas fa-file"></span> Summary</a>
+                                <a class="btn btn-sm btn-falcon-default fs--2 text-primary" href="#!"
+                                    data-bs-toggle="modal" data-bs-target="#modal-mcu" id="button-proses-check-up"
+                                    data-code="{{ $datas->company_mou_code }}" title="Proses Check Up"><span
+                                        class="fas fa-user-check"></span> Prosess</a>
 
                             </div>
                         </div>
@@ -209,6 +214,27 @@
             );
             $.ajax({
                 url: "{{ route('medical_check_up_summary') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-mcu-xl').html(data);
+            }).fail(function() {
+                $('#menu-mcu-xl').html('eror');
+            });
+        });
+        $(document).on("click", "#button-proses-update-peserta-mcu", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-mcu-xl').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('medical_check_up_prosess_update') }}",
                 type: "POST",
                 cache: false,
                 data: {

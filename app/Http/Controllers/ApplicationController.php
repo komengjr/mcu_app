@@ -170,6 +170,21 @@ class ApplicationController extends Controller
             return redirect()->back()->withSuccess('Great! Berhasil Check In Peserta MCU');
         }
     }
+    public function medical_check_up_prosess_update(Request $request)
+    {
+        $data = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->first();
+        $pemeriksaan = DB::table('company_mou_agreement_sub')
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+            ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)->get();
+        $cabang = DB::table('master_cabang')->get();
+        return view('application.menu.mcu.form-proses-mcu-update', ['data' => $data, 'pemeriksaan' => $pemeriksaan, 'cabang' => $cabang]);
+    }
+    public function medical_check_up_prosess_update_save(Request $request){
+        DB::table('log_lokasi_pasien')->where('mou_peserta_code',$request->code)->update([
+            'lokasi_cabang'=>$request->cabang
+        ]);
+        return redirect()->back()->withSuccess('Great! Berhasil update Check In Peserta MCU');
+    }
     public function medical_check_up_summary(Request $request)
     {
         $mou = DB::table('company_mou')

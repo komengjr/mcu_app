@@ -16,10 +16,20 @@ class SignaturePadController extends Controller
     }
     public function sign($id)
     {
-        $data= DB::table('company_mou_peserta')
-        ->join('log_kehadiran_pasien','log_kehadiran_pasien.mou_peserta_code','=','company_mou_peserta.mou_peserta_code')
-        ->where('log_kehadiran_pasien_token',$id)->first();
-        return view('kehadiran.form-sign',['data'=>$data]);
+        $data = DB::table('company_mou_peserta')
+            ->join('log_kehadiran_pasien', 'log_kehadiran_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+            ->where('log_kehadiran_pasien_token', $id)
+            ->first();
+        if ($data) {
+            if ($data->log_kehadiran_pasien_status == 0) {
+                return view('kehadiran.form-sign', ['data' => $data]);
+                # code...
+            } else {
+                return view('kehadiran.done');
+            }
+        } else {
+            return 'absensi tidak ditemukan';
+        }
     }
 
     public function upload(Request $request)
@@ -34,11 +44,18 @@ class SignaturePadController extends Controller
         file_put_contents($file, $image_base64);
         return back()->with('success', 'success Full upload signature');
     }
-    public function update(Request $request){
-        DB::table('log_kehadiran_pasien')->where('log_kehadiran_pasien_token',$request->token)->update([
-            'log_kehadiran_pasien_sign'=>$request->signed,
-            'log_kehadiran_pasien_status'=>1,
-            'log_kehadiran_pasien_time'=>now(),
+    public function update(Request $request)
+    {
+        DB::table('log_kehadiran_pasien')->where('log_kehadiran_pasien_token', $request->token)->update([
+            'log_kehadiran_pasien_sign' => $request->signed,
+            'log_kehadiran_pasien_status' => 1,
+            'log_kehadiran_pasien_time' => now(),
+        ]);
+        DB::table('log_lokasi_pasien')->insert([
+            'mou_peserta_code' => $request->peserta,
+            'lokasi_cabang' => $request->cabang,
+            'log_lokasi_status' => 1,
+            'created_at' => now()
         ]);
         return back()->with('success', 'success Full upload signature');
     }

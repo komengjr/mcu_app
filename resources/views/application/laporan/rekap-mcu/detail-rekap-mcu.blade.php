@@ -223,7 +223,9 @@
          </div>
      </div>
      <div class="card-footer border-top text-end">
-         <a class="btn btn-falcon-default btn-sm ms-2" href="#!">Export PDF</a>
+         <a class="btn btn-falcon-default btn-sm ms-2" href="#!" data-bs-toggle="modal"
+             data-bs-target="#modal-mcu" id="button-detail-rekap-kehadiran-peserta"
+             data-code="{{ $data->company_mou_code }}">Export Kehadiran PDF</a>
      </div>
  </div>
  <script>

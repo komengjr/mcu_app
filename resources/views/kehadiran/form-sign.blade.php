@@ -164,6 +164,8 @@
                                                     </div>
                                                 </div>
                                                 <textarea id="signature64" name="signed" style="display: none" required></textarea>
+                                                <input type="text" name="cabang" value="{{ $data->log_kehadiran_pasien_lokasi }}" hidden>
+                                                <input type="text" name="peserta" value="{{ $data->mou_peserta_code }}" hidden>
                                                 <div class="col-md-12">
                                                     <button class="btn btn-danger d-block w-100 " type="submit"
                                                         name="submit">Register</button>

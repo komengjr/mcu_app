@@ -135,6 +135,8 @@ Route::prefix('application')->group(function () {
     // LAPORAN REKAP MCU
     Route::post('laporan-rekap-mcu/cari-data', [ApplicationController::class, 'laporan_rekap_mcu_cari_data'])->name('laporan_rekap_mcu_cari_data');
     Route::post('laporan-rekap-mcu/pilih-data', [ApplicationController::class, 'laporan_rekap_mcu_pilih_data'])->name('laporan_rekap_mcu_pilih_data');
+    Route::post('laporan-rekap-mcu/kehadiran-peserta-mcu', [ApplicationController::class, 'laporan_rekap_mcu_kehadiran_peserta_mcu'])->name('laporan_rekap_mcu_kehadiran_peserta_mcu');
+    Route::post('laporan-rekap-mcu/kehadiran-peserta-mcu/report', [ApplicationController::class, 'laporan_rekap_mcu_kehadiran_peserta_mcu_report'])->name('laporan_rekap_mcu_kehadiran_peserta_mcu_report');
 });
 
 Route::prefix('master-data')->group(function () {

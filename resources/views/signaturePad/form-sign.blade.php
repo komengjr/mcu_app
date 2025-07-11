@@ -80,6 +80,11 @@
         height: auto;
 
     }
+    #sig {
+        cursor: url('../../pin.png') 1 26, pointer;
+        border: 2px solid var(--primary-color);
+        border-radius: 4px;
+    }
 </style>
 
 <body>

@@ -85,6 +85,11 @@
         border: 2px solid var(--primary-color);
         border-radius: 4px;
     }
+    @media (pointer: coarse){
+        body{
+            overflow: hidden;
+        }
+    }
 </style>
 
 <body>

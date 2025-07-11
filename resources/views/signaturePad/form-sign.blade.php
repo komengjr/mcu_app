@@ -148,7 +148,7 @@
                                                     <a href="#" id="clear"
                                                         class="text-danger float-end">Clear
                                                         Signature</a>
-                                                    <div id="sig"></div>
+                                                    <div id="sig" style="position: fixed;"></div>
                                                 </div>
 
                                                 <div class="col-12">

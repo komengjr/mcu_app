@@ -19,7 +19,7 @@ class SignaturePadController extends Controller
         $data= DB::table('company_mou_peserta')
         ->join('log_kehadiran_pasien','log_kehadiran_pasien.mou_peserta_code','=','company_mou_peserta.mou_peserta_code')
         ->where('log_kehadiran_pasien_token',$id)->first();
-        return view('signaturepad.form-sign',['data'=>$data]);
+        return view('kehadiran.form-sign',['data'=>$data]);
     }
 
     public function upload(Request $request)

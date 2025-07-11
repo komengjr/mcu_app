@@ -80,13 +80,15 @@
         height: auto;
 
     }
+
     #sig {
         cursor: url('../../pin.png') 1 26, pointer;
         border: 2px solid var(--primary-color);
         border-radius: 4px;
     }
-    @media (pointer: coarse){
-        body{
+
+    @media (pointer: coarse) {
+        body {
             overflow: hidden;
         }
     }
@@ -116,7 +118,8 @@
 
                                         <div class="z-index-1 position-relative">
                                             <a class="link-light mb-4 font-sans-serif fs-4 d-inline-block fw-bolder"
-                                                href="#"><img src="{{ asset('img/pram.png') }}" alt=""></a>
+                                                href="#"><img src="{{ asset('img/pram.png') }}"
+                                                    alt=""></a>
                                             <p class="opacity-75 text-white">With the power of Falcon, you can now focus
                                                 only on functionaries for your digital products, while leaving the UI
                                                 design on us!</p>
@@ -129,37 +132,35 @@
                                         <h3>Peserta MCU</h3>
                                         <form method="POST" action="{{ route('signaturepad.update') }}">
                                             @csrf
-                                            <input type="text" name="token" value="{{$data->log_kehadiran_pasien_token}}" hidden>
+                                            <input type="text" name="token"
+                                                value="{{ $data->log_kehadiran_pasien_token }}" hidden>
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <label class="form-label" for="card-name">Nama Lengkap</label>
                                                     <input class="form-control" type="text" autocomplete="on"
-                                                        id="card-name" value="{{$data->mou_peserta_name}}" disabled />
+                                                        id="card-name" value="{{ $data->mou_peserta_name }}"
+                                                        disabled />
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label" for="card-email">Nomor Induk
                                                         Pegawai</label>
                                                     <input class="form-control" type="text" autocomplete="on"
-                                                        id="card-email" value="{{$data->mou_peserta_nip}}" disabled />
+                                                        id="card-email" value="{{ $data->mou_peserta_nip }}"
+                                                        disabled />
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label" for="card-email">Nomor Whatsapp</label>
                                                     <input class="form-control" type="text" autocomplete="on"
-                                                        value="{{$data->mou_peserta_no_hp}}" disabled />
+                                                        value="{{ $data->mou_peserta_no_hp }}" disabled />
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label" for="card-email">Email</label>
                                                     <input class="form-control" type="text" autocomplete="on"
-                                                        value="{{$data->mou_peserta_email}}" disabled/>
+                                                        value="{{ $data->mou_peserta_email }}" disabled />
                                                 </div>
                                                 <div class="position-relative mt-2">
                                                     <hr class="bg-300" />
                                                     <div class="divider-content-center">Sign Here</div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <a href="#" id="clear"
-                                                        class="text-danger float-end">Clear Signature</a>
-                                                    <div id="sig"></div>
                                                 </div>
 
                                                 <div class="col-12">
@@ -191,6 +192,11 @@
             </div>
         </div>
     </main>
+    <div class="col-md-12">
+        <a href="#" id="clear" class="text-danger float-end">Clear Signature</a>
+        <div id="sig"></div>
+    </div>
+
     <!-- ===============================================-->
     <!--    End of Main Content-->
     <!-- ===============================================-->

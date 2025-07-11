@@ -162,7 +162,11 @@
                                                     <hr class="bg-300" />
                                                     <div class="divider-content-center">Sign Here</div>
                                                 </div>
-
+                                                <div class="col-md-12">
+                                                    <a href="#" id="clear"
+                                                        class="text-danger float-end">Clear Signature</a>
+                                                    <div id="sig"></div>
+                                                </div>
                                                 <div class="col-12">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox"
@@ -192,10 +196,7 @@
             </div>
         </div>
     </main>
-    <div class="col-md-12">
-        <a href="#" id="clear" class="text-danger float-end">Clear Signature</a>
-        <div id="sig"></div>
-    </div>
+
 
     <!-- ===============================================-->
     <!--    End of Main Content-->

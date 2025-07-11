@@ -226,7 +226,7 @@
             var ch = (canvas.height = 200),
                 cy = ch / 2;
         }else{
-            var cw = (canvas.width = 500),
+            var cw = (canvas.width = 450),
                 cx = cw / 2;
             var ch = (canvas.height = 200),
                 cy = ch / 2;

@@ -34,7 +34,7 @@
     <link
         href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:300,400,500,600,700,800,900&amp;display=swap"
         rel="stylesheet">
-    {{-- <link href="{{ asset('vendors/overlayscrollbars/OverlayScrollbars.min.css') }}" rel="stylesheet"> --}}
+    <link href="{{ asset('vendors/overlayscrollbars/OverlayScrollbars.min.css') }}" rel="stylesheet">
     <link href="{{ asset('asset/css/theme-rtl.min.css') }}" rel="stylesheet" id="style-rtl">
     <link href="{{ asset('asset/css/theme.min.css') }}" rel="stylesheet" id="style-default">
     <link href="{{ asset('asset/css/user-rtl.min.css') }}" rel="stylesheet" id="user-style-rtl">
@@ -119,7 +119,7 @@
                                             @csrf
                                             <input type="text" name="token"
                                                 value="{{ $data->log_kehadiran_pasien_token }}" hidden>
-                                            <div class="row">
+                                            <div class="row g-3">
                                                 <div class="col-md-6">
                                                     <label class="form-label" for="card-name">Nama Lengkap</label>
                                                     <input class="form-control" type="text" autocomplete="on"
@@ -194,8 +194,8 @@
     <!-- ===============================================-->
     {{-- <script src="{{ asset('vendors/popper/popper.min.js') }}"></script> --}}
     <script src="{{ asset('vendors/bootstrap/bootstrap.min.js') }}"></script>
-    {{-- <script src="{{ asset('vendors/anchorjs/anchor.min.js') }}"></script> --}}
-    {{-- <script src="{{ asset('vendors/is/is.min.js') }}"></script> --}}
+    <script src="{{ asset('vendors/anchorjs/anchor.min.js') }}"></script>
+    <script src="{{ asset('vendors/is/is.min.js') }}"></script>
     <script src="{{ asset('vendors/fontawesome/all.min.js') }}"></script>
     <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
     <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
@@ -217,12 +217,20 @@
         });
     </script>
     <script>
+        const mediaQuery = window.matchMedia('(max-width: 668px)');
         var canvas = document.querySelector("canvas");
         var ctx = canvas.getContext("2d");
-        var cw = (canvas.width = 400),
-            cx = cw / 2;
-        var ch = (canvas.height = 200),
-            cy = ch / 2;
+        if (mediaQuery.matches) {
+            var cw = (canvas.width = 300),
+                cx = cw / 2;
+            var ch = (canvas.height = 200),
+                cy = ch / 2;
+        }else{
+            var cw = (canvas.width = 500),
+                cx = cw / 2;
+            var ch = (canvas.height = 200),
+                cy = ch / 2;
+        }
         ctx.strokeStyle = "#fff";
         var dibujando = false;
         var m = {

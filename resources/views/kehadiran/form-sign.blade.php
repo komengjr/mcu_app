@@ -66,31 +66,16 @@
     </script>
 </head>
 <style>
-    .kbw-signature {
+    /* .kbw-signature {
         width: 100%;
         height: 200px;
-    }
-
-    #sig canvas {
-        cursor: url('../../pin.png') 1 26, pointer;
-        border: 2px solid var(--primary-color);
-        border-radius: 4px;
-        width: 100% !important;
-
-        height: auto;
-
-    }
-
+    } */
     canvas {
         background-color: #000;
         display: block;
         margin: 0 auto;
-    }
-
-    @media (pointer: coarse) {
-        body {
-            overflow: hidden;
-        }
+        /* width: 100%; */
+        height: 200px;
     }
 </style>
 
@@ -236,7 +221,7 @@
         var ctx = canvas.getContext("2d");
         var cw = (canvas.width = 400),
             cx = cw / 2;
-        var ch = (canvas.height = 400),
+        var ch = (canvas.height = 200),
             cy = ch / 2;
         ctx.strokeStyle = "#fff";
         var dibujando = false;

@@ -248,5 +248,26 @@
                 $('#menu-mcu-xl').html('eror');
             });
         });
+        $(document).on("click", "#button-generate-barcode-kehadiran", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-absensi-kehadiran').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('medical_check_up_prosess_generate_absensi') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-absensi-kehadiran').html(data);
+            }).fail(function() {
+                $('#menu-absensi-kehadiran').html('eror');
+            });
+        });
     </script>
 @endsection

@@ -106,8 +106,8 @@ class ApplicationController extends Controller
         $cabang = DB::table('log_lokasi_pasien')
             ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
             ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
-            ->join('group_cabang_detail','group_cabang_detail.master_cabang_code','=','master_cabang.master_cabang_code')
-            ->join('group_cabang','group_cabang.group_cabang_code','=','group_cabang_detail.group_cabang_code')
+            ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'master_cabang.master_cabang_code')
+            ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
             ->where('company_mou_peserta.company_mou_code', $request->code)
             ->get()
             ->unique('lokasi_cabang');
@@ -120,8 +120,8 @@ class ApplicationController extends Controller
         $group = DB::table('log_lokasi_pasien')
             ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
             ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
-            ->join('group_cabang_detail','group_cabang_detail.master_cabang_code','=','master_cabang.master_cabang_code')
-            ->join('group_cabang','group_cabang.group_cabang_code','=','group_cabang_detail.group_cabang_code')
+            ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'master_cabang.master_cabang_code')
+            ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
             ->where('company_mou_peserta.company_mou_code', $request->code)
             ->get()->unique('group_cabang_code');
         return view('application.dashboard.monitoring.rekap-full', [
@@ -189,11 +189,32 @@ class ApplicationController extends Controller
         $cabang = DB::table('master_cabang')->get();
         return view('application.menu.mcu.form-proses-mcu-update', ['data' => $data, 'pemeriksaan' => $pemeriksaan, 'cabang' => $cabang]);
     }
-    public function medical_check_up_prosess_update_save(Request $request){
-        DB::table('log_lokasi_pasien')->where('mou_peserta_code',$request->code)->update([
-            'lokasi_cabang'=>$request->cabang
+    public function medical_check_up_prosess_update_save(Request $request)
+    {
+        DB::table('log_lokasi_pasien')->where('mou_peserta_code', $request->code)->update([
+            'lokasi_cabang' => $request->cabang
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil update Check In Peserta MCU');
+    }
+    public function medical_check_up_prosess_generate_absensi(Request $request)
+    {
+        $code = DB::table('log_kehadiran_pasien')->where('mou_peserta_code', $request->code)->first();
+        if ($code) {
+            $token = $code->log_kehadiran_pasien_token;
+        } else {
+            $token = str::uuid().'-'.Str::random(25);
+            DB::table('log_kehadiran_pasien')->insert([
+                'mou_peserta_code'=>$request->code,
+                'log_kehadiran_pasien_lokasi'=>Auth::user()->access_cabang,
+                'log_kehadiran_pasien_sign'=>'-',
+                'log_kehadiran_pasien_status'=>'0',
+                'log_kehadiran_pasien_token'=>$token,
+                'log_kehadiran_pasien_time'=>now(),
+                'created_at'=>now(),
+            ]);
+        }
+
+        return view('application.menu.mcu.generate-absensi-kehadiran',['token'=>$token]);
     }
     public function medical_check_up_summary(Request $request)
     {
@@ -882,8 +903,8 @@ class ApplicationController extends Controller
         $cabang = DB::table('log_lokasi_pasien')
             ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
             ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
-            ->join('group_cabang_detail','group_cabang_detail.master_cabang_code','=','master_cabang.master_cabang_code')
-            ->join('group_cabang','group_cabang.group_cabang_code','=','group_cabang_detail.group_cabang_code')
+            ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'master_cabang.master_cabang_code')
+            ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
             ->where('company_mou_peserta.company_mou_code', $request->perusahaan)
             ->get()
             ->unique('lokasi_cabang');
@@ -897,8 +918,8 @@ class ApplicationController extends Controller
         $group = DB::table('log_lokasi_pasien')
             ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
             ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
-            ->join('group_cabang_detail','group_cabang_detail.master_cabang_code','=','master_cabang.master_cabang_code')
-            ->join('group_cabang','group_cabang.group_cabang_code','=','group_cabang_detail.group_cabang_code')
+            ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'master_cabang.master_cabang_code')
+            ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
             ->where('company_mou_peserta.company_mou_code', $request->perusahaan)
             ->get()->unique('group_cabang_code');
         return view('application.laporan.rekap-mcu.detail-rekap-mcu', [

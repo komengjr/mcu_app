@@ -4,6 +4,7 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\MasterController;
+use App\Http\Controllers\SignaturePadController;
 use App\Http\Controllers\UploadFileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -67,6 +68,7 @@ Route::prefix('application')->group(function () {
     Route::post('medical-check-up/prosess-save', [ApplicationController::class, 'medical_check_up_prosess_save'])->name('medical_check_up_prosess_save');
     Route::post('medical-check-up/prosess-update', [ApplicationController::class, 'medical_check_up_prosess_update'])->name('medical_check_up_prosess_update');
     Route::post('medical-check-up/prosess-update-save', [ApplicationController::class, 'medical_check_up_prosess_update_save'])->name('medical_check_up_prosess_update_save');
+    Route::post('medical-check-up/prosess-generate-absensi', [ApplicationController::class, 'medical_check_up_prosess_generate_absensi'])->name('medical_check_up_prosess_generate_absensi');
     Route::post('medical-check-up/summary', [ApplicationController::class, 'medical_check_up_summary'])->name('medical_check_up_summary');
     Route::post('medical-check-up/summary-save-persentasi', [ApplicationController::class, 'medical_check_up_summary_save_persentasi'])->name('medical_check_up_summary_save_persentasi');
     Route::post('medical-check-up/summary-save-executive', [ApplicationController::class, 'medical_check_up_summary_save_executive'])->name('medical_check_up_summary_save_executive');
@@ -155,3 +157,10 @@ Route::prefix('master-data')->group(function () {
 Route::post('file-upload/upload-file-persentasi', [UploadFileController::class, 'upload_persentasi'])->name('file-upload.data_persentasi');
 Route::post('file-upload/upload-file-executive', [UploadFileController::class, 'upload_executive'])->name('file-upload.data_executive');
 Route::post('file-upload/upload-file-healty-talk', [UploadFileController::class, 'upload_healty_talk'])->name('file-upload.data_healty_talk');
+
+
+Route::get('signaturepad', [SignaturePadController::class, 'index']);
+Route::get('signaturepad/data-kehadiran-mcu/detail/{id}', [SignaturePadController::class, 'sign']);
+
+Route::post('signaturepad', [SignaturePadController::class, 'upload'])->name('signaturepad.upload');
+Route::post('signaturepad-update', [SignaturePadController::class, 'update'])->name('signaturepad.update');

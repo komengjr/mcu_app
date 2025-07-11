@@ -6,7 +6,7 @@
     </div>
 
     <div class="card-body p-3">
-        <div class="card border border-primary">
+        <div class="card border border-primary" id="menu-absensi-kehadiran">
             <form class="row g-3 p-4" action="{{ route('medical_check_up_prosess_save') }}" method="post"
                 enctype="multipart/form-data">
                 @csrf
@@ -53,6 +53,8 @@
                     </select>
                 </div>
                 <div class="col-12 pt-3">
+                      <button class="btn btn-dark btn-sm" id="button-generate-barcode-kehadiran" data-code="{{$data->mou_peserta_code}}"><span
+                            class="far fa-chart-bar"></span> Generate Barcode Kehadiran</button>
                     <button class="btn btn-primary btn-sm float-end" type="submit"><span
                             class="far fa-chart-bar"></span> Check
                         In</button>

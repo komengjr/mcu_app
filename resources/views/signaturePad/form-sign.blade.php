@@ -72,7 +72,9 @@
     }
 
     #sig canvas {
-
+        cursor: url('../../pin.png') 1 26, pointer;
+        border: 2px solid var(--primary-color);
+        border-radius: 4px;
         width: 100% !important;
 
         height: auto;
@@ -146,9 +148,8 @@
                                                 </div>
                                                 <div class="col-md-12">
                                                     <a href="#" id="clear"
-                                                        class="text-danger float-end">Clear
-                                                        Signature</a>
-                                                    <div id="sig" style="position: fixed;"></div>
+                                                        class="text-danger float-end">Clear Signature</a>
+                                                    <div id="sig"></div>
                                                 </div>
 
                                                 <div class="col-12">

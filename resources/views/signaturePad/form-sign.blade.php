@@ -202,7 +202,7 @@
             syncField: '#signature64',
             syncFormat: 'PNG'
         });
-        document.getElementById("sig").autofocus;
+        sig.focus();
         $('#clear').click(function(e) {
 
             e.preventDefault();

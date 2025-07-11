@@ -31,11 +31,8 @@
         }
 
         #sig canvas {
-
             width: 100% !important;
-
             height: auto;
-
         }
     </style>
 

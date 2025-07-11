@@ -51,12 +51,15 @@ class SignaturePadController extends Controller
             'log_kehadiran_pasien_status' => 1,
             'log_kehadiran_pasien_time' => now(),
         ]);
-        DB::table('log_lokasi_pasien')->insert([
-            'mou_peserta_code' => $request->peserta,
-            'lokasi_cabang' => $request->cabang,
-            'log_lokasi_status' => 1,
-            'created_at' => now()
-        ]);
+        $cek = DB::table('log_lokasi_pasien')->where('mou_peserta_code', $request->peserta)->first();
+        if (!$cek) {
+            DB::table('log_lokasi_pasien')->insert([
+                'mou_peserta_code' => $request->peserta,
+                'lokasi_cabang' => $request->cabang,
+                'log_lokasi_status' => 1,
+                'created_at' => now()
+            ]);
+        }
         return back()->with('success', 'success Full upload signature');
     }
 }

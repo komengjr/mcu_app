@@ -940,8 +940,8 @@ class ApplicationController extends Controller
             ->where('company_mou.company_mou_code', $request->code)->first();
         $peserta = DB::table('company_mou_peserta')->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->where('company_mou_peserta.company_mou_code', $request->code)->get();
-        $image = base64_encode(file_get_contents(public_path('img/sima.jpeg')));
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.laporan.rekap-mcu.report.report-kehadiran', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A3', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);
+        $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.laporan.rekap-mcu.report.report-kehadiran', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A4', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);
         $pdf->output();
         $dompdf = $pdf->getDomPDF();
         $font = $dompdf->getFontMetrics()->get_font("helvetica", "bold");

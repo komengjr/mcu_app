@@ -120,7 +120,7 @@
     table th {
         white-space: nowrap;
         font-weight: normal;
-        background: #373332;
+        background: #b90303;
         color: white;
     }
 
@@ -227,19 +227,19 @@
 
 
 <body>
-    {{-- <header class="clearfix">
+    <header class="clearfix">
         <div id="logo">
             <img src="data:image/png;base64, {{ $image }}">
         </div>
         <div id="company">
-            <div id="no_surat">{{ $no }}</div>
-            <br>
-            <h2 class="name">{{ $cabang->nama_cabang }}</h2>
-            <div>{{ $cabang->alamat }}</div>
-            <div>{{ $cabang->phone }}</div>
+            {{-- <div id="no_surat">123</div>
+            <br> --}}
+            <h2 class="name">DAFTAR HADIR PESERTA MCU</h2>
+            {{-- <div>123</div> --}}
+            <div>123</div>
         </div>
         </div>
-    </header> --}}
+    </header>
     <main>
         <div id="details" class="clearfix">
             <div id="client">
@@ -272,19 +272,17 @@
             <thead style="font-size: 11px;">
                 <tr>
                     <th>No</th>
-                    <th>Nama Peserta</th>
+                    <th>NIP</th>
                     <th>NIK</th>
-                    <th>TTL</th>
+                    <th>Nama Peserta</th>
+                    <th>Tanggal Lahir</th>
                     <th>Jenis Kelamin</th>
                     <th>Email</th>
                     <th>No HP</th>
-                    <th>NIP</th>
                     <th>Departemen</th>
                     <th>Lokasi Kota</th>
                     <th>Lokasi Cabang MCU</th>
-                    <th>Status Pemeriksaan</th>
-                    <th>Status Konsultasi</th>
-                    <th>Status Pengiriman Hasil</th>
+                    <
                     <th>Tanda Tangan Kehadiran</th>
                 </tr>
             </thead>
@@ -295,8 +293,9 @@
                 @foreach ($peserta as $pesertas)
                     <tr>
                         <td>{{ $no++ }}</td>
-                        <td>{{ $pesertas->mou_peserta_name }}</td>
+                        <td>{{ $pesertas->mou_peserta_nip }}</td>
                         <td>{{ $pesertas->mou_peserta_nik }}</td>
+                        <td>{{ $pesertas->mou_peserta_name }}</td>
                         <td>{{ $pesertas->mou_peserta_ttl }}</td>
                         <td>
                             @if ($pesertas->mou_peserta_jk == 'L')
@@ -307,7 +306,6 @@
                         </td>
                         <td>{{ $pesertas->mou_peserta_email }}</td>
                         <td>{{ $pesertas->mou_peserta_no_hp }}</td>
-                        <td>{{ $pesertas->mou_peserta_nip }}</td>
                         <td>{{ $pesertas->mou_peserta_departemen }}</td>
                         <td>
                             @php
@@ -332,60 +330,7 @@
                             @else
                             @endif
                         </td>
-                        <td>
-                            @php
-                                $pemeriksaan = DB::table('company_mou_pemeriksaan')
-                                    ->join(
-                                        'master_pemeriksaan',
-                                        'master_pemeriksaan.master_pemeriksaan_code',
-                                        '=',
-                                        'company_mou_pemeriksaan.master_pemeriksaan_code',
-                                    )
-                                    ->where('company_mou_pemeriksaan.company_mou_code', $pesertas->company_mou_code)
-                                    ->get();
-                            @endphp
-                            @foreach ($pemeriksaan as $pem)
-                                @php
-                                    $check = DB::table('log_pemeriksaan_pasien')
-                                        ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
-                                        ->where('mou_peserta_code', $pesertas->mou_peserta_code)
-                                        ->first();
-                                @endphp
-                                <ul>
-                                    @if ($check)
-                                        <li>{{ $pem->master_pemeriksaan_name }} <strong
-                                                style="color: rgb(24, 199, 82)">( Selesai )</strong></li>
-                                    @else
-                                        <li>{{ $pem->master_pemeriksaan_name }} <strong
-                                                style="color: rgb(199, 27, 24)">( Belum Selesai )</strong></li>
-                                    @endif
-                                </ul>
-                            @endforeach
-                        </td>
-                        <td>
-                            @php
-                                $konsul = DB::table('log_konsultasi_pasien')
-                                    ->where('mou_peserta_code', $pesertas->mou_peserta_code)
-                                    ->first();
-                            @endphp
-                            @if ($konsul)
-                                <strong style="color: rgb(24, 199, 82)">Selesai</strong>
-                            @else
-                                <strong style="color: rgb(199, 27, 24)">Belum Selesai</strong>
-                            @endif
-                        </td>
-                        <td>
-                            @php
-                                $pengiriman = DB::table('log_pengiriman_pasien')
-                                    ->where('mou_peserta_code', $pesertas->mou_peserta_code)
-                                    ->first();
-                            @endphp
-                            @if ($pengiriman)
-                                <strong style="color: rgb(24, 199, 82)">Selesai</strong>
-                            @else
-                                <strong style="color: rgb(199, 27, 24)">Belum Selesai</strong>
-                            @endif
-                        </td>
+
                         <td style="text-align: center;">
                              @php
                                 $ttd = DB::table('log_kehadiran_pasien')
@@ -394,7 +339,8 @@
                                     ->first();
                             @endphp
                             @if ($ttd)
-                                <img src="<?php echo $ttd->log_kehadiran_pasien_sign ?>" width="50">
+                                <img src="<?php echo $ttd->log_kehadiran_pasien_sign ?>" width="50"> <br>
+                                {{$ttd->log_kehadiran_pasien_time}}
                             @else
                                 <strong style="color: rgb(199, 27, 24)">Belum</strong>
                             @endif

@@ -101,6 +101,9 @@ Route::prefix('application')->group(function () {
     Route::post('mou-company/insert-pemeriksaan-mcu/insert', [ApplicationController::class, 'mou_company_insert_pemeriksaan_mcu_insert'])->name('mou_company_insert_pemeriksaan_mcu_insert');
     Route::post('mou-company/activasi-mou', [ApplicationController::class, 'mou_company_activasi_mou'])->name('mou_company_activasi_mou');
     Route::post('mou-company/activasi-mou/save', [ApplicationController::class, 'mou_company_activasi_mou_save'])->name('mou_company_activasi_mou_save');
+    Route::post('mou-company/generate-absesnsi-mou', [ApplicationController::class, 'mou_company_generetae_absesnsi_mcu'])->name('mou_company_generetae_absesnsi_mcu');
+    Route::post('mou-company/generate-absesnsi-mou/report', [ApplicationController::class, 'mou_company_generetae_absesnsi_mcu_report'])->name('mou_company_generetae_absesnsi_mcu_report');
+    Route::post('mou-company/sinkronisasi/nik-nip', [ApplicationController::class, 'mou_company_sinkronisasi_nik_nip'])->name('mou_company_sinkronisasi_nik_nip');
     // AGREMENT
     Route::post('agreement-perusahaan/add', [ApplicationController::class, 'agreement_perusahaan_add'])->name('agreement_perusahaan_add');
     Route::post('agreement-perusahaan/save', [ApplicationController::class, 'agreement_perusahaan_save'])->name('agreement_perusahaan_save');
@@ -163,6 +166,9 @@ Route::post('file-upload/upload-file-healty-talk', [UploadFileController::class,
 
 Route::get('signaturepad', [SignaturePadController::class, 'index']);
 Route::get('signaturepad/data-kehadiran-mcu/detail/{id}', [SignaturePadController::class, 'sign']);
+Route::get('absensi/data-kehadiran-mcu/perusahaan/{id}', [SignaturePadController::class, 'sign_perusahaan']);
+Route::post('absensi/data-kehadiran-mcu/perusahaan/cari-peserta/data', [SignaturePadController::class, 'cari_data_peserta'])->name('cari_data_absensi_peserta_mcu');
 
 Route::post('signaturepad', [SignaturePadController::class, 'upload'])->name('signaturepad.upload');
 Route::post('signaturepad-update', [SignaturePadController::class, 'update'])->name('signaturepad.update');
+Route::post('signaturepad-update-save', [SignaturePadController::class, 'save_signiture'])->name('signaturepad.save_signiture');

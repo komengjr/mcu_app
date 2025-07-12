@@ -202,19 +202,19 @@ class ApplicationController extends Controller
         if ($code) {
             $token = $code->log_kehadiran_pasien_token;
         } else {
-            $token = str::uuid().'-'.Str::random(25);
+            $token = str::uuid() . '-' . Str::random(25);
             DB::table('log_kehadiran_pasien')->insert([
-                'mou_peserta_code'=>$request->code,
-                'log_kehadiran_pasien_lokasi'=>Auth::user()->access_cabang,
-                'log_kehadiran_pasien_sign'=>'-',
-                'log_kehadiran_pasien_status'=>'0',
-                'log_kehadiran_pasien_token'=>$token,
-                'log_kehadiran_pasien_time'=>now(),
-                'created_at'=>now(),
+                'mou_peserta_code' => $request->code,
+                'log_kehadiran_pasien_lokasi' => Auth::user()->access_cabang,
+                'log_kehadiran_pasien_sign' => '-',
+                'log_kehadiran_pasien_status' => '0',
+                'log_kehadiran_pasien_token' => $token,
+                'log_kehadiran_pasien_time' => now(),
+                'created_at' => now(),
             ]);
         }
 
-        return view('application.menu.mcu.generate-absensi-kehadiran',['token'=>$token]);
+        return view('application.menu.mcu.generate-absensi-kehadiran', ['token' => $token]);
     }
     public function medical_check_up_summary(Request $request)
     {
@@ -614,6 +614,49 @@ class ApplicationController extends Controller
             return redirect()->back()->withError('Gagal! Peserta dan Pemilihan Paket TIdak Boleh Kosong');
         }
     }
+    public function mou_company_generetae_absesnsi_mcu(Request $request)
+    {
+        $cek = DB::table('company_mou_peserta_token_absensi')->where('company_mou_code', $request->code)->first();
+        if ($cek) {
+            return view('application.master-data.mou-company.form-generate-absensi', ['code' => $cek->company_mou_token_code]);
+        } else {
+            $code = $request->code . '-' . str::uuid();
+            DB::table('company_mou_peserta_token_absensi')->insert([
+                'company_mou_token_code' => $code,
+                'company_mou_code' => $request->code,
+                'company_mou_token_link' => $request->code,
+                'company_mou_token_status' => 1,
+                'created_at' => now()
+            ]);
+            return view('application.master-data.mou-company.form-generate-absensi', ['code' => $code]);
+        }
+
+    }
+    public function mou_company_generetae_absesnsi_mcu_report(Request $request)
+    {
+        // $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+        //     ->where('company_mou.company_mou_code', $request->code)->first();
+        // $peserta = DB::table('company_mou_peserta')->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+        //     ->where('company_mou_peserta.company_mou_code', $request->code)->get();
+        $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.master-data.mou-company.report.form-absensi-mcu', ['data' => 123], compact('image'))->setPaper('A4', 'potrait')->setOptions(['defaultFont' => 'Helvetica']);
+        $pdf->output();
+        $dompdf = $pdf->getDomPDF();
+        $font = $dompdf->getFontMetrics()->get_font("helvetica", "bold");
+        $font1 = $dompdf->getFontMetrics()->get_font("helvetica", "normal");
+        $dompdf->get_canvas()->page_text(300, 820, "{PAGE_NUM} / {PAGE_COUNT}", $font, 10, array(0, 0, 0));
+        // $dompdf->get_canvas()->page_text(34, 820, "Print by. " . Auth::user()->fullname, $font1, 10, array(0, 0, 0));
+        return base64_encode($pdf->stream());
+    }
+    public function mou_company_sinkronisasi_nik_nip(Request $request){
+        $data = DB::table('company_mou_peserta')->where('company_mou_code',$request->code)->get();
+        foreach ($data as $value) {
+            DB::table('company_mou_peserta')->where('mou_peserta_code',$value->mou_peserta_code)->update([
+                'mou_peserta_nip'=>$value->mou_peserta_nik
+            ]);
+        }
+        return 'Sukses';
+    }
 
     // AGREEMENT PERUSAHAAN
     public function agreement_perusahaan($akses)
@@ -931,8 +974,9 @@ class ApplicationController extends Controller
             'group' => $group,
         ]);
     }
-    public function laporan_rekap_mcu_kehadiran_peserta_mcu(Request $request){
-        return view('application.laporan.rekap-mcu.form-kehadiran-mcu',['code'=>$request->code]);
+    public function laporan_rekap_mcu_kehadiran_peserta_mcu(Request $request)
+    {
+        return view('application.laporan.rekap-mcu.form-kehadiran-mcu', ['code' => $request->code]);
     }
     public function laporan_rekap_mcu_kehadiran_peserta_mcu_report(Request $request)
     {

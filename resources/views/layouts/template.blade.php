@@ -26,7 +26,7 @@
     <meta name="theme-color" content="#ffffff">
     <script src="{{ asset('asset/js/config.js') }}"></script>
     <script src="{{ asset('vendors/overlayscrollbars/OverlayScrollbars.min.js') }}"></script>
-
+    <link rel="stylesheet" href="{{ asset('asset/notifications/css/lobibox.min.css') }}" />
 
     <!-- ===============================================-->
     <!--    Stylesheets-->
@@ -94,8 +94,8 @@
 
                     </div><a class="navbar-brand" href="#">
                         <div class="d-flex align-items-center py-3"><img class="me-2"
-                                src="{{ asset('img/pram.png') }}" alt=""
-                                width="85" /><span class="font-sans-serif fs-2 text-youtube">MCU</span>
+                                src="{{ asset('img/pram.png') }}" alt="" width="85" /><span
+                                class="font-sans-serif fs-2 text-youtube">MCU</span>
                         </div>
                     </a>
                 </div>
@@ -245,9 +245,8 @@
                         aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span
                                 class="toggle-line"></span></span></button>
                     <a class="navbar-brand me-1 me-sm-3" href="#">
-                        <div class="d-flex align-items-center"><img class="me-2"
-                                src="{{ asset('img/pram.png') }}" alt=""
-                                width="80" /><span class="font-sans-serif text-youtube">MCU</span>
+                        <div class="d-flex align-items-center"><img class="me-2" src="{{ asset('img/pram.png') }}"
+                                alt="" width="80" /><span class="font-sans-serif text-youtube">MCU</span>
                         </div>
                     </a>
                     <ul class="navbar-nav align-items-center d-none d-lg-block">
@@ -294,10 +293,12 @@
                                     value="dark" />
                                 <label class="mb-0 theme-control-toggle-label theme-control-toggle-light"
                                     for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left"
-                                    title="Switch to light theme"><span class="fas fa-sun fs-0 text-danger"></span></label>
+                                    title="Switch to light theme"><span
+                                        class="fas fa-sun fs-0 text-danger"></span></label>
                                 <label class="mb-0 theme-control-toggle-label theme-control-toggle-dark"
                                     for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left"
-                                    title="Switch to dark theme"><span class="fas fa-moon fs-0 text-danger"></span></label>
+                                    title="Switch to dark theme"><span
+                                        class="fas fa-moon fs-0 text-danger"></span></label>
                             </div>
                         </li>
                         {{-- <li class="nav-item">
@@ -626,6 +627,7 @@
     <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
     <script src="{{ asset('asset/js/theme.js') }}"></script>
     <script src="{{ asset('online/resumable.min.js') }}"></script>
+    <script src="{{ asset('asset/notifications/js/notifications.min.js') }}"></script>
     @yield('base.js')
 
 

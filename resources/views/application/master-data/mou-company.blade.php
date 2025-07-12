@@ -83,10 +83,12 @@
                             <td>{{ $datas->company_mou_start }} <br>{{ $datas->company_mou_end }}</td>
                             <td>
                                 @php
-                                    $agreement = DB::table('company_mou_agreement')->where('company_mou_code',$datas->company_mou_code)->get();
+                                    $agreement = DB::table('company_mou_agreement')
+                                        ->where('company_mou_code', $datas->company_mou_code)
+                                        ->get();
                                 @endphp
                                 @foreach ($agreement as $item)
-                                    <li>{{$item->mou_agreement_name}}</li>
+                                    <li>{{ $item->mou_agreement_name }}</li>
                                 @endforeach
                             </td>
                             <td>
@@ -123,6 +125,12 @@
                                             data-code="{{ $datas->company_mou_code }}">
                                             <span class="fab fa-galactic-republic"></span>
                                             Aktivasi MOU</button>
+                                        <div class="dropdown-divider"></div>
+                                        <button class="dropdown-item text-success" data-bs-toggle="modal"
+                                            data-bs-target="#modal-company-lg" id="button-generate-absensi-mou"
+                                            data-code="{{ $datas->company_mou_code }}">
+                                            <span class="fas fa-qrcode"></span>
+                                            Generate Absensi</button>
                                     </div>
                                 </div>
                             </td>
@@ -384,6 +392,74 @@
                 $('#menu-metode-insert').html(data);
             }).fail(function() {
                 $('#menu-metode-insert').html('eror');
+            });
+        });
+
+        $(document).on("click", "#button-generate-absensi-mou", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-company-lg').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('mou_company_generetae_absesnsi_mcu') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-company-lg').html(data);
+            }).fail(function() {
+                $('#menu-company-lg').html('eror');
+            });
+        });
+        $(document).on("click", "#button-report-absensi-mcu", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-report-absensi-mcu').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('mou_company_generetae_absesnsi_mcu_report') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-report-absensi-mcu').html(
+                    '<iframe src="data:application/pdf;base64, ' +
+                    data +
+                    '" style="width:100%; height:533px;" frameborder="0"></iframe>');
+            }).fail(function() {
+                $('#menu-report-absensi-mcu').html('eror');
+            });
+        });
+        $(document).on("click", "#button-sinkron-nip-nik", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-nik-nip').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('mou_company_sinkronisasi_nik_nip') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-nik-nip').html(data);
+                location.reload();
+            }).fail(function() {
+                $('#menu-nik-nip').html('eror');
             });
         });
     </script>

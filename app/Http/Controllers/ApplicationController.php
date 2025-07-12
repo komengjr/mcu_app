@@ -77,6 +77,22 @@ class ApplicationController extends Controller
             ->where('company_mou_peserta.company_mou_code', $request->code)->get();
         return view('application.dashboard.monitoring.data-peserta-mcu', ['data' => $data, 'peserta' => $peserta]);
     }
+    public function monitoring_mcu_detail_belum(Request $request)
+    {
+        $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou.company_mou_code', $request->code)->first();
+        $peserta = DB::table('company_mou_peserta')->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->where('company_mou_peserta.company_mou_code', $request->code)->get();
+        return view('application.dashboard.monitoring.data-peserta-mcu-belum', ['data' => $data, 'peserta' => $peserta]);
+    }
+    public function monitoring_mcu_detail_sudah(Request $request)
+    {
+        $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou.company_mou_code', $request->code)->first();
+        $peserta = DB::table('company_mou_peserta')->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->where('company_mou_peserta.company_mou_code', $request->code)->get();
+        return view('application.dashboard.monitoring.data-peserta-mcu-sudah', ['data' => $data, 'peserta' => $peserta]);
+    }
     public function monitoring_mcu_rekap(Request $request)
     {
         $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')

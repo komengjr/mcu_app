@@ -10,7 +10,7 @@
             <div class="card bg-200 shadow border border-danger">
                 <div class="row gx-0 flex-between-center">
                     <div class="col-sm-auto d-flex align-items-center border-bottom">
-                        <img class="ms-3 mx-3" src="{{ asset('img/company.png') }}" alt="" width="50" />
+                        <img class="ms-3 mx-3 m-2" src="{{ asset('img/company.png') }}" alt="" width="50" />
                         <div>
                             <h6 class="text-danger fs--1 mb-0 pt-2">Welcome to </h6>
                             <h4 class="text-danger fw-bold mb-1">MCU <span class="text-danger fw-medium">Management
@@ -122,10 +122,15 @@
                                                                 </p>
                                                             </div>
                                                             <div class="col">
-                                                                <h5 class="fs--1 fs-md-1 text-warning mb-0">
-                                                                    {{ $totalmcu }}
-                                                                    Peserta
-                                                                </h5>
+                                                                <a href="#" id="button-sudah-mcu"
+                                                                    data-code="{{ $datas->company_mou_code }}"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#modal-monitoring">
+                                                                    <h5 class="fs--1 fs-md-1 text-warning mb-0">
+                                                                        {{ $totalmcu }}
+                                                                        Peserta
+                                                                    </h5>
+                                                                </a>
                                                             </div>
                                                         </div>
                                                         <div class="row">
@@ -135,10 +140,15 @@
                                                                 </p>
                                                             </div>
                                                             <div class="col">
-                                                                <h5 class="fs--1 fs-md-1 text-warning mb-0">
-                                                                    {{ $total - $totalmcu }}
-                                                                    Peserta
-                                                                </h5>
+                                                                <a href="#" id="button-belum-mcu"
+                                                                    data-code="{{ $datas->company_mou_code }}"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#modal-monitoring">
+                                                                    <h5 class="fs--1 fs-md-1 text-warning mb-0">
+                                                                        {{ $total - $totalmcu }}
+                                                                        Peserta
+                                                                    </h5>
+                                                                </a>
                                                             </div>
                                                         </div>
                                                         <div class="row">
@@ -264,6 +274,48 @@
             );
             $.ajax({
                 url: "{{ route('monitoring_mcu_detail') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-monitoring').html(data);
+            }).fail(function() {
+                $('#menu-monitoring').html('eror');
+            });
+        });
+        $(document).on("click", "#button-belum-mcu", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-monitoring').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('monitoring_mcu_detail_belum') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-monitoring').html(data);
+            }).fail(function() {
+                $('#menu-monitoring').html('eror');
+            });
+        });
+        $(document).on("click", "#button-sudah-mcu", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-monitoring').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('monitoring_mcu_detail_sudah') }}",
                 type: "POST",
                 cache: false,
                 data: {

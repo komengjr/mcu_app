@@ -10,10 +10,9 @@
                     <div class="col">
                         <h4 class="mb-0"><span class="badge bg-danger">REKAP PROJECT</span></h4>
                     </div>
-                    <div class="col-auto"><a class="btn btn-falcon-danger btn-sm" href="#!"
-                            id="button-cari-project" data-bs-toggle="modal" data-bs-target="#modal-laporan-lg"><span
-                                class="fas fa-search"></span>
-                            Cari Data Project</a></div>
+                    <div class="col-auto">
+
+                    </div>
                 </div>
             </div>
             <div class="card-body bg-light border-top">

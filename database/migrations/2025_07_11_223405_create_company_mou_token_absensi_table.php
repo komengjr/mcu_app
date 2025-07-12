@@ -15,7 +15,7 @@ class CreateCompanyMouTokenAbsensiTable extends Migration
     {
         Schema::create('company_mou_peserta_token_absensi', function (Blueprint $table) {
             $table->id('id_token_absensi');
-            $table->Text('company_mou_token_code')->unique();
+            $table->string('company_mou_token_code')->unique();
             $table->string('company_mou_code');
             $table->string('company_mou_token_link');
             $table->string('company_mou_token_status');

@@ -283,7 +283,7 @@
                     <th>Lokasi Kota</th>
                     <th>Lokasi Cabang MCU</th>
                     <
-                    <th>Tanda Tangan Kehadiran</th>
+                    <th>Tanda Tangan</th>
                 </tr>
             </thead>
             <tbody id="invoiceItems" style="font-size: 10px;">

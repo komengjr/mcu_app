@@ -634,12 +634,11 @@ class ApplicationController extends Controller
     }
     public function mou_company_generetae_absesnsi_mcu_report(Request $request)
     {
-        // $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
-        //     ->where('company_mou.company_mou_code', $request->code)->first();
-        // $peserta = DB::table('company_mou_peserta')->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
-        //     ->where('company_mou_peserta.company_mou_code', $request->code)->get();
+        $data = DB::table('company_mou_peserta_token_absensi')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta_token_absensi.company_mou_code')
+            ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')->first();
         $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.master-data.mou-company.report.form-absensi-mcu', ['data' => 123], compact('image'))->setPaper('A4', 'potrait')->setOptions(['defaultFont' => 'Helvetica']);
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.master-data.mou-company.report.form-absensi-mcu', ['data' => $data], compact('image'))->setPaper('A4', 'potrait')->setOptions(['defaultFont' => 'Helvetica']);
         $pdf->output();
         $dompdf = $pdf->getDomPDF();
         $font = $dompdf->getFontMetrics()->get_font("helvetica", "bold");
@@ -648,11 +647,12 @@ class ApplicationController extends Controller
         // $dompdf->get_canvas()->page_text(34, 820, "Print by. " . Auth::user()->fullname, $font1, 10, array(0, 0, 0));
         return base64_encode($pdf->stream());
     }
-    public function mou_company_sinkronisasi_nik_nip(Request $request){
-        $data = DB::table('company_mou_peserta')->where('company_mou_code',$request->code)->get();
+    public function mou_company_sinkronisasi_nik_nip(Request $request)
+    {
+        $data = DB::table('company_mou_peserta')->where('company_mou_code', $request->code)->get();
         foreach ($data as $value) {
-            DB::table('company_mou_peserta')->where('mou_peserta_code',$value->mou_peserta_code)->update([
-                'mou_peserta_nip'=>$value->mou_peserta_nik
+            DB::table('company_mou_peserta')->where('mou_peserta_code', $value->mou_peserta_code)->update([
+                'mou_peserta_nip' => $value->mou_peserta_nik
             ]);
         }
         return 'Sukses';
@@ -976,13 +976,34 @@ class ApplicationController extends Controller
     }
     public function laporan_rekap_mcu_kehadiran_peserta_mcu(Request $request)
     {
-        return view('application.laporan.rekap-mcu.form-kehadiran-mcu', ['code' => $request->code]);
+        $group = DB::table('group_cabang')->get();
+        return view('application.laporan.rekap-mcu.form-kehadiran-mcu', ['code' => $request->code, 'group' => $group]);
     }
     public function laporan_rekap_mcu_kehadiran_peserta_mcu_report(Request $request)
     {
         $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
             ->where('company_mou.company_mou_code', $request->code)->first();
         $peserta = DB::table('company_mou_peserta')->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->where('company_mou_peserta.company_mou_code', $request->code)->get();
+        $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.laporan.rekap-mcu.report.report-kehadiran', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A4', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);
+        $pdf->output();
+        $dompdf = $pdf->getDomPDF();
+        $font = $dompdf->getFontMetrics()->get_font("helvetica", "bold");
+        $font1 = $dompdf->getFontMetrics()->get_font("helvetica", "normal");
+        $dompdf->get_canvas()->page_text(300, 820, "{PAGE_NUM} / {PAGE_COUNT}", $font, 10, array(0, 0, 0));
+        $dompdf->get_canvas()->page_text(34, 820, "Print by. " . Auth::user()->fullname, $font1, 10, array(0, 0, 0));
+        return base64_encode($pdf->stream());
+    }
+    public function laporan_rekap_mcu_kehadiran_peserta_mcu_report_group(Request $request)
+    {
+        $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou.company_mou_code', $request->code)->first();
+        $peserta = DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->join('log_lokasi_pasien','log_lokasi_pasien.mou_peserta_code','=','company_mou_peserta.mou_peserta_code')
+            ->join('group_cabang_detail','group_cabang_detail.master_cabang_code','=','log_lokasi_pasien.lokasi_cabang')
+            ->where('group_cabang_detail.group_cabang_code',$request->id)
             ->where('company_mou_peserta.company_mou_code', $request->code)->get();
         $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.laporan.rekap-mcu.report.report-kehadiran', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A4', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);

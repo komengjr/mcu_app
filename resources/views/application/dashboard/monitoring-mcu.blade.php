@@ -117,8 +117,7 @@
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-7 col-sm-7">
-                                                                <p class="fs--1 fs-md-1 mb-1 fw-semi-bold">Total Sudah Check
-                                                                    In
+                                                                <p class="fs--1 fs-md-1 mb-1 fw-semi-bold">Total Sudah MCU
                                                                 </p>
                                                             </div>
                                                             <div class="col">
@@ -135,8 +134,7 @@
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-7 col-sm-7">
-                                                                <p class="fs--1 fs-md-1 mb-1 fw-semi-bold">Total Belum Check
-                                                                    In
+                                                                <p class="fs--1 fs-md-1 mb-1 fw-semi-bold">Total Belum MCU
                                                                 </p>
                                                             </div>
                                                             <div class="col">

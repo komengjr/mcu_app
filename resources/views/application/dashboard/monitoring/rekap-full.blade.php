@@ -128,13 +128,6 @@
                     </div>
                 </div>
                 <div class="row g-3">
-                    <div class="col-md-5">
-                        <div class="card border border-danger">
-                            <div class="echart-pie-chart-example p-3" style="min-height: 360px;"
-                                data-echart-responsive="true">
-                            </div>
-                        </div>
-                    </div>
                     <div class="col-md-7">
                         <div class="card p-2 border border-danger">
                             <h6 class="fw-semi-bold text-uppercase">Informasi Cabang</h6>
@@ -229,6 +222,14 @@
                             </table>
                         </div>
                     </div>
+                    <div class="col-md-5">
+                        <div class="card border border-danger">
+                            <div class="echart-pie-chart-example p-3" style="min-height: 360px;"
+                                data-echart-responsive="true">
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <div class="card-footer border-top text-end">
@@ -613,12 +614,12 @@
                                 },
                                 center: ['50%', '55%'],
                                 data: [
-                                    @foreach ($cabang as $cabangs)
+                                    @foreach ($group as $groups)
                                         @php
-                                            $total = DB::table('log_lokasi_pasien')->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')->where('company_mou_peserta.company_mou_code', $data->company_mou_code)->where('log_lokasi_pasien.lokasi_cabang', $cabangs->master_cabang_code)->count();
+                                            $total = DB::table('log_lokasi_pasien')->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')->where('company_mou_peserta.company_mou_code', $data->company_mou_code)->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')->where('group_cabang_detail.group_cabang_code', $groups->group_cabang_code)->count();
                                         @endphp {
                                             value: '{{ $total }}',
-                                            name: '{{ $cabangs->master_cabang_name }}',
+                                            name: '{{ $groups->group_cabang_name }}',
                                             itemStyle: {
                                                 color: utils.getColor(warna('{{ $id++ }}'))
                                             }

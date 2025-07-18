@@ -24,7 +24,7 @@ class PesertaAllImport implements ToModel, WithHeadingRow
         }
         $UNIX_DATE = ($row['ttl'] - 25569) * 86400;
         return new Peserta([
-            'mou_peserta_code' => $this->code . mt_rand(10000, 99999),
+            'mou_peserta_code' => $this->code . mt_rand(1000000, 9999999),
             'company_mou_code' => $this->code,
             'mou_peserta_nik' => $row['nik'],
             'mou_peserta_nip' => $row['nip'],

@@ -14,12 +14,12 @@
              <div class="col-lg-4 col-xxl-4">
                  <div class="card p-4 border border-danger">
                      <h6 class="fw-semi-bold ls mb-3 text-uppercase">Informasi Perusahaan</h6>
-                     <div class="row">
+                     {{-- <div class="row">
                          <div class="col-5 col-sm-4">
                              <p class="fw-semi-bold mb-1">Code</p>
                          </div>
                          <div class="col">{{ $data->master_company_code }}</div>
-                     </div>
+                     </div> --}}
                      <div class="row">
                          <div class="col-5 col-sm-4">
                              <p class="fw-semi-bold mb-1">Nama</p>
@@ -54,12 +54,12 @@
              <div class="col-lg-4 col-xxl-4">
                  <div class="card p-4 border border-danger">
                      <h6 class="fw-semi-bold ls mb-3 text-uppercase">Informasi Project</h6>
-                     <div class="row">
+                     {{-- <div class="row">
                          <div class="col-5 col-sm-4">
                              <p class="fw-semi-bold mb-1">Code</p>
                          </div>
                          <div class="col">{{ $data->company_mou_code }}</div>
-                     </div>
+                     </div> --}}
                      <div class="row">
                          <div class="col-5 col-sm-4">
                              <p class="fw-semi-bold mb-1">Nama Project</p>
@@ -130,8 +130,8 @@
                          <thead class="bg-200 text-900">
                              <tr>
                                  <th class="sort" data-sort="name">Wilayah</th>
-                                 <th class="sort" data-sort="name">Nama Cabang</th>
-                                 <th class="sort" data-sort="email">Peserta Check In</th>
+                                 {{-- <th class="sort" data-sort="name">Nama Cabang</th> --}}
+                                 <th class="sort" data-sort="email">Peserta</th>
                                  <th class="sort" data-sort="age">Executive</th>
                                  <th class="sort" data-sort="age">Persentasi</th>
                                  <th class="sort" data-sort="age">Healty Talk</th>
@@ -141,7 +141,7 @@
                              @foreach ($cabang as $cabangs)
                                  <tr>
                                      <td>{{ $cabangs->group_cabang_name }}</td>
-                                     <td class="name">{{ $cabangs->master_cabang_name }}</td>
+                                     {{-- <td class="name">{{ $cabangs->master_cabang_name }}</td> --}}
                                      <td class="email">
                                          @php
                                              $jumlah = DB::table('log_lokasi_pasien')

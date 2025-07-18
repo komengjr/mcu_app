@@ -234,9 +234,9 @@
         <div id="company">
             {{-- <div id="no_surat">123</div>
             <br> --}}
-            <h2 class="name">DAFTAR HADIR PESERTA MCU</h2>
+            <h2 class="name"><strong>DAFTAR HADIR PESERTA MCU</strong></h2>
             {{-- <div>123</div> --}}
-            <div>Form</div>
+            {{-- <div>Form</div> --}}
         </div>
         </div>
     </header>
@@ -273,15 +273,15 @@
                 <tr>
                     <th>No</th>
                     <th>NIP</th>
-                    <th>NIK</th>
+                    {{-- <th>NIK</th> --}}
                     <th>Nama Peserta</th>
-                    <th>Tanggal Lahir</th>
+                    {{-- <th>Tanggal Lahir</th> --}}
                     <th>Jenis Kelamin</th>
                     <th>Email</th>
                     <th>No HP</th>
                     <th>Departemen</th>
-                    <th>Lokasi Kota</th>
-                    <th>Lokasi Cabang MCU</th>
+                    {{-- <th>Wilayah</th> --}}
+                    <th>Lokasi MCU</th>
                     <
                     <th>Tanda Tangan</th>
                 </tr>
@@ -294,9 +294,9 @@
                     <tr>
                         <td>{{ $no++ }}</td>
                         <td>{{ $pesertas->mou_peserta_nip }}</td>
-                        <td>{{ $pesertas->mou_peserta_nik }}</td>
+                        {{-- <td>{{ $pesertas->mou_peserta_nik }}</td> --}}
                         <td>{{ $pesertas->mou_peserta_name }}</td>
-                        <td>{{ $pesertas->mou_peserta_ttl }}</td>
+                        {{-- <td>{{ $pesertas->mou_peserta_ttl }}</td> --}}
                         <td>
                             @if ($pesertas->mou_peserta_jk == 'L')
                                 Laki - Laki
@@ -307,6 +307,13 @@
                         <td>{{ $pesertas->mou_peserta_email }}</td>
                         <td>{{ $pesertas->mou_peserta_no_hp }}</td>
                         <td>{{ $pesertas->mou_peserta_departemen }}</td>
+                        {{-- <td>
+
+                            @if ($lokasi)
+                                {{ $lokasi->master_cabang_city }}
+                            @else
+                            @endif
+                        </td> --}}
                         <td>
                             @php
                                 $lokasi = DB::table('log_lokasi_pasien')
@@ -319,12 +326,6 @@
                                     ->where('log_lokasi_pasien.mou_peserta_code', $pesertas->mou_peserta_code)
                                     ->first();
                             @endphp
-                            @if ($lokasi)
-                                {{ $lokasi->master_cabang_city }}
-                            @else
-                            @endif
-                        </td>
-                        <td>
                             @if ($lokasi)
                                 {{ $lokasi->master_cabang_name }}
                             @else
@@ -339,7 +340,7 @@
                                     ->first();
                             @endphp
                             @if ($ttd)
-                                <img src="<?php echo $ttd->log_kehadiran_pasien_sign ?>" width="50"> <br>
+                                <img src="<?php echo $ttd->log_kehadiran_pasien_sign ?>" width="100"> <br>
                                 {{$ttd->log_kehadiran_pasien_time}}
                             @else
                                 <strong style="color: rgb(199, 27, 24)">Belum</strong>

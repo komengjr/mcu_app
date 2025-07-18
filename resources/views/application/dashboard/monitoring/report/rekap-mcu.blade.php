@@ -272,18 +272,14 @@
             <thead style="font-size: 11px;">
                 <tr>
                     <th>No</th>
-                    <th>Nama Peserta</th>
-                    <th>NIK</th>
-                    <th>TTL</th>
-                    <th>Jenis Kelamin</th>
-                    <th>Email</th>
-                    <th>No HP</th>
                     <th>NIP</th>
+                    <th>Nama Peserta</th>
+                    <th>Jenis Kelamin</th>
                     <th>Departemen</th>
-                    <th>Lokasi Kota</th>
-                    <th>Lokasi Cabang MCU</th>
+                    <th>Wilayah</th>
+                    <th>Lokasi MCU</th>
                     <th>Status Pemeriksaan</th>
-                    <th>Status Konsultasi</th>
+                    {{-- <th>Status Konsultasi</th> --}}
                     <th>Status Pengiriman Hasil</th>
                 </tr>
             </thead>
@@ -294,9 +290,8 @@
                 @foreach ($peserta as $pesertas)
                     <tr>
                         <td>{{ $no++ }}</td>
+                        <td>{{ $pesertas->mou_peserta_nip }}</td>
                         <td>{{ $pesertas->mou_peserta_name }}</td>
-                        <td>{{ $pesertas->mou_peserta_nik }}</td>
-                        <td>{{ $pesertas->mou_peserta_ttl }}</td>
                         <td>
                             @if ($pesertas->mou_peserta_jk == 'L')
                                 Laki - Laki
@@ -304,9 +299,6 @@
                                 Perempuan
                             @endif
                         </td>
-                        <td>{{ $pesertas->mou_peserta_email }}</td>
-                        <td>{{ $pesertas->mou_peserta_no_hp }}</td>
-                        <td>{{ $pesertas->mou_peserta_nip }}</td>
                         <td>{{ $pesertas->mou_peserta_departemen }}</td>
                         <td>
                             @php
@@ -354,7 +346,7 @@
                                 </ul>
                             @endforeach
                         </td>
-                        <td>
+                        {{-- <td>
                             @php
                                 $konsul = DB::table('log_konsultasi_pasien')
                                     ->where('mou_peserta_code', $pesertas->mou_peserta_code)
@@ -365,7 +357,7 @@
                             @else
                                 <strong style="color: rgb(199, 27, 24)">Belum Selesai</strong>
                             @endif
-                        </td>
+                        </td> --}}
                         <td>
                             @php
                                 $pengiriman = DB::table('log_pengiriman_pasien')

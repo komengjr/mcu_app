@@ -20,12 +20,12 @@
                     <div class="col-lg-4 col-xxl-4">
                         <div class="card p-4 border border-danger">
                             <h6 class="fw-semi-bold ls mb-3 text-uppercase">Informasi Perusahaan</h6>
-                            <div class="row">
+                            {{-- <div class="row">
                                 <div class="col-5 col-sm-4">
                                     <p class="fw-semi-bold mb-1">Code</p>
                                 </div>
                                 <div class="col">{{ $data->master_company_code }}</div>
-                            </div>
+                            </div> --}}
                             <div class="row">
                                 <div class="col-5 col-sm-4">
                                     <p class="fw-semi-bold mb-1">Nama</p>
@@ -60,12 +60,12 @@
                     <div class="col-lg-4 col-xxl-4">
                         <div class="card p-4 border border-danger">
                             <h6 class="fw-semi-bold ls mb-3 text-uppercase">Informasi Project</h6>
-                            <div class="row">
+                            {{-- <div class="row">
                                 <div class="col-5 col-sm-4">
                                     <p class="fw-semi-bold mb-1">Code</p>
                                 </div>
                                 <div class="col">{{ $data->company_mou_code }}</div>
-                            </div>
+                            </div> --}}
                             <div class="row">
                                 <div class="col-5 col-sm-4">
                                     <p class="fw-semi-bold mb-1">Nama Project</p>
@@ -101,7 +101,7 @@
                                 <div class="col">{{ $totalpeserta }} Peserta</div>
                             </div>
                             <div class="row">
-                                <div class="col-8 col-sm-8">
+                                <div class="col-5 col-sm-8">
                                     <p class="fw-semi-bold mb-1">Sudah Melakukan MCU</p>
                                 </div>
                                 <div class="col">
@@ -109,7 +109,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-8 col-sm-8">
+                                <div class="col-5 col-sm-8">
                                     <p class="fw-semi-bold mb-1">Belum Melakukan MCU</p>
                                 </div>
                                 <div class="col">{{ $totalpeserta - $totalmcu }} Peserta</div>

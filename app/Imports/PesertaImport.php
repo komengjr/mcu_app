@@ -22,7 +22,7 @@ class PesertaImport implements ToModel , WithHeadingRow
         // $data = DB::table('company_mou_peserta')->where('company_mou_code', $request->code)->first();
         $UNIX_DATE = ($row['ttl'] - 25569) * 86400;
         return new Peserta([
-            'mou_peserta_code' => $this->code.mt_rand(1000, 9999),
+            'mou_peserta_code' => $this->code.mt_rand(100000, 999999),
             'company_mou_code' => $this->code,
             'mou_peserta_nik' => $row['nik'],
             'mou_peserta_nip' => $row['nip'],

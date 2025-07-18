@@ -10,13 +10,9 @@
             <thead class="bg-200 text-700 fs--2">
                 <tr>
                     <th>No</th>
-                    <th>Nama Peserta</th>
-                    <th>NIK</th>
-                    <th>TTL</th>
-                    <th>Jenis Kelamin</th>
-                    {{-- <th>Email</th> --}}
-                    <th>No HP</th>
                     <th>NIP</th>
+                    <th>Nama Peserta</th>
+                    <th>Jenis Kelamin</th>
                     <th>Departemen</th>
                     <th>Status Pemeriksaan</th>
                     <th>Status Konsultasi</th>
@@ -36,9 +32,8 @@
                     @if (!$log)
                         <tr>
                             <td>{{ $no++ }}</td>
+                            <td>{{ $pesertas->mou_peserta_nip }}</td>
                             <td>{{ $pesertas->mou_peserta_name }}</td>
-                            <td>{{ $pesertas->mou_peserta_nik }}</td>
-                            <td>{{ $pesertas->mou_peserta_ttl }}</td>
                             <td>
                                 @if ($pesertas->mou_peserta_jk == 'L')
                                     Laki - Laki
@@ -46,9 +41,6 @@
                                     Perempuan
                                 @endif
                             </td>
-                            {{-- <td>{{ $pesertas->mou_peserta_email }}</td> --}}
-                            <td>{{ $pesertas->mou_peserta_no_hp }}</td>
-                            <td>{{ $pesertas->mou_peserta_nip }}</td>
                             <td>{{ $pesertas->mou_peserta_departemen }}</td>
                             <td>
                                 @php

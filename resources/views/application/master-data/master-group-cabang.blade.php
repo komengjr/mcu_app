@@ -101,6 +101,11 @@
                                                 class="far fa-edit"></span>
                                             Tambah Cabang
                                         </button>
+                                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-user"
+                                            id="button-update-wilayah" data-code="{{ $datas->group_cabang_code }}"><span
+                                                class="far fa-object-group"></span>
+                                            Update Wilayah
+                                        </button>
                                         <div class="dropdown-divider"></div>
                                         <button class="dropdown-item text-youtube" data-bs-toggle="modal"
                                             data-bs-target="#modal-user" id="button-remove-full-group"
@@ -149,6 +154,27 @@
             );
             $.ajax({
                 url: "{{ route('master_group_cabang_add') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-user').html(data);
+            }).fail(function() {
+                $('#menu-user').html('eror');
+            });
+        });
+        $(document).on("click", "#button-update-wilayah", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-user').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('master_group_cabang_update_group') }}",
                 type: "POST",
                 cache: false,
                 data: {

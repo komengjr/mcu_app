@@ -905,6 +905,14 @@ class ApplicationController extends Controller
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data User Cabang');
     }
+    public function master_group_cabang_update_group(Request $request){
+        $data = DB::table('group_cabang')->where('group_cabang_code',$request->code)->first();
+        return view('application.master-data.group-cabang.form-update',['data'=>$data]);
+    }
+    public function master_group_cabang_save_group(Request $request){
+        DB::table('group_cabang')->where('group_cabang_code',$request->code)->update(['group_cabang_name'=>$request->nama_group]);
+        return redirect()->back()->withSuccess('Great! Berhasil update Data Wilayah');
+    }
     public function master_group_cabang_add_cabang(Request $request)
     {
         $cabang = DB::table('master_cabang')->select('master_cabang_code', 'master_cabang_name')->get();

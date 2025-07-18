@@ -72,24 +72,25 @@ class SignaturePadController extends Controller
         file_put_contents($file, $image_base64);
         return back()->with('success', 'success Full upload signature');
     }
-    // public function update(Request $request)
-    // {
-    //     DB::table('log_kehadiran_pasien')->where('log_kehadiran_pasien_token', $request->token)->update([
-    //         'log_kehadiran_pasien_sign' => $request->signed,
-    //         'log_kehadiran_pasien_token' => str::uuid(),
-    //         'log_kehadiran_pasien_status' => 1,
-    //         'log_kehadiran_pasien_time' => now(),
-    //     ]);
-    //     $cek = DB::table('log_lokasi_pasien')->where('mou_peserta_code', $request->peserta)->first();
-    //     if (!$cek) {
-    //         DB::table('log_lokasi_pasien')->insert([
-    //             'mou_peserta_code' => $request->peserta,
-    //             'lokasi_cabang' => $request->cabang,
-    //             'created_at' => now()
-    //         ]);
-    //     }
-    //     return back()->with('success', 'success Full upload signature');
-    // }
+    public function update(Request $request)
+    {
+        DB::table('log_kehadiran_pasien')->where('log_kehadiran_pasien_token', $request->token)->update([
+            'log_kehadiran_pasien_sign' => $request->signed,
+            'log_kehadiran_pasien_token' => str::uuid(),
+            'log_kehadiran_pasien_status' => 1,
+            'log_kehadiran_pasien_time' => now(),
+        ]);
+        $cek = DB::table('log_lokasi_pasien')->where('mou_peserta_code', $request->peserta)->first();
+        if (!$cek) {
+            DB::table('log_lokasi_pasien')->insert([
+                'mou_peserta_code' => $request->peserta,
+                'lokasi_cabang' => $request->cabang,
+                'log_lokasi_status' => 1,
+                'created_at' => now()
+            ]);
+        }
+        return back()->with('success', 'success Full upload signature');
+    }
     public function save_signiture(Request $request)
     {
         DB::table('log_kehadiran_pasien')->insert([

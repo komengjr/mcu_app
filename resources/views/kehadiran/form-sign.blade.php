@@ -640,7 +640,7 @@
     <script>
         var sig = $('#sig').signature({
             syncField: '#signature64',
-            syncFormat: 'PNG'
+            syncFormat: 'SVG'
         });
         sig.focus();
         $('#clear').click(function(e) {
@@ -718,7 +718,7 @@
 
         function onEnd(evt) {
             dibujando = false;
-            console.log(canvas);
+            console.log(attrs2);
         }
 
         function oMousePos(canvas, evt) {

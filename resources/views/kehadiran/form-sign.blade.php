@@ -210,15 +210,15 @@
             syncFormat: 'PNG'
         });
         sig.focus();
-        $('#clear').click(function(e) {
+        // $('#clear').click(function(e) {
 
-            e.preventDefault();
+        //     e.preventDefault();
 
-            sig.signature('clear');
+        //     sig.signature('clear');
 
-            $("#signature64").val('');
+        //     $("#signature64").val('');
 
-        });
+        // });
     </script>
     <script>
         const mediaQuery = window.matchMedia('(max-width: 668px)');

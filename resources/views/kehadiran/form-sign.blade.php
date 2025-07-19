@@ -163,7 +163,7 @@
                                                                 policy</a></label>
                                                     </div>
                                                 </div>
-                                                <textarea id="signature64" name="signed" style="display: none" required></textarea>
+                                                <textarea id="signature64" name="signed" style="display: none"></textarea>
                                                 <input type="text" name="cabang"
                                                     value="{{ $data->log_kehadiran_pasien_lokasi }}" hidden>
                                                 <input type="text" name="peserta"

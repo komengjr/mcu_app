@@ -271,7 +271,7 @@
         }
 
         function onEnd(evt) {
-            dibujando = false;
+            dibujando = true;
         }
 
         function oMousePos(canvas, evt) {

@@ -34,7 +34,7 @@ class SignaturePadController extends Controller
                 return view('kehadiran.done');
             }
         } else {
-            return 'absensi tidak ditemukan';
+            return 'Selesai';
         }
     }
     public function sign_perusahaan($id)

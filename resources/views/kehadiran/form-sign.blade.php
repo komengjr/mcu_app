@@ -171,13 +171,13 @@
 
                                             </div>
                                             <div class="col-md-12">
-                                                <button class="btn btn-danger w-100 " type="submit"
-                                                    name="submit">Register</button>
+                                                <button class="btn btn-danger w-100 " id="button-submit-selesai"
+                                                    type="submit" name="submit">Register</button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
-
+                                <a href="#" onclick="myFunction()">Selsai</a>
                             </div>
                         </div>
                     </div>
@@ -204,6 +204,11 @@
     <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
     <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
     {{-- <script src="{{ asset('asset/js/theme.js') }}"></script> --}}
+    <script>
+        function myFunction() {
+            document.getElementById("button-submit-selesai").click();
+        }
+    </script>
     <script type="text/javascript">
         var sig = $('#sig').signature({
             syncField: '#signature64',
@@ -221,20 +226,20 @@
         });
     </script>
     <script>
-        // const mediaQuery = window.matchMedia('(max-width: 668px)');
+        const mediaQuery = window.matchMedia('(max-width: 668px)');
         var canvas = document.querySelector("canvas");
         var ctx = canvas.getContext("2d");
-        // if (mediaQuery.matches) {
-            // var cw = (canvas.width = 300),
-            //     cx = cw / 2;
-            // var ch = (canvas.height = 200),
-            //     cy = ch / 2;
-        // } else {
+        if (mediaQuery.matches) {
+            var cw = (canvas.width = 300),
+                cx = cw / 2;
+            var ch = (canvas.height = 200),
+                cy = ch / 2;
+        } else {
             var cw = (canvas.width = 450),
                 cx = cw / 2;
             var ch = (canvas.height = 200),
                 cy = ch / 2;
-        // }
+        }
         ctx.strokeStyle = "#fff";
         var dibujando = false;
         var m = {

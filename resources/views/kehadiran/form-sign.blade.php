@@ -232,7 +232,7 @@
                 cy = ch / 2;
         }
         ctx.strokeStyle = "#fff";
-        var dibujando = true;
+        var dibujando = false;
         var m = {
             x: 0,
             y: 0

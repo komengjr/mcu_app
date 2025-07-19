@@ -881,6 +881,32 @@ class ApplicationController extends Controller
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data User Cabang');
     }
+    public function master_user_cabang_update(Request $request)
+    {
+        $data = DB::table('user_mains')->where('userid', $request->code)->first();
+        return view('application.master-data.user-cabang.form-update', ['data' => $data]);
+    }
+    public function master_user_cabang_update_save(Request $request)
+    {
+        if ($request->password == "") {
+            DB::table('user_mains')->where('userid', $request->code)->update([
+                'fullname' => $request->nama_lengkap,
+                'email' => $request->email,
+                'number_handphone' => $request->email,
+                'username' => $request->username,
+            ]);
+        } else {
+            DB::table('user_mains')->where('userid', $request->code)->update([
+                'fullname' => $request->nama_lengkap,
+                'email' => $request->email,
+                'number_handphone' => $request->email,
+                'username' => $request->username,
+                'password' => Hash::make($request['password']),
+            ]);
+        }
+        return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data User Cabang');
+
+    }
 
     // MASTER GROUP CABANG
     public function master_group_cabang($akses)
@@ -905,12 +931,14 @@ class ApplicationController extends Controller
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data User Cabang');
     }
-    public function master_group_cabang_update_group(Request $request){
-        $data = DB::table('group_cabang')->where('group_cabang_code',$request->code)->first();
-        return view('application.master-data.group-cabang.form-update',['data'=>$data]);
+    public function master_group_cabang_update_group(Request $request)
+    {
+        $data = DB::table('group_cabang')->where('group_cabang_code', $request->code)->first();
+        return view('application.master-data.group-cabang.form-update', ['data' => $data]);
     }
-    public function master_group_cabang_save_group(Request $request){
-        DB::table('group_cabang')->where('group_cabang_code',$request->code)->update(['group_cabang_name'=>$request->nama_group]);
+    public function master_group_cabang_save_group(Request $request)
+    {
+        DB::table('group_cabang')->where('group_cabang_code', $request->code)->update(['group_cabang_name' => $request->nama_group]);
         return redirect()->back()->withSuccess('Great! Berhasil update Data Wilayah');
     }
     public function master_group_cabang_add_cabang(Request $request)
@@ -1025,9 +1053,9 @@ class ApplicationController extends Controller
             ->where('company_mou.company_mou_code', $request->code)->first();
         $peserta = DB::table('company_mou_peserta')
             ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
-            ->join('log_lokasi_pasien','log_lokasi_pasien.mou_peserta_code','=','company_mou_peserta.mou_peserta_code')
-            ->join('group_cabang_detail','group_cabang_detail.master_cabang_code','=','log_lokasi_pasien.lokasi_cabang')
-            ->where('group_cabang_detail.group_cabang_code',$request->id)
+            ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+            ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+            ->where('group_cabang_detail.group_cabang_code', $request->id)
             ->where('company_mou_peserta.company_mou_code', $request->code)->get();
         $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.laporan.rekap-mcu.report.report-kehadiran', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A4', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);

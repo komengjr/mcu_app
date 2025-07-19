@@ -130,6 +130,8 @@ Route::prefix('application')->group(function () {
     //USER CABANG
     Route::post('master-user-cabang/add', [ApplicationController::class, 'master_user_cabang_add'])->name('master_user_cabang_add');
     Route::post('master-user-cabang/save', [ApplicationController::class, 'master_user_cabang_save'])->name('master_user_cabang_save');
+    Route::post('master-user-cabang/update', [ApplicationController::class, 'master_user_cabang_update'])->name('master_user_cabang_update');
+    Route::post('master-user-cabang/update-save', [ApplicationController::class, 'master_user_cabang_update_save'])->name('master_user_cabang_update_save');
     //USER CABANG
     Route::post('master-group-cabang/add', [ApplicationController::class, 'master_group_cabang_add'])->name('master_group_cabang_add');
     Route::post('master-group-cabang/save', [ApplicationController::class, 'master_group_cabang_save'])->name('master_group_cabang_save');

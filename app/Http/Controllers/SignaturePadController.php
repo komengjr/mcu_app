@@ -22,19 +22,22 @@ class SignaturePadController extends Controller
     }
     public function sign($id)
     {
-        $data = DB::table('company_mou_peserta')
-            ->join('log_kehadiran_pasien', 'log_kehadiran_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+        $data = DB::table('log_kehadiran_pasien')
+            ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_kehadiran_pasien.mou_peserta_code')
             ->where('log_kehadiran_pasien_token', $id)
             ->first();
         if ($data) {
             if ($data->log_kehadiran_pasien_status == 0) {
                 return view('kehadiran.signature-template', ['data' => $data]);
-                # code...
             } else {
                 return view('kehadiran.done');
             }
         } else {
-            return 'Selesai';
+            return '<script>
+        setTimeout(() => {
+            window.close();
+        }, 2000);
+    </script>';
         }
     }
     public function sign_perusahaan($id)

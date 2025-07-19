@@ -80,7 +80,7 @@
                                             data-fa-transform="shrink-3"></span>Option</button>
                                     <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
                                         <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-user"
-                                            id="button-update-user" data-code="123"><span class="far fa-edit"></span>
+                                            id="button-update-user" data-code="{{$datas->userid}}"><span class="far fa-edit"></span>
                                             Update User</button>
 
                                     </div>
@@ -125,6 +125,27 @@
             );
             $.ajax({
                 url: "{{ route('master_user_cabang_add') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-user').html(data);
+            }).fail(function() {
+                $('#menu-user').html('eror');
+            });
+        });
+        $(document).on("click", "#button-update-user", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-user').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('master_user_cabang_update') }}",
                 type: "POST",
                 cache: false,
                 data: {

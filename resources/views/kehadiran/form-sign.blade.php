@@ -49,7 +49,7 @@
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript" src="http://keith-wood.name/js/jquery.signature.js"></script>
     <link rel="stylesheet" type="text/css" href="http://keith-wood.name/css/jquery.signature.css">
-    <script>
+    {{-- <script>
         var isRTL = JSON.parse(localStorage.getItem('isRTL'));
         if (isRTL) {
             var linkDefault = document.getElementById('style-default');
@@ -63,19 +63,7 @@
             linkRTL.setAttribute('disabled', true);
             userLinkRTL.setAttribute('disabled', true);
         }
-    </script>
-    <script>
-        var sig = $('#sig').signature({
-            syncField: '#signature64',
-            syncFormat: 'PNG'
-        });
-        sig.focus();
-        $('#clear').click(function(e) {
-            e.preventDefault();
-            sig.signature('clear');
-            $("#signature64").val('');
-        });
-    </script>
+    </script> --}}
 </head>
 <style>
     /* .kbw-signature {
@@ -216,7 +204,18 @@
     <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
     <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
     <script src="{{ asset('asset/js/theme.js') }}"></script>
-
+    <script>
+        var sig = $('#sig').signature({
+            syncField: '#signature64',
+            syncFormat: 'PNG'
+        });
+        sig.focus();
+        $('#clear').click(function(e) {
+            e.preventDefault();
+            sig.signature('clear');
+            $("#signature64").val('');
+        });
+    </script>
     <script>
         const mediaQuery = window.matchMedia('(max-width: 668px)');
         var canvas = document.querySelector("canvas");
@@ -283,7 +282,6 @@
                 ctx.stroke();
             }
         }
-
         function onEnd(evt) {
             dibujando = false;
             console.log(canvas);

@@ -169,15 +169,15 @@
                                                 <input type="text" name="peserta"
                                                     value="{{ $data->mou_peserta_code }}" hidden>
 
-                                            </div>
-                                            <div class="col-md-12">
-                                                <button class="btn btn-danger w-100 " id="button-submit-selesai"
-                                                    type="submit" name="submit">Register</button>
+                                                <div class="col-md-12">
+                                                    <button class="btn btn-danger w-100 " id="button-submit-selesai"
+                                                        type="submit" name="submit">Register</button>
+                                                </div>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
-                                <a href="#" onclick="myFunction()">Selsai</a>
+                                {{-- <a href="#" onclick="myFunction()">Selsai</a> --}}
                             </div>
                         </div>
                     </div>

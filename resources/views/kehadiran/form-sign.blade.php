@@ -155,7 +155,7 @@
                                                 <div class="col-12">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox"
-                                                            id="card-register-checkbox"/>
+                                                            id="card-register-checkbox" />
                                                         <label class="form-label" for="card-register-checkbox">I
                                                             accept
                                                             the <a href="#!">terms </a>and <a
@@ -164,14 +164,16 @@
                                                     </div>
                                                 </div>
                                                 <textarea id="signature64" name="signed" style="display: none" required></textarea>
-                                                <input type="text" name="cabang" value="{{ $data->log_kehadiran_pasien_lokasi }}" hidden>
-                                                <input type="text" name="peserta" value="{{ $data->mou_peserta_code }}" hidden>
-                                                <div class="col-md-12">
-                                                    <button class="btn btn-danger d-block w-100 " type="submit"
-                                                        name="submit">Register</button>
-                                                </div>
-                                            </div>
+                                                <input type="text" name="cabang"
+                                                    value="{{ $data->log_kehadiran_pasien_lokasi }}" hidden>
+                                                <input type="text" name="peserta"
+                                                    value="{{ $data->mou_peserta_code }}" hidden>
 
+                                            </div>
+                                            <div class="col-md-12">
+                                                <button class="btn btn-danger w-100 " type="submit"
+                                                    name="submit">Register</button>
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
@@ -227,7 +229,7 @@
                 cx = cw / 2;
             var ch = (canvas.height = 200),
                 cy = ch / 2;
-        }else{
+        } else {
             var cw = (canvas.width = 450),
                 cx = cw / 2;
             var ch = (canvas.height = 200),

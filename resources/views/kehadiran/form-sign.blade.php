@@ -64,6 +64,18 @@
             userLinkRTL.setAttribute('disabled', true);
         }
     </script>
+    <script>
+        var sig = $('#sig').signature({
+            syncField: '#signature64',
+            syncFormat: 'PNG'
+        });
+        sig.focus();
+        $('#clear').click(function(e) {
+            e.preventDefault();
+            sig.signature('clear');
+            $("#signature64").val('');
+        });
+    </script>
 </head>
 <style>
     /* .kbw-signature {
@@ -204,20 +216,7 @@
     <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
     <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
     <script src="{{ asset('asset/js/theme.js') }}"></script>
-    <script>
-        var sig = $('#sig').signature({
-            syncField: '#signature64',
-            syncFormat: 'PNG'
-        });
 
-
-        sig.focus();
-        $('#clear').click(function(e) {
-            e.preventDefault();
-            sig.signature('clear');
-            $("#signature64").val('');
-        });
-    </script>
     <script>
         const mediaQuery = window.matchMedia('(max-width: 668px)');
         var canvas = document.querySelector("canvas");
@@ -284,6 +283,7 @@
                 ctx.stroke();
             }
         }
+
         function onEnd(evt) {
             dibujando = false;
             console.log(canvas);

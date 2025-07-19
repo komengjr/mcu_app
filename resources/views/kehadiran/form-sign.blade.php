@@ -171,7 +171,7 @@
 
                                                 <div class="col-md-12">
                                                     <button class="btn btn-danger w-100 " id="button-submit-selesai"
-                                                        type="submit" name="submit">Registers</button>
+                                                        type="submit" name="submit">Register</button>
                                                 </div>
                                             </div>
                                         </form>
@@ -203,13 +203,18 @@
     <script src="{{ asset('vendors/fontawesome/all.min.js') }}"></script>
     <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
     <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
-    {{-- <script src="{{ asset('asset/js/theme.js') }}"></script> --}}
+    <script src="{{ asset('asset/js/theme.js') }}"></script>
     <script type="text/javascript">
         var sig = $('#sig').signature({
             syncField: '#signature64',
             syncFormat: 'PNG'
         });
-
+        sig.focus();
+        $('#clear').click(function(e) {
+            e.preventDefault();
+            sig.signature('clear');
+            $("#signature64").val('');
+        });
     </script>
     <script>
         const mediaQuery = window.matchMedia('(max-width: 668px)');

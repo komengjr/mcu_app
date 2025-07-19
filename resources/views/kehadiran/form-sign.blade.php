@@ -204,22 +204,7 @@
     <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
     <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
     {{-- <script src="{{ asset('asset/js/theme.js') }}"></script> --}}
-    <script type="text/javascript">
-        var sig = $('#sig').signature({
-            syncField: '#signature64',
-            syncFormat: 'PNG'
-        });
-        sig.focus();
-        $('#clear').click(function(e) {
 
-            e.preventDefault();
-
-            sig.signature('clear');
-
-            $("#signature64").val('');
-
-        });
-    </script>
     <script>
         const mediaQuery = window.matchMedia('(max-width: 668px)');
         var canvas = document.querySelector("canvas");
@@ -314,13 +299,29 @@
             })(i);
         }
 
-        // clear.addEventListener(
-        //     "click",
-        //     function() {
-        //         ctx.clearRect(0, 0, cw, ch);
-        //     },
-        //     false
-        // );
+        clear.addEventListener(
+            "click",
+            function() {
+                ctx.clearRect(0, 0, cw, ch);
+            },
+            false
+        );
+    </script>
+    <script type="text/javascript">
+        var sig = $('#sig').signature({
+            syncField: '#signature64',
+            syncFormat: 'PNG'
+        });
+        sig.focus();
+        $('#clear').click(function(e) {
+
+            e.preventDefault();
+
+            sig.signature('clear');
+
+            $("#signature64").val('');
+
+        });
     </script>
 </body>
 

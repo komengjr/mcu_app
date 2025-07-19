@@ -150,7 +150,7 @@
                                                 <div class="col-md-12">
                                                     <a href="#" id="clear"
                                                         class="text-danger float-end">Clear Signature</a>
-                                                    <canvas id="sig"></canvas>
+                                                    <span id="sig"></span>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-check">
@@ -263,11 +263,11 @@
                 func: "onEnd"
             },
             {
-                event: "touchend",
+                event: "mouseout",
                 func: "onEnd"
             },
             {
-                event: "mouseout",
+                event: "touchend",
                 func: "onEnd"
             }
         ];

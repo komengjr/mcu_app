@@ -209,12 +209,7 @@
             syncField: '#signature64',
             syncFormat: 'PNG'
         });
-        // sig.focus();
-        // $('#clear').click(function(e) {
-        //     e.preventDefault();
-        //     sig.signature('clear');
-        //     $("#signature64").val('');
-        // });
+
     </script>
     <script>
         const mediaQuery = window.matchMedia('(max-width: 668px)');

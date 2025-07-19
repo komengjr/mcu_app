@@ -220,14 +220,19 @@
         const mediaQuery = window.matchMedia('(max-width: 668px)');
         var canvas = document.querySelector("canvas");
         var ctx = canvas.getContext("2d");
-
+        if (mediaQuery.matches) {
+            var cw = (canvas.width = 300),
+                cx = cw / 2;
+            var ch = (canvas.height = 200),
+                cy = ch / 2;
+        } else {
             var cw = (canvas.width = 450),
                 cx = cw / 2;
             var ch = (canvas.height = 200),
                 cy = ch / 2;
-
+        }
         ctx.strokeStyle = "#fff";
-        var dibujando = false;
+        var dibujando = true;
         var m = {
             x: 0,
             y: 0

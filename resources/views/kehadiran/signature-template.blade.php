@@ -169,7 +169,7 @@
                                                                 policy</a></label>
                                                     </div>
                                                 </div>
-                                                <textarea id="signature64" name="signed"></textarea>
+                                                <textarea id="signature64" name="signed" hidden></textarea>
                                                 <input type="text" name="cabang"
                                                     value="{{ $data->log_kehadiran_pasien_lokasi }}" hidden>
                                                 <input type="text" name="peserta"
@@ -177,7 +177,7 @@
 
                                                 <div class="col-md-12">
                                                     <button class="btn btn-danger w-100 " id="button-submit-selesai"
-                                                        type="submit" name="submit">Register</button>
+                                                        type="submit" name="submit" style="display: none;">Register</button>
                                                 </div>
                                             </div>
                                         </form>
@@ -222,6 +222,7 @@
             var data = signaturePad.toDataURL('image/png');
             console.log(data);
             $('#signature64').html(data);
+            $("#button-submit-selesai").show();
             // Send data to server instead...
             // window.open(data);
         });

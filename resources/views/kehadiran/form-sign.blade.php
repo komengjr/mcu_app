@@ -204,10 +204,10 @@
     <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
     <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
     <script src="{{ asset('asset/js/theme.js') }}"></script>
-    <script type="text/javascript">
+    <script>
         var sig = $('#sig').signature({
             syncField: '#signature64',
-            // syncFormat: 'PNG'
+            syncFormat: 'PNG'
         });
 
 

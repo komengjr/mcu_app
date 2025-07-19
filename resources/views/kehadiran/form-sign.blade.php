@@ -254,22 +254,22 @@
                 event: "mousemove",
                 func: "onMove"
             },
-            // {
-            //     event: "touchmove",
-            //     func: "onMove"
-            // },
-            // {
-            //     event: "mouseup",
-            //     func: "onEnd"
-            // },
-            // {
-            //     event: "mouseout",
-            //     func: "onEnd"
-            // },
-            // {
-            //     event: "touchend",
-            //     func: "onEnd"
-            // }
+            {
+                event: "touchmove",
+                func: "onMove"
+            },
+            {
+                event: "mouseup",
+                func: "onEnd"
+            },
+            {
+                event: "mouseout",
+                func: "onEnd"
+            },
+            {
+                event: "touchend",
+                func: "onEnd"
+            }
         ];
 
         function onStart(evt) {
@@ -314,13 +314,13 @@
             })(i);
         }
 
-        clear.addEventListener(
-            "click",
-            function() {
-                ctx.clearRect(0, 0, cw, ch);
-            },
-            false
-        );
+        // clear.addEventListener(
+        //     "click",
+        //     function() {
+        //         ctx.clearRect(0, 0, cw, ch);
+        //     },
+        //     false
+        // );
     </script>
 </body>
 

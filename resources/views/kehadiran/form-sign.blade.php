@@ -171,7 +171,7 @@
 
                                                 <div class="col-md-12">
                                                     <button class="btn btn-danger w-100 " id="button-submit-selesai"
-                                                        type="submit" name="submit">Register</button>
+                                                        type="submit" name="submit">Registers</button>
                                                 </div>
                                             </div>
                                         </form>

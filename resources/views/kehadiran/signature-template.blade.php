@@ -148,7 +148,7 @@
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="wrapper">
-                                                        <img src="https://preview.ibb.co/jnW4Qz/Grumpy_Cat_920x584.jpg"
+                                                        <img src="{{ asset('img/bg.jpg') }}"
                                                             width=400 height=200 />
                                                         <canvas id="signature-pad" class="signature-pad" width=400
                                                             height=200></canvas>

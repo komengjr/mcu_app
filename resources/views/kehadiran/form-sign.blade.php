@@ -239,29 +239,16 @@
         };
 
         var eventsRy = [{
-                event: "mousedown",
-                func: "onStart"
-            },
-            {
                 event: "touchstart",
                 func: "onStart"
             },
-            {
-                event: "mousemove",
-                func: "onMove"
-            },
+
             {
                 event: "touchmove",
                 func: "onMove"
             },
-            {
-                event: "mouseup",
-                func: "onEnd"
-            },
-            {
-                event: "mouseout",
-                func: "onEnd"
-            },
+
+
             {
                 event: "touchend",
                 func: "onEnd"

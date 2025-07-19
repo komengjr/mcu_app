@@ -150,7 +150,7 @@
                                                 <div class="col-md-12">
                                                     <a href="#" id="clear"
                                                         class="text-danger float-end">Clear Signature</a>
-                                                    <span id="sig"></span>
+                                                    <span id="sig"></canvas>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-check">
@@ -210,15 +210,15 @@
             syncFormat: 'PNG'
         });
         sig.focus();
-        // $('#clear').click(function(e) {
+        $('#clear').click(function(e) {
 
-        //     e.preventDefault();
+            e.preventDefault();
 
-        //     sig.signature('clear');
+            sig.signature('clear');
 
-        //     $("#signature64").val('');
+            $("#signature64").val('');
 
-        // });
+        });
     </script>
     <script>
         const mediaQuery = window.matchMedia('(max-width: 668px)');
@@ -254,22 +254,22 @@
                 event: "mousemove",
                 func: "onMove"
             },
-            {
-                event: "touchmove",
-                func: "onMove"
-            },
-            {
-                event: "mouseup",
-                func: "onEnd"
-            },
-            {
-                event: "mouseout",
-                func: "onEnd"
-            },
-            {
-                event: "touchend",
-                func: "onEnd"
-            }
+            // {
+            //     event: "touchmove",
+            //     func: "onMove"
+            // },
+            // {
+            //     event: "mouseup",
+            //     func: "onEnd"
+            // },
+            // {
+            //     event: "mouseout",
+            //     func: "onEnd"
+            // },
+            // {
+            //     event: "touchend",
+            //     func: "onEnd"
+            // }
         ];
 
         function onStart(evt) {

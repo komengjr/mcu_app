@@ -170,6 +170,7 @@ Route::post('file-upload/upload-file-healty-talk', [UploadFileController::class,
 
 
 Route::get('signaturepad', [SignaturePadController::class, 'index']);
+Route::get('contoh', [SignaturePadController::class, 'contoh']);
 Route::get('signaturepad/data-kehadiran-mcu/detail/{id}', [SignaturePadController::class, 'sign']);
 Route::get('absensi/data-kehadiran-mcu/perusahaan/{id}', [SignaturePadController::class, 'sign_perusahaan']);
 Route::post('absensi/data-kehadiran-mcu/perusahaan/cari-peserta/data', [SignaturePadController::class, 'cari_data_peserta'])->name('cari_data_absensi_peserta_mcu');

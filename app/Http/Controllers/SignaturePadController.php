@@ -14,6 +14,12 @@ class SignaturePadController extends Controller
         return view('signaturePad');
 
     }
+    public function contoh()
+    {
+
+        return view('contoh');
+
+    }
     public function sign($id)
     {
         $data = DB::table('company_mou_peserta')
@@ -22,7 +28,7 @@ class SignaturePadController extends Controller
             ->first();
         if ($data) {
             if ($data->log_kehadiran_pasien_status == 0) {
-                return view('kehadiran.form-sign', ['data' => $data]);
+                return view('kehadiran.signature-template', ['data' => $data]);
                 # code...
             } else {
                 return view('kehadiran.done');

@@ -401,7 +401,7 @@
                 	@param {Event} event The triggering mouse event.
                 	@return {boolean} <code>true</code> if allowed, <code>false</code> if not */
                 _mouseCapture: function( /* event */ ) {
-                    return this.options.disabled;
+                    return !this.options.disabled;
                 },
 
                 /** Start a new line.

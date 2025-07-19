@@ -207,7 +207,7 @@
     <script type="text/javascript">
         var sig = $('#sig').signature({
             syncField: '#signature64',
-            syncFormat: 'PNG'
+            syncFormat: 'jpg'
         });
         sig.focus();
         $('#clear').click(function(e) {

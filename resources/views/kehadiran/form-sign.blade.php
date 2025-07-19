@@ -204,11 +204,6 @@
     <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
     <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
     {{-- <script src="{{ asset('asset/js/theme.js') }}"></script> --}}
-    <script>
-        function myFunction() {
-            document.getElementById("button-submit-selesai").click();
-        }
-    </script>
     <script type="text/javascript">
         var sig = $('#sig').signature({
             syncField: '#signature64',

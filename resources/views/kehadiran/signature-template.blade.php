@@ -104,9 +104,9 @@
                                             <a class="link-light mb-4 font-sans-serif fs-4 d-inline-block fw-bolder"
                                                 href="#"><img src="{{ asset('img/pram.png') }}"
                                                     alt=""></a>
-                                            <p class="opacity-75 text-white">With the power of Falcon, you can now focus
+                                            {{-- <p class="opacity-75 text-white">With the power of Falcon, you can now focus
                                                 only on functionaries for your digital products, while leaving the UI
-                                                design on us!</p>
+                                                design on us!</p> --}}
                                         </div>
                                     </div>
 

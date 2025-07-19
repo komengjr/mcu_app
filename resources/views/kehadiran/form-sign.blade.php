@@ -155,7 +155,7 @@
                                                 <div class="col-12">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox"
-                                                            id="card-register-checkbox" required />
+                                                            id="card-register-checkbox"/>
                                                         <label class="form-label" for="card-register-checkbox">I
                                                             accept
                                                             the <a href="#!">terms </a>and <a

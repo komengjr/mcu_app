@@ -207,8 +207,10 @@
     <script type="text/javascript">
         var sig = $('#sig').signature({
             syncField: '#signature64',
-            syncFormat: 'jpg'
+            // syncFormat: 'PNG'
         });
+
+
         sig.focus();
         $('#clear').click(function(e) {
             e.preventDefault();
@@ -239,16 +241,29 @@
         };
 
         var eventsRy = [{
+                event: "mousedown",
+                func: "onStart"
+            },
+            {
                 event: "touchstart",
                 func: "onStart"
             },
-
+            {
+                event: "mousemove",
+                func: "onMove"
+            },
             {
                 event: "touchmove",
                 func: "onMove"
             },
-
-
+            {
+                event: "mouseup",
+                func: "onEnd"
+            },
+            {
+                event: "mouseout",
+                func: "onEnd"
+            },
             {
                 event: "touchend",
                 func: "onEnd"
@@ -269,15 +284,14 @@
                 ctx.stroke();
             }
         }
-
         function onEnd(evt) {
-            dibujando = true;
+            dibujando = false;
+            console.log(canvas);
         }
 
         function oMousePos(canvas, evt) {
             var ClientRect = canvas.getBoundingClientRect();
             var e = evt.touches ? evt.touches[0] : evt;
-
             return {
                 x: Math.round(e.clientX - ClientRect.left),
                 y: Math.round(e.clientY - ClientRect.top)

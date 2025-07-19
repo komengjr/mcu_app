@@ -401,7 +401,7 @@
                 	@param {Event} event The triggering mouse event.
                 	@return {boolean} <code>true</code> if allowed, <code>false</code> if not */
                 _mouseCapture: function( /* event */ ) {
-                    return !this.options.disabled;
+                    return this.options.disabled;
                 },
 
                 /** Start a new line.
@@ -640,7 +640,7 @@
     <script>
         var sig = $('#sig').signature({
             syncField: '#signature64',
-            syncFormat: 'SVG'
+            syncFormat: 'PNG'
         });
         sig.focus();
         $('#clear').click(function(e) {
@@ -718,7 +718,7 @@
 
         function onEnd(evt) {
             dibujando = false;
-            console.log(attrs2);
+            console.log($.kbw.signature.options);
         }
 
         function oMousePos(canvas, evt) {

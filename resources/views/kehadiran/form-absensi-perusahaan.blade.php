@@ -194,13 +194,13 @@
             var code = document.getElementById("code").value;
             var nip = document.getElementById("nip").value;
             var cab = document.getElementById("organizerSingle").value;
-            if (cab == "") {
+            if (cab == "" || nip == "") {
                 Lobibox.notify('warning', {
                     pauseDelayOnHover: true,
                     continueDelayOnInactiveTab: true,
                     position: 'top right',
                     icon: 'fas fa-info-circle',
-                    msg: 'Pastikan Lokasi MCU Sudah dipilih'
+                    msg: 'Pastikan Lokasi MCU dan NIP Sudah diisi'
                 });
             } else {
                 $('#menu-template-sign').html(

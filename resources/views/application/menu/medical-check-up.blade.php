@@ -92,9 +92,9 @@
                             </div>
                             <div class="d-flex flex-between-center px-3">
 
-                                {{-- <a class="btn btn-sm btn-falcon-default me-2" href="#!" data-bs-toggle="tooltip"
-                                        data-bs-placement="top" title="Add to Wish List"><span
-                                            class="far fa-heart"></span></a> --}}
+                                <a class="btn btn-sm btn-falcon-default me-2" href="#!" data-bs-toggle="modal"
+                                        data-bs-target="#modal-mcu-xl" id="button-kehadiran-peserta-mcu" data-code="{{ $datas->company_mou_code }}"><span
+                                            class="far fa-list-alt"></span></a>
                                 <a class="btn btn-sm btn-falcon-danger fs--2 text-youtube " href="#!"
                                     data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
                                     id="button-proses-summary-check-up" data-code="{{ $datas->company_mou_code }}"
@@ -267,6 +267,27 @@
                 $('#menu-absensi-kehadiran').html(data);
             }).fail(function() {
                 $('#menu-absensi-kehadiran').html('eror');
+            });
+        });
+        $(document).on("click", "#button-kehadiran-peserta-mcu", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-mcu-xl').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('medical_check_up_prosess_cetak_absensi') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-mcu-xl').html(data);
+            }).fail(function() {
+                $('#menu-mcu-xl').html('eror');
             });
         });
     </script>

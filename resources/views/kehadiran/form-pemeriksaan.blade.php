@@ -63,6 +63,7 @@
             userLinkRTL.setAttribute('disabled', true);
         }
     </script>
+
     <style>
         .wrapper {
             position: relative;
@@ -88,7 +89,6 @@
             height: 200px; */
         }
     </style>
-    <script src="{{ asset('asset/js/signature.js') }}"></script>
 </head>
 
 
@@ -126,10 +126,12 @@
                                 <div class="col-md-7 d-flex flex-center">
                                     <div class="p-4 flex-grow-1">
                                         <h3>Peserta MCU</h3>
-                                        <form method="POST" action="{{ route('signaturepad.update') }}">
+                                        <form method="POST" action="{{ route('signaturepad.update_pemeriksaan_save') }}">
                                             @csrf
                                             <input type="text" name="token"
                                                 value="{{ $data->log_kehadiran_pasien_token }}" hidden>
+                                            <input type="text" name="jumlah" id="jumlah"
+                                                value="{{ $pemeriksaan->count() }}" hidden>
                                             <div class="row g-3">
                                                 <div class="col-md-6">
                                                     <label class="form-label" for="card-name">Nama Lengkap</label>
@@ -156,19 +158,45 @@
                                                 </div>
                                                 <div class="position-relative mt-2">
                                                     <hr class="bg-300" />
-                                                    <div class="divider-content-center">Sign Here</div>
+                                                    <div class="divider-content-center">Status Pemeriksaan Disini</div>
                                                 </div>
-                                                <div class="col-md-6">
-                                                    <div class="wrapper">
-                                                        <img src="{{ asset('img/bg.jpg') }}"  width='300' height='200'/>
-                                                        <canvas id="signature-pad" class="signature-pad" width='300' height='200' style="border: 2px solid black;"></canvas>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6 justify-content-between flex-column">
-                                                    <div class="d-grid gap-2 mt-2 g-2 float-end">
-                                                        <button class="btn btn-falcon-primary px-5" type="button" id="save"><span class="fas fa-file-signature"></span> Save</button>
-                                                        <!-- <br> -->
-                                                        <button class="btn btn-falcon-danger px-5" type="button" id="clear"><span class="fas fa-remove-format"></span> Clear</button>
+                                                <div class="col-12">
+                                                    <div id="tableExample2" data-list='{"valueNames":["name","email","age"],"page":5,"pagination":true}'>
+                                                        <div class="table-responsive scrollbar">
+                                                            <table class="table table-bordered table-striped fs--1 mb-0 border">
+                                                                <thead class="bg-200 text-900">
+                                                                    <tr>
+                                                                        <th class="sort" data-sort="name">Nama Pemeriksaan</th>
+                                                                        <th class="text-center" data-sort="email">Status</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody class="list">
+                                                                    <?php $hitung = 0; ?>
+                                                                    @foreach ($pemeriksaan as $pem)
+                                                                    <tr>
+                                                                        <td class="name">{{$pem->master_pemeriksaan_name}}</td>
+                                                                        <td class="text-center">
+                                                                            <?php
+
+                                                                            $cek = Illuminate\Support\Facades\DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $data->mou_peserta_code)->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)->first()
+                                                                            ?>
+                                                                            @if ($cek)
+                                                                            <input class="form-check-input" name="pemeriksaan" id="pem{{$pem->master_pemeriksaan_code}}" type="checkbox" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" checked />
+                                                                            <?php $hitung = $hitung + 1; ?>
+                                                                            @else
+                                                                            <input class="form-check-input" name="pemeriksaan" id="pem{{$pem->master_pemeriksaan_code}}" type="checkbox" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" />
+                                                                            @endif
+                                                                        </td>
+                                                                    </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <!-- <div class="d-flex justify-content-center mt-3">
+                                                            <button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                                                            <ul class="pagination mb-0"></ul>
+                                                            <button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next" data-list-pagination="next"><span class="fas fa-chevron-right"> </span></button>
+                                                        </div> -->
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
@@ -189,8 +217,14 @@
                                                     value="{{ $data->mou_peserta_code }}" hidden>
 
                                                 <div class="col-md-12">
+                                                    @if ($hitung == $pemeriksaan->count())
                                                     <button class="btn btn-danger w-100 " id="button-submit-selesai"
-                                                        type="submit" name="submit" style="display: none;">Register</button>
+                                                        type="submit" name="submit">Simpan</button>
+                                                    @else
+                                                    <button class="btn btn-danger w-100 " id="button-submit-selesai"
+                                                        type="submit" name="submit" style="display: none;">Simpan</button>
+
+                                                    @endif
                                                 </div>
                                             </div>
                                         </form>
@@ -221,29 +255,38 @@
     <script src="{{ asset('vendors/is/is.min.js') }}"></script>
     <script src="{{ asset('vendors/fontawesome/all.min.js') }}"></script>
     <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
-    <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
+    <!-- <script src="{{ asset('vendors/list.js/list.min.js') }}"></script> -->
     <script src="{{ asset('asset/js/theme.js') }}"></script>
     <script>
-        var signaturePad = new SignaturePad(document.getElementById('signature-pad'), {
-            backgroundColor: 'rgba(255, 255, 255, 0)',
-            penColor: 'rgb(0, 0, 0)'
-        });
-        var saveButton = document.getElementById('save');
-        var cancelButton = document.getElementById('clear');
+        function MyFunction(id, x) {
+            var total = document.getElementById('jumlah').value;
+            if ($('#pem' + id).is(":checked")) {
+                var pilihan = 'on';
+            } else {
+                var pilihan = 'off';
+            }
+            $.ajax({
+                url: "{{ route('signaturepad.update_pemeriksaan') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": id,
+                    "user": x,
+                    "option": pilihan,
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                if (data == total) {
+                    $("#button-submit-selesai").show();
+                } else {
+                    $("#button-submit-selesai").hide();
+                }
+            }).fail(function() {
+                console.log('eror');
 
-        saveButton.addEventListener('click', function(event) {
-            var data = signaturePad.toDataURL('image/png');
-            $('#signature64').html(data);
-            $("#button-submit-selesai").show();
-            $("#save").hide();
-        });
-
-        cancelButton.addEventListener('click', function(event) {
-            signaturePad.clear();
-            $("#save").show();
-            $("#button-submit-selesai").hide();
-        });
-
+            });
+        }
     </script>
 
 </body>

@@ -71,6 +71,8 @@ Route::prefix('application')->group(function () {
     Route::post('medical-check-up/prosess-update', [ApplicationController::class, 'medical_check_up_prosess_update'])->name('medical_check_up_prosess_update');
     Route::post('medical-check-up/prosess-update-save', [ApplicationController::class, 'medical_check_up_prosess_update_save'])->name('medical_check_up_prosess_update_save');
     Route::post('medical-check-up/prosess-generate-absensi', [ApplicationController::class, 'medical_check_up_prosess_generate_absensi'])->name('medical_check_up_prosess_generate_absensi');
+    Route::post('medical-check-up/prosess-cetak-absensi', [ApplicationController::class, 'medical_check_up_prosess_cetak_absensi'])->name('medical_check_up_prosess_cetak_absensi');
+    Route::post('medical-check-up/prosess-cetak-absensi-mcu', [ApplicationController::class, 'medical_check_up_prosess_cetak_absensi_mcu'])->name('medical_check_up_prosess_cetak_absensi_mcu');
     Route::post('medical-check-up/summary', [ApplicationController::class, 'medical_check_up_summary'])->name('medical_check_up_summary');
     Route::post('medical-check-up/summary-save-persentasi', [ApplicationController::class, 'medical_check_up_summary_save_persentasi'])->name('medical_check_up_summary_save_persentasi');
     Route::post('medical-check-up/summary-save-executive', [ApplicationController::class, 'medical_check_up_summary_save_executive'])->name('medical_check_up_summary_save_executive');
@@ -173,10 +175,12 @@ Route::post('file-upload/upload-file-healty-talk', [UploadFileController::class,
 
 Route::get('signaturepad', [SignaturePadController::class, 'index']);
 Route::get('contoh', [SignaturePadController::class, 'contoh']);
-Route::get('signaturepad/data-kehadiran-mcu/detail/{id}', [SignaturePadController::class, 'sign']);
+Route::get('signaturepad/data-kehadiran-mcu/detail/{id}', [SignaturePadController::class, 'sign'])->name('sign-data-baru');
 Route::get('absensi/data-kehadiran-mcu/perusahaan/{id}', [SignaturePadController::class, 'sign_perusahaan']);
 Route::post('absensi/data-kehadiran-mcu/perusahaan/cari-peserta/data', [SignaturePadController::class, 'cari_data_peserta'])->name('cari_data_absensi_peserta_mcu');
 
 Route::post('signaturepad', [SignaturePadController::class, 'upload'])->name('signaturepad.upload');
 Route::post('signaturepad-update', [SignaturePadController::class, 'update'])->name('signaturepad.update');
+Route::post('signaturepad-update-pemeriksaan', [SignaturePadController::class, 'update_pemeriksaan'])->name('signaturepad.update_pemeriksaan');
+Route::post('signaturepad-update-pemeriksaan-save', [SignaturePadController::class, 'update_pemeriksaan_save'])->name('signaturepad.update_pemeriksaan_save');
 Route::post('signaturepad-update-save', [SignaturePadController::class, 'save_signiture'])->name('signaturepad.save_signiture');

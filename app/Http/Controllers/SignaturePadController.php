@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -12,13 +12,11 @@ class SignaturePadController extends Controller
     {
 
         return view('signaturePad');
-
     }
     public function contoh()
     {
 
         return view('contoh');
-
     }
     public function sign($id)
     {
@@ -29,15 +27,23 @@ class SignaturePadController extends Controller
         if ($data) {
             if ($data->log_kehadiran_pasien_status == 0) {
                 return view('kehadiran.signature-template', ['data' => $data]);
+            } elseif ($data->log_kehadiran_pasien_status == 1) {
+                if ($data->mou_peserta_status == 0) {
+                    $pemeriksaan = DB::table('company_mou_agreement_sub')->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+                        ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)->get();
+                    return view('kehadiran.form-pemeriksaan', ['data' => $data, 'pemeriksaan' => $pemeriksaan]);
+                } elseif ($data->mou_peserta_status == 1) {
+                    return view('kehadiran.done');
+                }
             } else {
                 return view('kehadiran.done');
             }
         } else {
             return '<script>
-        setTimeout(() => {
-            window.close();
-        }, 2000);
-    </script>';
+                        setTimeout(() => {
+                            window.close();
+                        }, 100);
+                    </script>';
         }
     }
     public function sign_perusahaan($id)
@@ -59,10 +65,20 @@ class SignaturePadController extends Controller
         $cabang = DB::table('master_cabang')->where('master_cabang_code', $request->cab)->first();
         if ($data) {
             $log = DB::table('log_kehadiran_pasien')->where('mou_peserta_code', $data->mou_peserta_code)->first();
-            if (!$log) {
-                return view('kehadiran.template-sign', ['data' => $data, 'cabang' => $cabang]);
+            if ($log) {
+                return view('kehadiran.template-sign', ['data' => $data, 'cabang' => $cabang, 'token' => $log->log_kehadiran_pasien_token]);
             } else {
-                return 'Sudah Melakukan Absensi';
+                $token = str::uuid() . '-' . Str::random(45);
+                DB::table('log_kehadiran_pasien')->insert([
+                    'mou_peserta_code' => $data->mou_peserta_code,
+                    'log_kehadiran_pasien_lokasi' => $request->cab,
+                    'log_kehadiran_pasien_sign' => '-',
+                    'log_kehadiran_pasien_status' => '0',
+                    'log_kehadiran_pasien_token' => $token,
+                    'log_kehadiran_pasien_time' => now(),
+                    'created_at' => now(),
+                ]);
+                return view('kehadiran.template-sign', ['data' => $data, 'cabang' => $cabang, 'token' => $token]);
             }
         } else {
             return 'absensi tidak ditemukan';
@@ -85,7 +101,7 @@ class SignaturePadController extends Controller
     {
         DB::table('log_kehadiran_pasien')->where('log_kehadiran_pasien_token', $request->token)->update([
             'log_kehadiran_pasien_sign' => $request->signed,
-            'log_kehadiran_pasien_token' => str::uuid(),
+            'log_kehadiran_pasien_token' => $request->token,
             'log_kehadiran_pasien_status' => 1,
             'log_kehadiran_pasien_time' => now(),
         ]);
@@ -98,7 +114,30 @@ class SignaturePadController extends Controller
                 'created_at' => now()
             ]);
         }
-        return back()->with('success', 'success Full upload signature');
+        return redirect()->back()->withSuccess('Great! Berhasil Check In Peserta MCU');
+    }
+    public function update_pemeriksaan(Request $request)
+    {
+        if ($request->option == 'on') {
+            DB::table('log_pemeriksaan_pasien')->insert([
+                'mou_peserta_code' => $request->user,
+                'master_pemeriksaan_code' => $request->code,
+                'log_pemeriksaan_status' => 1,
+                'log_pemeriksaan_deskripsi' => '-',
+                'created_at' => now()
+            ]);
+        } elseif ($request->option == 'off') {
+            DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->user)->where('master_pemeriksaan_code', $request->code)->delete();
+        }
+        $data =  DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->user)->count();
+        return $data;
+    }
+    public function update_pemeriksaan_save(Request $request)
+    {
+        DB::table('company_mou_peserta')->where('mou_peserta_code', $request->peserta)->update([
+            'mou_peserta_status' => 1
+        ]);
+        return redirect()->back()->withSuccess('Great! Berhasil Menyelesaikan Medicak Checkup');
     }
     public function save_signiture(Request $request)
     {

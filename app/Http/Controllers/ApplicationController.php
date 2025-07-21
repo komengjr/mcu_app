@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\McuExport;
 use App\Imports\PesertaAllImport;
 use App\Imports\PesertaImport;
 use App\Models\Peserta;
@@ -1049,6 +1050,11 @@ class ApplicationController extends Controller
     {
         $group = DB::table('group_cabang')->get();
         return view('application.laporan.rekap-mcu.form-kehadiran-mcu', ['code' => $request->code, 'group' => $group]);
+    }
+    public function laporan_rekap_excel_mcu_kehadiran_peserta_mcu($id)
+    {
+
+        return Excel::download(new McuExport($id), 'Report_MCU' . $id . '.xlsx');
     }
     public function laporan_rekap_mcu_kehadiran_peserta_mcu_report(Request $request)
     {

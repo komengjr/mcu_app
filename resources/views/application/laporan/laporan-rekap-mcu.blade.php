@@ -172,5 +172,30 @@
                 }, 1000);
             });
         });
+        // $(document).on("click", "#button-detail-rekap-kehadiran-peserta-excel", function(e) {
+        //     e.preventDefault();
+        //     var code = $(this).data("code");
+        //     $('#menu-mcu').html(
+        //         '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        //     );
+        //     $.ajax({
+        //         url: "{{ route('laporan_rekap_mcu_kehadiran_peserta_mcu') }}",
+        //         type: "POST",
+        //         cache: false,
+        //         data: {
+        //             "_token": "{{ csrf_token() }}",
+        //             "code": code
+        //         },
+        //         dataType: 'html',
+        //     }).done(function(data) {
+        //         $('#menu-mcu').html(data);
+        //     }).fail(function() {
+        //         $('#menu-mcu').html(
+        //             '<span class="badge bg-warning">Data Belum Lengkap , Reload.. dalam 3 detik</span>');
+        //         setTimeout(() => {
+        //             location.reload();
+        //         }, 1000);
+        //     });
+        // });
     </script>
 @endsection

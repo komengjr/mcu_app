@@ -149,6 +149,7 @@ Route::prefix('application')->group(function () {
     Route::post('laporan-rekap-mcu/kehadiran-peserta-mcu', [ApplicationController::class, 'laporan_rekap_mcu_kehadiran_peserta_mcu'])->name('laporan_rekap_mcu_kehadiran_peserta_mcu');
     Route::post('laporan-rekap-mcu/kehadiran-peserta-mcu/report', [ApplicationController::class, 'laporan_rekap_mcu_kehadiran_peserta_mcu_report'])->name('laporan_rekap_mcu_kehadiran_peserta_mcu_report');
     Route::post('laporan-rekap-mcu/kehadiran-peserta-mcu/report-group', [ApplicationController::class, 'laporan_rekap_mcu_kehadiran_peserta_mcu_report_group'])->name('laporan_rekap_mcu_kehadiran_peserta_mcu_report_group');
+    Route::get('laporan-rekap-mcu/kehadiran-peserta-mcu/export-excel/{id}', [ApplicationController::class, 'laporan_rekap_excel_mcu_kehadiran_peserta_mcu'])->name('laporan_rekap_excel_mcu_kehadiran_peserta_mcu');
 });
 
 Route::prefix('master-data')->group(function () {

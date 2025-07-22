@@ -377,14 +377,14 @@ class ApplicationController extends Controller
                 $data = DB::table('company_mou_peserta')
                     ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
                     ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
-                    ->where('company_mou_peserta.mou_peserta_status', '!=', 1)
+                    ->where('company_mou_peserta.mou_peserta_status', '<', 2)
                     ->orderBy('log_lokasi_pasien.id_log_lokasi_pasien', 'DESC')->get();
             } else {
                 $data = DB::table('company_mou_peserta')
                     ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
                     ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
                     ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
-                    ->where('company_mou_peserta.mou_peserta_status', '!=', 1)
+                    ->where('company_mou_peserta.mou_peserta_status', '<', 2)
                     ->orderBy('log_lokasi_pasien.id_log_lokasi_pasien', 'DESC')->get();
             }
 
@@ -486,7 +486,7 @@ class ApplicationController extends Controller
     public function menu_service_proses_penyelesaian_peserta_mcu(Request $request)
     {
         DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->update([
-            'mou_peserta_status' => 1
+            'mou_peserta_status' => 2
         ]);
         return 'sukses';
     }

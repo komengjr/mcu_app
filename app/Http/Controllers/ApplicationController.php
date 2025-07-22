@@ -185,6 +185,10 @@ class ApplicationController extends Controller
             ->where('company_mou_peserta.company_mou_code', $request->code)->get();
         return view('application.menu.mcu.data-peserta-mcu', ['data' => $data, 'peserta' => $peserta]);
     }
+    public function medical_check_up_add_pesertal(Request $request){
+        $data = DB::table('company_mou_agreement')->where('company_mou_code', $request->code)->get();
+        return view('application.menu.service.form-add-peserta', ['code' => $request->code, 'data' => $data]);
+    }
     public function medical_check_up_prosess(Request $request)
     {
         $data = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->first();

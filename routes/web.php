@@ -67,6 +67,7 @@ Route::prefix('application')->group(function () {
 
 
     Route::post('medical-check-up/detail', [ApplicationController::class, 'medical_check_up_detail'])->name('medical_check_up_detail');
+    Route::post('medical-check-up/add-peserta', [ApplicationController::class, 'medical_check_up_add_pesertal'])->name('medical_check_up_add_pesertal');
     Route::post('medical-check-up/prosess', [ApplicationController::class, 'medical_check_up_prosess'])->name('medical_check_up_prosess');
     Route::post('medical-check-up/prosess-save', [ApplicationController::class, 'medical_check_up_prosess_save'])->name('medical_check_up_prosess_save');
     Route::post('medical-check-up/prosess-update', [ApplicationController::class, 'medical_check_up_prosess_update'])->name('medical_check_up_prosess_update');

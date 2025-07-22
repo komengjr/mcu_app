@@ -2,6 +2,7 @@
 @section('base.css')
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.4/css/responsive.bootstrap5.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.4/css/buttons.dataTables.css">
     <link href="{{ asset('vendors/choices/choices.min.css') }}" rel="stylesheet" />
 @endsection
 @section('content')
@@ -225,6 +226,12 @@
                                                     data-code="{{ $datas->company_mou_code }}">
                                                     <span class="far fa-address-card"></span>
                                                     <span class="ms-2 d-none d-md-inline-block">Rekap</span></a>
+                                                <a class="btn btn-sm btn-info d-lg-block mt-lg-2" href="#!"
+                                                    id="button-detail-full-peserta" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-monitoring"
+                                                    data-code="{{ $datas->company_mou_code }}">
+                                                    <span class="fas fa-file-export"></span>
+                                                    <span class="d-none d-md-inline-block">Export</span></a>
                                             </div>
                                         </div>
                                     </div>
@@ -257,6 +264,13 @@
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
     <script src="https://cdn.datatables.net/responsive/3.0.4/js/dataTables.responsive.js"></script>
     <script src="https://cdn.datatables.net/responsive/3.0.4/js/responsive.bootstrap5.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.4/js/dataTables.buttons.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.4/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.4/js/buttons.print.min.js"></script>
     <script src="{{ asset('vendors/choices/choices.min.js') }}"></script>
     <script>
         new DataTable('#example', {
@@ -359,6 +373,32 @@
             );
             $.ajax({
                 url: "{{ route('monitoring_mcu_rekap_full') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-monitoring').html(data);
+            }).fail(function() {
+                $('#menu-monitoring').html(
+                    '<span class="badge bg-warning m-4">Data Belum Lengkap , Reload.. dalam 3 detik</span>'
+                );
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            });
+        });
+        $(document).on("click", "#button-detail-full-peserta", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-monitoring').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('monitoring_mcu_rekap_full_detail') }}",
                 type: "POST",
                 cache: false,
                 data: {

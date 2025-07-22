@@ -63,6 +63,7 @@ Route::prefix('application')->group(function () {
     Route::post('monitoring-mcu/detail/sudah', [ApplicationController::class, 'monitoring_mcu_detail_sudah'])->name('monitoring_mcu_detail_sudah');
     Route::post('monitoring-mcu/rekap', [ApplicationController::class, 'monitoring_mcu_rekap'])->name('monitoring_mcu_rekap');
     Route::post('monitoring-mcu/rekap-full', [ApplicationController::class, 'monitoring_mcu_rekap_full'])->name('monitoring_mcu_rekap_full');
+    Route::post('monitoring-mcu/rekap-full/detail', [ApplicationController::class, 'monitoring_mcu_rekap_full_detail'])->name('monitoring_mcu_rekap_full_detail');
 
 
     Route::post('medical-check-up/detail', [ApplicationController::class, 'medical_check_up_detail'])->name('medical_check_up_detail');
@@ -149,6 +150,7 @@ Route::prefix('application')->group(function () {
     Route::post('laporan-rekap-mcu/kehadiran-peserta-mcu', [ApplicationController::class, 'laporan_rekap_mcu_kehadiran_peserta_mcu'])->name('laporan_rekap_mcu_kehadiran_peserta_mcu');
     Route::post('laporan-rekap-mcu/kehadiran-peserta-mcu/report', [ApplicationController::class, 'laporan_rekap_mcu_kehadiran_peserta_mcu_report'])->name('laporan_rekap_mcu_kehadiran_peserta_mcu_report');
     Route::post('laporan-rekap-mcu/kehadiran-peserta-mcu/report-group', [ApplicationController::class, 'laporan_rekap_mcu_kehadiran_peserta_mcu_report_group'])->name('laporan_rekap_mcu_kehadiran_peserta_mcu_report_group');
+    Route::post('laporan-rekap-mcu/kehadiran-peserta-mcu/export-data', [ApplicationController::class, 'laporan_rekap_mcu_kehadiran_peserta_mcu_export_data'])->name('laporan_rekap_mcu_kehadiran_peserta_mcu_export_data');
     Route::get('laporan-rekap-mcu/kehadiran-peserta-mcu/export-excel/{id}', [ApplicationController::class, 'laporan_rekap_excel_mcu_kehadiran_peserta_mcu'])->name('laporan_rekap_excel_mcu_kehadiran_peserta_mcu');
 });
 

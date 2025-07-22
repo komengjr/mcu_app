@@ -225,7 +225,9 @@
          </div>
      </div>
      <div class="card-footer border-top text-end">
-         <a class="btn btn-falcon-default btn-sm ms-2" href="{{route('laporan_rekap_excel_mcu_kehadiran_peserta_mcu',['id'=>$data->company_mou_code])}}" >Export Excel</a>
+          <button class="btn btn-falcon-danger" data-bs-toggle="modal"
+             data-bs-target="#modal-mcu" id="button-detail-full-peserta"
+             data-code="{{ $data->company_mou_code }}">Export data</button>
          <a class="btn btn-falcon-default btn-sm ms-2" href="#!" data-bs-toggle="modal"
              data-bs-target="#modal-mcu" id="button-detail-rekap-kehadiran-peserta"
              data-code="{{ $data->company_mou_code }}">Export Kehadiran PDF</a>

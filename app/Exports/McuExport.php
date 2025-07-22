@@ -64,7 +64,7 @@ class McuExport implements FromArray, WithHeadings, ShouldAutoSize
             $data_arr[] = array(
                 "No" => $no++,
                 "mou_peserta_nip" => "'" . $value->mou_peserta_nip,
-                "mou_peserta_name" => $value->mou_peserta_code,
+                "mou_peserta_name" => $value->mou_peserta_name,
                 "mou_peserta_jk" => $value->mou_peserta_jk,
                 "mou_peserta_departemen" => $value->mou_peserta_departemen,
                 "wilayah" => $wilayah,

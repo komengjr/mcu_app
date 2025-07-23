@@ -138,9 +138,9 @@
                              </tr>
                          </thead>
                          <tbody class="list">
-                             @foreach ($cabang as $cabangs)
+                             @foreach ($group as $groups)
                                  <tr>
-                                     <td>{{ $cabangs->group_cabang_name }}</td>
+                                     <td>{{ $groups->group_cabang_name }}</td>
                                      {{-- <td class="name">{{ $cabangs->master_cabang_name }}</td> --}}
                                      <td class="email">
                                          @php
@@ -151,13 +151,15 @@
                                                      '=',
                                                      'log_lokasi_pasien.mou_peserta_code',
                                                  )
+                                                 ->join('master_cabang','master_cabang.master_cabang_code','=','log_lokasi_pasien.lokasi_cabang')
+                                                 ->join('group_cabang_detail','group_cabang_detail.master_cabang_code','=','master_cabang.master_cabang_code')
                                                  ->where(
                                                      'company_mou_peserta.company_mou_code',
                                                      $data->company_mou_code,
                                                  )
                                                  ->where(
-                                                     'log_lokasi_pasien.lokasi_cabang',
-                                                     $cabangs->master_cabang_code,
+                                                     'group_cabang_detail.master_cabang_code',
+                                                     $groups->master_cabang_code,
                                                  )
                                                  ->count();
                                          @endphp
@@ -166,11 +168,11 @@
                                      @php
                                          $sumarry = DB::table('log_summary_cabang')
                                              ->where('company_mou_code', $data->company_mou_code)
-                                             ->where('master_cabang_code', $cabangs->master_cabang_code)
+                                             ->where('master_cabang_code', $groups->master_cabang_code)
                                              ->first();
                                      @endphp
                                      <td class="age">
-                                         @if ($sumarry)
+                                         <!-- @if ($sumarry)
                                              @if ($sumarry->summary_cabang_executive == 1)
                                                  <span class="badge bg-primary">Done</span>
                                              @elseif ($sumarry->summary_cabang_executive == 0)
@@ -180,10 +182,10 @@
                                              @endif
                                          @else
                                              <span class="badge bg-danger">Belum</span>
-                                         @endif
+                                         @endif -->
                                      </td>
                                      <td>
-                                         @if ($sumarry)
+                                         <!-- @if ($sumarry)
                                              @if ($sumarry->summary_cabang_pesentasi == 1)
                                                  <span class="badge bg-primary">Done</span>
                                              @elseif ($sumarry->summary_cabang_pesentasi == 0)
@@ -193,10 +195,10 @@
                                              @endif
                                          @else
                                              <span class="badge bg-danger">Belum</span>
-                                         @endif
+                                         @endif -->
                                      </td>
                                      <td>
-                                         @if ($sumarry)
+                                         <!-- @if ($sumarry)
                                              @if ($sumarry->summary_cabang_ht == 1)
                                                  <span class="badge bg-primary">Done</span>
                                              @elseif ($sumarry->summary_cabang_ht == 0)
@@ -206,7 +208,7 @@
                                              @endif
                                          @else
                                              <span class="badge bg-danger">Belum</span>
-                                         @endif
+                                         @endif -->
                                      </td>
                                  </tr>
                              @endforeach

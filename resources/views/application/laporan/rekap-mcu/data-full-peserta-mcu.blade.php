@@ -54,9 +54,9 @@
                     ?>
                     <th class="text-center">
                         @if ($status)
-                        <span style="color: blue;">✓</span>
+                        <span style="color: blue;">🗹</span>
                         @else
-                        <span style="color: red;">✘</span>
+                        <span style="color: red;">x</span>
                         @endif
                     </th>
                     @endforeach

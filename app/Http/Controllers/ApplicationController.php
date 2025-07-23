@@ -185,7 +185,8 @@ class ApplicationController extends Controller
             ->where('company_mou_peserta.company_mou_code', $request->code)->get();
         return view('application.menu.mcu.data-peserta-mcu', ['data' => $data, 'peserta' => $peserta]);
     }
-    public function medical_check_up_add_pesertal(Request $request){
+    public function medical_check_up_add_pesertal(Request $request)
+    {
         $data = DB::table('company_mou_agreement')->where('company_mou_code', $request->code)->get();
         return view('application.menu.service.form-add-peserta', ['code' => $request->code, 'data' => $data]);
     }
@@ -387,11 +388,36 @@ class ApplicationController extends Controller
                     ->where('company_mou_peserta.mou_peserta_status', '<', 2)
                     ->orderBy('log_lokasi_pasien.id_log_lokasi_pasien', 'DESC')->get();
             }
-
-            return view('application.menu.menu-service', ['data' => $data]);
+            $perusahaan = DB::table('master_company')->get();
+            return view('application.menu.menu-service', ['data' => $data, 'perusahaan' => $perusahaan]);
         } else {
             return Redirect::to('dashboard/home');
         }
+    }
+    public function menu_service_pilih_perusahaan(Request $request)
+    {
+        $paket = DB::table('company_mou')->where('master_company_code', $request->code)->get();
+        return view('application.menu.service.form-select-agreement', ['paket' => $paket]);
+    }
+    public function menu_service_pilih_agreement(Request $request)
+    {
+        if (Auth::user()->access_code == '0c654ba3-4496-4873-9a4c-f15f1fbc73d2' || Auth::user()->access_code == 'master') {
+            $data = DB::table('company_mou_peserta')
+                ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+                ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+                ->where('company_mou_peserta.mou_peserta_status', '<', 2)
+                ->where('company_mou.company_mou_code', $request->code)
+                ->orderBy('log_lokasi_pasien.id_log_lokasi_pasien', 'DESC')->get();
+        } else {
+            $data = DB::table('company_mou_peserta')
+                ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+                ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+                ->where('company_mou_peserta.mou_peserta_status', '<', 2)
+                ->where('company_mou.company_mou_code', $request->code)
+                ->orderBy('log_lokasi_pasien.id_log_lokasi_pasien', 'DESC')->get();
+        }
+        return view('application.menu.service.table-menu-service',['data'=>$data]);
     }
     public function menu_service_history(Request $request)
     {
@@ -410,6 +436,13 @@ class ApplicationController extends Controller
             ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
             ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)->get();
         return view('application.menu.service.form-proses-pasien', ['data' => $data, 'pemeriksaan' => $pemeriksaan]);
+    }
+    public function menu_service_proses_update_status(Request $request){
+        $data = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->first();
+        $pemeriksaan = DB::table('company_mou_agreement_sub')
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+            ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)->get();
+        return view('application.menu.service.form-proses-update', ['data' => $data, 'pemeriksaan' => $pemeriksaan]);
     }
     public function menu_service_proses_pemeriksaan_save(Request $request)
     {

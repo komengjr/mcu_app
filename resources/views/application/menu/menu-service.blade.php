@@ -36,15 +36,16 @@
             <div class="col-sm-auto">
                 <div class="row gx-2 align-items-center">
                     <div class="col-auto">
-                        <form class="row gx-2">
-                            <div class="col-auto"><small>Sort by:</small></div>
-                            <div class="col-auto">
-                                <select class="form-select form-select-sm" aria-label="Bulk actions">
-                                    <option selected="">Best Match</option>
-                                    <option value="Refund">Newest</option>
-                                </select>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-falcon-danger dropdown-toggle" id="btnGroupVerticalDrop2"
+                                type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
+                                    class="fas fa-align-left me-1" data-fa-transform="shrink-3"></span>Menu</button>
+                            <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
+                                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu"
+                                    id="button-data-history-mcu"><span class="far fa-folder-open"></span>
+                                    History</button>
                             </div>
-                        </form>
+                        </div>
                     </div>
                     {{-- <div class="col-auto pe-0">
                             <a class="text-600 px-1" href="../../../app/e-commerce/product/product-list.html"
@@ -59,26 +60,25 @@
 <div class="card mb-3">
     <div class="card-header bg-danger">
         <div class="row align-items-center">
-            <div class="col">
-                <h3 class="m-0"><span class="badge bg-danger m-0 p-0">Service MCU</span></h3>
+            <div class="col-md-4">
+                <label for="organizerSingle" class="my-0 text-white">Pilih Perusahaan</label>
+                <select class="form-select js-choice bg-light" id="perusahaan" name="perusahaan">
+                    <option value="">Select Perusahaan</option>
+                    @foreach ($perusahaan as $per)
+                    <option value="{{ $per->master_company_code  }}">{{ $per->master_company_name }}</option>
+                    @endforeach
+                </select>
             </div>
-            <div class="col-auto">
-                <div class="btn-group" role="group">
-                    <button class="btn btn-sm btn-falcon-danger dropdown-toggle" id="btnGroupVerticalDrop2"
-                        type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
-                            class="fas fa-align-left me-1" data-fa-transform="shrink-3"></span>Menu</button>
-                    <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
+            <div class="col-md-4" id="menu-agreement">
 
-                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu"
-                            id="button-data-history-mcu"><span class="far fa-folder-open"></span>
-                            History</button>
-                    </div>
-                </div>
+            </div>
+            <div class="col-md-4 py-0">
+
             </div>
         </div>
     </div>
-    <div class="card-body border-top p-3">
-        <table id="example" class="table table-striped nowrap" style="width:100%">
+    <div class="card-body border-top p-3" id="table-service">
+        <table id="example" class="table table-striped nowrap border" style="width:100%">
             <thead class="bg-200 text-700 fs--2">
                 <tr>
                     <th>No</th>
@@ -106,10 +106,15 @@
                                 aria-expanded="false"><span class="fas fa-align-left me-1"
                                     data-fa-transform="shrink-3"></span>Option</button>
                             <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
-                                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
+                                <button class="dropdown-item text-primary" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
                                     id="button-proses-peserta-mcu" data-code="{{ $datas->mou_peserta_code }}"><span
-                                        class="far fa-folder-open"></span>
+                                        class="fas fa-project-diagram"></span>
                                     Proses Service</button>
+                                <div class="dropdown-divider"></div>
+                                <button class="dropdown-item text-warning" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
+                                    id="button-proses-update-status-mcu" data-code="{{ $datas->mou_peserta_code }}" data-company="{{ $datas->company_mou_code }}"><span
+                                        class="fas fa-scroll"></span>
+                                    Update Pemeriksaan</button>
                             </div>
                         </div>
                     </td>
@@ -228,6 +233,9 @@
     });
 </script>
 <script>
+    new window.Choices(document.querySelector(".js-choice"));
+</script>
+<script>
     $(document).on("click", "#button-data-history-mcu", function(e) {
         e.preventDefault();
         $('#menu-mcu').html(
@@ -248,27 +256,6 @@
             $('#menu-mcu').html('eror');
         });
     });
-    // $(document).on("click", "#button-proses-check-up", function(e) {
-    //     e.preventDefault();
-    //     var code = $(this).data("code");
-    //     $('#menu-mcu').html(
-    //         '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
-    //     );
-    //     $.ajax({
-    //         url: "{{ route('medical_check_up_detail') }}",
-    //         type: "POST",
-    //         cache: false,
-    //         data: {
-    //             "_token": "{{ csrf_token() }}",
-    //             "code": code
-    //         },
-    //         dataType: 'html',
-    //     }).done(function(data) {
-    //         $('#menu-mcu').html(data);
-    //     }).fail(function() {
-    //         $('#menu-mcu').html('eror');
-    //     });
-    // });
     $(document).on("click", "#button-proses-peserta-mcu", function(e) {
         e.preventDefault();
         var code = $(this).data("code");
@@ -282,6 +269,29 @@
             data: {
                 "_token": "{{ csrf_token() }}",
                 "code": code
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-mcu-xl').html(data);
+        }).fail(function() {
+            $('#menu-mcu-xl').html('eror');
+        });
+    });
+    $(document).on("click", "#button-proses-update-status-mcu", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        var company = $(this).data("company");
+        $('#menu-mcu-xl').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('menu_service_proses_update_status') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code,
+                "company": company,
             },
             dataType: 'html',
         }).done(function(data) {
@@ -312,5 +322,95 @@
             $('#button-penyelesaian-peserta-mcu').html('eror');
         });
     });
+</script>
+<script>
+    $('#perusahaan').on("change", function() {
+        var dataid = document.getElementById("perusahaan").value;
+        if (dataid == "") {
+            Lobibox.notify('warning', {
+                pauseDelayOnHover: true,
+                continueDelayOnInactiveTab: true,
+                position: 'top right',
+                icon: 'fas fa-info-circle',
+                msg: 'Pastikan Sudah dipilih'
+            });
+        } else {
+            $.ajax({
+                url: "{{ route('menu_service_pilih_perusahaan') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": dataid,
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $("#menu-agreement").html(data);
+            }).fail(function() {
+                console.log('eror');
+            });
+        }
+    });
+</script>
+<script>
+    function MyFunction(id, x) {
+        $(this).removeAttr('checked');
+        var ket = document.getElementById('ket' + id).value;
+        if ($('#pem' + id).is(":checked")) {
+            var pilihan = 'on';
+        } else {
+            var pilihan = 'off';
+        }
+        if (pilihan == 'off') {
+            if (ket == '') {
+                Lobibox.notify('warning', {
+                    pauseDelayOnHover: true,
+                    continueDelayOnInactiveTab: true,
+                    position: 'top right',
+                    icon: 'fas fa-info-circle',
+                    msg: 'Pastikan Untuk Mengisi Keterangan Terlebih dahulu'
+                });
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                $.ajax({
+                    url: "{{ route('signaturepad.update_pemeriksaan') }}",
+                    type: "POST",
+                    cache: false,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "code": id,
+                        "user": x,
+                        "option": pilihan,
+                        "ket": ket,
+                    },
+                    dataType: 'html',
+                }).done(function(data) {
+
+                }).fail(function() {
+                    console.log('eror');
+                });
+            }
+        } else {
+            $.ajax({
+                url: "{{ route('signaturepad.update_pemeriksaan') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": id,
+                    "user": x,
+                    "option": pilihan,
+                    "ket": ket,
+                },
+                dataType: 'html',
+            }).done(function(data) {
+
+            }).fail(function() {
+                console.log('eror');
+            });
+        }
+    }
 </script>
 @endsection

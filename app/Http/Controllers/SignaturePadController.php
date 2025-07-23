@@ -118,16 +118,37 @@ class SignaturePadController extends Controller
     }
     public function update_pemeriksaan(Request $request)
     {
-        if ($request->option == 'on') {
-            DB::table('log_pemeriksaan_pasien')->insert([
-                'mou_peserta_code' => $request->user,
-                'master_pemeriksaan_code' => $request->code,
-                'log_pemeriksaan_status' => 1,
-                'log_pemeriksaan_deskripsi' => '-',
-                'created_at' => now()
-            ]);
-        } elseif ($request->option == 'off') {
-            DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->user)->where('master_pemeriksaan_code', $request->code)->delete();
+        $cek = DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->user)->where('master_pemeriksaan_code', $request->code)->first();
+        if ($cek) {
+            if ($request->option == 'on') {
+                DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->user)->where('master_pemeriksaan_code', $request->code)->update([
+                    'log_pemeriksaan_status' => 1,
+                    'log_pemeriksaan_deskripsi' => $request->ket,
+                ]);
+            } elseif ($request->option == 'off') {
+                DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->user)->where('master_pemeriksaan_code', $request->code)->update([
+                    'log_pemeriksaan_status' => 0,
+                    'log_pemeriksaan_deskripsi' => $request->ket,
+                ]);
+            }
+        } else {
+            if ($request->option == 'on') {
+                DB::table('log_pemeriksaan_pasien')->insert([
+                    'mou_peserta_code' => $request->user,
+                    'master_pemeriksaan_code' => $request->code,
+                    'log_pemeriksaan_status' => 1,
+                    'log_pemeriksaan_deskripsi' => $request->ket,
+                    'created_at' => now()
+                ]);
+            } elseif ($request->option == 'off') {
+                DB::table('log_pemeriksaan_pasien')->insert([
+                    'mou_peserta_code' => $request->user,
+                    'master_pemeriksaan_code' => $request->code,
+                    'log_pemeriksaan_status' => 0,
+                    'log_pemeriksaan_deskripsi' => $request->ket,
+                    'created_at' => now()
+                ]);
+            }
         }
         $data =  DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->user)->count();
         return $data;

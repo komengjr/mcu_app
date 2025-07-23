@@ -80,8 +80,11 @@ Route::prefix('application')->group(function () {
     Route::post('medical-check-up/summary-save-executive', [ApplicationController::class, 'medical_check_up_summary_save_executive'])->name('medical_check_up_summary_save_executive');
     Route::post('medical-check-up/summary-save-healty-talk', [ApplicationController::class, 'medical_check_up_summary_save_healty_talk'])->name('medical_check_up_summary_save_healty_talk');
 
+    Route::post('menu-servic/pilih-perusahaan', [ApplicationController::class, 'menu_service_pilih_perusahaan'])->name('menu_service_pilih_perusahaan');
+    Route::post('menu-servic/pilih-agreement', [ApplicationController::class, 'menu_service_pilih_agreement'])->name('menu_service_pilih_agreement');
     Route::post('menu-servic/history', [ApplicationController::class, 'menu_service_history'])->name('menu_service_history');
     Route::post('menu-service/proses', [ApplicationController::class, 'menu_service_proses'])->name('menu_service_proses');
+    Route::post('menu-service/proses-update-status', [ApplicationController::class, 'menu_service_proses_update_status'])->name('menu_service_proses_update_status');
     Route::post('menu-service/proses-pemeriksaan-save', [ApplicationController::class, 'menu_service_proses_pemeriksaan_save'])->name('menu_service_proses_pemeriksaan_save');
     Route::post('menu-service/proses-konsultasi-save', [ApplicationController::class, 'menu_service_proses_konsultasi_save'])->name('menu_service_proses_konsultasi_save');
     Route::post('menu-service/proses-pengiriman-save', [ApplicationController::class, 'menu_service_proses_pengiriman_save'])->name('menu_service_proses_pengiriman_save');

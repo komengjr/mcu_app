@@ -25,7 +25,7 @@
     <meta name="theme-color" content="#ffffff">
     <script src="{{ asset('asset/js/config.js') }}"></script>
     {{-- <script src="{{ asset('vendors/overlayscrollbars/OverlayScrollbars.min.js') }}"></script> --}}
-
+    <link rel="stylesheet" href="{{ asset('asset/notifications/css/lobibox.min.css') }}" />
 
     <!-- ===============================================-->
     <!--    Stylesheets-->
@@ -167,24 +167,66 @@
                                                                 <thead class="bg-200 text-900">
                                                                     <tr>
                                                                         <th class="sort" data-sort="name">Nama Pemeriksaan</th>
-                                                                        <th class="text-center" data-sort="email">Status</th>
+                                                                        <th class="text-center" data-sort="email">Yes</th>
+                                                                        <th class="text-center" data-sort="email">No</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody class="list">
                                                                     <?php $hitung = 0; ?>
                                                                     @foreach ($pemeriksaan as $pem)
+                                                                    <?php
+                                                                    $ket = Illuminate\Support\Facades\DB::table('log_pemeriksaan_pasien')
+                                                                        ->where('mou_peserta_code', $data->mou_peserta_code)
+                                                                        ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
+                                                                        ->first()
+                                                                    ?>
                                                                     <tr>
-                                                                        <td class="name">{{$pem->master_pemeriksaan_name}}</td>
+                                                                        <td class="name">
+                                                                            {{$pem->master_pemeriksaan_name}} <br>
+                                                                            @if ($ket)
+                                                                            <textarea name="" class="form-control" id="ket{{$pem->master_pemeriksaan_code}}">{{ $ket->log_pemeriksaan_deskripsi }}</textarea>
+                                                                            @else
+                                                                            <textarea name="" class="form-control" id="ket{{$pem->master_pemeriksaan_code}}"></textarea>
+                                                                            @endif
+                                                                        </td>
                                                                         <td class="text-center">
                                                                             <?php
-
-                                                                            $cek = Illuminate\Support\Facades\DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $data->mou_peserta_code)->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)->first()
+                                                                            $cek = Illuminate\Support\Facades\DB::table('log_pemeriksaan_pasien')
+                                                                                ->where('mou_peserta_code', $data->mou_peserta_code)
+                                                                                ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
+                                                                                ->where('log_pemeriksaan_pasien.log_pemeriksaan_status', 1)
+                                                                                ->first()
                                                                             ?>
                                                                             @if ($cek)
-                                                                            <input class="form-check-input" name="pemeriksaan" id="pem{{$pem->master_pemeriksaan_code}}" type="checkbox" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" checked />
+                                                                            <!-- <input class="form-check-input" name="pemeriksaan" id="pem{{$pem->master_pemeriksaan_code}}" type="checkbox" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" checked /> -->
+                                                                            <div class="form-check">
+                                                                                <input class="form-check-input" id="pem{{$pem->master_pemeriksaan_code}}" type="radio" name="pem{{$pem->master_pemeriksaan_code}}" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" checked />
+                                                                            </div>
                                                                             <?php $hitung = $hitung + 1; ?>
                                                                             @else
-                                                                            <input class="form-check-input" name="pemeriksaan" id="pem{{$pem->master_pemeriksaan_code}}" type="checkbox" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" />
+                                                                            <div class="form-check">
+                                                                                <input class="form-check-input" id="pem{{$pem->master_pemeriksaan_code}}" type="radio" name="pem{{$pem->master_pemeriksaan_code}}" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" />
+                                                                            </div>
+                                                                            <!-- <input class="form-check-input" name="pemeriksaan" id="pem{{$pem->master_pemeriksaan_code}}" type="checkbox" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" /> -->
+                                                                            @endif
+                                                                        </td>
+                                                                        <td>
+                                                                            <?php
+                                                                            $cek1 = Illuminate\Support\Facades\DB::table('log_pemeriksaan_pasien')
+                                                                                ->where('mou_peserta_code', $data->mou_peserta_code)
+                                                                                ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
+                                                                                ->where('log_pemeriksaan_pasien.log_pemeriksaan_status', 0)
+                                                                                ->first()
+                                                                            ?>
+                                                                            @if ($cek1)
+                                                                            <div class="form-check">
+                                                                                <input class="form-check-input" id="pem{{$pem->master_pemeriksaan_code}}" type="radio" name="pem{{$pem->master_pemeriksaan_code}}" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" value="off" checked />
+                                                                            </div>
+                                                                            <?php $hitung = $hitung + 1; ?>
+                                                                            @else
+                                                                            <div class="form-check">
+                                                                                <input class="form-check-input" id="pem{{$pem->master_pemeriksaan_code}}" type="radio" name="pem{{$pem->master_pemeriksaan_code}}" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" value="off" />
+                                                                            </div>
                                                                             @endif
                                                                         </td>
                                                                     </tr>
@@ -257,35 +299,75 @@
     <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
     <!-- <script src="{{ asset('vendors/list.js/list.min.js') }}"></script> -->
     <script src="{{ asset('asset/js/theme.js') }}"></script>
+    <script src="{{ asset('asset/notifications/js/notifications.min.js') }}"></script>
     <script>
         function MyFunction(id, x) {
+            $(this).removeAttr('checked');
             var total = document.getElementById('jumlah').value;
+            var ket = document.getElementById('ket' + id).value;
             if ($('#pem' + id).is(":checked")) {
                 var pilihan = 'on';
             } else {
                 var pilihan = 'off';
             }
-            $.ajax({
-                url: "{{ route('signaturepad.update_pemeriksaan') }}",
-                type: "POST",
-                cache: false,
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    "code": id,
-                    "user": x,
-                    "option": pilihan,
-                },
-                dataType: 'html',
-            }).done(function(data) {
-                if (data == total) {
-                    $("#button-submit-selesai").show();
+            if (pilihan == 'off') {
+                if (ket == '') {
+                    Lobibox.notify('warning', {
+                        pauseDelayOnHover: true,
+                        continueDelayOnInactiveTab: true,
+                        position: 'top right',
+                        icon: 'fas fa-info-circle',
+                        msg: 'Pastikan Untuk Mengisi Keterangan Terlebih dahulu'
+                    });
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
                 } else {
-                    $("#button-submit-selesai").hide();
+                    $.ajax({
+                        url: "{{ route('signaturepad.update_pemeriksaan') }}",
+                        type: "POST",
+                        cache: false,
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            "code": id,
+                            "user": x,
+                            "option": pilihan,
+                            "ket": ket,
+                        },
+                        dataType: 'html',
+                    }).done(function(data) {
+                        if (data == total) {
+                            $("#button-submit-selesai").show();
+                        } else {
+                            $("#button-submit-selesai").hide();
+                        }
+                    }).fail(function() {
+                        console.log('eror');
+                    });
                 }
-            }).fail(function() {
-                console.log('eror');
-
-            });
+            } else {
+                $.ajax({
+                    url: "{{ route('signaturepad.update_pemeriksaan') }}",
+                    type: "POST",
+                    cache: false,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "code": id,
+                        "user": x,
+                        "option": pilihan,
+                        "ket": ket,
+                    },
+                    dataType: 'html',
+                }).done(function(data) {
+                    if (data == total) {
+                        $("#button-submit-selesai").show();
+                    } else {
+                        $("#button-submit-selesai").hide();
+                    }
+                }).fail(function() {
+                    console.log('eror');
+                });
+            }
         }
     </script>
 </body>

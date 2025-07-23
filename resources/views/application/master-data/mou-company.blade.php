@@ -108,7 +108,7 @@
                                         <button class="dropdown-item text-warning" data-bs-toggle="modal"
                                             data-bs-target="#modal-company" id="button-add-companys" data-code="123"><span
                                                 class="far fa-edit"></span>
-                                            Edit Perusahaan</button>
+                                            Edit Agreement</button>
                                         <div class="dropdown-divider"></div>
                                         <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-company"
                                             id="button-data-peserta-mcu" data-code="{{ $datas->company_mou_code }}">
@@ -458,6 +458,27 @@
             }).done(function(data) {
                 $('#menu-nik-nip').html(data);
                 location.reload();
+            }).fail(function() {
+                $('#menu-nik-nip').html('eror');
+            });
+        });
+        $(document).on("click", "#button-update-data-peserta-mcu", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-nik-nip').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('mou_company_update_peserta_mcu') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-nik-nip').html(data);
             }).fail(function() {
                 $('#menu-nik-nip').html('eror');
             });

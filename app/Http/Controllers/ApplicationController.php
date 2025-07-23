@@ -417,7 +417,7 @@ class ApplicationController extends Controller
                 ->where('company_mou.company_mou_code', $request->code)
                 ->orderBy('log_lokasi_pasien.id_log_lokasi_pasien', 'DESC')->get();
         }
-        return view('application.menu.service.table-menu-service',['data'=>$data]);
+        return view('application.menu.service.table-menu-service', ['data' => $data]);
     }
     public function menu_service_history(Request $request)
     {
@@ -437,7 +437,8 @@ class ApplicationController extends Controller
             ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)->get();
         return view('application.menu.service.form-proses-pasien', ['data' => $data, 'pemeriksaan' => $pemeriksaan]);
     }
-    public function menu_service_proses_update_status(Request $request){
+    public function menu_service_proses_update_status(Request $request)
+    {
         $data = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->first();
         $pemeriksaan = DB::table('company_mou_agreement_sub')
             ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
@@ -740,6 +741,25 @@ class ApplicationController extends Controller
             ]);
         }
         return 'Sukses';
+    }
+    public function mou_company_update_peserta_mcu(Request $request)
+    {
+        $data = DB::table('company_mou_peserta')->where('mou_peserta_code',$request->code)->first();
+        return view('application.master-data.mou-company.form-update-peserta',['data'=>$data]);
+    }
+    public function mou_company_update_peserta_mcu_save(Request $request)
+    {
+        DB::table('company_mou_peserta')->where('mou_peserta_code',$request->code)->update([
+            'mou_peserta_nik'=>$request->nik,
+            'mou_peserta_nip'=>$request->nip,
+            'mou_peserta_name'=>$request->name,
+            'mou_peserta_no_hp'=>$request->no_hp,
+            'mou_peserta_email'=>$request->email,
+            'mou_peserta_ttl'=>$request->ttl,
+            'mou_peserta_jk'=>$request->jk,
+            'mou_peserta_departemen'=>$request->departemen,
+        ]);
+        return redirect()->back()->withSuccess('Great! Berhasil Update Data Peserta');
     }
 
     // AGREEMENT PERUSAHAAN

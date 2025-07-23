@@ -113,6 +113,8 @@ Route::prefix('application')->group(function () {
     Route::post('mou-company/generate-absesnsi-mou', [ApplicationController::class, 'mou_company_generetae_absesnsi_mcu'])->name('mou_company_generetae_absesnsi_mcu');
     Route::post('mou-company/generate-absesnsi-mou/report', [ApplicationController::class, 'mou_company_generetae_absesnsi_mcu_report'])->name('mou_company_generetae_absesnsi_mcu_report');
     Route::post('mou-company/sinkronisasi/nik-nip', [ApplicationController::class, 'mou_company_sinkronisasi_nik_nip'])->name('mou_company_sinkronisasi_nik_nip');
+    Route::post('mou-company/update/peserta-mcu', [ApplicationController::class, 'mou_company_update_peserta_mcu'])->name('mou_company_update_peserta_mcu');
+    Route::post('mou-company/update/peserta-mcu/save', [ApplicationController::class, 'mou_company_update_peserta_mcu_save'])->name('mou_company_update_peserta_mcu_save');
     // AGREMENT
     Route::post('agreement-perusahaan/add', [ApplicationController::class, 'agreement_perusahaan_add'])->name('agreement_perusahaan_add');
     Route::post('agreement-perusahaan/save', [ApplicationController::class, 'agreement_perusahaan_save'])->name('agreement_perusahaan_save');

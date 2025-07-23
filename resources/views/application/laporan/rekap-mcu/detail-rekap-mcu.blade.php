@@ -145,23 +145,11 @@
                                      <td class="email">
                                          @php
                                              $jumlah = DB::table('log_lokasi_pasien')
-                                                 ->join(
-                                                     'company_mou_peserta',
-                                                     'company_mou_peserta.mou_peserta_code',
-                                                     '=',
-                                                     'log_lokasi_pasien.mou_peserta_code',
-                                                 )
-                                                 ->join('master_cabang','master_cabang.master_cabang_code','=','log_lokasi_pasien.lokasi_cabang')
-                                                 ->join('group_cabang_detail','group_cabang_detail.master_cabang_code','=','master_cabang.master_cabang_code')
-                                                 ->where(
-                                                     'company_mou_peserta.company_mou_code',
-                                                     $data->company_mou_code,
-                                                 )
-                                                 ->where(
-                                                     'group_cabang_detail.master_cabang_code',
-                                                     $groups->master_cabang_code,
-                                                 )
-                                                 ->count();
+                                                ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
+                                                ->where('company_mou_peserta.company_mou_code', $data->company_mou_code)
+                                                ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+                                                ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
+                                                ->where('group_cabang_detail.group_cabang_code', $groups->group_cabang_code)->count();
                                          @endphp
                                          {{ $jumlah }} Peserta
                                      </td>
@@ -601,7 +589,8 @@
                          data: [
                              @foreach ($group as $groups)
                                  @php
-                                     $total = DB::table('log_lokasi_pasien')->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
+                                     $total = DB::table('log_lokasi_pasien')
+                                     ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
                                      ->where('company_mou_peserta.company_mou_code', $data->company_mou_code)
                                      ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
                                      ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')

@@ -54,7 +54,7 @@
                     ?>
                     <th class="text-center">
                         @if ($status)
-                        <span style="color: green;">&#x1F5F9;</span>
+                        <span style="color: green;">✅</span>
                         @else
                         <span style="color: red;">x</span>
                         @endif

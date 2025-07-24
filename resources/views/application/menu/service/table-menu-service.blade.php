@@ -30,6 +30,11 @@
                             id="button-proses-peserta-mcu" data-code="{{ $datas->mou_peserta_code }}"><span
                                 class="far fa-folder-open"></span>
                             Proses Service</button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item text-warning" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
+                            id="button-proses-update-status-mcu" data-code="{{ $datas->mou_peserta_code }}" data-company="{{ $datas->company_mou_code }}"><span
+                                class="fas fa-scroll"></span>
+                            Update Pemeriksaan</button>
                     </div>
                 </div>
             </td>

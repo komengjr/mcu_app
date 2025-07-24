@@ -108,7 +108,10 @@
                                 <button class="dropdown-item text-warning" id="button-update-data-peserta-mcu" data-code="{{$pesertas->mou_peserta_code}}"><span
                                         class="far fa-edit"></span>
                                     Edit Peserta</button>
-                                <!-- <div class="dropdown-divider"></div> -->
+                                <div class="dropdown-divider"></div>
+                                <button class="dropdown-item text-danger" id="button-reset-data-signature-mcu" data-code="{{$pesertas->mou_peserta_code}}"><span
+                                        class="fas fa-signature"></span>
+                                    Reset Signature</button>
                             </div>
                         </div>
                     </td>

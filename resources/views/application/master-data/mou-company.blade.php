@@ -483,5 +483,29 @@
                 $('#menu-nik-nip').html('eror');
             });
         });
+        $(document).on("click", "#button-reset-data-signature-mcu", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-nik-nip').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('mou_company_update_peserta_mcu_reset_signature') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-nik-nip').html(data);
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            }).fail(function() {
+                $('#menu-nik-nip').html('eror');
+            });
+        });
     </script>
 @endsection

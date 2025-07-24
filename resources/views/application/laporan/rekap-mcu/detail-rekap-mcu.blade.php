@@ -1,3 +1,9 @@
+ <style>
+    #button-show-detail-wilayah:hover{
+        cursor: pointer;
+        color: red;
+    }
+ </style>
  <div class="card mb-3">
      <div class="card-header bg-danger">
          <div class="row align-items-center">
@@ -139,7 +145,7 @@
                          </thead>
                          <tbody class="list">
                              @foreach ($group as $groups)
-                                 <tr>
+                                 <tr id="button-show-detail-wilayah">
                                      <td>{{ $groups->group_cabang_name }}</td>
                                      {{-- <td class="name">{{ $cabangs->master_cabang_name }}</td> --}}
                                      <td class="email">

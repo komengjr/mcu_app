@@ -155,7 +155,7 @@ class ApplicationController extends Controller
         $pemeriksaan = DB::table('company_mou_agreement_sub')
             ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
             ->join('company_mou_agreement', 'company_mou_agreement.mou_agreement_code', '=', 'company_mou_agreement_sub.mou_agreement_code')
-            ->where('company_mou_agreement.company_mou_code', $request->code)->get();
+            ->where('company_mou_agreement.company_mou_code', $request->code)->get()->unique('master_pemeriksaan_code');
         $peserta = DB::table('company_mou_peserta')->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->where('company_mou_peserta.company_mou_code', $request->code)->get();
         $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
@@ -1171,7 +1171,7 @@ class ApplicationController extends Controller
         $pemeriksaan = DB::table('company_mou_agreement_sub')
             ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
             ->join('company_mou_agreement', 'company_mou_agreement.mou_agreement_code', '=', 'company_mou_agreement_sub.mou_agreement_code')
-            ->where('company_mou_agreement.company_mou_code', $request->code)->get();
+            ->where('company_mou_agreement.company_mou_code', $request->code)->get()->unique('master_pemeriksaan_code');
         $peserta = DB::table('company_mou_peserta')->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->where('company_mou_peserta.company_mou_code', $request->code)->get();
         $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')

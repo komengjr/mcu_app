@@ -525,6 +525,17 @@ class ApplicationController extends Controller
         return 'sukses';
     }
 
+    // MENU PENGIRIMAN
+    public function menu_pengiriman($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            $perusahaan = DB::table('master_company')->get();
+            return view('application.menu.menu-pengiriman', [ 'perusahaan' => $perusahaan]);
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
+
     // COMPANY MASTER
     public function master_company($akses)
     {

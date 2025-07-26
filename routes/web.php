@@ -45,6 +45,7 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('monitoring-mcu', [ApplicationController::class, 'monitoring_mcu'])->name('monitoring_mcu');
     Route::get('medical-check-up', [ApplicationController::class, 'medical_check_up'])->name('medical_check_up');
     Route::get('menu-service', [ApplicationController::class, 'menu_service'])->name('menu_service');
+    Route::get('menu-pengiriman', [ApplicationController::class, 'menu_pengiriman'])->name('menu_pengiriman');
     Route::get('master-company', [ApplicationController::class, 'master_company'])->name('master_company');
     Route::get('mou-company', [ApplicationController::class, 'mou_company'])->name('mou_company');
     Route::get('agreement-perusahaan', [ApplicationController::class, 'agreement_perusahaan'])->name('agreement_perusahaan');

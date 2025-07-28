@@ -344,7 +344,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <p>PRAMITA menyediakan fasilitas layanan pemeriksaan mandiri, terutama untuk jenis pemeriksaan medical check-up,
+                                <p style="text-align: justify;">PRAMITA menyediakan fasilitas layanan pemeriksaan mandiri, terutama untuk jenis pemeriksaan medical check-up,
                                 pemeriksaan untuk pencegahan penyakit, pemeriksaan skrining, serta untuk monitoring penyakit.
                                 Kami menyediakan layanan konsultasi dokter untuk pemilihan jenis pemeriksaan yang sesuai dan konsultasi hasil pemeriksaan.
                                 Pelanggan bisa juga mengambil paket-paket general medical check-up, mulai yang paling sederhana sampai dengan yang sangat lengkap.

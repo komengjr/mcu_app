@@ -547,35 +547,65 @@ class ApplicationController extends Controller
     }
     public function menu_pengiriman_send_project(Request $request)
     {
-        if ($request->pilihan == 'all') {
-            $data = DB::table('company_mou_peserta')->where('company_mou_code', $request->dataproject)->get();
-            foreach ($data as $value) {
-                DB::table('h_log_mail')->insert([
-                    'h_log_mail_code' => str::uuid(),
-                    'h_log_mail_address' => $value->mou_peserta_email,
-                    'h_log_mail_userid' => $value->mou_peserta_code,
-                    'h_log_mail_subject' => $request->subject,
-                    'h_log_mail_name' => $value->mou_peserta_name,
-                    'h_log_mail_messages' => $request->pesan,
-                    'h_log_mail_status' => 0,
-                    'h_log_mail_cabang' => Auth::user()->access_cabang,
-                    'created_at' => now()
-                ]);
+        // METODE EMAIL
+        if ($request->metode == 'mail') {
+            if ($request->pilihan == 'all') {
+                $data = DB::table('company_mou_peserta')->where('company_mou_code', $request->dataproject)->get();
+                foreach ($data as $value) {
+                    DB::table('h_log_mail')->insert([
+                        'h_log_mail_code' => str::uuid(),
+                        'h_log_mail_address' => $value->mou_peserta_email,
+                        'h_log_mail_userid' => $value->mou_peserta_code,
+                        'h_log_mail_subject' => $request->subject,
+                        'h_log_mail_name' => $value->mou_peserta_name,
+                        'h_log_mail_messages' => $request->pesan,
+                        'h_log_mail_status' => 0,
+                        'h_log_mail_cabang' => Auth::user()->access_cabang,
+                        'created_at' => now()
+                    ]);
+                }
+            } elseif ($request->pilihan == 'single') {
+                $data = $request->peserta;
+                for ($i = 0; $i < count($data); $i++) {
+                    $user = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->peserta[$i])->first();
+                    if ($user) {
+                        DB::table('h_log_mail')->insert([
+                            'h_log_mail_code' => str::uuid(),
+                            'h_log_mail_address' => $user->mou_peserta_email,
+                            'h_log_mail_userid' => $user->mou_peserta_code,
+                            'h_log_mail_subject' => $request->subject,
+                            'h_log_mail_name' => $user->mou_peserta_name,
+                            'h_log_mail_messages' => $request->pesan,
+                            'h_log_mail_status' => 0,
+                            'h_log_mail_cabang' => Auth::user()->access_cabang,
+                            'created_at' => now()
+                        ]);
+                    }
+                }
             }
-        } elseif ($request->pilihan == 'single') {
+        } elseif ($request->metode == 'whatsapp') {
             $data = $request->peserta;
             for ($i = 0; $i < count($data); $i++) {
                 $user = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->peserta[$i])->first();
                 if ($user) {
-                    DB::table('h_log_mail')->insert([
-                        'h_log_mail_code' => str::uuid(),
-                        'h_log_mail_address' => $user->mou_peserta_email,
-                        'h_log_mail_userid' => $user->mou_peserta_code,
-                        'h_log_mail_subject' => $request->subject,
-                        'h_log_mail_name' => $user->mou_peserta_name,
-                        'h_log_mail_messages' => $request->pesan,
-                        'h_log_mail_status' => 0,
-                        'h_log_mail_cabang' => Auth::user()->access_cabang,
+                    if (!preg_match('/[^+0-9]/', trim($user->mou_peserta_no_hp))) {
+                        // cek apakah no hp karakter 1-3 adalah +62
+                        if (substr(trim($user->mou_peserta_no_hp), 0, 3) == '+62') {
+                            $nomorhp = trim($user->mou_peserta_no_hp);
+                        }
+                        // cek apakah no hp karakter 1 adalah 0
+                        elseif (substr($user->mou_peserta_no_hp, 0, 1) == '0') {
+                            $nomorhp = '+62' . substr($user->mou_peserta_no_hp, 1);
+                        }
+                    }
+                    DB::table('h_log_whatsapp')->insert([
+                        'h_log_whatsapp_code' => str::uuid(),
+                        'h_log_whatsapp_number' => $nomorhp,
+                        'h_log_whatsapp_userid' => $user->mou_peserta_code,
+                        'h_log_whatsapp_name' => $user->mou_peserta_name,
+                        'h_log_whatsapp_text' => $request->pesan_wa,
+                        'h_log_whatsapp_status' => 0,
+                        'h_log_whatsapp_cabang' => Auth::user()->access_cabang,
                         'created_at' => now()
                     ]);
                 }

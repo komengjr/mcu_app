@@ -52,17 +52,17 @@
 
         <div class="card-body p-0">
             <div class="row px-3 py-3">
-                <div class="col-md-4">
+                <div class="col-md-4" style="z-index: 999;">
                     <label for="organizerSingle" class="my-0">Pilih Metode Kirim</label>
                     <select class="form-select js-choice bg-light" id="metode" name="metode">
                         <option value="">Pilih</option>
                         <option value="mail">Email</option>
-                        <!-- <option value="blast">Blast</option> -->
+                        <option value="whatsapp">Whatsapp</option>
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4" style="z-index: 999;">
                     <label for="organizerSingle" class="my-0">Pilih Perusahaan</label>
-                    <select class="form-select js-choice bg-light" id="perusahaan" name="perusahaan">
+                    <select class="form-select js-choice bg-light" id="perusahaan" name="perusahaan" style="z-index: 99999;">
                         <option value="">Select Perusahaan</option>
                         @foreach ($perusahaan as $per)
                         <option value="{{ $per->master_company_code  }}">{{ $per->master_company_name }}</option>
@@ -78,11 +78,12 @@
                         <option value="belum">Belum MCU</option>
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <label for="organizerSingle" class="my-0">Template Email</label>
+                <div class="col-md-4" style="z-index: 998;">
+                    <label for="organizerSingle" class="my-0">Template Pengiriman</label>
                     <select class="form-select js-choice bg-light" id="template" name="template">
-                        <option value="">Pilih</option>
+                        <option value="">Pilih Template</option>
                         <option value="1">Template 1</option>
+                        <option value="2">Template 2</option>
                     </select>
                 </div>
 
@@ -103,6 +104,9 @@
             </div>
             <div class="min-vh-50" id="menu-template" style="display: none;">
                 <textarea class="tinymce d-none" name="textAreaName" id="pesan"></textarea>
+            </div>
+            <div class="min-vh-10 pt-4" id="menu-template-wa" style="display: none;">
+                <textarea class="form-control" name="textAreaName" rows="10" id="pesan-wa"></textarea>
             </div>
             <!-- <div class="bg-light px-card py-3">
                 <div class="d-inline-flex flex-column">
@@ -179,6 +183,8 @@
         var pilihan = document.getElementById("project-site").value;
         var status = document.getElementById("status_mcu").value;
         var dataproject = document.getElementById("project").value;
+        var metode = document.getElementById("metode").value;
+        var pesan_wa = document.getElementById("pesan-wa").value;
         var peserta = $('#pesertamcu').val();
 
         if (pilihan == "" || peserta == "" || subject == "") {
@@ -205,6 +211,8 @@
                     "status": status,
                     "dataproject": dataproject,
                     "peserta": peserta,
+                    "metode": metode,
+                    "pesan_wa": pesan_wa,
                 },
                 dataType: 'html',
             }).done(function(data) {
@@ -223,6 +231,7 @@
 <script>
     $('#template').on("change", function() {
         var template = document.getElementById("template").value;
+        var metode = document.getElementById("metode").value;
         if (template == "") {
             Lobibox.notify('warning', {
                 pauseDelayOnHover: true,
@@ -232,8 +241,39 @@
                 msg: 'Pastikan Pilih Template Dulu'
             });
         } else {
-            $("#menu-template").show();
-            $("#button-kirim-pesan").show();
+            if (metode == "") {
+                Lobibox.notify('warning', {
+                    pauseDelayOnHover: true,
+                    continueDelayOnInactiveTab: true,
+                    position: 'top right',
+                    icon: 'fas fa-info-circle',
+                    msg: 'Pastikan Pilih Metode Kirim Dulu'
+                });
+            } else if (metode == "mail") {
+                $("#menu-template-wa").hide();
+                $("#menu-template").show();
+                $("#button-kirim-pesan").show();
+            } else if (metode == "whatsapp") {
+                $("#menu-template").hide();
+                $("#menu-template-wa").show();
+                $("#button-kirim-pesan").show();
+            }
+        }
+    });
+    $('#metode').on("change", function() {
+        var dataid = document.getElementById("metode").value;
+        if (dataid == "") {
+            Lobibox.notify('warning', {
+                pauseDelayOnHover: true,
+                continueDelayOnInactiveTab: true,
+                position: 'top right',
+                icon: 'fas fa-info-circle',
+                msg: 'Pastikan Sudah dipilih'
+            });
+        } else {
+            $("#menu-template-wa").hide();
+            $("#menu-template").hide();
+            $("#button-kirim-pesan").hide();
         }
     });
     $('#perusahaan').on("change", function() {

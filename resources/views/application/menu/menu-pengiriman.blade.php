@@ -52,7 +52,7 @@
 
         <div class="card-body p-0">
             <div class="row px-3 py-3">
-                <div class="col-md-4" style="z-index: 999;">
+                <div class="col-md-4" style="z-index: 998;">
                     <label for="organizerSingle" class="my-0">Pilih Metode Kirim</label>
                     <select class="form-select js-choice bg-light" id="metode" name="metode">
                         <option value="">Pilih</option>
@@ -60,9 +60,9 @@
                         <option value="whatsapp">Whatsapp</option>
                     </select>
                 </div>
-                <div class="col-md-4" style="z-index: 999;">
+                <div class="col-md-4" style="z-index: 998;">
                     <label for="organizerSingle" class="my-0">Pilih Perusahaan</label>
-                    <select class="form-select js-choice bg-light" id="perusahaan" name="perusahaan" style="z-index: 99999;">
+                    <select class="form-select js-choice bg-light" id="perusahaan" name="perusahaan">
                         <option value="">Select Perusahaan</option>
                         @foreach ($perusahaan as $per)
                         <option value="{{ $per->master_company_code  }}">{{ $per->master_company_name }}</option>
@@ -78,7 +78,7 @@
                         <option value="belum">Belum MCU</option>
                     </select>
                 </div>
-                <div class="col-md-4" style="z-index: 998;">
+                <div class="col-md-4" style="z-index: 997;">
                     <label for="organizerSingle" class="my-0">Template Pengiriman</label>
                     <select class="form-select js-choice bg-light" id="template" name="template">
                         <option value="">Pilih Template</option>

@@ -113,20 +113,20 @@
         </div>
         <div class="card-footer border-top border-200 d-flex flex-between-center">
             <div class="d-flex align-items-center" id="loading-pengiriman">
-                <button class="btn btn-primary btn-sm px-5 me-2" type="button" id="button-kirim-pesan">Send</button>
-                <input class="d-none" id="email-attachment" type="file" />
+                <button class="btn btn-primary btn-sm px-5 me-2" type="button" id="button-kirim-pesan" style="display: none;">Send</button>
+                <!-- <input class="d-none" id="email-attachment" type="file" />
                 <label class="me-2 btn btn-light btn-sm mb-0 cursor-pointer" for="email-attachment" data-bs-toggle="tooltip" data-bs-placement="top" title="Attach files"><span class="fas fa-paperclip fs-1" data-fa-transform="down-2"></span></label>
                 <input class="d-none" id="email-image" type="file" accept="image/*" />
-                <label class="btn btn-light btn-sm mb-0 cursor-pointer" for="email-image" data-bs-toggle="tooltip" data-bs-placement="top" title="Attach images"><span class="fas fa-image fs-1" data-fa-transform="down-2"></span></label>
+                <label class="btn btn-light btn-sm mb-0 cursor-pointer" for="email-image" data-bs-toggle="tooltip" data-bs-placement="top" title="Attach images"><span class="fas fa-image fs-1" data-fa-transform="down-2"></span></label> -->
             </div>
             <div class="d-flex align-items-center">
-                <div class="dropdown font-sans-serif me-2 btn-reveal-trigger">
+                <!-- <div class="dropdown font-sans-serif me-2 btn-reveal-trigger">
                     <button class="btn btn-link text-600 btn-sm dropdown-toggle btn-reveal dropdown-caret-none" id="email-options" type="button" data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-v" data-fa-transform="down-2"></span></button>
                     <div class="dropdown-menu dropdown-menu-end border py-2" aria-labelledby="email-options"><a class="dropdown-item" href="#!">Print</a><a class="dropdown-item" href="#!">Check spelling</a><a class="dropdown-item" href="#!">Plain text mode</a>
                         <div class="dropdown-divider"></div><a class="dropdown-item" href="#!">Archive</a>
                     </div>
                 </div>
-                <button class="btn btn-light btn-sm" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"> <span class="fas fa-trash"></span></button>
+                <button class="btn btn-light btn-sm" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"> <span class="fas fa-trash"></span></button> -->
             </div>
         </div>
     </form>
@@ -180,34 +180,44 @@
         var status = document.getElementById("status_mcu").value;
         var dataproject = document.getElementById("project").value;
         var peserta = $('#pesertamcu').val();
-        $('#loading-pengiriman').html(
-            '<span class="badge bg-warning">Prosess , Reload.. dalam 3 detik</span>'
-        );
-        $.ajax({
-            url: "{{ route('menu_pengiriman_send_project') }}",
-            type: "POST",
-            cache: false,
-            data: {
-                "_token": "{{ csrf_token() }}",
-                "pesan": editorContent,
-                "subject": subject,
-                "pilihan": pilihan,
-                "status": status,
-                "dataproject": dataproject,
-                "peserta": peserta,
-            },
-            dataType: 'html',
-        }).done(function(data) {
 
-            location.reload();
-        }).fail(function() {
-            $('#menu-mcu').html(
-                '<span class="badge bg-warning m-4">Data Belum Lengkap , Reload.. dalam 3 detik</span>'
+        if (pilihan == "" || peserta == "" || subject == "") {
+            Lobibox.notify('warning', {
+                pauseDelayOnHover: true,
+                continueDelayOnInactiveTab: true,
+                position: 'top right',
+                icon: 'fas fa-info-circle',
+                msg: 'Pastikan Pilihan diisi Terlebih Dahulu'
+            });
+        } else {
+            $('#loading-pengiriman').html(
+                '<span class="badge bg-warning">Prosess , Reload.. dalam 3 detik</span>'
             );
-            setTimeout(() => {
+            $.ajax({
+                url: "{{ route('menu_pengiriman_send_project') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "pesan": editorContent,
+                    "subject": subject,
+                    "pilihan": pilihan,
+                    "status": status,
+                    "dataproject": dataproject,
+                    "peserta": peserta,
+                },
+                dataType: 'html',
+            }).done(function(data) {
                 location.reload();
-            }, 2000);
-        });
+            }).fail(function() {
+                $('#menu-mcu').html(
+                    '<span class="badge bg-warning m-4">Data Belum Lengkap , Reload.. dalam 3 detik</span>'
+                );
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            });
+        }
     });
 </script>
 <script>
@@ -223,6 +233,7 @@
             });
         } else {
             $("#menu-template").show();
+            $("#button-kirim-pesan").show();
         }
     });
     $('#perusahaan').on("change", function() {

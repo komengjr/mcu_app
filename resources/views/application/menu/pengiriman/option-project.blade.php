@@ -12,7 +12,7 @@
         <label for="organizerSingle" class="my-0">Penerima</label>
         <select class="form-select js-choice-pro bg-light" id="project-site" name="project">
             <option value="">Pilih</option>
-            <option value="all">All</option>
+            <!-- <option value="all">All</option> -->
             <option value="single">Custom</option>
 
         </select>

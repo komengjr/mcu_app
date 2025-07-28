@@ -11,7 +11,7 @@ class ApiController extends Controller
 {
     public function gateway_email()
     {
-        $data = DB::table('h_log_mail')->where('h_log_mail_status', 0)->first();
+        $data = DB::table('h_log_mail')->where('h_log_mail_status','=', 0)->first();
         if ($data) {
             $details = [
                 'name' => $data->h_log_mail_name,

@@ -336,7 +336,7 @@
                                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                                     <tbody>
                                                         <tr>
-                                                            <td> <a href="https://pramita.co.id/" target="_blank">Website Kami</a> </td>
+                                                            <td> <a href="https://pramita.co.id/id/hubungi" target="_blank">Hubungi Kami</a> </td>
                                                         </tr>
                                                     </tbody>
                                                 </table>

@@ -112,7 +112,7 @@
             </div> -->
         </div>
         <div class="card-footer border-top border-200 d-flex flex-between-center">
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center" id="loading-pengiriman">
                 <button class="btn btn-primary btn-sm px-5 me-2" type="button" id="button-kirim-pesan">Send</button>
                 <input class="d-none" id="email-attachment" type="file" />
                 <label class="me-2 btn btn-light btn-sm mb-0 cursor-pointer" for="email-attachment" data-bs-toggle="tooltip" data-bs-placement="top" title="Attach files"><span class="fas fa-paperclip fs-1" data-fa-transform="down-2"></span></label>
@@ -180,7 +180,9 @@
         var status = document.getElementById("status_mcu").value;
         var dataproject = document.getElementById("project").value;
         var peserta = $('#pesertamcu').val();
-
+        $('#loading-pengiriman').html(
+            '<span class="badge bg-warning">Prosess , Reload.. dalam 3 detik</span>'
+        );
         $.ajax({
             url: "{{ route('menu_pengiriman_send_project') }}",
             type: "POST",
@@ -196,6 +198,7 @@
             },
             dataType: 'html',
         }).done(function(data) {
+
             location.reload();
         }).fail(function() {
             $('#menu-mcu').html(

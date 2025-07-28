@@ -52,7 +52,7 @@
 
         <div class="card-body p-0">
             <div class="row px-3 py-3">
-                <div class="col-md-4" style="z-index: 998;">
+                <div class="col-md-4" >
                     <label for="organizerSingle" class="my-0">Pilih Metode Kirim</label>
                     <select class="form-select js-choice bg-light" id="metode" name="metode">
                         <option value="">Pilih</option>
@@ -78,7 +78,7 @@
                         <option value="belum">Belum MCU</option>
                     </select>
                 </div>
-                <div class="col-md-4" style="z-index: 997;">
+                <div class="col-md-4">
                     <label for="organizerSingle" class="my-0">Template Pengiriman</label>
                     <select class="form-select js-choice bg-light" id="template" name="template">
                         <option value="">Pilih Template</option>

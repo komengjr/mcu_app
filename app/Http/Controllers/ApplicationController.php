@@ -553,6 +553,7 @@ class ApplicationController extends Controller
                 DB::table('h_log_mail')->insert([
                     'h_log_mail_code' => str::uuid(),
                     'h_log_mail_address' => $value->mou_peserta_email,
+                    'h_log_mail_userid' => $value->mou_peserta_code,
                     'h_log_mail_subject' => $request->subject,
                     'h_log_mail_name' => $value->mou_peserta_name,
                     'h_log_mail_messages' => $request->pesan,
@@ -569,6 +570,7 @@ class ApplicationController extends Controller
                     DB::table('h_log_mail')->insert([
                         'h_log_mail_code' => str::uuid(),
                         'h_log_mail_address' => $user->mou_peserta_email,
+                        'h_log_mail_userid' => $user->mou_peserta_code,
                         'h_log_mail_subject' => $request->subject,
                         'h_log_mail_name' => $user->mou_peserta_name,
                         'h_log_mail_messages' => $request->pesan,

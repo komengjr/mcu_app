@@ -530,9 +530,52 @@ class ApplicationController extends Controller
     {
         if ($this->url_akses($akses) == true) {
             $perusahaan = DB::table('master_company')->get();
-            return view('application.menu.menu-pengiriman', [ 'perusahaan' => $perusahaan]);
+            return view('application.menu.menu-pengiriman', ['perusahaan' => $perusahaan]);
         } else {
             return Redirect::to('dashboard/home');
+        }
+    }
+    public function menu_pengiriman_pilih_perusahaan(Request $request)
+    {
+        $data = DB::table('company_mou')->where('master_company_code', $request->code)->get();
+        return view('application.menu.pengiriman.option-project', ['data' => $data]);
+    }
+    public function menu_pengiriman_pilih_project(Request $request)
+    {
+        $data = DB::table('company_mou_peserta')->where('company_mou_code', $request->code)->get();
+        return view('application.menu.pengiriman.option-peserta', ['data' => $data]);
+    }
+    public function menu_pengiriman_send_project(Request $request)
+    {
+        if ($request->pilihan == 'all') {
+            $data = DB::table('company_mou_peserta')->where('company_mou_code', $request->dataproject)->get();
+            foreach ($data as $value) {
+                DB::table('h_log_mail')->insert([
+                    'h_log_mail_code' => str::uuid(),
+                    'h_log_mail_address' => $value->mou_peserta_email,
+                    'h_log_mail_subject' => $request->subject,
+                    'h_log_mail_name' => $value->mou_peserta_name,
+                    'h_log_mail_messages' => $request->pesan,
+                    'h_log_mail_status' => 0,
+                    'created_at' => now()
+                ]);
+            }
+        } elseif ($request->pilihan == 'single') {
+            $data = $request->peserta;
+            for ($i = 0; $i < count($data); $i++) {
+                $user = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->peserta[$i])->first();
+                if ($user) {
+                    DB::table('h_log_mail')->insert([
+                        'h_log_mail_code' => str::uuid(),
+                        'h_log_mail_address' => $user->mou_peserta_email,
+                        'h_log_mail_subject' => $request->subject,
+                        'h_log_mail_name' => $user->mou_peserta_name,
+                        'h_log_mail_messages' => $request->pesan,
+                        'h_log_mail_status' => 0,
+                        'created_at' => now()
+                    ]);
+                }
+            }
         }
     }
 

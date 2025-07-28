@@ -6,6 +6,7 @@ use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\SignaturePadController;
 use App\Http\Controllers\UploadFileController;
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 Route::get('log-eror', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
 Route::controller(AuthController::class)->group(function () {
     Route::get('/', 'index');
@@ -80,7 +82,7 @@ Route::prefix('application')->group(function () {
     Route::post('medical-check-up/summary-save-persentasi', [ApplicationController::class, 'medical_check_up_summary_save_persentasi'])->name('medical_check_up_summary_save_persentasi');
     Route::post('medical-check-up/summary-save-executive', [ApplicationController::class, 'medical_check_up_summary_save_executive'])->name('medical_check_up_summary_save_executive');
     Route::post('medical-check-up/summary-save-healty-talk', [ApplicationController::class, 'medical_check_up_summary_save_healty_talk'])->name('medical_check_up_summary_save_healty_talk');
-
+    //MENU SERVICE
     Route::post('menu-servic/pilih-perusahaan', [ApplicationController::class, 'menu_service_pilih_perusahaan'])->name('menu_service_pilih_perusahaan');
     Route::post('menu-servic/pilih-agreement', [ApplicationController::class, 'menu_service_pilih_agreement'])->name('menu_service_pilih_agreement');
     Route::post('menu-servic/history', [ApplicationController::class, 'menu_service_history'])->name('menu_service_history');
@@ -90,6 +92,10 @@ Route::prefix('application')->group(function () {
     Route::post('menu-service/proses-konsultasi-save', [ApplicationController::class, 'menu_service_proses_konsultasi_save'])->name('menu_service_proses_konsultasi_save');
     Route::post('menu-service/proses-pengiriman-save', [ApplicationController::class, 'menu_service_proses_pengiriman_save'])->name('menu_service_proses_pengiriman_save');
     Route::post('menu-service/proses-penyelesaian-peserta-mcu', [ApplicationController::class, 'menu_service_proses_penyelesaian_peserta_mcu'])->name('menu_service_proses_penyelesaian_peserta_mcu');
+    // MENU PENGIRIMAN
+    Route::post('menu-pengiriman/pilih-perusahaan', [ApplicationController::class, 'menu_pengiriman_pilih_perusahaan'])->name('menu_pengiriman_pilih_perusahaan');
+    Route::post('menu-pengiriman/pilih-project', [ApplicationController::class, 'menu_pengiriman_pilih_project'])->name('menu_pengiriman_pilih_project');
+    Route::post('menu-pengiriman/send-project', [ApplicationController::class, 'menu_pengiriman_send_project'])->name('menu_pengiriman_send_project');
 
     Route::post('master-company/add-company', [ApplicationController::class, 'master_company_add_company'])->name('master_company_add_company');
     Route::post('master-company/add-company/save', [ApplicationController::class, 'master_company_add_company_save'])->name('master_company_add_company_save');
@@ -195,3 +201,14 @@ Route::post('signaturepad-update', [SignaturePadController::class, 'update'])->n
 Route::post('signaturepad-update-pemeriksaan', [SignaturePadController::class, 'update_pemeriksaan'])->name('signaturepad.update_pemeriksaan');
 Route::post('signaturepad-update-pemeriksaan-save', [SignaturePadController::class, 'update_pemeriksaan_save'])->name('signaturepad.update_pemeriksaan_save');
 Route::post('signaturepad-update-save', [SignaturePadController::class, 'save_signiture'])->name('signaturepad.save_signiture');
+
+
+
+Route::get('template_mail', function () {
+    $details = [
+        'name' => '123',
+        'title' => '123',
+        'body' => 123
+    ];
+    return view('emails.mytestmail', ['details' => $details]);
+});

@@ -21,7 +21,7 @@
                 </div>
                 <div class="col-xl-auto px-3 py-2">
                     <h6 class="text-danger fs--1 mb-0">Menu : </h6>
-                    <h4 class="text-danger fw-bold mb-0">Pengiriman <span class="text-danger fw-medium">MCU Mail</span></h4>
+                    <h4 class="text-danger fw-bold mb-0">Pengiriman <span class="text-danger fw-medium">MCU</span></h4>
                 </div>
             </div>
         </div>
@@ -32,7 +32,7 @@
     <div class="card-header bg-danger">
         <div class="row align-items-center">
             <div class="col">
-                <h5 class="mb-0">New message</h5>
+                <h5 class="mb-0">Pengiriman Management</h5>
             </div>
             <div class="col-auto py-0">
                 <div class="btn-group  float-end" role="group">
@@ -51,25 +51,69 @@
     <form class="card">
 
         <div class="card-body p-0">
-            <div class="border border-top-0 border-200">
+            <div class="row px-3 py-3">
+                <div class="col-md-4">
+                    <label for="organizerSingle" class="my-0">Pilih Metode Kirim</label>
+                    <select class="form-select js-choice bg-light" id="metode" name="metode">
+                        <option value="">Pilih</option>
+                        <option value="mail">Email</option>
+                        <!-- <option value="blast">Blast</option> -->
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="organizerSingle" class="my-0">Pilih Perusahaan</label>
+                    <select class="form-select js-choice bg-light" id="perusahaan" name="perusahaan">
+                        <option value="">Select Perusahaan</option>
+                        @foreach ($perusahaan as $per)
+                        <option value="{{ $per->master_company_code  }}">{{ $per->master_company_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="organizerSingle" class="my-0">Status Mcu</label>
+                    <select class="form-select js-choice bg-light" id="status_mcu" name="status_mcu">
+                        <option value="">Select Status</option>
+                        <option value="all">All</option>
+                        <option value="sudah">Sudah MCU</option>
+                        <option value="belum">Belum MCU</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="organizerSingle" class="my-0">Template Email</label>
+                    <select class="form-select js-choice bg-light" id="template" name="template">
+                        <option value="">Pilih</option>
+                        <option value="1">Template 1</option>
+                    </select>
+                </div>
+
+                <div class="col-8">
+
+                    <span id="option-project"></span>
+
+                </div>
+                <div class="col-md-12">
+                    <span id="option-peserta"></span>
+                </div>
+            </div>
+            <!-- <div class="border border-top border-200">
                 <input class="form-control border-0 rounded-0 outline-none px-card" id="email-to" type="email" aria-describedby="email-to" placeholder="To" />
-            </div>
+            </div> -->
             <div class="border border-y-0 border-200">
-                <input class="form-control border-0 rounded-0 outline-none px-card" id="email-subject" type="text" aria-describedby="email-subject" placeholder="Subject" />
+                <input class="form-control form-control-lg border-0 rounded-0 outline-none px-card" id="email-subject" type="text" aria-describedby="email-subject" placeholder="Subject" />
             </div>
-            <div class="min-vh-50">
-                <textarea class="tinymce d-none" name="content"></textarea>
+            <div class="min-vh-50" id="menu-template" style="display: none;">
+                <textarea class="tinymce d-none" name="textAreaName" id="pesan"></textarea>
             </div>
-            <div class="bg-light px-card py-3">
+            <!-- <div class="bg-light px-card py-3">
                 <div class="d-inline-flex flex-column">
                     <div class="border px-2 rounded-3 d-flex flex-between-center bg-white dark__bg-1000 my-1 fs--1"><span class="fs-1 far fa-image"></span><span class="ms-2">winter.jpg (873kb)</span><a class="text-300 p-1 ms-6" href="#!" data-bs-toggle="tooltip" data-bs-placement="right" title="Detach"><span class="fas fa-times"></span></a></div>
                     <div class="border px-2 rounded-3 d-flex flex-between-center bg-white dark__bg-1000 my-1 fs--1"><span class="fs-1 far fa-file-archive"></span><span class="ms-2">coffee.zip (342kb)</span><a class="text-300 p-1 ms-6" href="#!" data-bs-toggle="tooltip" data-bs-placement="right" title="Detach"><span class="fas fa-times"></span></a></div>
                 </div>
-            </div>
+            </div> -->
         </div>
         <div class="card-footer border-top border-200 d-flex flex-between-center">
             <div class="d-flex align-items-center">
-                <button class="btn btn-primary btn-sm px-5 me-2" type="submit">Send</button>
+                <button class="btn btn-primary btn-sm px-5 me-2" type="button" id="button-kirim-pesan">Send</button>
                 <input class="d-none" id="email-attachment" type="file" />
                 <label class="me-2 btn btn-light btn-sm mb-0 cursor-pointer" for="email-attachment" data-bs-toggle="tooltip" data-bs-placement="top" title="Attach files"><span class="fas fa-paperclip fs-1" data-fa-transform="down-2"></span></label>
                 <input class="d-none" id="email-image" type="file" accept="image/*" />
@@ -124,6 +168,86 @@
         responsive: true
     });
 </script>
+<script>
+    new window.Choices(document.querySelector(".js-choice"));
+</script>
+<script>
+    $(document).on("click", "#button-kirim-pesan", function(e) {
+        e.preventDefault();
+        var editorContent = tinymce.activeEditor.getContent();
+        var subject = document.getElementById("email-subject").value;
+        var pilihan = document.getElementById("project-site").value;
+        var status = document.getElementById("status_mcu").value;
+        var dataproject = document.getElementById("project").value;
+        var peserta = $('#pesertamcu').val();
 
-
+        $.ajax({
+            url: "{{ route('menu_pengiriman_send_project') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "pesan": editorContent,
+                "subject": subject,
+                "pilihan": pilihan,
+                "status": status,
+                "dataproject": dataproject,
+                "peserta": peserta,
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            location.reload();
+        }).fail(function() {
+            $('#menu-mcu').html(
+                '<span class="badge bg-warning m-4">Data Belum Lengkap , Reload.. dalam 3 detik</span>'
+            );
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        });
+    });
+</script>
+<script>
+    $('#template').on("change", function() {
+        var template = document.getElementById("template").value;
+        if (template == "") {
+            Lobibox.notify('warning', {
+                pauseDelayOnHover: true,
+                continueDelayOnInactiveTab: true,
+                position: 'top right',
+                icon: 'fas fa-info-circle',
+                msg: 'Pastikan Pilih Template Dulu'
+            });
+        } else {
+            $("#menu-template").show();
+        }
+    });
+    $('#perusahaan').on("change", function() {
+        var dataid = document.getElementById("perusahaan").value;
+        if (dataid == "") {
+            Lobibox.notify('warning', {
+                pauseDelayOnHover: true,
+                continueDelayOnInactiveTab: true,
+                position: 'top right',
+                icon: 'fas fa-info-circle',
+                msg: 'Pastikan Sudah dipilih'
+            });
+        } else {
+            $.ajax({
+                url: "{{ route('menu_pengiriman_pilih_perusahaan') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": dataid,
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $("#option-project").html(data);
+            }).fail(function() {
+                console.log('eror');
+            });
+        }
+    });
+</script>
 @endsection

@@ -60,7 +60,7 @@
                         <option value="whatsapp">Whatsapp</option>
                     </select>
                 </div>
-                <div class="col-md-4" style="z-index: 998;">
+                <div class="col-md-4">
                     <label for="organizerSingle" class="my-0">Pilih Perusahaan</label>
                     <select class="form-select js-choice bg-light" id="perusahaan" name="perusahaan">
                         <option value="">Select Perusahaan</option>

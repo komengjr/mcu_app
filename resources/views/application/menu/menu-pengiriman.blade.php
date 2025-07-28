@@ -71,7 +71,7 @@
                 </div>
                 <div class="col-md-4">
                     <label for="organizerSingle" class="my-0">Status Mcu</label>
-                    <select class="form-select js-choice bg-light" id="status_mcu" name="status_mcu">
+                    <select class="form-select js-choice bg-light" id="status_mcu" name="status_mcu" disabled>
                         <option value="">Select Status</option>
                         <option value="all">All</option>
                         <option value="sudah">Sudah MCU</option>

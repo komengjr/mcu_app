@@ -18,10 +18,10 @@ class ApiController extends Controller
                 'title' => $data->h_log_mail_subject,
                 'body' => $data->h_log_mail_messages
             ];
-            Mail::to($data->h_log_mail_address)->send(new \App\Mail\MyTestMail($details,$data->h_log_mail_subject));
             DB::table('h_log_mail')->where('h_log_mail_code', $data->h_log_mail_code)->update([
                 'h_log_mail_status' => 1
             ]);
+            Mail::to($data->h_log_mail_address)->send(new \App\Mail\MyTestMail($details,$data->h_log_mail_subject));
             return response()->json($details);
         }
     }

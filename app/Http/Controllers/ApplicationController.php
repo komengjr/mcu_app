@@ -588,14 +588,28 @@ class ApplicationController extends Controller
             for ($i = 0; $i < count($data); $i++) {
                 $user = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->peserta[$i])->first();
                 if ($user) {
-                    if (!preg_match('/[^+0-9]/', trim($user->mou_peserta_no_hp))) {
+                    $nomorhp = $user->mou_peserta_no_hp;
+                    //Terlebih dahulu kita trim dl
+                    $nomorhp = trim($nomorhp);
+                    //bersihkan dari karakter yang tidak perlu
+                    $nomorhp = strip_tags($nomorhp);
+                    // Berishkan dari spasi
+                    $nomorhp = str_replace(" ", "", $nomorhp);
+                    // Berishkan dari -
+                    $nomorhp = str_replace("-", "", $nomorhp);
+                    // bersihkan dari bentuk seperti  (022) 66677788
+                    $nomorhp = str_replace("(", "", $nomorhp);
+                    // bersihkan dari format yang ada titik seperti 0811.222.333.4
+                    $nomorhp = str_replace(".", "", $nomorhp);
+
+                    if (!preg_match('/[^+0-9]/', trim($nomorhp))) {
                         // cek apakah no hp karakter 1-3 adalah +62
-                        if (substr(trim($user->mou_peserta_no_hp), 0, 3) == '+62') {
-                            $nomorhp = trim($user->mou_peserta_no_hp);
+                        if (substr(trim($nomorhp), 0, 3) == '+62') {
+                            $nomorhp = trim($nomorhp);
                         }
                         // cek apakah no hp karakter 1 adalah 0
-                        elseif (substr($user->mou_peserta_no_hp, 0, 1) == '0') {
-                            $nomorhp = '+62' . substr($user->mou_peserta_no_hp, 1);
+                        elseif (substr($nomorhp, 0, 1) == '0') {
+                            $nomorhp = '+62' . substr($nomorhp, 1);
                         }
                     }
                     DB::table('h_log_whatsapp')->insert([

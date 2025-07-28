@@ -557,6 +557,7 @@ class ApplicationController extends Controller
                     'h_log_mail_name' => $value->mou_peserta_name,
                     'h_log_mail_messages' => $request->pesan,
                     'h_log_mail_status' => 0,
+                    'h_log_mail_cabang' => Auth::user()->access_cabang,
                     'created_at' => now()
                 ]);
             }
@@ -572,6 +573,7 @@ class ApplicationController extends Controller
                         'h_log_mail_name' => $user->mou_peserta_name,
                         'h_log_mail_messages' => $request->pesan,
                         'h_log_mail_status' => 0,
+                        'h_log_mail_cabang' => Auth::user()->access_cabang,
                         'created_at' => now()
                     ]);
                 }

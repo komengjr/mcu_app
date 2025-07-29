@@ -100,7 +100,7 @@
             <!-- <div class="border border-top border-200">
                 <input class="form-control border-0 rounded-0 outline-none px-card" id="email-to" type="email" aria-describedby="email-to" placeholder="To" />
             </div> -->
-            <div class="border border-y-0 border-200">
+            <div class="border border-400">
                 <input class="form-control form-control-lg border-0 rounded-0 outline-none px-card" id="email-subject" type="text" aria-describedby="email-subject" placeholder="Subject" />
             </div>
             <div class="min-vh-50" id="menu-template" style="display: none;">

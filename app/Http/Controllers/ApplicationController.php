@@ -640,10 +640,10 @@ class ApplicationController extends Controller
     public function menu_pengiriman_history_whatsapp(Request $request)
     {
         if (Auth::user()->access_code == 'master') {
-            $data = DB::table('h_log_mail')->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'h_log_mail.h_log_mail_userid')->get();
+            $data = DB::table('h_log_whatsapp')->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'h_log_whatsapp.h_log_whatsapp_userid')->get();
         } else {
-            $data = DB::table('h_log_mail')->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'h_log_mail.h_log_mail_userid')
-                ->where('h_log_mail.h_log_mail_cabang', Auth::user()->access_cabang)->get();
+            $data = DB::table('h_log_whatsapp')->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'h_log_whatsapp.h_log_whatsapp_userid')
+                ->where('h_log_whatsapp.h_log_whatsapp_cabang', Auth::user()->access_cabang)->get();
         }
         return view('application.menu.pengiriman.data-pengiriman-whatsapp', ['data' => $data]);
     }

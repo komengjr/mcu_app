@@ -612,7 +612,7 @@ class ApplicationController extends Controller
                             $nomorhp = '+62' . substr($nomorhp, 1);
                         }
                     }
-                    $text = "Hi*".$user->mou_peserta_name."*\nSelamat Anda Terdaftar Sebagai Peserta MCU\n\n".$request->pesan_wa."\n\nSupport By. Pramita Lab";
+                    $text = "Hi *".$user->mou_peserta_name."* \nSelamat Anda Terdaftar Sebagai Peserta MCU\n\n".$request->pesan_wa."\n\nSupport By. Pramita Lab";
                     DB::table('h_log_whatsapp')->insert([
                         'h_log_whatsapp_code' => str::uuid(),
                         'h_log_whatsapp_number' => $nomorhp,

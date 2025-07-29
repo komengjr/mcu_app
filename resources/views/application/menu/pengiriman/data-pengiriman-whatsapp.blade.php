@@ -20,16 +20,20 @@
                 $no = 1;
                 @endphp
                 @foreach ($data as $datas)
-                    <tr>
-                        <td>{{ $no++ }}</td>
-                        <td>{{ $datas->h_log_whatsapp_name }}</td>
-                        <td>{{ $datas->h_log_whatsapp_number }}</td>
-                        <td><?php echo $datas->h_log_whatsapp_text;?></td>
-                        <td>
-
-                        </td>
-                        <td></td>
-                    </tr>
+                <tr>
+                    <td>{{ $no++ }}</td>
+                    <td>{{ $datas->h_log_whatsapp_name }}</td>
+                    <td>{{ $datas->h_log_whatsapp_number }}</td>
+                    <td><?php echo $datas->h_log_whatsapp_text; ?></td>
+                    <td>
+                        @if ($datas->h_log_whatsapp_status == 0)
+                        <span class="badge bg-warning">Proses Kirim</span>
+                        @elseif($datas->h_log_whatsapp_status == 1)
+                        <span class="badge bg-primary">Terkirim</span>
+                        @endif
+                    </td>
+                    <td></td>
+                </tr>
                 @endforeach
             </tbody>
         </table>

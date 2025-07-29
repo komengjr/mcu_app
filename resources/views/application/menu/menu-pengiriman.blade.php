@@ -41,8 +41,9 @@
                             class="fas fa-align-left me-1" data-fa-transform="shrink-3"></span>Menu</button>
                     <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
                         <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu"
-                            id="button-data-history-mcu"><span class="far fa-folder-open"></span>
-                            History</button>
+                            id="button-data-history-email"><span class="fas fa-voicemail"></span> Status Email</button>
+                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu"
+                            id="button-data-history-mcu"><span class="fab fa-whatsapp"></span> Status Whatsapp</button>
                     </div>
                 </div>
             </div>
@@ -52,7 +53,7 @@
 
         <div class="card-body p-0">
             <div class="row px-3 py-3">
-                <div class="col-md-4" >
+                <div class="col-md-4">
                     <label for="organizerSingle" class="my-0">Pilih Metode Kirim</label>
                     <select class="form-select js-choice bg-light" id="metode" name="metode">
                         <option value="">Pilih</option>
@@ -302,6 +303,29 @@
                 console.log('eror');
             });
         }
+    });
+</script>
+<script>
+    $(document).on("click", "#button-data-history-email", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        $('#menu-mcu').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('menu_pengiriman_history_email') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-mcu').html(data);
+        }).fail(function() {
+            $('#menu-mcu').html('eror');
+        });
     });
 </script>
 @endsection

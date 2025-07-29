@@ -96,6 +96,7 @@ Route::prefix('application')->group(function () {
     Route::post('menu-pengiriman/pilih-perusahaan', [ApplicationController::class, 'menu_pengiriman_pilih_perusahaan'])->name('menu_pengiriman_pilih_perusahaan');
     Route::post('menu-pengiriman/pilih-project', [ApplicationController::class, 'menu_pengiriman_pilih_project'])->name('menu_pengiriman_pilih_project');
     Route::post('menu-pengiriman/send-project', [ApplicationController::class, 'menu_pengiriman_send_project'])->name('menu_pengiriman_send_project');
+    Route::post('menu-pengiriman/history-email', [ApplicationController::class, 'menu_pengiriman_history_email'])->name('menu_pengiriman_history_email');
 
     Route::post('master-company/add-company', [ApplicationController::class, 'master_company_add_company'])->name('master_company_add_company');
     Route::post('master-company/add-company/save', [ApplicationController::class, 'master_company_add_company_save'])->name('master_company_add_company_save');

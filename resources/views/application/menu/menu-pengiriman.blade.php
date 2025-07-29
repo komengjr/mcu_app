@@ -43,7 +43,7 @@
                         <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu"
                             id="button-data-history-email"><span class="fas fa-voicemail"></span> Status Email</button>
                         <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu"
-                            id="button-data-history-mcu"><span class="fab fa-whatsapp"></span> Status Whatsapp</button>
+                            id="button-data-history-whatsapp"><span class="fab fa-whatsapp"></span> Status Whatsapp</button>
                     </div>
                 </div>
             </div>
@@ -314,6 +314,27 @@
         );
         $.ajax({
             url: "{{ route('menu_pengiriman_history_email') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-mcu').html(data);
+        }).fail(function() {
+            $('#menu-mcu').html('eror');
+        });
+    });
+    $(document).on("click", "#button-data-history-whatsapp", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        $('#menu-mcu').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('menu_pengiriman_history_whatsapp') }}",
             type: "POST",
             cache: false,
             data: {

@@ -65,8 +65,4 @@
             </div>
         </div>
     </div>
-    <div class="col-12 pt-3">
-        <button class="btn btn-primary btn-sm float-end" type="submit"><span
-                class="far fa-chart-bar"></span> Simpan</button>
-    </div>
 </form>

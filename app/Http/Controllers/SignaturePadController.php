@@ -29,9 +29,15 @@ class SignaturePadController extends Controller
                 return view('kehadiran.signature-template', ['data' => $data]);
             } elseif ($data->log_kehadiran_pasien_status == 1) {
                 if ($data->mou_peserta_status == 0) {
-                    $pemeriksaan = DB::table('company_mou_agreement_sub')->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
-                        ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)->get();
-                    return view('kehadiran.form-pemeriksaan', ['data' => $data, 'pemeriksaan' => $pemeriksaan]);
+                    $paket = DB::table('company_mou_agreement')->where('mou_agreement_code', $data->mou_agreement_code)->first();
+                    if ($paket) {
+                        $pemeriksaan = DB::table('company_mou_agreement_sub')->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+                            ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)->get();
+                        return view('kehadiran.form-pemeriksaan', ['data' => $data, 'pemeriksaan' => $pemeriksaan]);
+                    } else {
+                        $paketmcu = DB::table('company_mou_agreement')->where('company_mou_code',$data->company_mou_code)->get();
+                        return view('kehadiran.form-paket', ['data' => $data,'paket'=>$paketmcu]);
+                    }
                 } elseif ($data->mou_peserta_status == 1) {
                     return view('kehadiran.done');
                 }
@@ -115,6 +121,11 @@ class SignaturePadController extends Controller
             ]);
         }
         return redirect()->back()->withSuccess('Great! Berhasil Check In Peserta MCU');
+    }
+    public function signaturepad_pilih_pemeriksaan(Request $request){
+        DB::table('company_mou_peserta')->where('mou_peserta_code',$request->id)->update([
+            'mou_agreement_code'=>$request->code
+        ]);
     }
     public function update_pemeriksaan(Request $request)
     {

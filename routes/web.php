@@ -203,6 +203,7 @@ Route::post('absensi/data-kehadiran-mcu/perusahaan/cari-peserta/data', [Signatur
 
 Route::post('signaturepad', [SignaturePadController::class, 'upload'])->name('signaturepad.upload');
 Route::post('signaturepad-update', [SignaturePadController::class, 'update'])->name('signaturepad.update');
+Route::post('signaturepad-pilih-pemeriksaan', [SignaturePadController::class, 'signaturepad_pilih_pemeriksaan'])->name('signaturepad_pilih_pemeriksaan');
 Route::post('signaturepad-update-pemeriksaan', [SignaturePadController::class, 'update_pemeriksaan'])->name('signaturepad.update_pemeriksaan');
 Route::post('signaturepad-update-pemeriksaan-save', [SignaturePadController::class, 'update_pemeriksaan_save'])->name('signaturepad.update_pemeriksaan_save');
 Route::post('signaturepad-update-save', [SignaturePadController::class, 'save_signiture'])->name('signaturepad.save_signiture');

@@ -183,7 +183,149 @@ class ApplicationController extends Controller
             ->where('company_mou.company_mou_code', $request->code)->first();
         $peserta = DB::table('company_mou_peserta')->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->where('company_mou_peserta.company_mou_code', $request->code)->get();
-        return view('application.menu.mcu.data-peserta-mcu', ['data' => $data, 'peserta' => $peserta]);
+        return view('application.menu.mcu.data-peserta-mcu', ['data' => $data, 'peserta' => $peserta, 'code' => $request->code]);
+    }
+    public function medical_check_up_detail_data(Request $request, $id)
+    {
+        $draw = $request->get('draw');
+        $start = $request->get("start");
+        $rowperpage = $request->get("length"); // Rows display per page
+
+        $columnIndex_arr = $request->get('order');
+        $columnName_arr = $request->get('columns');
+        $order_arr = $request->get('order');
+        $search_arr = $request->get('search');
+
+        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
+        $searchValue = $search_arr['value']; // Search value
+
+        // Total records
+        $totalRecords =  DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->where('company_mou_peserta.company_mou_code', $id)->count();
+        $totalRecordswithFilter = DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->where('company_mou_peserta.company_mou_code', $id)
+            ->where('company_mou_peserta.mou_peserta_name', 'like', '%' . $searchValue . '%')->count();
+
+        // Fetch records
+        $records = DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->where('company_mou_peserta.company_mou_code', $id)
+            ->where('company_mou_peserta.mou_peserta_name', 'like', '%' . $searchValue . '%')
+            ->select('company_mou_peserta.*')
+            ->orderBy('id_mou_peserta', $columnSortOrder)
+            ->skip($start)
+            ->take($rowperpage)
+            ->get();
+
+        $data_arr = array();
+        $no = 1;
+        foreach ($records as $record) {
+            $id = $no++;
+            $nama_peserta = $record->mou_peserta_name;
+            $nik = $record->mou_peserta_nik;
+            $ttl = $record->mou_peserta_ttl;
+            $jk = $record->mou_peserta_jk;
+            $email = $record->mou_peserta_email;
+            $no_hp = $record->mou_peserta_no_hp;
+            $nip = $record->mou_peserta_nip;
+            $departemen = $record->mou_peserta_departemen;
+            $paket = DB::table('company_mou_agreement')
+                ->where('mou_agreement_code', $record->mou_agreement_code)
+                ->first();
+            if ($paket) {
+                $packet = $paket->mou_agreement_name;
+            } else {
+                $packet = '<button class="btn btn-danger btn-sm" id="button-pilih-paket-mcu" data-code="' . $record->mou_peserta_code . '">Pilih Paket</button>';
+            }
+            $log = DB::table('log_lokasi_pasien')
+                ->select('log_lokasi_pasien.created_at', 'master_cabang.master_cabang_name')
+                ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+                ->where('log_lokasi_pasien.mou_peserta_code', $record->mou_peserta_code)
+                ->first();
+            if ($log) {
+                $lokasi = '<span class="text-primary">'.$log->master_cabang_name.'</span> <br>'.$log->created_at;
+                $button = '<div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-falcon-primary" id="btnGroupVerticalDrop2" type="button"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
+                                    class="fas fa-align-left me-1"
+                                    data-fa-transform="shrink-3"></span>Option</button>
+                            <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
+                                <button class="dropdown-item" data-bs-toggle="modal"
+                                    data-bs-target="#modal-mcu-xl" id="button-proses-update-peserta-mcu"
+                                    data-code="'.$record->mou_peserta_code.'">
+                                    <span class="fas fa-folder-plus"></span> Update Lokasi</button>
+                            </div>
+                        </div>';
+            } else {
+                $lokasi = '<span class="badge bg-danger">Belum Check in</span>';
+                $button = '<div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-falcon-primary" id="btnGroupVerticalDrop2" type="button"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
+                                    class="fas fa-align-left me-1"
+                                    data-fa-transform="shrink-3"></span>Option</button>
+                            <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
+                                <button class="dropdown-item" data-bs-toggle="modal"
+                                    data-bs-target="#modal-mcu-xl" id="button-proses-peserta-mcu"
+                                    data-code="'.$record->mou_peserta_code.'">
+                                    <span class="fas fa-folder-plus"></span> Proses MCU</button>
+                            </div>
+                        </div>';
+            }
+
+            // $ruangan = DB::table('tbl_nomor_ruangan_cabang')->where('id_nomor_ruangan_cbaang', $record->id_nomor_ruangan_cbaang)->first();
+            // if ($ruangan) {
+            //     $dataruangan = $ruangan->nomor_ruangan;
+            //     if ($record->status_barang == 5) {
+            //         $status_barang = '<span class="badge bg-danger p-2" style="font-size: 11px;">Musnah</span>';
+            //         $button = "";
+            //     } else if ($record->status_barang == 4) {
+            //         $status_barang = '<span class="badge bg-warning p-2" style="font-size: 11px;">Mutasi</span>';
+            //         $button = "";
+            //     } else {
+            //         $status_barang = '<span class="badge bg-success p-2" style="font-size: 11px;">Baik</span>';
+            //         $button =  "<button class='btn-warning m-1' data-toggle='modal' data-target='#editmasterbarang' id='editbarangmaster' data-url=" . url('divisi/masterbarang/showedit', ['id' => $id_inventaris]) . "><i class='bx bx-pencil'></i> edit</button>
+            //         <button class='btn-dark m-1' data-toggle='modal' data-target='#editmasterbarang' id='print-barcode-master-barang' data-url=" . url('printbarcodebyidinventaris', ['id' => $record->id]) . "><i class='bx bx-print'></i> Cetak Barcode</button>";
+            //     };
+            // } else {
+            //     $dataruangan = '<span class="badge bg-danger p-2" style="font-size: 11px;">Tidak di temukan</span>';
+            //     if ($record->status_barang == 5) {
+            //         $status_barang = '<span class="badge bg-danger p-2" style="font-size: 11px;">Musnah</span>';
+            //         $button = "";
+            //     } else if ($record->status_barang == 4) {
+            //         $status_barang = '<span class="badge bg-warning p-2" style="font-size: 11px;">Mutasi</span>';
+            //         $button = "";
+            //     } else {
+            //         $status_barang = '<span class="badge bg-success p-2" style="font-size: 11px;">Baik</span>';
+            //         $button = "<button class='btn-warning m-1' data-toggle='modal' data-target='#editmasterbarang' id='editbarangmaster' data-url=" . url('divisi/masterbarang/showedit', ['id' => $id_inventaris]) . "><i class='bx bx-pencil'></i> edit</button>";
+            //     };
+            // };
+            $data_arr[] = array(
+                "id" => $id,
+                "nama_peserta" => $nama_peserta,
+                "nik" => $nik,
+                "ttl" => $ttl,
+                "jk" => $jk,
+                "email" => $email,
+                "no_hp" => $no_hp,
+                "nip" => $nip,
+                "departemen" => $departemen,
+                "paket" => $packet,
+                "lokasi" => $lokasi,
+                "button" => $button,
+            );
+        }
+        $response = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordswithFilter,
+            "aaData" => $data_arr
+        );
+        echo json_encode($response);
+        // exit;
     }
     public function medical_check_up_add_pesertal(Request $request)
     {

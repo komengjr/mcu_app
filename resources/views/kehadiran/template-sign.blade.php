@@ -17,7 +17,7 @@
 
       </div>
       <div class="col-md-12 pt-3">
-          <a href="{{ route('sign-data-baru',['id'=>$token]) }}" class="btn btn-danger d-block w-100 " type="submit" name="submit">Click disini Jika Ini Saya</a>
+          <a href="{{ route('sign-data-baru',['id'=>$token]) }}" class="btn btn-danger d-block w-100 " type="submit" name="submit">Setuju</a>
       </div>
 </div>
 

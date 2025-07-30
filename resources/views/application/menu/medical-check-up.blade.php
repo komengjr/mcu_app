@@ -321,5 +321,52 @@
             $('#menu-mcu-xl').html('eror');
         });
     });
+    $(document).on("click", "#button-pilih-paket-mcu", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        $('#menu-table-peserta-mcu').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('medical_check_up_prosess_update_paket_mcu') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-table-peserta-mcu').html(data);
+        }).fail(function() {
+            $('#menu-table-peserta-mcu').html('eror');
+        });
+    });
+    $(document).on("click", "#button-fix-pilih-paket-mcu", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        var paket = $(this).data("paket");
+        $('#menu-table-peserta-mcu').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        console.log(paket);
+
+        $.ajax({
+            url: "{{ route('medical_check_up_prosess_update_paket_mcu_save') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code,
+                "paket": paket,
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-table-peserta-mcu').html("");
+            location.reload();
+        }).fail(function() {
+            $('#menu-table-peserta-mcu').html('eror');
+        });
+    });
 </script>
 @endsection

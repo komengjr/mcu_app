@@ -273,6 +273,18 @@ class ApplicationController extends Controller
         $dompdf->get_canvas()->page_text(34, 820, "Print by. " . Auth::user()->fullname, $font1, 10, array(0, 0, 0));
         return base64_encode($pdf->stream());
     }
+    public function medical_check_up_prosess_update_paket_mcu(Request $request)
+    {
+        $data = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->first();
+        $paket = DB::table('company_mou_agreement')->where('company_mou_code', $data->company_mou_code)->get();
+        return view('application.menu.mcu.form-update-paket-mcu', ['data' => $data, 'paket' => $paket]);
+    }
+    public function medical_check_up_prosess_update_paket_mcu_save(Request $request)
+    {
+        DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->update([
+            'mou_agreement_code' => $request->paket
+        ]);
+    }
     public function medical_check_up_summary(Request $request)
     {
         $mou = DB::table('company_mou')
@@ -612,7 +624,7 @@ class ApplicationController extends Controller
                             $nomorhp = '+62' . substr($nomorhp, 1);
                         }
                     }
-                    $text = "Hi *".$user->mou_peserta_name."* \nSelamat Anda Terdaftar Sebagai Peserta MCU\n\n".$request->pesan_wa."\n\nSupport By. Pramita Lab";
+                    $text = "Hi *" . $user->mou_peserta_name . "* \nSelamat Anda Terdaftar Sebagai Peserta MCU\n\n" . $request->pesan_wa . "\n\nSupport By. Pramita Lab";
                     DB::table('h_log_whatsapp')->insert([
                         'h_log_whatsapp_code' => str::uuid(),
                         'h_log_whatsapp_number' => $nomorhp,

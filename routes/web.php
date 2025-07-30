@@ -78,6 +78,8 @@ Route::prefix('application')->group(function () {
     Route::post('medical-check-up/prosess-generate-absensi', [ApplicationController::class, 'medical_check_up_prosess_generate_absensi'])->name('medical_check_up_prosess_generate_absensi');
     Route::post('medical-check-up/prosess-cetak-absensi', [ApplicationController::class, 'medical_check_up_prosess_cetak_absensi'])->name('medical_check_up_prosess_cetak_absensi');
     Route::post('medical-check-up/prosess-cetak-absensi-mcu', [ApplicationController::class, 'medical_check_up_prosess_cetak_absensi_mcu'])->name('medical_check_up_prosess_cetak_absensi_mcu');
+    Route::post('medical-check-up/prosess-update-paket-mcu', [ApplicationController::class, 'medical_check_up_prosess_update_paket_mcu'])->name('medical_check_up_prosess_update_paket_mcu');
+    Route::post('medical-check-up/prosess-update-paket-mcu-save', [ApplicationController::class, 'medical_check_up_prosess_update_paket_mcu_save'])->name('medical_check_up_prosess_update_paket_mcu_save');
     Route::post('medical-check-up/summary', [ApplicationController::class, 'medical_check_up_summary'])->name('medical_check_up_summary');
     Route::post('medical-check-up/summary-save-persentasi', [ApplicationController::class, 'medical_check_up_summary_save_persentasi'])->name('medical_check_up_summary_save_persentasi');
     Route::post('medical-check-up/summary-save-executive', [ApplicationController::class, 'medical_check_up_summary_save_executive'])->name('medical_check_up_summary_save_executive');

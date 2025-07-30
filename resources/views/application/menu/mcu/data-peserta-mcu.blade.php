@@ -1,10 +1,10 @@
 <div class="modal-body p-0">
-    <div class="bg-light rounded-top-lg py-3 ps-4 pe-6">
+    <div class="bg-300 rounded-top-lg py-3 ps-4 pe-6">
         <h4 class="mb-1" id="staticBackdropLabel">Data Peserta MCU : <strong
                 class="text-primary">{{ $data->master_company_name }} - {{ $data->company_mou_name }}</strong></h4>
         <p class="fs--2 mb-0">Support by <a class="link-600 fw-semi-bold" href="#!">Transforma</a></p>
     </div>
-    <div class="tab-content p-3">
+    <div class="tab-content p-3" id="menu-table-peserta-mcu">
         <table id="data-v3" class="table table-striped nowrap" style="width:100%">
             <thead class="bg-200 text-700 fs--2">
                 <tr>
@@ -29,7 +29,7 @@
                 @foreach ($peserta as $pesertas)
                     <tr>
                         <td>{{ $no++ }}</td>
-                        <td>{{ $pesertas->mou_peserta_name }}</td>
+                        <td>{{ $pesertas->mou_peserta_name }} <br> {{ $pesertas->mou_peserta_code }}</td>
                         <td>{{ $pesertas->mou_peserta_nik }}</td>
                         <td>{{ $pesertas->mou_peserta_ttl }}</td>
                         <td>
@@ -52,7 +52,7 @@
                             @if ($paket)
                                 {{ $paket->mou_agreement_name }}
                             @else
-                                <span class="badge bg-danger">Belum Memilih Paket</span>
+                                <button class="btn btn-danger btn-sm" id="button-pilih-paket-mcu" data-code="{{ $pesertas->mou_peserta_code }}">Pilih Paket</button>
                             @endif
                         </td>
                         <td>

@@ -300,6 +300,77 @@
             $('#menu-absensi-kehadiran').html('eror');
         });
     });
+    $(document).on("click", "#button-tambah-pemeriksaan-peserta-mcu", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        var mou = $(this).data("mou");
+        $('#data-table-pemeriksaan-peserta').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('medical_check_up_prosess_tambah_pemeriksaan') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code,
+                "mou": mou
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#data-table-pemeriksaan-peserta').html(data);
+        }).fail(function() {
+            $('#data-table-pemeriksaan-peserta').html('eror');
+        });
+    });
+    $(document).on("click", "#button-simpan-penambahan-pemeriksaan-peserta-mcu", function(e) {
+        e.preventDefault();
+        var peserta_code = document.getElementById("peserta_code").value;
+        var mou_code = document.getElementById("mou_code").value;
+        var pemeriksaan = document.getElementById("pemeriksaan").value;
+        $('#data-table-pemeriksaan-peserta').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('medical_check_up_prosess_tambah_pemeriksaan_save') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "peserta_code": peserta_code,
+                "mou_code": mou_code,
+                "pemeriksaan": pemeriksaan,
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#data-table-pemeriksaan-peserta').html(data);
+        }).fail(function() {
+            $('#data-table-pemeriksaan-peserta').html('eror');
+        });
+    });
+    $(document).on("click", "#button-remove-pemeriksaan-peserta-mcu", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        var pem = $(this).data("pem");
+        $('#data-table-pemeriksaan-peserta').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('medical_check_up_prosess_tambah_pemeriksaan_remove') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code,
+                "pem": pem,
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#data-table-pemeriksaan-peserta').html(data);
+        }).fail(function() {
+            $('#data-table-pemeriksaan-peserta').html('eror');
+        });
+    });
     $(document).on("click", "#button-kehadiran-peserta-mcu", function(e) {
         e.preventDefault();
         var code = $(this).data("code");

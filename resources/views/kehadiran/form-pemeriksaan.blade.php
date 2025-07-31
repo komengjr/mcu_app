@@ -131,7 +131,7 @@
                                             <input type="text" name="token"
                                                 value="{{ $data->log_kehadiran_pasien_token }}" hidden>
                                             <input type="text" name="jumlah" id="jumlah"
-                                                value="{{ $pemeriksaan->count() }}" hidden>
+                                                value="{{$jumlah}}" hidden>
                                             <div class="row g-3">
                                                 <div class="col-md-6">
                                                     <label class="form-label" for="card-name">Nama Lengkap</label>
@@ -231,6 +231,65 @@
                                                                         </td>
                                                                     </tr>
                                                                     @endforeach
+                                                                    <!-- PEMERIKSAAN ADDITIONAL -->
+                                                                    @foreach ($pemeriksaan1 as $pem)
+                                                                    <?php
+                                                                    $ket = Illuminate\Support\Facades\DB::table('log_pemeriksaan_pasien')
+                                                                        ->where('mou_peserta_code', $data->mou_peserta_code)
+                                                                        ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
+                                                                        ->first()
+                                                                    ?>
+                                                                    <tr>
+                                                                        <td class="name text-primary">
+                                                                            {{$pem->master_pemeriksaan_name}} <small>Addiitional </small><br>
+                                                                            @if ($ket)
+                                                                            <textarea name="" class="form-control" id="ket{{$pem->master_pemeriksaan_code}}">{{ $ket->log_pemeriksaan_deskripsi }}</textarea>
+                                                                            @else
+                                                                            <textarea name="" class="form-control" id="ket{{$pem->master_pemeriksaan_code}}"></textarea>
+                                                                            @endif
+                                                                        </td>
+                                                                        <td class="text-center">
+                                                                            <?php
+                                                                            $cek = Illuminate\Support\Facades\DB::table('log_pemeriksaan_pasien')
+                                                                                ->where('mou_peserta_code', $data->mou_peserta_code)
+                                                                                ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
+                                                                                ->where('log_pemeriksaan_pasien.log_pemeriksaan_status', 1)
+                                                                                ->first()
+                                                                            ?>
+                                                                            @if ($cek)
+                                                                            <!-- <input class="form-check-input" name="pemeriksaan" id="pem{{$pem->master_pemeriksaan_code}}" type="checkbox" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" checked /> -->
+                                                                            <div class="form-check">
+                                                                                <input class="form-check-input" id="pem{{$pem->master_pemeriksaan_code}}" type="radio" name="pem{{$pem->master_pemeriksaan_code}}" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" checked />
+                                                                            </div>
+                                                                            <?php $hitung = $hitung + 1; ?>
+                                                                            @else
+                                                                            <div class="form-check">
+                                                                                <input class="form-check-input" id="pem{{$pem->master_pemeriksaan_code}}" type="radio" name="pem{{$pem->master_pemeriksaan_code}}" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" />
+                                                                            </div>
+                                                                            <!-- <input class="form-check-input" name="pemeriksaan" id="pem{{$pem->master_pemeriksaan_code}}" type="checkbox" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" /> -->
+                                                                            @endif
+                                                                        </td>
+                                                                        <td>
+                                                                            <?php
+                                                                            $cek1 = Illuminate\Support\Facades\DB::table('log_pemeriksaan_pasien')
+                                                                                ->where('mou_peserta_code', $data->mou_peserta_code)
+                                                                                ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
+                                                                                ->where('log_pemeriksaan_pasien.log_pemeriksaan_status', 0)
+                                                                                ->first()
+                                                                            ?>
+                                                                            @if ($cek1)
+                                                                            <div class="form-check">
+                                                                                <input class="form-check-input" id="pem{{$pem->master_pemeriksaan_code}}" type="radio" name="pem{{$pem->master_pemeriksaan_code}}" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" value="off" checked />
+                                                                            </div>
+                                                                            <?php $hitung = $hitung + 1; ?>
+                                                                            @else
+                                                                            <div class="form-check">
+                                                                                <input class="form-check-input" id="pem{{$pem->master_pemeriksaan_code}}" type="radio" name="pem{{$pem->master_pemeriksaan_code}}" onclick="MyFunction('{{$pem->master_pemeriksaan_code}}','{{ $data->mou_peserta_code }}')" value="off" />
+                                                                            </div>
+                                                                            @endif
+                                                                        </td>
+                                                                    </tr>
+                                                                    @endforeach
                                                                 </tbody>
                                                             </table>
                                                         </div>
@@ -259,7 +318,7 @@
                                                     value="{{ $data->mou_peserta_code }}" hidden>
 
                                                 <div class="col-md-12">
-                                                    @if ($hitung == $pemeriksaan->count())
+                                                    @if ($hitung == $jumlah)
                                                     <button class="btn btn-danger w-100 " id="button-submit-selesai"
                                                         type="submit" name="submit">Simpan</button>
                                                     @else

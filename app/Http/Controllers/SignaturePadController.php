@@ -33,7 +33,10 @@ class SignaturePadController extends Controller
                     if ($paket) {
                         $pemeriksaan = DB::table('company_mou_agreement_sub')->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
                             ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)->get();
-                        return view('kehadiran.form-pemeriksaan', ['data' => $data, 'pemeriksaan' => $pemeriksaan]);
+                        $pemeriksaan1 = DB::table('company_mou_agreement_user')->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_user.master_pemeriksaan_code')
+                            ->where('company_mou_agreement_user.mou_peserta_code', $data->mou_peserta_code)->get();
+                        $jumlah = $pemeriksaan->count() + $pemeriksaan1->count();
+                        return view('kehadiran.form-pemeriksaan', ['data' => $data, 'pemeriksaan' => $pemeriksaan, 'pemeriksaan1' => $pemeriksaan1,'jumlah'=>$jumlah]);
                     } else {
                         $paketmcu = DB::table('company_mou_agreement')->where('company_mou_code',$data->company_mou_code)->get();
                         return view('kehadiran.form-paket', ['data' => $data,'paket'=>$paketmcu]);

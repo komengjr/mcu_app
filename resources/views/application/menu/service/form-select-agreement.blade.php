@@ -11,6 +11,7 @@
     new window.Choices(document.querySelector(".js-choice-paket"));
     $('#agreement').on("change", function() {
         var dataid = document.getElementById("agreement").value;
+        $("#table-service").html('<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>');
         if (dataid == "") {
             Lobibox.notify('warning', {
                 pauseDelayOnHover: true,

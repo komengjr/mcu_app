@@ -591,6 +591,7 @@ class ApplicationController extends Controller
     }
     public function menu_service_pilih_agreement(Request $request)
     {
+        $perusahaan = DB::table('company_mou')->where('company_mou_code',$request->code)->first();
         if (Auth::user()->access_code == '0c654ba3-4496-4873-9a4c-f15f1fbc73d2' || Auth::user()->access_code == 'master') {
             $data = DB::table('company_mou_peserta')
                 ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
@@ -607,7 +608,7 @@ class ApplicationController extends Controller
                 ->where('company_mou.company_mou_code', $request->code)
                 ->orderBy('log_lokasi_pasien.id_log_lokasi_pasien', 'DESC')->get();
         }
-        return view('application.menu.service.table-menu-service', ['data' => $data]);
+        return view('application.menu.service.table-menu-service', ['data' => $data,'perusahaan'=>$perusahaan]);
     }
     public function menu_service_history(Request $request)
     {

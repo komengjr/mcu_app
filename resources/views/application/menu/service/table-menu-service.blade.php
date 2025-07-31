@@ -1,3 +1,4 @@
+<span class="badge bg-primary">Data Peserta {{ $perusahaan->company_mou_name }}</span>
 <table id="example01" class="table table-striped nowrap border" style="width:100%">
     <thead class="bg-200 text-700 fs--2">
         <tr>

@@ -998,7 +998,8 @@ class ApplicationController extends Controller
     {
         $data = DB::table('company_mou_peserta_token_absensi')
             ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta_token_absensi.company_mou_code')
-            ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')->first();
+            ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou_peserta_token_absensi.company_mou_token_code',$request->code)->first();
         $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.master-data.mou-company.report.form-absensi-mcu', ['data' => $data], compact('image'))->setPaper('A4', 'potrait')->setOptions(['defaultFont' => 'Helvetica']);
         $pdf->output();

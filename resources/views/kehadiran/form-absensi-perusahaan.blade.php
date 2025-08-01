@@ -128,7 +128,6 @@
                                         <div class="row g-2">
                                             <div class="col-md-12">
                                                 <label class="form-label" for="card-email">Pilih Lokasi MCU</label>
-                                                <label for="organizerSingle">Single</label>
                                                 <select class="form-select js-choice bg-light" id="organizerSingle"
                                                     size="1" name="organizerSingle"
                                                     data-options='{"removeItemButton":true,"placeholder":true}'>

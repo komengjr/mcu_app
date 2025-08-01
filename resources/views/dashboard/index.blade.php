@@ -19,7 +19,7 @@
         </div>
     </div>
 </div>
-<div class="card mb-3">
+<!-- <div class="card mb-3">
     <div class="card-header bg-300">
         <div class="row flex-between-end">
             <div class="col-auto align-self-center">
@@ -45,7 +45,7 @@
 
         </div>
     </div>
-</div>
+</div> -->
 
 @endsection
 @section('base.js')

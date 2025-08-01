@@ -169,8 +169,9 @@
                             <span type="button" class="fas fa-check-circle text-success" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Melakukan"></span>
                         </li>
                         @else
-                        <li>{{ $pem->master_pemeriksaan_name }} <span
-                                class="fas fa-exclamation-circle text-warning"></span></li>
+                        <li>{{ $pem->master_pemeriksaan_name }}
+                            <span type="button" class="far fa-times-circle text-warning" data-bs-toggle="tooltip" data-bs-placement="right" title="{{$check->log_pemeriksaan_deskripsi}}"></span>
+                        </li>
                         @endif
                         @else
                         <li>{{ $pem->master_pemeriksaan_name }}

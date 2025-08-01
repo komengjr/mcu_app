@@ -134,8 +134,7 @@
                                                     data-options='{"removeItemButton":true,"placeholder":true}'>
                                                     <option value="">Select Cabang</option>
                                                     @foreach ($cabang as $cabangs)
-                                                        <option value="{{ $cabangs->master_cabang_code }}">
-                                                            {{ $cabangs->master_cabang_name }}</option>
+                                                        <option value="{{ $cabangs->master_cabang_code }}">{{ $cabangs->master_cabang_name }}</option>
                                                     @endforeach
                                                 </select>
 

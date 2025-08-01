@@ -2,6 +2,7 @@
 @section('base.css')
 <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.4/css/responsive.bootstrap5.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.4/css/buttons.dataTables.css">
 <link href="{{ asset('vendors/choices/choices.min.css') }}" rel="stylesheet" />
 @endsection
 @section('content')
@@ -100,10 +101,14 @@
                                 type="button" data-bs-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false"><span class="far fa-address-card"></span><span class="ms-1 d-none d-md-inline-block">Option</span></button>
                             <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
-                                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
+                                <button class="dropdown-item text-primary" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
                                     id="button-add-peserta-mcu" data-code="{{ $datas->company_mou_code }}"><span
                                         class="far fa-user"></span>
                                     Tambah Peserta</button>
+                                <button class="dropdown-item text-warning" data-bs-toggle="modal"
+                                    data-bs-target="#modal-mcu" id="button-data-monitoring-peserta-mcu" data-code="{{ $datas->company_mou_code }}"><span
+                                        class="fas fa-chalkboard-teacher"></span>
+                                    Data Monitoring Peserta</button>
                                 <button class="dropdown-item" data-bs-toggle="modal"
                                     data-bs-target="#modal-mcu-xl" id="button-kehadiran-peserta-mcu" data-code="{{ $datas->company_mou_code }}"><span
                                         class="fas fa-file-contract"></span>
@@ -167,6 +172,12 @@
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
 <script src="https://cdn.datatables.net/responsive/3.0.4/js/dataTables.responsive.js"></script>
 <script src="https://cdn.datatables.net/responsive/3.0.4/js/responsive.bootstrap5.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.4/js/dataTables.buttons.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.4/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.4/js/buttons.print.min.js"></script>
 <script src="{{ asset('vendors/choices/choices.min.js') }}"></script>
 <script>
     new DataTable('#example', {
@@ -214,6 +225,27 @@
             $('#menu-mcu-xl').html(data);
         }).fail(function() {
             $('#menu-mcu-xl').html('eror');
+        });
+    });
+    $(document).on("click", "#button-data-monitoring-peserta-mcu", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        $('#menu-mcu').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('medical_check_up_data_mointoring_peserta') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-mcu').html(data);
+        }).fail(function() {
+            $('#menu-mcu').html('eror');
         });
     });
     $(document).on("click", "#button-proses-peserta-mcu", function(e) {

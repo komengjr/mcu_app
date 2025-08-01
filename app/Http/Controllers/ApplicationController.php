@@ -332,6 +332,21 @@ class ApplicationController extends Controller
         $data = DB::table('company_mou_agreement')->where('company_mou_code', $request->code)->get();
         return view('application.menu.service.form-add-peserta', ['code' => $request->code, 'data' => $data]);
     }
+    public function medical_check_up_data_mointoring_peserta(Request $request)
+    {
+        $pemeriksaan = DB::table('company_mou_agreement_sub')
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+            ->join('company_mou_agreement', 'company_mou_agreement.mou_agreement_code', '=', 'company_mou_agreement_sub.mou_agreement_code')
+            ->where('company_mou_agreement.company_mou_code', $request->code)->get()->unique('master_pemeriksaan_code');
+        $peserta = DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->join('log_lokasi_pasien','log_lokasi_pasien.mou_peserta_code','=','company_mou_peserta.mou_peserta_code')
+            ->where('company_mou_peserta.company_mou_code', $request->code)
+            ->where('log_lokasi_pasien.lokasi_cabang',Auth::user()->access_cabang)->get();
+        $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou.company_mou_code', $request->code)->first();
+        return view('application.menu.mcu.form-monitoring-mcu', ['data' => $data, 'pem' => $pemeriksaan, 'peserta' => $peserta]);
+    }
     public function medical_check_up_prosess(Request $request)
     {
         $data = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->first();
@@ -591,7 +606,7 @@ class ApplicationController extends Controller
     }
     public function menu_service_pilih_agreement(Request $request)
     {
-        $perusahaan = DB::table('company_mou')->where('company_mou_code',$request->code)->first();
+        $perusahaan = DB::table('company_mou')->where('company_mou_code', $request->code)->first();
         if (Auth::user()->access_code == '0c654ba3-4496-4873-9a4c-f15f1fbc73d2' || Auth::user()->access_code == 'master') {
             $data = DB::table('company_mou_peserta')
                 ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
@@ -608,7 +623,7 @@ class ApplicationController extends Controller
                 ->where('company_mou.company_mou_code', $request->code)
                 ->orderBy('log_lokasi_pasien.id_log_lokasi_pasien', 'DESC')->get();
         }
-        return view('application.menu.service.table-menu-service', ['data' => $data,'perusahaan'=>$perusahaan]);
+        return view('application.menu.service.table-menu-service', ['data' => $data, 'perusahaan' => $perusahaan]);
     }
     public function menu_service_history(Request $request)
     {

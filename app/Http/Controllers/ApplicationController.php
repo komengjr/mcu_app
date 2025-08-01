@@ -237,7 +237,7 @@ class ApplicationController extends Controller
                 ->where('mou_agreement_code', $record->mou_agreement_code)
                 ->first();
             if ($paket) {
-                $packet = $paket->mou_agreement_name;
+                $packet = $paket->mou_agreement_name.'<br><button class="btn btn-warning btn-sm" id="button-pilih-paket-mcu" data-code="' . $record->mou_peserta_code . '"><span class="fas fa-undo"></span></button>';
             } else {
                 $packet = '<button class="btn btn-danger btn-sm" id="button-pilih-paket-mcu" data-code="' . $record->mou_peserta_code . '">Pilih Paket</button>';
             }
@@ -252,7 +252,7 @@ class ApplicationController extends Controller
                             <button class="btn btn-sm btn-falcon-primary" id="btnGroupVerticalDrop2" type="button"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
                                     class="fas fa-align-left me-1"
-                                    data-fa-transform="shrink-3"></span>Option</button>
+                                    data-fa-transform="shrink-3"></span></button>
                             <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
                                 <button class="dropdown-item" data-bs-toggle="modal"
                                     data-bs-target="#modal-mcu-xl" id="button-proses-update-peserta-mcu"
@@ -266,7 +266,7 @@ class ApplicationController extends Controller
                             <button class="btn btn-sm btn-falcon-primary" id="btnGroupVerticalDrop2" type="button"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
                                     class="fas fa-align-left me-1"
-                                    data-fa-transform="shrink-3"></span>Option</button>
+                                    data-fa-transform="shrink-3"></span></button>
                             <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
                                 <button class="dropdown-item" data-bs-toggle="modal"
                                     data-bs-target="#modal-mcu-xl" id="button-proses-peserta-mcu"

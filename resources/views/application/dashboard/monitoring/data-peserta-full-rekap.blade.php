@@ -5,7 +5,7 @@
         <p class="text-white fs--2 mb-0">Support by <a class="fw-semi-bold text-white" href="#!">Transforma</a></p>
     </div>
     <div class="tab-content p-3">
-        <table id="example" class="table table-striped nowrap" style="width:100%">
+        <table id="example" class="table table-striped" style="width:100%">
             <thead class="bg-200 text-700 fs--2">
                 <tr>
                     <th>NO</th>
@@ -14,7 +14,7 @@
                     <th>JENIS KELAMIN</th>
                     <th>DEPARTEMEN</th>
                     <th>WILAYAH</th>
-                    <th>LOKASI MCU</th>
+                    <th>LOKASI MCU </th>
                     @foreach ($pem as $pems)
                     <th>{{$pems->master_pemeriksaan_name}}</th>
                     @endforeach

@@ -1032,6 +1032,23 @@ class ApplicationController extends Controller
             return redirect()->back()->withError('Gagal! Peserta dan Pemilihan Paket TIdak Boleh Kosong');
         }
     }
+    public function mou_company_non_activasi_mou(Request $request)
+    {
+        return view('application.master-data.mou-company.form-activasi-non', ['code' => $request->code]);
+    }
+    public function mou_company_non_activasi_mou_save(Request $request)
+    {
+        $peserta = DB::table('company_mou_peserta')->where('company_mou_code', $request->code)->first();
+        $paket = DB::table('company_mou_agreement')->where('company_mou_code', $request->code)->first();
+        if ($peserta || $paket) {
+            DB::table('company_mou')->where('company_mou_code', $request->code)->update([
+                'company_mou_status' => 0
+            ]);
+            return redirect()->back()->withSuccess('Great! Berhasil Aktivasi Data MOU Perusahaan');
+        } else {
+            return redirect()->back()->withError('Gagal! Peserta dan Pemilihan Paket TIdak Boleh Kosong');
+        }
+    }
     public function mou_company_generetae_absesnsi_mcu(Request $request)
     {
         $cek = DB::table('company_mou_peserta_token_absensi')->where('company_mou_code', $request->code)->first();

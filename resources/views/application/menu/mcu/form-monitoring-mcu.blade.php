@@ -50,11 +50,15 @@
                         ->where('mou_peserta_code', $pes->mou_peserta_code)
                         ->where('master_pemeriksaan_code', $pems->master_pemeriksaan_code)->first();
                     ?>
-                    <th class="text-center">
+                    <th class="text-center fs--1">
                         @if ($status)
-                        <span style="color: green;">✅</span>
+                        @if ($status->log_pemeriksaan_status == 1)
+                        <span style="color: green;" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Melakukan">✅</span>
                         @else
-                        <span style="color: red;">x</span>
+                        <span style="color: blue;" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="{{$status->log_pemeriksaan_deskripsi}}">!</span>
+                        @endif
+                        @else
+                        <span style="color: red;" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Belum Melakukan">x</span>
                         @endif
                     </th>
                     @endforeach

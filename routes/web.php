@@ -126,6 +126,8 @@ Route::prefix('application')->group(function () {
     Route::post('mou-company/insert-pemeriksaan-mcu/insert', [ApplicationController::class, 'mou_company_insert_pemeriksaan_mcu_insert'])->name('mou_company_insert_pemeriksaan_mcu_insert');
     Route::post('mou-company/activasi-mou', [ApplicationController::class, 'mou_company_activasi_mou'])->name('mou_company_activasi_mou');
     Route::post('mou-company/activasi-mou/save', [ApplicationController::class, 'mou_company_activasi_mou_save'])->name('mou_company_activasi_mou_save');
+    Route::post('mou-company/non-activasi-mou', [ApplicationController::class, 'mou_company_non_activasi_mou'])->name('mou_company_non_activasi_mou');
+    Route::post('mou-company/non-activasi-mou/save', [ApplicationController::class, 'mou_company_non_activasi_mou_save'])->name('mou_company_non_activasi_mou_save');
     Route::post('mou-company/generate-absesnsi-mou', [ApplicationController::class, 'mou_company_generetae_absesnsi_mcu'])->name('mou_company_generetae_absesnsi_mcu');
     Route::post('mou-company/generate-absesnsi-mou/report', [ApplicationController::class, 'mou_company_generetae_absesnsi_mcu_report'])->name('mou_company_generetae_absesnsi_mcu_report');
     Route::post('mou-company/sinkronisasi/nik-nip', [ApplicationController::class, 'mou_company_sinkronisasi_nik_nip'])->name('mou_company_sinkronisasi_nik_nip');

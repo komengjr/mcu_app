@@ -125,6 +125,11 @@
                                             data-code="{{ $datas->company_mou_code }}">
                                             <span class="fab fa-galactic-republic"></span>
                                             Aktivasi MOU</button>
+                                        <button class="dropdown-item text-danger" data-bs-toggle="modal"
+                                            data-bs-target="#modal-company-sm" id="button-non-aktifasi-mou"
+                                            data-code="{{ $datas->company_mou_code }}">
+                                            <span class="fas fa-window-close"></span>
+                                            Non Aktivasi MOU</button>
                                         <div class="dropdown-divider"></div>
                                         <button class="dropdown-item text-success" data-bs-toggle="modal"
                                             data-bs-target="#modal-company-lg" id="button-generate-absensi-mou"
@@ -359,6 +364,27 @@
             );
             $.ajax({
                 url: "{{ route('mou_company_activasi_mou') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-company-sm').html(data);
+            }).fail(function() {
+                $('#menu-company-sm').html('eror');
+            });
+        });
+        $(document).on("click", "#button-non-aktifasi-mou", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-company-sm').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('mou_company_non_activasi_mou') }}",
                 type: "POST",
                 cache: false,
                 data: {

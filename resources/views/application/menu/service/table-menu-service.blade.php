@@ -46,17 +46,12 @@
             <td>
                 @php
                 $pemeriksaan = DB::table('company_mou_agreement_sub')
-                ->join(
-                'master_pemeriksaan',
-                'master_pemeriksaan.master_pemeriksaan_code',
-                '=',
-                'company_mou_agreement_sub.master_pemeriksaan_code',
-                )
-                ->where(
-                'company_mou_agreement_sub.mou_agreement_code',
-                $datas->mou_agreement_code,
-                )
+                ->join('master_pemeriksaan','master_pemeriksaan.master_pemeriksaan_code','=','company_mou_agreement_sub.master_pemeriksaan_code')
+                ->where('company_mou_agreement_sub.mou_agreement_code',$datas->mou_agreement_code)
                 ->get();
+                $pemeriksaan1 = DB::table('company_mou_agreement_user')
+                ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_user.master_pemeriksaan_code')
+                ->where('company_mou_agreement_user.mou_peserta_code', $datas->mou_peserta_code)->get();
                 @endphp
                 @foreach ($pemeriksaan as $pem)
                 @php
@@ -67,22 +62,44 @@
                 @endphp
                 @if ($check)
                 @if ($check->log_pemeriksaan_status == 1)
-                <li>{{ $pem->master_pemeriksaan_name }} <span
-                        class="fas fa-check-square text-success"></span></li>
+                <li>{{ $pem->master_pemeriksaan_name }}
+                    <span type="button" class="fas fa-check-circle text-success" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Melakukan"></span>
+                </li>
                 @else
-                <li>{{ $pem->master_pemeriksaan_name }} <span
-                        class="fas fa-exclamation-circle text-warning"></span></li>
+                <li>{{ $pem->master_pemeriksaan_name }}
+                    <span type="button" class="far fa-times-circle text-warning" data-bs-toggle="tooltip" data-bs-placement="right" title="{{$check->log_pemeriksaan_deskripsi}}"></span>
+                </li>
                 @endif
                 @else
-                <li>{{ $pem->master_pemeriksaan_name }} <span
-                        class="fas fa-window-close text-danger"></span></li>
+                <li>{{ $pem->master_pemeriksaan_name }}
+                    <span type="button" class="far fa-times-circle text-danger" data-bs-toggle="tooltip" data-bs-placement="right" title="Belum Melakukan"></span>
+                </li>
                 @endif
                 @endforeach
-                {{-- @if ($konsul)
-                                    <span class="badge bg-primary">Selesai</span>
-                                @else
-                                    <span class="badge bg-danger">Belum Selesai</span>
-                                @endif --}}
+                <!-- SECOUNd PEMERIKSAAN -->
+                @foreach ($pemeriksaan1 as $pem)
+                @php
+                $check = DB::table('log_pemeriksaan_pasien')
+                ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
+                ->where('mou_peserta_code', $datas->mou_peserta_code)
+                ->first();
+                @endphp
+                @if ($check)
+                @if ($check->log_pemeriksaan_status == 1)
+                <li>{{ $pem->master_pemeriksaan_name }}
+                    <span type="button" class="fas fa-check-circle text-success" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Melakukan"></span>
+                </li>
+                @else
+                <li>{{ $pem->master_pemeriksaan_name }}
+                    <span type="button" class="far fa-times-circle text-warning" data-bs-toggle="tooltip" data-bs-placement="right" title="{{$check->log_pemeriksaan_deskripsi}}"></span>
+                </li>
+                @endif
+                @else
+                <li>{{ $pem->master_pemeriksaan_name }}
+                    <span type="button" class="far fa-times-circle text-danger" data-bs-toggle="tooltip" data-bs-placement="right" title="Belum Melakukan"></span>
+                </li>
+                @endif
+                @endforeach
             </td>
             {{-- Pengiriman --}}
             <td>

@@ -158,17 +158,17 @@
                                                     <hr class="bg-300" />
                                                     <div class="divider-content-center">Sign Here</div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-8">
                                                     <div class="wrapper">
                                                         <img src="{{ asset('img/bg.jpg') }}"  width='300' height='200'/>
                                                         <canvas id="signature-pad" class="signature-pad" width='300' height='200' style="border: 2px solid black;"></canvas>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6 justify-content-between flex-column">
+                                                <div class="col-md-4 justify-content-between flex-column">
                                                     <div class="d-grid gap-2 mt-2 g-2 float-end">
-                                                        <button class="btn btn-falcon-primary px-5" type="button" id="save"><span class="fas fa-file-signature"></span> Save</button>
+                                                        <button class="btn btn-falcon-primary px-3" type="button" id="save"><span class="fas fa-file-signature"></span> Save</button>
                                                         <!-- <br> -->
-                                                        <button class="btn btn-falcon-danger px-5" type="button" id="clear"><span class="fas fa-remove-format"></span> Clear</button>
+                                                        <button class="btn btn-falcon-danger px-3" type="button" id="clear"><span class="fas fa-remove-format"></span> Clear</button>
                                                     </div>
                                                 </div>
                                                 <div class="col-12">

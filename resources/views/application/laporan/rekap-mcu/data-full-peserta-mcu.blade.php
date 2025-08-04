@@ -53,10 +53,14 @@
                         ->where('master_pemeriksaan_code', $pems->master_pemeriksaan_code)->first();
                     ?>
                     <th class="text-center">
-                        @if ($status)
-                        <span style="color: green;">✅</span>
+                      @if ($status)
+                        @if ($status->log_pemeriksaan_status == 1)
+                        <span style="color: green;" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Diperiksa">Y</span>
                         @else
-                        <span style="color: red;">x</span>
+                        <span class="text-warning" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="{{$status->log_pemeriksaan_deskripsi}}">!</span><span> : {{$status->log_pemeriksaan_deskripsi}}</span>
+                        @endif
+                        @else
+                        <span class="text-danger" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Belum Diperiksa">X</span>
                         @endif
                     </th>
                     @endforeach

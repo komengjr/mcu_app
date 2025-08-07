@@ -32,20 +32,8 @@
                     <td>{{ $pes->mou_peserta_name }}</td>
                     <td>{{ $pes->mou_peserta_jk }}</td>
                     <td>{{ $pes->mou_peserta_departemen }}</td>
-                    <?php
-                    $lokasi = DB::table('log_lokasi_pasien')
-                        ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
-                        ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
-                        ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
-                        ->where('log_lokasi_pasien.mou_peserta_code', $pes->mou_peserta_code)->first();
-                    ?>
-                    @if ($lokasi)
-                    <td>{{ $lokasi->group_cabang_name }}</td>
-                    <td>{{ $lokasi->master_cabang_name }}</td>
-                    @else
-                    <td></td>
-                    <td></td>
-                    @endif
+                    <td>{{ $pes->group_cabang_name }}</td>
+                    <td>{{ $pes->master_cabang_name }}</td>
                     @foreach ($pem as $pems)
                     <?php
                     $status = DB::table('log_pemeriksaan_pasien')

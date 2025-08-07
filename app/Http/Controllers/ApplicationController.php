@@ -180,7 +180,7 @@ class ApplicationController extends Controller
             ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
             ->join('company_mou_agreement', 'company_mou_agreement.mou_agreement_code', '=', 'company_mou_agreement_sub.mou_agreement_code')
             ->where('company_mou_agreement.company_mou_code', $request->code)
-            ->where('company_mou_agreement.mou_agreement_code',$request->id)
+            ->where('company_mou_agreement.mou_agreement_code', $request->id)
             ->get()->unique('master_pemeriksaan_code');
         $peserta = DB::table('company_mou_peserta')->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->where('company_mou_peserta.company_mou_code', $request->code)
@@ -1125,6 +1125,41 @@ class ApplicationController extends Controller
             ->where('company_mou.master_company_code', $request->code)
             ->orderBy('id_company_mou', 'DESC')->get();
         return view('application.master-data.company.data-mou-company', ['data' => $data]);
+    }
+    public function master_company_data_location_company(Request $request)
+    {
+        $data = DB::table('company_location')->where('master_company_code', $request->code)->get();
+        return view('application.master-data.company.data-location-company', ['code' => $request->code, 'data' => $data]);
+    }
+    public function master_company_data_location_company_add(Request $request)
+    {
+        return view('application.master-data.company.form-add-location', ['code' => $request->code]);
+    }
+    public function master_company_data_location_company_save(Request $request)
+    {
+        DB::table('company_location')->insert([
+            'company_location_code' => str::uuid(),
+            'master_company_code' => $request->code,
+            'company_location_name' => $request->name,
+            'company_location_alamat' => $request->alamat,
+            'company_location_status' => 1,
+            'created_at' => now()
+        ]);
+        return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Lokasi Perusahaan');
+    }
+    public function master_company_data_location_company_add_handle(Request $request)
+    {
+        $data = DB::table('master_cabang')->get();
+        return view('application.master-data.company.form-add-handle-cabang', ['code' => $request->code, 'data' => $data]);
+    }
+    public function master_company_data_location_company_save_handle(Request $request)
+    {
+        DB::table('company_location_handle')->insert([
+            'company_location_code' => $request->code,
+            'master_cabang_code' => $request->cabang,
+            'created_at' => now()
+        ]);
+        return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Handle Cabang');
     }
 
     // COMPANY MOU

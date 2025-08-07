@@ -120,6 +120,7 @@ Route::prefix('application')->group(function () {
     Route::post('master-company/data-location-company/save', [ApplicationController::class, 'master_company_data_location_company_save'])->name('master_company_data_location_company_save');
     Route::post('master-company/data-location-company/add-handle', [ApplicationController::class, 'master_company_data_location_company_add_handle'])->name('master_company_data_location_company_add_handle');
     Route::post('master-company/data-location-company/save-handle', [ApplicationController::class, 'master_company_data_location_company_save_handle'])->name('master_company_data_location_company_save_handle');
+    Route::post('master-company/data-location-company/remove-handle', [ApplicationController::class, 'master_company_data_location_company_remove_handle'])->name('master_company_data_location_company_remove_handle');
     // MOU COMPANY
     Route::post('mou-company/add', [ApplicationController::class, 'mou_company_add'])->name('mou_company_add');
     Route::post('mou-company/save', [ApplicationController::class, 'mou_company_save'])->name('mou_company_save');

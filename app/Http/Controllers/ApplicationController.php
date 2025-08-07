@@ -1190,6 +1190,10 @@ class ApplicationController extends Controller
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Handle Cabang');
     }
+    public function master_company_data_location_company_remove_handle(Request $requestq){
+        DB::table('company_location_handle')->where('id_company_location_handle',$requestq->code)->delete();
+        return 123;
+    }
 
     // COMPANY MOU
     public function mou_company($akses)

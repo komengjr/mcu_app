@@ -152,6 +152,7 @@
 <script src="https://cdn.datatables.net/responsive/3.0.4/js/dataTables.responsive.js"></script>
 <script src="https://cdn.datatables.net/responsive/3.0.4/js/responsive.bootstrap5.js"></script>
 <script src="{{ asset('vendors/choices/choices.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     new DataTable('#example', {
         responsive: true
@@ -283,6 +284,58 @@
         }).fail(function() {
             $('#menu-table-location').html('eror');
         });
+    });
+    $(document).on("click", "#button-remove-lokasi-handle-cabang", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: "btn btn-falcon-success",
+                cancelButton: "btn btn-falcon-danger"
+            },
+            buttonsStyling: true
+        });
+        swalWithBootstrapButtons.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                swalWithBootstrapButtons.fire({
+                    title: "Deleted!",
+                    text: "Your file has been deleted.",
+                    icon: "success"
+                });
+                $.ajax({
+                    url: "{{ route('master_company_data_location_company_remove_handle') }}",
+                    type: "POST",
+                    cache: false,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "code": code
+                    },
+                    dataType: 'html',
+                }).done(function(data) {
+                    location.reload();
+                }).fail(function() {
+                    location.reload();
+                });
+            } else if (
+                /* Read more about handling dismissals below */
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                swalWithBootstrapButtons.fire({
+                    title: "Cancelled",
+                    text: "Your Data file is safe :)",
+                    icon: "error"
+                });
+            }
+        });
+
     });
 </script>
 @endsection

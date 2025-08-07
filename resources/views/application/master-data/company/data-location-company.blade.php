@@ -43,7 +43,7 @@
                                 ->where('company_location_handle.company_location_code',$datas->company_location_code)->get();
                             @endphp
                             @foreach ($handle as $han)
-                                <li>{{ $han->master_cabang_name }}</li>
+                                <li>{{ $han->master_cabang_name }} <a href="#" id="button-remove-lokasi-handle-cabang" data-code="{{ $han->id_company_location_handle }}"><span class="fas fa-trash-alt text-danger"></span></a></li>
                             @endforeach
                         </td>
                         <td class="text-center">

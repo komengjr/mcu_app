@@ -22,6 +22,9 @@
                     <div class="d-none d-md-block">
                         <select name="perusahaan" class="form-control choices-single-lokasi" id="">
                             <option value="">Pilih Lokasi Perusahaan</option>
+                            @foreach ($lokasi as $lok)
+                                <option value="{{ $lok->company_location_code  }}">{{ $lok->company_location_name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="dropdown font-sans-serif">

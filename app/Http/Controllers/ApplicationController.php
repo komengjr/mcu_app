@@ -163,6 +163,9 @@ class ApplicationController extends Controller
             ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
             ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
             ->get();
+        $lokasi = DB::table('company_location')
+        ->join('company_mou','company_mou.master_company_code','company_location.master_company_code')
+        ->where('company_mou.company_mou_code',$request->code)->get();
         $paket = DB::table('company_mou_agreement')->where('company_mou_code', $request->code)->get();
         $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
             ->where('company_mou.company_mou_code', $request->code)->first();
@@ -171,6 +174,7 @@ class ApplicationController extends Controller
             'pem' => $pemeriksaan,
             'peserta' => $peserta,
             'paket' => $paket,
+            'lokasi' => $lokasi,
             'code' => $request->code
         ]);
     }

@@ -272,6 +272,7 @@
 <script src="https://cdn.datatables.net/buttons/3.2.4/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/3.2.4/js/buttons.print.min.js"></script>
 <script src="{{ asset('vendors/choices/choices.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     new DataTable('#example', {
         responsive: true

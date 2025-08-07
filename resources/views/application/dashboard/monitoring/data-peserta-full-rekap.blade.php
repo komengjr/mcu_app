@@ -2,6 +2,8 @@
     <div class="bg-danger rounded-top-lg py-3 ps-4 pe-6">
         <h4 class="mb-1 text-white" id="staticBackdropLabel">Data Peserta MCU<strong>{{ $data->master_company_name }} -
                 {{ $data->company_mou_name }}</strong></h4>
+                <input type="text" name="code_perusahaan" id="code_perusahaan" value="{{ $data->master_company_code }}" hidden>
+                <input type="text" name="code_mou" id="code_mou" value="{{ $data->company_mou_code }}" hidden>
         <p class="text-white fs--2 mb-0">Support by <a class="fw-semi-bold text-white" href="#!">Transforma</a></p>
     </div>
     <div class="tab-content p-3">
@@ -20,10 +22,10 @@
                 </div>
                 <div class="d-flex">
                     <div class="d-none d-md-block">
-                        <select name="perusahaan" class="form-control choices-single-lokasi" id="">
+                        <select name="lokasi_perusahaan" class="form-control choices-single-lokasi" id="lokasi_perusahaan">
                             <option value="">Pilih Lokasi Perusahaan</option>
                             @foreach ($lokasi as $lok)
-                                <option value="{{ $lok->company_location_code  }}">{{ $lok->company_location_name }}</option>
+                            <option value="{{ $lok->company_location_code  }}">{{ $lok->company_location_name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -115,4 +117,36 @@
 </script>
 <script>
     new window.Choices(document.querySelector(".choices-single-lokasi"));
+</script>
+<script>
+    $('#lokasi_perusahaan').on("change", function() {
+        var dataid = document.getElementById("lokasi_perusahaan").value;
+
+        var code_mou = document.getElementById("code_mou").value;
+        if (dataid == "") {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Pilihan dipilih Terlebih dahulu",
+                footer: '<a href="#">Why do I have this issue?</a>'
+            });
+        } else {
+            $.ajax({
+                url: "{{ route('monitoring_mcu_rekap_full_detail_lokasi') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": dataid,
+                    // "code_perusahaan": code_perusahaan,
+                    "code_mou": code_mou,
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $("#peserta-monitoring-mcu").html(data);
+            }).fail(function() {
+                $("#peserta-monitoring-mcu").html('error');
+            });
+        }
+    });
 </script>

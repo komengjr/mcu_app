@@ -10,12 +10,10 @@ class SignaturePadController extends Controller
 {
     public function index()
     {
-
         return view('signaturePad');
     }
     public function contoh()
     {
-
         return view('contoh');
     }
     public function sign($id)
@@ -97,7 +95,6 @@ class SignaturePadController extends Controller
             return 'absensi tidak ditemukan';
         }
     }
-
     public function upload(Request $request)
     {
         $folderPath = public_path('/signature/');

@@ -409,12 +409,12 @@
             }).done(function(data) {
                 $('#menu-monitoring').html(data);
             }).fail(function() {
-                $('#menu-monitoring').html(
-                    '<span class="badge bg-warning m-4">Data Belum Lengkap , Reload.. dalam 3 detik</span>'
-                );
-                setTimeout(() => {
-                    location.reload();
-                }, 2000);
+                // $('#menu-monitoring').html(
+                //     '<span class="badge bg-warning m-4">Data Belum Lengkap , Reload.. dalam 3 detik</span>'
+                // );
+                // setTimeout(() => {
+                //     location.reload();
+                // }, 2000);
             });
         });
     </script>

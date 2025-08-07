@@ -157,10 +157,192 @@ class ApplicationController extends Controller
             ->join('company_mou_agreement', 'company_mou_agreement.mou_agreement_code', '=', 'company_mou_agreement_sub.mou_agreement_code')
             ->where('company_mou_agreement.company_mou_code', $request->code)->get()->unique('master_pemeriksaan_code');
         $peserta = DB::table('company_mou_peserta')->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
-            ->where('company_mou_peserta.company_mou_code', $request->code)->get();
+            ->where('company_mou_peserta.company_mou_code', $request->code)
+            ->join('log_pemeriksaan_pasien','log_pemeriksaan_pasien.mou_peserta_code','=','company_mou_peserta.mou_peserta_code')->get();
         $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
             ->where('company_mou.company_mou_code', $request->code)->first();
-        return view('application.dashboard.monitoring.data-peserta-full-rekap', ['data' => $data, 'pem' => $pemeriksaan, 'peserta' => $peserta]);
+        return view('application.dashboard.monitoring.data-peserta-full-rekap', ['data' => $data, 'pem' => $pemeriksaan, 'peserta' => $peserta, 'code' => $request->code]);
+    }
+    public function monitoring_mcu_rekap_full_detail_peserta(Request $request, $id)
+    {
+        $draw = $request->get('draw');
+        $start = $request->get("start");
+        $rowperpage = $request->get("length"); // Rows display per page
+
+        $columnIndex_arr = $request->get('order');
+        $columnName_arr = $request->get('columns');
+        $order_arr = $request->get('order');
+        $search_arr = $request->get('search');
+
+        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
+        $searchValue = $search_arr['value']; // Search value
+
+        // Total records
+        $totalRecords =  DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->where('company_mou_peserta.company_mou_code', $id)->count();
+        $totalRecordswithFilter = DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->where('company_mou_peserta.company_mou_code', $id)
+            ->where('company_mou_peserta.mou_peserta_name', 'like', '%' . $searchValue . '%')->count();
+
+        // Fetch records
+        $records = DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->where('company_mou_peserta.company_mou_code', $id)
+            ->where('company_mou_peserta.mou_peserta_name', 'like', '%' . $searchValue . '%')
+            ->select('company_mou_peserta.*')
+            ->orderBy('id_mou_peserta', $columnSortOrder)
+            ->skip($start)
+            ->take($rowperpage)
+            ->get();
+
+        $data_arr = array();
+        $no = 1;
+        $pemeriksaan = DB::table('company_mou_agreement_sub')
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+            ->join('company_mou_agreement', 'company_mou_agreement.mou_agreement_code', '=', 'company_mou_agreement_sub.mou_agreement_code')
+            ->where('company_mou_agreement.company_mou_code', $id)->get()->unique('master_pemeriksaan_code');
+        foreach ($records as $record) {
+            $id = $no++;
+            $code_peserta = $record->mou_peserta_code;
+            $nama_peserta = $record->mou_peserta_name;
+            $nik = $record->mou_peserta_nik;
+            $ttl = $record->mou_peserta_ttl;
+            $jk = $record->mou_peserta_jk;
+            $email = $record->mou_peserta_email;
+            $no_hp = $record->mou_peserta_no_hp;
+            $nip = $record->mou_peserta_nip;
+            $lokasi = DB::table('log_lokasi_pasien')
+                ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+                ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+                ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
+                ->where('log_lokasi_pasien.mou_peserta_code', $record->mou_peserta_code)->first();
+            if ($lokasi) {
+                $group = $lokasi->group_cabang_name;
+                $cabang =  $lokasi->master_cabang_name;
+            } else {
+                $group = "";
+                $cabang = "";
+            }
+            foreach ($pemeriksaan as $value) {
+                $status = DB::table('log_pemeriksaan_pasien')
+                    ->where('mou_peserta_code', $record->mou_peserta_code)
+                    ->where('master_pemeriksaan_code', $value->master_pemeriksaan_code)->first();
+                if ($status) {
+                    $check = '<span style="color: green;" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Diperiksa">Y</span>';
+                } else {
+                    $check = '<span class="text-danger" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Belum Diperiksa">X</span>';
+                }
+            }
+            $sudah = '<span style="color: green;" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Diperiksa">Y</span>';
+            $belum = '<span class="text-danger" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Belum Diperiksa">X</span>';
+            $notice = '<span class="text-warning" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="panding">!</span><span> : Panding</span>';
+            $departemen = $record->mou_peserta_departemen;
+            $paket = DB::table('company_mou_agreement')
+                ->where('mou_agreement_code', $record->mou_agreement_code)
+                ->first();
+            if ($paket) {
+                $packet = $paket->mou_agreement_name . '<br><button class="btn btn-warning btn-sm" id="button-pilih-paket-mcu" data-code="' . $record->mou_peserta_code . '"><span class="fas fa-undo"></span></button>';
+            } else {
+                $packet = '<button class="btn btn-danger btn-sm" id="button-pilih-paket-mcu" data-code="' . $record->mou_peserta_code . '">Pilih Paket</button>';
+            }
+            $log = DB::table('log_lokasi_pasien')
+                ->select('log_lokasi_pasien.created_at', 'master_cabang.master_cabang_name')
+                ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+                ->where('log_lokasi_pasien.mou_peserta_code', $record->mou_peserta_code)
+                ->first();
+            if ($log) {
+                $lokasi = '<span class="text-primary">' . $log->master_cabang_name . '</span> <br>' . $log->created_at;
+                $button = '<div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-falcon-primary" id="btnGroupVerticalDrop2" type="button"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
+                                    class="fas fa-align-left me-1"
+                                    data-fa-transform="shrink-3"></span></button>
+                            <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
+                                <button class="dropdown-item" data-bs-toggle="modal"
+                                    data-bs-target="#modal-mcu-xl" id="button-proses-update-peserta-mcu"
+                                    data-code="' . $record->mou_peserta_code . '">
+                                    <span class="fas fa-folder-plus"></span> Update Lokasi</button>
+                            </div>
+                        </div>';
+            } else {
+                $lokasi = '<span class="badge bg-danger">Belum Check in</span>';
+                $button = '<div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-falcon-primary" id="btnGroupVerticalDrop2" type="button"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
+                                    class="fas fa-align-left me-1"
+                                    data-fa-transform="shrink-3"></span></button>
+                            <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
+                                <button class="dropdown-item" data-bs-toggle="modal"
+                                    data-bs-target="#modal-mcu-xl" id="button-proses-peserta-mcu"
+                                    data-code="' . $record->mou_peserta_code . '">
+                                    <span class="fas fa-folder-plus"></span> Proses MCU</button>
+                            </div>
+                        </div>';
+            }
+
+            // $ruangan = DB::table('tbl_nomor_ruangan_cabang')->where('id_nomor_ruangan_cbaang', $record->id_nomor_ruangan_cbaang)->first();
+            // if ($ruangan) {
+            //     $dataruangan = $ruangan->nomor_ruangan;
+            //     if ($record->status_barang == 5) {
+            //         $status_barang = '<span class="badge bg-danger p-2" style="font-size: 11px;">Musnah</span>';
+            //         $button = "";
+            //     } else if ($record->status_barang == 4) {
+            //         $status_barang = '<span class="badge bg-warning p-2" style="font-size: 11px;">Mutasi</span>';
+            //         $button = "";
+            //     } else {
+            //         $status_barang = '<span class="badge bg-success p-2" style="font-size: 11px;">Baik</span>';
+            //         $button =  "<button class='btn-warning m-1' data-toggle='modal' data-target='#editmasterbarang' id='editbarangmaster' data-url=" . url('divisi/masterbarang/showedit', ['id' => $id_inventaris]) . "><i class='bx bx-pencil'></i> edit</button>
+            //         <button class='btn-dark m-1' data-toggle='modal' data-target='#editmasterbarang' id='print-barcode-master-barang' data-url=" . url('printbarcodebyidinventaris', ['id' => $record->id]) . "><i class='bx bx-print'></i> Cetak Barcode</button>";
+            //     };
+            // } else {
+            //     $dataruangan = '<span class="badge bg-danger p-2" style="font-size: 11px;">Tidak di temukan</span>';
+            //     if ($record->status_barang == 5) {
+            //         $status_barang = '<span class="badge bg-danger p-2" style="font-size: 11px;">Musnah</span>';
+            //         $button = "";
+            //     } else if ($record->status_barang == 4) {
+            //         $status_barang = '<span class="badge bg-warning p-2" style="font-size: 11px;">Mutasi</span>';
+            //         $button = "";
+            //     } else {
+            //         $status_barang = '<span class="badge bg-success p-2" style="font-size: 11px;">Baik</span>';
+            //         $button = "<button class='btn-warning m-1' data-toggle='modal' data-target='#editmasterbarang' id='editbarangmaster' data-url=" . url('divisi/masterbarang/showedit', ['id' => $id_inventaris]) . "><i class='bx bx-pencil'></i> edit</button>";
+            //     };
+            // };
+            $check_arr[] = array(
+                'cheeek' => '<span style="color: green;" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Diperiksa">Y</span>'
+            );
+            $data_arr[] = array(
+                "id" => $id,
+                "code_peserta" => $code_peserta,
+                "nama_peserta" => $nama_peserta,
+                "nik" => $nik,
+                "ttl" => $ttl,
+                "jk" => $jk,
+                "email" => $email,
+                "no_hp" => $no_hp,
+                "nip" => $nip,
+                "check" => $check,
+                "departemen" => $departemen,
+                "paket" => $packet,
+                "lokasi" => $lokasi,
+                "button" => $button,
+                "group" => $group,
+                "cabang" => $cabang,
+                "sudah" => $sudah,
+                "belum" => $belum,
+                "notice" => $notice,
+            );
+        }
+        $response = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordswithFilter,
+            "aaData" => $data_arr,
+        );
+        echo json_encode($response);
     }
 
     // MCU
@@ -237,7 +419,7 @@ class ApplicationController extends Controller
                 ->where('mou_agreement_code', $record->mou_agreement_code)
                 ->first();
             if ($paket) {
-                $packet = $paket->mou_agreement_name.'<br><button class="btn btn-warning btn-sm" id="button-pilih-paket-mcu" data-code="' . $record->mou_peserta_code . '"><span class="fas fa-undo"></span></button>';
+                $packet = $paket->mou_agreement_name . '<br><button class="btn btn-warning btn-sm" id="button-pilih-paket-mcu" data-code="' . $record->mou_peserta_code . '"><span class="fas fa-undo"></span></button>';
             } else {
                 $packet = '<button class="btn btn-danger btn-sm" id="button-pilih-paket-mcu" data-code="' . $record->mou_peserta_code . '">Pilih Paket</button>';
             }
@@ -340,9 +522,9 @@ class ApplicationController extends Controller
             ->where('company_mou_agreement.company_mou_code', $request->code)->get()->unique('master_pemeriksaan_code');
         $peserta = DB::table('company_mou_peserta')
             ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
-            ->join('log_lokasi_pasien','log_lokasi_pasien.mou_peserta_code','=','company_mou_peserta.mou_peserta_code')
+            ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
             ->where('company_mou_peserta.company_mou_code', $request->code)
-            ->where('log_lokasi_pasien.lokasi_cabang',Auth::user()->access_cabang)->get();
+            ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)->get();
         $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
             ->where('company_mou.company_mou_code', $request->code)->first();
         return view('application.menu.mcu.form-monitoring-mcu', ['data' => $data, 'pem' => $pemeriksaan, 'peserta' => $peserta]);

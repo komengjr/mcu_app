@@ -163,9 +163,43 @@ class ApplicationController extends Controller
             ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
             ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
             ->get();
+        $paket = DB::table('company_mou_agreement')->where('company_mou_code', $request->code)->get();
         $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
             ->where('company_mou.company_mou_code', $request->code)->first();
-        return view('application.dashboard.monitoring.data-peserta-full-rekap', ['data' => $data, 'pem' => $pemeriksaan, 'peserta' => $peserta, 'code' => $request->code]);
+        return view('application.dashboard.monitoring.data-peserta-full-rekap', [
+            'data' => $data,
+            'pem' => $pemeriksaan,
+            'peserta' => $peserta,
+            'paket' => $paket,
+            'code' => $request->code
+        ]);
+    }
+    public function monitoring_mcu_rekap_full_detail_paket(Request $request)
+    {
+        $pemeriksaan = DB::table('company_mou_agreement_sub')
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+            ->join('company_mou_agreement', 'company_mou_agreement.mou_agreement_code', '=', 'company_mou_agreement_sub.mou_agreement_code')
+            ->where('company_mou_agreement.company_mou_code', $request->code)
+            ->where('company_mou_agreement.mou_agreement_code',$request->id)
+            ->get()->unique('master_pemeriksaan_code');
+        $peserta = DB::table('company_mou_peserta')->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->where('company_mou_peserta.company_mou_code', $request->code)
+            ->where('company_mou_peserta.mou_agreement_code', $request->id)
+            ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+            ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+            ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+            ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
+            ->get();
+        $paket = DB::table('company_mou_agreement')->where('company_mou_code', $request->code)->get();
+        $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou.company_mou_code', $request->code)->first();
+        return view('application.dashboard.monitoring.table-monitoring-peserta-mcu', [
+            'data' => $data,
+            'pem' => $pemeriksaan,
+            'peserta' => $peserta,
+            'paket' => $paket,
+            'code' => $request->code
+        ]);
     }
     public function monitoring_mcu_rekap_full_detail_peserta(Request $request, $id)
     {

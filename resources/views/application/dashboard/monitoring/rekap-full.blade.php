@@ -127,7 +127,14 @@
                     </div>
                 </div>
                 <div class="row g-3">
-                    <div class="col-md-7">
+                    <div class="col-md-12">
+                        <div class="card border border-danger">
+                            <div class="echart-pie-chart-example p-3" style="min-height: 360px;"
+                                data-echart-responsive="true">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
                         <div class="card p-2 border border-danger">
                             <h6 class="fw-semi-bold text-uppercase">Informasi Cabang</h6>
                             <table id="table-cabang"
@@ -141,6 +148,7 @@
                                         <th class="sort" data-sort="age">Executive</th>
                                         <th class="sort" data-sort="age">Persentasi</th>
                                         <th class="sort" data-sort="age">Healty Talk</th>
+                                        <th class="sort" data-sort="age">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody class="list">
@@ -214,6 +222,9 @@
                                                     <span class="badge bg-danger">Belum</span>
                                                 @endif
                                             </td>
+                                            <td>
+                                                <button class="btn btn-warning btn-sm">Lihat Data</button>
+                                            </td>
                                         </tr>
                                     @endforeach
 
@@ -221,14 +232,6 @@
                             </table>
                         </div>
                     </div>
-                    <div class="col-md-5">
-                        <div class="card border border-danger">
-                            <div class="echart-pie-chart-example p-3" style="min-height: 360px;"
-                                data-echart-responsive="true">
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
             <div class="card-footer border-top text-end">

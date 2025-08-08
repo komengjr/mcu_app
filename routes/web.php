@@ -62,6 +62,7 @@ Route::prefix('application')->group(function () {
     //MONITORING MCU
     Route::post('monitoring-mcu/cari-nama', [ApplicationController::class, 'monitoring_mcu_cari_nama'])->name('monitoring_mcu_cari_nama');
     Route::post('monitoring-mcu/detail', [ApplicationController::class, 'monitoring_mcu_detail'])->name('monitoring_mcu_detail');
+    Route::get('monitoring-mcu/detail/{id}', [ApplicationController::class, 'monitoring_mcu_detail_table'])->name('monitoring_mcu_detail_table');
 
     Route::post('monitoring-mcu/detail/belum', [ApplicationController::class, 'monitoring_mcu_detail_belum'])->name('monitoring_mcu_detail_belum');
     Route::post('monitoring-mcu/detail/sudah', [ApplicationController::class, 'monitoring_mcu_detail_sudah'])->name('monitoring_mcu_detail_sudah');

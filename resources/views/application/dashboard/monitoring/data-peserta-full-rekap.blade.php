@@ -131,6 +131,7 @@
                 footer: '<a href="#">Why do I have this issue?</a>'
             });
         } else {
+            $("#peserta-monitoring-mcu").html('<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>');
             $.ajax({
                 url: "{{ route('monitoring_mcu_rekap_full_detail_lokasi') }}",
                 type: "POST",

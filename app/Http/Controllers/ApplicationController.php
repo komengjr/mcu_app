@@ -76,7 +76,96 @@ class ApplicationController extends Controller
             ->where('company_mou.company_mou_code', $request->code)->first();
         $peserta = DB::table('company_mou_peserta')->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->where('company_mou_peserta.company_mou_code', $request->code)->get();
-        return view('application.dashboard.monitoring.data-peserta-mcu', ['data' => $data, 'peserta' => $peserta]);
+        return view('application.dashboard.monitoring.data-peserta-mcu', ['data' => $data, 'peserta' => $peserta, 'code' => $request->code]);
+    }
+    public function monitoring_mcu_detail_table(Request $request, $id)
+    {
+        $draw = $request->get('draw');
+        $start = $request->get("start");
+        $rowperpage = $request->get("length"); // Rows display per page
+
+        $columnIndex_arr = $request->get('order');
+        $columnName_arr = $request->get('columns');
+        $order_arr = $request->get('order');
+        $search_arr = $request->get('search');
+
+        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
+        $searchValue = $search_arr['value']; // Search value
+
+        // Total records
+        $totalRecords =  DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->where('company_mou_peserta.company_mou_code', $id)->count();
+        $totalRecordswithFilter = DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->where('company_mou_peserta.company_mou_code', $id)
+            ->where('company_mou_peserta.mou_peserta_name', 'like', '%' . $searchValue . '%')->count();
+
+        // Fetch records
+        $records = DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->where('company_mou_peserta.company_mou_code', $id)
+            ->where('company_mou_peserta.mou_peserta_name', 'like', '%' . $searchValue . '%')
+            ->select('company_mou_peserta.*')
+            ->orderBy('id_mou_peserta', $columnSortOrder)
+            ->skip($start)
+            ->take($rowperpage)
+            ->get();
+
+        $data_arr = array();
+        $no = 1;
+        $pemeriksaan = DB::table('company_mou_agreement_sub')
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+            ->join('company_mou_agreement', 'company_mou_agreement.mou_agreement_code', '=', 'company_mou_agreement_sub.mou_agreement_code')
+            ->where('company_mou_agreement.company_mou_code', $id)->get()->unique('master_pemeriksaan_code');
+        foreach ($records as $record) {
+            $id = $no++;
+            $nip = $record->mou_peserta_nip;
+            $nama_peserta = $record->mou_peserta_name;
+            $nik = $record->mou_peserta_nik;
+            $ttl = $record->mou_peserta_ttl;
+            $jk = $record->mou_peserta_jk;
+            $departemen = $record->mou_peserta_departemen;
+            $pemeriksaan = DB::table('company_mou_agreement_sub')
+                ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+                ->where('company_mou_agreement_sub.mou_agreement_code', $record->mou_agreement_code)
+                ->get();
+            $status = "";
+            foreach ($pemeriksaan as $pem) {
+                $check = DB::table('log_pemeriksaan_pasien')
+                    ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
+                    ->where('mou_peserta_code', $record->mou_peserta_code)
+                    ->first();
+                if ($check) {
+                    if ($check->log_pemeriksaan_status == 1) {
+                        $status = $status . '<li>' . $pem->master_pemeriksaan_name . ' <span class="fas fa-check-square text-success" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Diperiksa"></span></li>';
+                    } else {
+                        $status = $status . '<li>' . $pem->master_pemeriksaan_name . ' <span class="fas fa-exclamation-circle text-warning" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="'.$check->log_pemeriksaan_deskripsi.'"></span></li>';
+                    }
+                } else {
+                    $status = $status . '<li>' . $pem->master_pemeriksaan_name . ' <span class="fas fa-window-close text-danger" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Diperiksa"></span></li>';
+                }
+            }
+            $data_arr[] = array(
+                "id" => $id,
+                "nip" => $nip,
+                "nama_peserta" => $nama_peserta,
+                "nik" => $nik,
+                "ttl" => $ttl,
+                "jk" => $jk,
+                "departemen" => $departemen,
+                "status" => $status,
+            );
+        }
+        $response = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordswithFilter,
+            "aaData" => $data_arr,
+        );
+        echo json_encode($response);
     }
     public function monitoring_mcu_detail_belum(Request $request)
     {
@@ -1190,8 +1279,9 @@ class ApplicationController extends Controller
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Handle Cabang');
     }
-    public function master_company_data_location_company_remove_handle(Request $requestq){
-        DB::table('company_location_handle')->where('id_company_location_handle',$requestq->code)->delete();
+    public function master_company_data_location_company_remove_handle(Request $requestq)
+    {
+        DB::table('company_location_handle')->where('id_company_location_handle', $requestq->code)->delete();
         return 123;
     }
 

@@ -332,7 +332,7 @@
                                     ->first();
                             @endphp
                             @if ($ttd)
-                                {{ substr($ttd->log_kehadiran_pasien_sign,1,15) }}<br>
+                                <img src="{{$ttd->log_kehadiran_pasien_sign}}" width="50"> <br>
                                 {{$ttd->log_kehadiran_pasien_time}}
                             @else
                                 <strong style="color: rgb(199, 27, 24)">Belum</strong>

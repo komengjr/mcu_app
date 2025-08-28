@@ -243,10 +243,6 @@
     <main>
         <div id="details" class="clearfix">
             <div id="client">
-                {{-- <h2 class="name">
-                </h2>
-                <div class="address"></div> --}}
-
                 <table style="margin: 0px; padding: 0px;">
                     <tr>
                         <td>Nama Perusahaan</td>
@@ -265,7 +261,7 @@
             <div id="invoice">
 
                 <span> <img style="padding-top: 1px; left: 10px;"
-                        src="data:image/png;base64, {!! base64_encode(QrCode::style('round')->format('svg')->size(50)->errorCorrection('H')->generate($data->company_mou_code)) !!}"></span><br>
+                        src="data:image/png;base64, {!! base64_encode(QrCode::style('round')->format('svg')->size(30)->errorCorrection('H')->generate($data->company_mou_code)) !!}"></span><br>
             </div>
         </div>
         <table border="1" cellspacing="0" cellpadding="0">
@@ -273,16 +269,12 @@
                 <tr>
                     <th>No</th>
                     <th>NIP</th>
-                    {{-- <th>NIK</th> --}}
                     <th>Nama Peserta</th>
-                    {{-- <th>Tanggal Lahir</th> --}}
                     <th>Jenis Kelamin</th>
                     <th>Email</th>
                     <th>No HP</th>
                     <th>Departemen</th>
-                    {{-- <th>Wilayah</th> --}}
                     <th>Lokasi MCU</th>
-                    <
                     <th>Tanda Tangan</th>
                 </tr>
             </thead>
@@ -310,7 +302,7 @@
                         {{-- <td>
 
                             @if ($lokasi)
-                                {{ $lokasi->master_cabang_city }}
+                            {{ $lokasi->master_cabang_city }}
                             @else
                             @endif
                         </td> --}}
@@ -333,14 +325,14 @@
                         </td>
 
                         <td style="text-align: center;">
-                             @php
+                            @php
                                 $ttd = DB::table('log_kehadiran_pasien')
                                     ->where('mou_peserta_code', $pesertas->mou_peserta_code)
-                                    ->where('log_kehadiran_pasien_status',1)
+                                    ->where('log_kehadiran_pasien_status', 1)
                                     ->first();
                             @endphp
                             @if ($ttd)
-                                <img src="<?php echo $ttd->log_kehadiran_pasien_sign ?>" width="100"> <br>
+                                <img src="{{$ttd->log_kehadiran_pasien_sign}}" width="70"> <br>
                                 {{$ttd->log_kehadiran_pasien_time}}
                             @else
                                 <strong style="color: rgb(199, 27, 24)">Belum</strong>

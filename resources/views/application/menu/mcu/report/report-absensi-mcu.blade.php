@@ -332,7 +332,7 @@
                                     ->first();
                             @endphp
                             @if ($ttd)
-                                 <br>
+                                {{ substr($ttd->log_kehadiran_pasien_sign,15) }}<br>
                                 {{$ttd->log_kehadiran_pasien_time}}
                             @else
                                 <strong style="color: rgb(199, 27, 24)">Belum</strong>

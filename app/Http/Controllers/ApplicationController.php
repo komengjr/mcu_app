@@ -795,7 +795,7 @@ class ApplicationController extends Controller
             ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
             ->where('company_mou_peserta.company_mou_code', $request->code)->get();
         $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.menu.mcu.report.report-absensi-mcu', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A3', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.menu.mcu.report.report-absensi-mcu', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A4', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);
         $pdf->output();
         $dompdf = $pdf->getDomPDF();
         $font = $dompdf->getFontMetrics()->get_font("helvetica", "bold");

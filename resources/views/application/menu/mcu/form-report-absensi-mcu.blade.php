@@ -17,7 +17,7 @@
                         @for ($i = 1; $i < 100; $i++)
                             @if ($cetak < 0)
                             @else
-                                <option value="{{ $i }}">Page {{ $i }} ({{ $no }} Sampai {{  }})
+                                <option value="{{ $i }}">Page {{ $i }}
                                 </option>
                             @endif
                             @php

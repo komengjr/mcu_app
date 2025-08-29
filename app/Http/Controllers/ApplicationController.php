@@ -813,63 +813,63 @@ class ApplicationController extends Controller
                 ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
                 ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
                 ->where('company_mou_peserta.company_mou_code', $request->code)
-                ->offset(100)->limit(200)->get();
+                ->offset(100)->limit(100)->get();
         } elseif ($request->page == 3) {
             $peserta = DB::table('company_mou_peserta')
                 ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
                 ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
                 ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
                 ->where('company_mou_peserta.company_mou_code', $request->code)
-                ->offset(200)->limit(300)->get();
+                ->offset(200)->limit(100)->get();
         } elseif ($request->page == 4) {
             $peserta = DB::table('company_mou_peserta')
                 ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
                 ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
                 ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
                 ->where('company_mou_peserta.company_mou_code', $request->code)
-                ->offset(300)->limit(400)->get();
+                ->offset(300)->limit(100)->get();
         } elseif ($request->page == 5) {
             $peserta = DB::table('company_mou_peserta')
                 ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
                 ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
                 ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
                 ->where('company_mou_peserta.company_mou_code', $request->code)
-                ->offset(400)->limit(500)->get();
+                ->offset(400)->limit(100)->get();
         } elseif ($request->page == 6) {
             $peserta = DB::table('company_mou_peserta')
                 ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
                 ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
                 ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
                 ->where('company_mou_peserta.company_mou_code', $request->code)
-                ->offset(500)->limit(600)->get();
+                ->offset(500)->limit(100)->get();
         } elseif ($request->page == 7) {
             $peserta = DB::table('company_mou_peserta')
                 ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
                 ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
                 ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
                 ->where('company_mou_peserta.company_mou_code', $request->code)
-                ->offset(600)->limit(700)->get();
+                ->offset(600)->limit(100)->get();
         } elseif ($request->page == 8) {
             $peserta = DB::table('company_mou_peserta')
                 ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
                 ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
                 ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
                 ->where('company_mou_peserta.company_mou_code', $request->code)
-                ->offset(700)->limit(800)->get();
+                ->offset(700)->limit(100)->get();
         } elseif ($request->page == 9) {
             $peserta = DB::table('company_mou_peserta')
                 ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
                 ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
                 ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
                 ->where('company_mou_peserta.company_mou_code', $request->code)
-                ->offset(800)->limit(900)->get();
+                ->offset(800)->limit(100)->get();
         } elseif ($request->page == 10) {
             $peserta = DB::table('company_mou_peserta')
                 ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
                 ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
                 ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
                 ->where('company_mou_peserta.company_mou_code', $request->code)
-                ->offset(900)->limit(1000)->get();
+                ->offset(900)->limit(100)->get();
         }
         $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.menu.mcu.report.report-absensi-mcu', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A4', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);

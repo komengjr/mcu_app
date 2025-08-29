@@ -17,8 +17,7 @@
                         @for ($i = 1; $i < 100; $i++)
                             @if ($cetak < 0)
                             @else
-                                <option value="{{ $i }}">Page {{ $i }}
-                                </option>
+                                <option value="{{ $i }}">Page {{ $i }} </option>
                             @endif
                             @php
                                 $cetak = $cetak - 100;
@@ -42,6 +41,8 @@
         e.preventDefault();
         var page_data = document.getElementById("page_data").value;
         var code = $(this).data("code");
+        console.log(page_data);
+
         if (page_data == "") {
             const Toast = Swal.mixin({
                 toast: true,

@@ -95,7 +95,7 @@ class ApplicationController extends Controller
         $searchValue = $search_arr['value']; // Search value
 
         // Total records
-        $totalRecords =  DB::table('company_mou_peserta')
+        $totalRecords = DB::table('company_mou_peserta')
             ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->where('company_mou_peserta.company_mou_code', $id)->count();
         $totalRecordswithFilter = DB::table('company_mou_peserta')
@@ -142,7 +142,7 @@ class ApplicationController extends Controller
                     if ($check->log_pemeriksaan_status == 1) {
                         $status = $status . '<li>' . $pem->master_pemeriksaan_name . ' <span class="fas fa-check-square text-success" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Diperiksa"></span></li>';
                     } else {
-                        $status = $status . '<li>' . $pem->master_pemeriksaan_name . ' <span class="fas fa-exclamation-circle text-warning" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="'.$check->log_pemeriksaan_deskripsi.'"></span></li>';
+                        $status = $status . '<li>' . $pem->master_pemeriksaan_name . ' <span class="fas fa-exclamation-circle text-warning" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="' . $check->log_pemeriksaan_deskripsi . '"></span></li>';
                     }
                 } else {
                     $status = $status . '<li>' . $pem->master_pemeriksaan_name . ' <span class="fas fa-window-close text-danger" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Diperiksa"></span></li>';
@@ -336,7 +336,7 @@ class ApplicationController extends Controller
         $searchValue = $search_arr['value']; // Search value
 
         // Total records
-        $totalRecords =  DB::table('company_mou_peserta')
+        $totalRecords = DB::table('company_mou_peserta')
             ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->where('company_mou_peserta.company_mou_code', $id)->count();
         $totalRecordswithFilter = DB::table('company_mou_peserta')
@@ -378,7 +378,7 @@ class ApplicationController extends Controller
                 ->where('log_lokasi_pasien.mou_peserta_code', $record->mou_peserta_code)->first();
             if ($lokasi) {
                 $group = $lokasi->group_cabang_name;
-                $cabang =  $lokasi->master_cabang_name;
+                $cabang = $lokasi->master_cabang_name;
             } else {
                 $group = "";
                 $cabang = "";
@@ -540,7 +540,7 @@ class ApplicationController extends Controller
         $searchValue = $search_arr['value']; // Search value
 
         // Total records
-        $totalRecords =  DB::table('company_mou_peserta')
+        $totalRecords = DB::table('company_mou_peserta')
             ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->where('company_mou_peserta.company_mou_code', $id)->count();
         $totalRecordswithFilter = DB::table('company_mou_peserta')
@@ -783,17 +783,94 @@ class ApplicationController extends Controller
     }
     public function medical_check_up_prosess_cetak_absensi(Request $request)
     {
-        return view('application.menu.mcu.form-report-absensi-mcu', ['code' => $request['code']]);
+        $peserta = DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+            ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+            ->where('company_mou_peserta.company_mou_code', $request->code)->count();
+        return view('application.menu.mcu.form-report-absensi-mcu', ['code' => $request['code'], 'peserta' => $peserta]);
     }
     public function medical_check_up_prosess_cetak_absensi_mcu(Request $request)
     {
         $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
             ->where('company_mou.company_mou_code', $request->code)->first();
-        $peserta = DB::table('company_mou_peserta')
-            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
-            ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
-            ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
-            ->where('company_mou_peserta.company_mou_code', $request->code)->get();
+        if ($request->page == 'all') {
+            $peserta = DB::table('company_mou_peserta')
+                ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+                ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+                ->where('company_mou_peserta.company_mou_code', $request->code)->get();
+        } elseif ($request->page == 1) {
+            $peserta = DB::table('company_mou_peserta')
+                ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+                ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+                ->where('company_mou_peserta.company_mou_code', $request->code)
+                ->offset(0)->limit(100)->get();
+        } elseif ($request->page == 2) {
+            $peserta = DB::table('company_mou_peserta')
+                ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+                ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+                ->where('company_mou_peserta.company_mou_code', $request->code)
+                ->offset(100)->limit(200)->get();
+        } elseif ($request->page == 3) {
+            $peserta = DB::table('company_mou_peserta')
+                ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+                ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+                ->where('company_mou_peserta.company_mou_code', $request->code)
+                ->offset(200)->limit(300)->get();
+        } elseif ($request->page == 4) {
+            $peserta = DB::table('company_mou_peserta')
+                ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+                ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+                ->where('company_mou_peserta.company_mou_code', $request->code)
+                ->offset(300)->limit(400)->get();
+        } elseif ($request->page == 5) {
+            $peserta = DB::table('company_mou_peserta')
+                ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+                ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+                ->where('company_mou_peserta.company_mou_code', $request->code)
+                ->offset(400)->limit(500)->get();
+        } elseif ($request->page == 6) {
+            $peserta = DB::table('company_mou_peserta')
+                ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+                ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+                ->where('company_mou_peserta.company_mou_code', $request->code)
+                ->offset(500)->limit(600)->get();
+        } elseif ($request->page == 7) {
+            $peserta = DB::table('company_mou_peserta')
+                ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+                ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+                ->where('company_mou_peserta.company_mou_code', $request->code)
+                ->offset(600)->limit(700)->get();
+        } elseif ($request->page == 8) {
+            $peserta = DB::table('company_mou_peserta')
+                ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+                ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+                ->where('company_mou_peserta.company_mou_code', $request->code)
+                ->offset(700)->limit(800)->get();
+        } elseif ($request->page == 9) {
+            $peserta = DB::table('company_mou_peserta')
+                ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+                ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+                ->where('company_mou_peserta.company_mou_code', $request->code)
+                ->offset(800)->limit(900)->get();
+        } elseif ($request->page == 10) {
+            $peserta = DB::table('company_mou_peserta')
+                ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+                ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+                ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+                ->where('company_mou_peserta.company_mou_code', $request->code)
+                ->offset(900)->limit(1000)->get();
+        }
         $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.menu.mcu.report.report-absensi-mcu', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A4', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);
         $pdf->output();
@@ -838,10 +915,10 @@ class ApplicationController extends Controller
         if ($data) {
             DB::table('log_summary_cabang')->where('company_mou_code', $request->code)
                 ->where('master_cabang_code', Auth::user()->access_cabang)->update([
-                    'summary_cabang_pesentasi' => $request->persentasi,
-                    'summary_cabang_pesentasi_r' => $img,
-                    'summary_cabang_pesentasi_date' => now(),
-                ]);
+                        'summary_cabang_pesentasi' => $request->persentasi,
+                        'summary_cabang_pesentasi_r' => $img,
+                        'summary_cabang_pesentasi_date' => now(),
+                    ]);
         } else {
             DB::table('log_summary_cabang')->insert([
                 'summary_cabang_code' => str::uuid(),
@@ -867,10 +944,10 @@ class ApplicationController extends Controller
         if ($data) {
             DB::table('log_summary_cabang')->where('company_mou_code', $request->code)
                 ->where('master_cabang_code', Auth::user()->access_cabang)->update([
-                    'summary_cabang_executive' => $request->executive,
-                    'summary_cabang_executive_r' => $img,
-                    'summary_cabang_executive_date' => now(),
-                ]);
+                        'summary_cabang_executive' => $request->executive,
+                        'summary_cabang_executive_r' => $img,
+                        'summary_cabang_executive_date' => now(),
+                    ]);
         } else {
             DB::table('log_summary_cabang')->insert([
                 'summary_cabang_code' => str::uuid(),
@@ -895,10 +972,10 @@ class ApplicationController extends Controller
         if ($data) {
             DB::table('log_summary_cabang')->where('company_mou_code', $request->code)
                 ->where('master_cabang_code', Auth::user()->access_cabang)->update([
-                    'summary_cabang_ht' => $request->healty_talk,
-                    'summary_cabang_ht_r' => $img,
-                    'summary_cabang_ht_date' => now(),
-                ]);
+                        'summary_cabang_ht' => $request->healty_talk,
+                        'summary_cabang_ht_r' => $img,
+                        'summary_cabang_ht_date' => now(),
+                    ]);
         } else {
             DB::table('log_summary_cabang')->insert([
                 'summary_cabang_code' => str::uuid(),
@@ -1008,9 +1085,9 @@ class ApplicationController extends Controller
                     if ($tes) {
                         DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->code)
                             ->where('master_pemeriksaan_code', $value->master_pemeriksaan_code)->update([
-                                'log_pemeriksaan_status' => 1,
-                                'log_pemeriksaan_deskripsi' => $request['desc' . $value->master_pemeriksaan_code],
-                            ]);
+                                    'log_pemeriksaan_status' => 1,
+                                    'log_pemeriksaan_deskripsi' => $request['desc' . $value->master_pemeriksaan_code],
+                                ]);
                     } else {
                         DB::table('log_pemeriksaan_pasien')->insert([
                             'mou_peserta_code' => $request->code,
@@ -1026,9 +1103,9 @@ class ApplicationController extends Controller
                     if ($tes) {
                         DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->code)
                             ->where('master_pemeriksaan_code', $value->master_pemeriksaan_code)->update([
-                                'log_pemeriksaan_status' => 0,
-                                'log_pemeriksaan_deskripsi' => $request['desc' . $value->master_pemeriksaan_code],
-                            ]);
+                                    'log_pemeriksaan_status' => 0,
+                                    'log_pemeriksaan_deskripsi' => $request['desc' . $value->master_pemeriksaan_code],
+                                ]);
                     } else {
                         DB::table('log_pemeriksaan_pasien')->insert([
                             'mou_peserta_code' => $request->code,

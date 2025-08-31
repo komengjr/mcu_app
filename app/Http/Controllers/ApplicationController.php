@@ -922,7 +922,7 @@ class ApplicationController extends Controller
             ->where('company_mou_peserta.company_mou_code', $id)
             ->where('company_mou_peserta.mou_peserta_name', 'like', '%' . $searchValue . '%')
             ->select('company_mou_peserta.*')
-            ->orderBy('id_mou_peserta', $columnSortOrder)
+            ->orderBy('id_log_lokasi_pasien', $columnSortOrder)
             ->skip($start)
             ->take($rowperpage)
             ->get();

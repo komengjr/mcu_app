@@ -105,18 +105,27 @@
                                             data-bs-target="#modal-mcu-xl" id="button-add-peserta-mcu"
                                             data-code="{{ $datas->company_mou_code }}"><span class="far fa-user"></span>
                                             Tambah Peserta</button>
+                                        <button class="dropdown-item text-dark" data-bs-toggle="modal"
+                                            data-bs-target="#modal-mcu-xl" id="button-monitoring-peserta-all-mcu"
+                                            data-code="{{ $datas->company_mou_code }}"><span class="fas fa-map-marked-alt"></span>
+                                            Monitoring Lokasi Peserta</button>
+                                        <div class="dropdown-divider"></div>
                                         <button class="dropdown-item text-warning" data-bs-toggle="modal"
                                             data-bs-target="#modal-mcu" id="button-data-monitoring-peserta-mcu"
-                                            data-code="{{ $datas->company_mou_code }}"><span
-                                                class="fas fa-chalkboard-teacher"></span>
-                                            Data Monitoring Peserta</button>
+                                            data-code="{{ $datas->company_mou_code }}"><span class="fas fa-file-invoice"></span>
+                                            Status Pemeriksaan Peserta</button>
+                                        <button class="dropdown-item text-success" data-bs-toggle="modal"
+                                            data-bs-target="#modal-mcu-xl" id="button-preview-kehadiran-peserta-mcu"
+                                            data-code="{{ $datas->company_mou_code }}"><span class="fas fa-file-alt"></span>
+                                            Preview Data Kehadiran</button>
                                         <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
                                             id="button-kehadiran-peserta-mcu" data-code="{{ $datas->company_mou_code }}"><span
                                                 class="fas fa-file-contract"></span>
-                                            Data Kehadiran</button>
-                                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
-                                            id="button-proses-summary-check-up" data-code="{{ $datas->company_mou_code }}"><span
-                                                class="fas fa-upload"></span>
+                                            Report Data Kehadiran</button>
+                                        <div class="dropdown-divider"></div>
+                                        <button class="dropdown-item text-youtube" data-bs-toggle="modal"
+                                            data-bs-target="#modal-mcu-xl" id="button-proses-summary-check-up"
+                                            data-code="{{ $datas->company_mou_code }}"><span class="fas fa-upload"></span>
                                             Upload Summary</button>
                                     </div>
                                 </div>
@@ -217,6 +226,27 @@
             );
             $.ajax({
                 url: "{{ route('medical_check_up_add_pesertal') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function (data) {
+                $('#menu-mcu-xl').html(data);
+            }).fail(function () {
+                $('#menu-mcu-xl').html('eror');
+            });
+        });
+        $(document).on("click", "#button-monitoring-peserta-all-mcu", function (e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-mcu-xl').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('medical_check_up_data_mointoring_all_peserta') }}",
                 type: "POST",
                 cache: false,
                 data: {
@@ -406,6 +436,27 @@
                 $('#data-table-pemeriksaan-peserta').html('eror');
             });
         });
+        $(document).on("click", "#button-preview-kehadiran-peserta-mcu", function (e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-mcu-xl').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('medical_check_up_preview_cetak_absensi') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function (data) {
+                $('#menu-mcu-xl').html(data);
+            }).fail(function () {
+                $('#menu-mcu-xl').html('eror');
+            });
+        });
         $(document).on("click", "#button-kehadiran-peserta-mcu", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
@@ -473,6 +524,54 @@
             }).fail(function () {
                 $('#menu-table-peserta-mcu').html('eror');
             });
+        });
+    </script>
+    <script>
+        $(document).on("click", "#button-cetak-data-kehadiran-peserta-mcu", function (e) {
+            e.preventDefault();
+            var page_data = document.getElementById("page_data").value;
+            var code = $(this).data("code");
+            console.log(page_data);
+
+            if (page_data == "") {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: "error",
+                    title: "Pilih Page Dulu Guys"
+                });
+            } else {
+                $('#report-kehadiran-mcu').html(
+                    '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+                );
+                $.ajax({
+                    url: "{{ route('medical_check_up_prosess_cetak_absensi_mcu') }}",
+                    type: "POST",
+                    cache: false,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "code": code,
+                        "page": page_data
+                    },
+                    dataType: 'html',
+                }).done(function (data) {
+                    $('#report-kehadiran-mcu').html(
+                        '<iframe src="data:application/pdf;base64, ' +
+                        data +
+                        '" style="width:100%; height:533px;" frameborder="0"></iframe>');
+                }).fail(function () {
+                    $('#report-kehadiran-mcu').html('eror');
+                });
+            }
         });
     </script>
 @endsection

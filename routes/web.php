@@ -77,6 +77,8 @@ Route::prefix('application')->group(function () {
     Route::post('medical-check-up/detail', [ApplicationController::class, 'medical_check_up_detail'])->name('medical_check_up_detail');
     Route::get('medical-check-up/detail-data/{id}', [ApplicationController::class, 'medical_check_up_detail_data'])->name('medical_check_up_detail_data');
     Route::post('medical-check-up/add-peserta', [ApplicationController::class, 'medical_check_up_add_pesertal'])->name('medical_check_up_add_pesertal');
+    Route::post('medical-check-up/data-monitoring-all-peserta', [ApplicationController::class, 'medical_check_up_data_mointoring_all_peserta'])->name('medical_check_up_data_mointoring_all_peserta');
+    Route::get('medical-check-up/data-monitoring-all-peserta/{id}', [ApplicationController::class, 'medical_check_up_data_mointoring_all_peserta_table'])->name('medical_check_up_data_mointoring_all_peserta_table');
     Route::post('medical-check-up/data-monitoring-peserta', [ApplicationController::class, 'medical_check_up_data_mointoring_peserta'])->name('medical_check_up_data_mointoring_peserta');
     Route::post('medical-check-up/prosess', [ApplicationController::class, 'medical_check_up_prosess'])->name('medical_check_up_prosess');
     Route::post('medical-check-up/prosess-save', [ApplicationController::class, 'medical_check_up_prosess_save'])->name('medical_check_up_prosess_save');
@@ -86,6 +88,8 @@ Route::prefix('application')->group(function () {
     Route::post('medical-check-up/prosess-tambah-pemeriksaan/add', [ApplicationController::class, 'medical_check_up_prosess_tambah_pemeriksaan'])->name('medical_check_up_prosess_tambah_pemeriksaan');
     Route::post('medical-check-up/prosess-tambah-pemeriksaan/save', [ApplicationController::class, 'medical_check_up_prosess_tambah_pemeriksaan_save'])->name('medical_check_up_prosess_tambah_pemeriksaan_save');
     Route::post('medical-check-up/prosess-tambah-pemeriksaan/remove', [ApplicationController::class, 'medical_check_up_prosess_tambah_pemeriksaan_remove'])->name('medical_check_up_prosess_tambah_pemeriksaan_remove');
+    Route::post('medical-check-up/prosess-preview-absensi', [ApplicationController::class, 'medical_check_up_preview_cetak_absensi'])->name('medical_check_up_preview_cetak_absensi');
+    Route::get('medical-check-up/prosess-preview-absensi/{id}', [ApplicationController::class, 'medical_check_up_preview_cetak_absensi_table'])->name('medical_check_up_preview_cetak_absensi_table');
     Route::post('medical-check-up/prosess-cetak-absensi', [ApplicationController::class, 'medical_check_up_prosess_cetak_absensi'])->name('medical_check_up_prosess_cetak_absensi');
     Route::post('medical-check-up/prosess-cetak-absensi-mcu', [ApplicationController::class, 'medical_check_up_prosess_cetak_absensi_mcu'])->name('medical_check_up_prosess_cetak_absensi_mcu');
     Route::post('medical-check-up/prosess-update-paket-mcu', [ApplicationController::class, 'medical_check_up_prosess_update_paket_mcu'])->name('medical_check_up_prosess_update_paket_mcu');

@@ -93,9 +93,8 @@
                                 class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
 
                     </div><a class="navbar-brand" href="#">
-                        <div class="d-flex align-items-center py-3"><img class="me-2"
-                                src="{{ asset('img/pram.png') }}" alt="" width="85" /><span
-                                class="font-sans-serif fs-2 text-youtube">MCU</span>
+                        <div class="d-flex align-items-center py-3"><img class="me-2" src="{{ asset('img/pram.png') }}"
+                                alt="" width="85" /><span class="font-sans-serif fs-2 text-youtube">MCU</span>
                         </div>
                     </a>
                 </div>
@@ -160,8 +159,9 @@
                                         <a class="nav-link"
                                             href="{{ url($sub_menus->menu_sub_code . '/' . $sub_menus->menu_sub_link) }}"
                                             role="button" aria-expanded="false">
-                                            <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                                        class="{{ $sub_menus->menu_sub_icon }}"></span></span><span
+                                            <div class="d-flex align-items-center">
+                                                <span class="nav-link-icon">
+                                                    <span class="{{ $sub_menus->menu_sub_icon }}"></span></span><span
                                                     class="nav-link-text ps-1">{{ $sub_menus->menu_sub_name }}</span>
                                             </div>
                                         </a>
@@ -212,10 +212,9 @@
                                     </a>
                                     <ul class="nav collapse true" id="master_menu">
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('master_menu') }}"
-                                                aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span
-                                                        class="nav-link-text ps-1">Main Menu</span>
+                                            <a class="nav-link" href="{{ route('master_menu') }}" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Main
+                                                        Menu</span>
                                                 </div>
                                             </a>
                                         </li>
@@ -288,9 +287,8 @@
                     <ul class="navbar-nav navbar-nav-icons ms-auto flex-row align-items-center">
                         <li class="nav-item">
                             <div class="theme-control-toggle fa-icon-wait px-2">
-                                <input class="form-check-input ms-0 theme-control-toggle-input"
-                                    id="themeControlToggle" type="checkbox" data-theme-control="theme"
-                                    value="dark" />
+                                <input class="form-check-input ms-0 theme-control-toggle-input" id="themeControlToggle"
+                                    type="checkbox" data-theme-control="theme" value="dark" />
                                 <label class="mb-0 theme-control-toggle-label theme-control-toggle-light"
                                     for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left"
                                     title="Switch to light theme"><span
@@ -303,17 +301,16 @@
                         </li>
                         {{-- <li class="nav-item">
                             <a class="nav-link px-0 notification-indicator notification-indicator-warning notification-indicator-fill fa-icon-wait"
-                                href="#"><span class="fas fa-shopping-cart"
-                                    data-fa-transform="shrink-7" style="font-size: 33px;"></span><span
+                                href="#"><span class="fas fa-shopping-cart" data-fa-transform="shrink-7"
+                                    style="font-size: 33px;"></span><span
                                     class="notification-indicator-number">1</span></a>
 
                         </li> --}}
                         <li class="nav-item dropdown">
                             <a class="nav-link notification-indicator notification-indicator-danger px-0 fa-icon-wait"
-                                id="navbarDropdownNotification" href="#" role="button"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
-                                    class="fas fa-bell" data-fa-transform="shrink-6"
-                                    style="font-size: 33px;"></span></a>
+                                id="navbarDropdownNotification" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false"><span class="fas fa-bell"
+                                    data-fa-transform="shrink-6" style="font-size: 33px;"></span></a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-card dropdown-menu-notification"
                                 aria-labelledby="navbarDropdownNotification">
                                 <div class="card card-notification shadow-none">
@@ -334,12 +331,10 @@
                                 </div>
                             </div>
                         </li>
-                        <li class="nav-item dropdown"><a class="nav-link pe-0" id="navbarDropdownUser"
-                                href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
+                        <li class="nav-item dropdown"><a class="nav-link pe-0" id="navbarDropdownUser" href="#"
+                                role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <div class="avatar avatar-xl">
-                                    <img class="rounded-circle" src="{{ asset('img/avatar.png') }}"
-                                        alt="" />
+                                    <img class="rounded-circle" src="{{ asset('img/avatar.png') }}" alt="" />
 
                                 </div>
                             </a>
@@ -352,9 +347,9 @@
                                     <a class="dropdown-item" href="#!" id="button-setup-notification"
                                         data-bs-toggle="modal" data-bs-target="#modal-template-sm"><span
                                             class="fas fa-volume-down"></span> Set Notification</a>
-                                    <a class="dropdown-item" href="#" id="button-setup-profil"
-                                        data-bs-toggle="modal" data-bs-target="#modal-template-xl"><span
-                                            class="fas fa-user-cog"></span> Profile &amp;
+                                    <a class="dropdown-item" href="#" id="button-setup-profil" data-bs-toggle="modal"
+                                        data-bs-target="#modal-template-xl"><span class="fas fa-user-cog"></span>
+                                        Profile &amp;
                                         account</a>
                                     <div class="dropdown-divider"></div>
                                     {{-- <a class="dropdown-item" href="#">Settings</a> --}}
@@ -404,13 +399,11 @@
                             <form>
                                 <div class="mb-3">
                                     <label class="form-label" for="modal-auth-name">Name</label>
-                                    <input class="form-control" type="text" autocomplete="on"
-                                        id="modal-auth-name" />
+                                    <input class="form-control" type="text" autocomplete="on" id="modal-auth-name" />
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label" for="modal-auth-email">Email address</label>
-                                    <input class="form-control" type="email" autocomplete="on"
-                                        id="modal-auth-email" />
+                                    <input class="form-control" type="email" autocomplete="on" id="modal-auth-email" />
                                 </div>
                                 <div class="row gx-2">
                                     <div class="mb-3 col-sm-6">
@@ -426,8 +419,7 @@
                                     </div>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox"
-                                        id="modal-auth-register-checkbox" />
+                                    <input class="form-check-input" type="checkbox" id="modal-auth-register-checkbox" />
                                     <label class="form-label" for="modal-auth-register-checkbox">I accept the <a
                                             href="#!">terms </a>and <a href="#!">privacy
                                             policy</a></label>
@@ -474,28 +466,27 @@
             <div class="btn-group d-block w-100 btn-group-navbar-style">
                 <div class="row gx-2">
                     <div class="col-6">
-                        <input class="btn-check" id="themeSwitcherLight" name="theme-color" type="radio"
-                            value="light" data-theme-control="theme" />
+                        <input class="btn-check" id="themeSwitcherLight" name="theme-color" type="radio" value="light"
+                            data-theme-control="theme" />
                         <label class="btn d-inline-block btn-navbar-style fs--1" for="themeSwitcherLight"> <span
                                 class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0"
-                                    src="{{ asset('asset/img/generic/falcon-mode-default.jpg') }}"
-                                    alt="" /></span><span class="label-text">Light</span></label>
+                                    src="{{ asset('asset/img/generic/falcon-mode-default.jpg') }}" alt="" /></span><span
+                                class="label-text">Light</span></label>
                     </div>
                     <div class="col-6">
-                        <input class="btn-check" id="themeSwitcherDark" name="theme-color" type="radio"
-                            value="dark" data-theme-control="theme" />
+                        <input class="btn-check" id="themeSwitcherDark" name="theme-color" type="radio" value="dark"
+                            data-theme-control="theme" />
                         <label class="btn d-inline-block btn-navbar-style fs--1" for="themeSwitcherDark"> <span
                                 class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0"
-                                    src="{{ asset('asset/img/generic/falcon-mode-dark.jpg') }}"
-                                    alt="" /></span><span class="label-text"> Dark</span></label>
+                                    src="{{ asset('asset/img/generic/falcon-mode-dark.jpg') }}" alt="" /></span><span
+                                class="label-text"> Dark</span></label>
                     </div>
                 </div>
             </div>
             <hr />
             <div class="d-flex justify-content-between">
                 <div class="d-flex align-items-start"><img class="me-2"
-                        src="{{ asset('asset/img/icons/left-arrow-from-left.svg') }}" width="20"
-                        alt="" />
+                        src="{{ asset('asset/img/icons/left-arrow-from-left.svg') }}" width="20" alt="" />
                     <div class="flex-1">
                         <h5 class="fs-0">RTL Mode</h5>
                         <p class="fs--1 mb-0">Pariatur labore dolorem laboriosam eum at ratione, nesciunt, tenetur
@@ -504,8 +495,7 @@
                     </div>
                 </div>
                 <div class="form-check form-switch">
-                    <input class="form-check-input ms-0" id="mode-rtl" type="checkbox"
-                        data-theme-control="isRTL" />
+                    <input class="form-check-input ms-0" id="mode-rtl" type="checkbox" data-theme-control="isRTL" />
                 </div>
             </div>
             <hr />
@@ -518,8 +508,7 @@
                     </div>
                 </div>
                 <div class="form-check form-switch">
-                    <input class="form-check-input ms-0" id="mode-fluid" type="checkbox"
-                        data-theme-control="isFluid" />
+                    <input class="form-check-input ms-0" id="mode-fluid" type="checkbox" data-theme-control="isFluid" />
                 </div>
             </div>
             <hr />
@@ -542,8 +531,8 @@
                                 alt="" /><span class="label-text"> Inverted</span></label>
                     </div>
                     <div class="col-6">
-                        <input class="btn-check" id="navbar-style-card" type="radio" name="navbarStyle"
-                            value="card" data-theme-control="navbarStyle" />
+                        <input class="btn-check" id="navbar-style-card" type="radio" name="navbarStyle" value="card"
+                            data-theme-control="navbarStyle" />
                         <label class="btn d-block w-100 btn-navbar-style fs--1" for="navbar-style-card"> <img
                                 class="img-fluid img-prototype" src="{{ asset('asset/img/generic/card.png') }}"
                                 alt="" /><span class="label-text"> Card</span></label>
@@ -572,8 +561,7 @@
                     </span>
                 </div>
             </div>
-            <small
-                class="text-uppercase text-danger fw-bold bg-soft-primary py-2 pe-2 ps-1 rounded-end">Setting</small>
+            <small class="text-uppercase text-danger fw-bold bg-soft-primary py-2 pe-2 ps-1 rounded-end">Setting</small>
         </div>
     </a>
 
@@ -590,8 +578,8 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-template-xl" data-bs-keyboard="false" data-bs-backdrop="static"
-        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="false">
+    <div class="modal fade" id="modal-template-xl" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="false">
         <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
             <div class="modal-content border-0">
                 <div class="position-absolute top-0 end-0 mt-3 me-3 z-index-1">
@@ -602,8 +590,8 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-template-sm" data-bs-keyboard="false" data-bs-backdrop="static"
-        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="false">
+    <div class="modal fade" id="modal-template-sm" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="false">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content border-0">
                 <div class="position-absolute top-0 end-0 mt-3 me-3 z-index-1">

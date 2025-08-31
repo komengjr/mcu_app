@@ -731,14 +731,7 @@ class ApplicationController extends Controller
             $nip = $record->mou_peserta_nip;
             $departemen = $record->mou_peserta_departemen;
 
-            $paket = DB::table('company_mou_agreement')
-                ->where('mou_agreement_code', $record->mou_agreement_code)
-                ->first();
-            if ($paket) {
-                $packet = $paket->mou_agreement_name . '<br><button class="btn btn-warning btn-sm" id="button-pilih-paket-mcu" data-code="' . $record->mou_peserta_code . '"><span class="fas fa-undo"></span></button>';
-            } else {
-                $packet = '<button class="btn btn-danger btn-sm" id="button-pilih-paket-mcu" data-code="' . $record->mou_peserta_code . '">Pilih Paket</button>';
-            }
+
             $log = DB::table('log_lokasi_pasien')
                 ->select('log_lokasi_pasien.created_at', 'master_cabang.master_cabang_name')
                 ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
@@ -755,11 +748,7 @@ class ApplicationController extends Controller
                 ->where('mou_peserta_code', $record->mou_peserta_code)
                 ->where('log_kehadiran_pasien_status', 1)
                 ->first();
-            if ($ttd) {
-                $ttd = '<img src=' . $ttd->log_kehadiran_pasien_sign . ' width="100"> <br>' . $ttd->log_kehadiran_pasien_time;
-            } else {
-                $ttd = 'Belum';
-            }
+
             $data_arr[] = array(
                 "id" => $id,
                 "nama_peserta" => $nama_peserta,
@@ -770,9 +759,7 @@ class ApplicationController extends Controller
                 "no_hp" => $no_hp,
                 "nip" => $nip,
                 "departemen" => $departemen,
-                "paket" => $packet,
                 "lokasi" => $lokasi,
-                "ttd" => $ttd,
             );
         }
         $response = array(

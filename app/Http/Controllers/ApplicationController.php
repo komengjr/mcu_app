@@ -1608,6 +1608,22 @@ class ApplicationController extends Controller
         ]);
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data MOU Perusahaan');
     }
+    public function mou_company_update(Request $request)
+    {
+        $data = DB::table('company_mou')->where('company_mou_code', $request->code)->first();
+        return view('application.master-data.mou-company.form-update', ['data' => $data]);
+    }
+    public function mou_company_update_save(Request $request)
+    {
+        DB::table('company_mou')->where('company_mou_code', $request->code)->update([
+            'company_mou_name' => $request->nama,
+            'company_mou_peserta' => $request->peserta,
+            'company_mou_start' => $request->start,
+            'company_mou_end' => $request->end,
+            'created_at' => now(),
+        ]);
+        return redirect()->back()->withSuccess('Great! Berhasil Update Data MOU Perusahaan');
+    }
     public function mou_company_peserta_mcu(Request $request)
     {
         $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')

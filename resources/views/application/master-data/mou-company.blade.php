@@ -101,22 +101,20 @@
                             <td>
                                 <div class="btn-group" role="group">
                                     <button class="btn btn-sm btn-falcon-primary dropdown-toggle" id="btnGroupVerticalDrop2"
-                                        type="button" data-bs-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false"><span class="fas fa-align-left me-1"
-                                            data-fa-transform="shrink-3"></span>Option</button>
+                                        type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
+                                            class="fas fa-align-left me-1" data-fa-transform="shrink-3"></span>Option</button>
                                     <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
                                         <button class="dropdown-item text-warning" data-bs-toggle="modal"
-                                            data-bs-target="#modal-company" id="button-add-companys" data-code="123"><span
-                                                class="far fa-edit"></span>
+                                            data-bs-target="#modal-company-xl" id="button-edit-agreement"
+                                            data-code="{{$datas->company_mou_code}}"><span class="far fa-edit"></span>
                                             Edit Agreement</button>
                                         <div class="dropdown-divider"></div>
                                         <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-company"
                                             id="button-data-peserta-mcu" data-code="{{ $datas->company_mou_code }}">
                                             <span class="fas fa-user-friends"></span>
                                             Peserta MCU</button>
-                                        <button class="dropdown-item" data-bs-toggle="modal"
-                                            data-bs-target="#modal-company-xl" id="button-data-insert-peserta"
-                                            data-code="{{ $datas->company_mou_code }}">
+                                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-company-xl"
+                                            id="button-data-insert-peserta" data-code="{{ $datas->company_mou_code }}">
                                             <span class="fas fa-file-import"></span>
                                             Insert Peserta</button>
                                         <div class="dropdown-divider"></div>
@@ -206,7 +204,7 @@
         });
     </script>
     <script>
-        $(document).on("click", "#button-add-mou-company", function(e) {
+        $(document).on("click", "#button-add-mou-company", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
             $('#menu-company-xl').html(
@@ -221,13 +219,34 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-company-xl').html(data);
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-company-xl').html('eror');
             });
         });
-        $(document).on("click", "#button-data-peserta-mcu", function(e) {
+        $(document).on("click", "#button-edit-agreement", function (e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-company-xl').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('mou_company_update') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function (data) {
+                $('#menu-company-xl').html(data);
+            }).fail(function () {
+                $('#menu-company-xl').html('eror');
+            });
+        });
+        $(document).on("click", "#button-data-peserta-mcu", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
             $('#menu-company').html(
@@ -242,13 +261,13 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-company').html(data);
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-company').html('eror');
             });
         });
-        $(document).on("click", "#button-data-insert-peserta", function(e) {
+        $(document).on("click", "#button-data-insert-peserta", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
             $('#menu-company-xl').html(
@@ -263,13 +282,13 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-company-xl').html(data);
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-company-xl').html('eror');
             });
         });
-        $(document).on("click", "#button-add-form-mou-company", function(e) {
+        $(document).on("click", "#button-add-form-mou-company", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
             $('#menu-metode-insert').html(
@@ -284,13 +303,13 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-metode-insert').html(data);
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-metode-insert').html('eror');
             });
         });
-        $(document).on("click", "#button-add-upload-mou-company", function(e) {
+        $(document).on("click", "#button-add-upload-mou-company", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
             $('#menu-metode-insert').html(
@@ -305,13 +324,13 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-metode-insert').html(data);
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-metode-insert').html('eror');
             });
         });
-        $(document).on("click", "#button-data-insert-pemeriksaan", function(e) {
+        $(document).on("click", "#button-data-insert-pemeriksaan", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
             $('#menu-company').html(
@@ -326,13 +345,13 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-company').html(data);
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-company').html('eror');
             });
         });
-        $(document).on("click", "#button-pilih-pemeriksaan-mou", function(e) {
+        $(document).on("click", "#button-pilih-pemeriksaan-mou", function (e) {
             e.preventDefault();
             var id = $(this).data("id");
             var code = $(this).data("code");
@@ -349,14 +368,14 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-pemeriksaan-mcu').html(data);
                 location.reload();
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-pemeriksaan-mcu').html('eror');
             });
         });
-        $(document).on("click", "#button-aktifasi-mou", function(e) {
+        $(document).on("click", "#button-aktifasi-mou", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
             $('#menu-company-sm').html(
@@ -371,13 +390,13 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-company-sm').html(data);
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-company-sm').html('eror');
             });
         });
-        $(document).on("click", "#button-non-aktifasi-mou", function(e) {
+        $(document).on("click", "#button-non-aktifasi-mou", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
             $('#menu-company-sm').html(
@@ -392,14 +411,14 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-company-sm').html(data);
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-company-sm').html('eror');
             });
         });
 
-        $(document).on("click", "#button-add-upload-excel-mou-company", function(e) {
+        $(document).on("click", "#button-add-upload-excel-mou-company", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
             $('#menu-metode-insert').html(
@@ -414,14 +433,14 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-metode-insert').html(data);
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-metode-insert').html('eror');
             });
         });
 
-        $(document).on("click", "#button-generate-absensi-mou", function(e) {
+        $(document).on("click", "#button-generate-absensi-mou", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
             $('#menu-company-lg').html(
@@ -436,13 +455,13 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-company-lg').html(data);
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-company-lg').html('eror');
             });
         });
-        $(document).on("click", "#button-report-absensi-mcu", function(e) {
+        $(document).on("click", "#button-report-absensi-mcu", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
             $('#menu-report-absensi-mcu').html(
@@ -457,16 +476,16 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-report-absensi-mcu').html(
                     '<iframe src="data:application/pdf;base64, ' +
                     data +
                     '" style="width:100%; height:533px;" frameborder="0"></iframe>');
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-report-absensi-mcu').html('eror');
             });
         });
-        $(document).on("click", "#button-sinkron-nip-nik", function(e) {
+        $(document).on("click", "#button-sinkron-nip-nik", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
             $('#menu-nik-nip').html(
@@ -481,14 +500,14 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-nik-nip').html(data);
                 location.reload();
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-nik-nip').html('eror');
             });
         });
-        $(document).on("click", "#button-update-data-peserta-mcu", function(e) {
+        $(document).on("click", "#button-update-data-peserta-mcu", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
             $('#menu-nik-nip').html(
@@ -503,13 +522,13 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-nik-nip').html(data);
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-nik-nip').html('eror');
             });
         });
-        $(document).on("click", "#button-reset-data-signature-mcu", function(e) {
+        $(document).on("click", "#button-reset-data-signature-mcu", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
             $('#menu-nik-nip').html(
@@ -524,12 +543,12 @@
                     "code": code
                 },
                 dataType: 'html',
-            }).done(function(data) {
+            }).done(function (data) {
                 $('#menu-nik-nip').html(data);
                 setTimeout(() => {
                     location.reload();
                 }, 1000);
-            }).fail(function() {
+            }).fail(function () {
                 $('#menu-nik-nip').html('eror');
             });
         });

@@ -129,6 +129,8 @@ Route::prefix('application')->group(function () {
     // MOU COMPANY
     Route::post('mou-company/add', [ApplicationController::class, 'mou_company_add'])->name('mou_company_add');
     Route::post('mou-company/save', [ApplicationController::class, 'mou_company_save'])->name('mou_company_save');
+    Route::post('mou-company/update', [ApplicationController::class, 'mou_company_update'])->name('mou_company_update');
+    Route::post('mou-company/update-save', [ApplicationController::class, 'mou_company_update_save'])->name('mou_company_update_save');
     Route::post('mou-company/peserta-mcu', [ApplicationController::class, 'mou_company_peserta_mcu'])->name('mou_company_peserta_mcu');
     Route::post('mou-company/insert-peserta-mcu', [ApplicationController::class, 'mou_company_insert_peserta_mcu'])->name('mou_company_insert_peserta_mcu');
     Route::post('mou-company/insert-peserta-mcu/manual', [ApplicationController::class, 'mou_company_insert_peserta_mcu_manual'])->name('mou_company_insert_peserta_mcu_manual');

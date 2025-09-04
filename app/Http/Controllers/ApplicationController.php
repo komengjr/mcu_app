@@ -700,8 +700,8 @@ class ApplicationController extends Controller
             ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
             ->where('company_mou_peserta.company_mou_code', $id)
             ->where('company_mou_peserta.mou_peserta_name', 'like', '%' . $searchValue . '%')
-            ->orWhere('company_mou_peserta.mou_peserta_departemen', 'like', '%' . $searchValue . '%')
-            ->orWhere('company_mou_peserta.mou_peserta_nip', 'like', '%' . $searchValue . '%')
+            // ->orWhere('company_mou_peserta.mou_peserta_departemen', 'like', '%' . $searchValue . '%')
+            // ->orWhere('company_mou_peserta.mou_peserta_nip', 'like', '%' . $searchValue . '%')
             ->count();
 
         // Fetch records

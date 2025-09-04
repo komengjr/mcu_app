@@ -1524,6 +1524,14 @@ class ApplicationController extends Controller
     }
     public function master_company_edit_company_save(Request $request)
     {
+        DB::table('master_company')->where('master_company_code', $request->code)->update([
+            'master_company_name' => $request->name,
+            'master_company_wilayah' => $request->lokasi,
+            'master_company_nat' => 0,
+            'master_company_type' => $request->type,
+            'master_company_phone' => $request->phone,
+            'master_company_email' => $request->email,
+        ]);
         return redirect()->back()->withSuccess('Great! Berhasil update Data Perusahaan');
     }
     public function master_company_data_mou_company(Request $request)

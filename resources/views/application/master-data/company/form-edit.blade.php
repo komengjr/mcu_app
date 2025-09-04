@@ -10,6 +10,7 @@
             <label class="form-label" for="inputAddress">Nama Perusahaan</label>
             <input class="form-control form-control-lg" id="inputAddress" type="text" name="name"
                 value="{{$data->master_company_name}}" required />
+                <input type="text" name="code" value="{{$data->master_company_code}}" hidden>
         </div>
         <div class="col-md-6">
             <label class="form-label" for="inputAddress">Lokasi Perusahaan</label>
@@ -19,7 +20,7 @@
         <div class="col-md-4">
             <label class="form-label" for="inputAddress">Type Perusahaan</label>
             <select name="type" class="form-select form-select-lg" id="">
-                <option value="">Pilih Type</option>
+                <option value="{{$data->master_company_type}}">{{$data->master_company_type}}</option>
                 <option value="Local">Local</option>
                 <option value="Nasional">Nasional</option>
             </select>

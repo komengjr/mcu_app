@@ -117,6 +117,11 @@
                                             id="button-data-insert-peserta" data-code="{{ $datas->company_mou_code }}">
                                             <span class="fas fa-file-import"></span>
                                             Insert Peserta</button>
+                                        <button class="dropdown-item text-youtube" data-bs-toggle="modal"
+                                            data-bs-target="#modal-company-xl" id="button-data-setup-paket-mcu"
+                                            data-code="{{ $datas->company_mou_code }}">
+                                            <span class="fas fa-file-import"></span>
+                                            Setup Paket MCU</button>
                                         <div class="dropdown-divider"></div>
                                         <button class="dropdown-item text-primary" data-bs-toggle="modal"
                                             data-bs-target="#modal-company-sm" id="button-aktifasi-mou"
@@ -506,6 +511,58 @@
             }).fail(function () {
                 $('#menu-nik-nip').html('eror');
             });
+        });
+        $(document).on("click", "#button-data-setup-paket-mcu", function (e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-company-xl').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('mou_company_setup_paket_mcu') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function (data) {
+                $('#menu-company-xl').html(data);
+            }).fail(function () {
+                $('#menu-company-xl').html('eror');
+            });
+        });
+        $(document).on("click", "#button-adjust-paket-mcu", function (e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            var paket_mcu = document.getElementById("paket_mcu").value;
+
+            if (paket_mcu == "") {
+                alert('pilih paket pilihan');
+            } else {
+                $.ajax({
+                    url: "{{ route('mou_company_setup_paket_mcu_adjust') }}",
+                    type: "POST",
+                    cache: false,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "code": code,
+                        "paket": paket_mcu
+                    },
+                    dataType: 'html',
+                }).done(function (data) {
+                    $('#menu-nik-nip').html(
+                        '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+                    );
+                    $('#menu-nik-nip').html(data);
+                    location.reload();
+                }).fail(function () {
+                    $('#menu-nik-nip').html('eror');
+                });
+            }
         });
         $(document).on("click", "#button-update-data-peserta-mcu", function (e) {
             e.preventDefault();

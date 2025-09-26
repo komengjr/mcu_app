@@ -1784,6 +1784,41 @@ class ApplicationController extends Controller
         }
         return 'Sukses';
     }
+    public function mou_company_setup_paket_mcu(Request $request)
+    {
+        $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou.company_mou_code', $request->code)->first();
+        $peserta = DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('company_mou_agreement')
+                    ->whereColumn('company_mou_agreement.mou_agreement_code', 'company_mou_peserta.mou_agreement_code');
+            })->where('company_mou_peserta.company_mou_code', $request->code)->get();
+        $paket = DB::table('company_mou_agreement')->where('company_mou_code', $request->code)->get();
+        return view('application.master-data.mou-company.form-setup-paket', [
+            'data' => $data,
+            'peserta' => $peserta,
+            'paket' => $paket,
+            'code' => $request->code
+        ]);
+    }
+    public function mou_company_setup_paket_mcu_adjust(Request $request)
+    {
+        $peserta = DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('company_mou_agreement')
+                    ->whereColumn('company_mou_agreement.mou_agreement_code', 'company_mou_peserta.mou_agreement_code');
+            })->where('company_mou_peserta.company_mou_code', $request->code)->get();
+        foreach ($peserta as $value) {
+            DB::table('company_mou_peserta')->where('mou_peserta_code', $value->mou_peserta_code)->update([
+                'mou_agreement_code' => $request->paket
+            ]);
+        }
+        return 123;
+    }
     public function mou_company_update_peserta_mcu(Request $request)
     {
         $data = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->first();

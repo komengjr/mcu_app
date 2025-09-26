@@ -148,6 +148,8 @@ Route::prefix('application')->group(function () {
     Route::post('mou-company/generate-absesnsi-mou', [ApplicationController::class, 'mou_company_generetae_absesnsi_mcu'])->name('mou_company_generetae_absesnsi_mcu');
     Route::post('mou-company/generate-absesnsi-mou/report', [ApplicationController::class, 'mou_company_generetae_absesnsi_mcu_report'])->name('mou_company_generetae_absesnsi_mcu_report');
     Route::post('mou-company/sinkronisasi/nik-nip', [ApplicationController::class, 'mou_company_sinkronisasi_nik_nip'])->name('mou_company_sinkronisasi_nik_nip');
+    Route::post('mou-company/setup-peket-mcu', [ApplicationController::class, 'mou_company_setup_paket_mcu'])->name('mou_company_setup_paket_mcu');
+    Route::post('mou-company/setup-peket-mcu/adjust', [ApplicationController::class, 'mou_company_setup_paket_mcu_adjust'])->name('mou_company_setup_paket_mcu_adjust');
     Route::post('mou-company/update/peserta-mcu', [ApplicationController::class, 'mou_company_update_peserta_mcu'])->name('mou_company_update_peserta_mcu');
     Route::post('mou-company/update/peserta-mcu/save', [ApplicationController::class, 'mou_company_update_peserta_mcu_save'])->name('mou_company_update_peserta_mcu_save');
     Route::post('mou-company/update/peserta-mcu/sreset-signature', [ApplicationController::class, 'mou_company_update_peserta_mcu_reset_signature'])->name('mou_company_update_peserta_mcu_reset_signature');

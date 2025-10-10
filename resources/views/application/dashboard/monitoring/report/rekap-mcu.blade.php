@@ -278,6 +278,7 @@
                     <th>Departemen</th>
                     <th>Wilayah</th>
                     <th>Lokasi MCU</th>
+                    <th>Tanggal MCU</th>
                     <th>Status Pemeriksaan</th>
                     {{-- <th>Status Konsultasi</th> --}}
                     <th>Status Pengiriman Hasil</th>
@@ -302,8 +303,9 @@
                         <td>{{ $pesertas->mou_peserta_departemen }}</td>
                         <td>
                             @php
-                                $lokasi = DB::table('log_lokasi_pasien')->join('master_cabang','master_cabang.master_cabang_code','=','log_lokasi_pasien.lokasi_cabang')
-                                ->where('log_lokasi_pasien.mou_peserta_code',$pesertas->mou_peserta_code)->first();
+                                $lokasi = DB::table('log_lokasi_pasien')
+                                    ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+                                    ->where('log_lokasi_pasien.mou_peserta_code', $pesertas->mou_peserta_code)->first();
                             @endphp
                             @if ($lokasi)
                                 {{$lokasi->master_cabang_city}}
@@ -316,6 +318,11 @@
                                 {{$lokasi->master_cabang_name}}
                             @else
 
+                            @endif
+                        </td>
+                        <td>
+                            @if ($lokasi)
+                                {{$lokasi->created_at}}
                             @endif
                         </td>
                         <td>
@@ -339,23 +346,25 @@
                                 @endphp
                                 <ul>
                                     @if ($check)
-                                        <li>{{ $pem->master_pemeriksaan_name }} <strong style="color: rgb(24, 199, 82)">( Selesai )</strong></li>
+                                        <li>{{ $pem->master_pemeriksaan_name }} <strong style="color: rgb(24, 199, 82)">( Selesai
+                                                )</strong></li>
                                     @else
-                                        <li>{{ $pem->master_pemeriksaan_name }} <strong style="color: rgb(199, 27, 24)">( Belum Selesai )</strong></li>
+                                        <li>{{ $pem->master_pemeriksaan_name }} <strong style="color: rgb(199, 27, 24)">( Belum
+                                                Selesai )</strong></li>
                                     @endif
                                 </ul>
                             @endforeach
                         </td>
                         {{-- <td>
                             @php
-                                $konsul = DB::table('log_konsultasi_pasien')
-                                    ->where('mou_peserta_code', $pesertas->mou_peserta_code)
-                                    ->first();
+                            $konsul = DB::table('log_konsultasi_pasien')
+                            ->where('mou_peserta_code', $pesertas->mou_peserta_code)
+                            ->first();
                             @endphp
                             @if ($konsul)
-                                <strong style="color: rgb(24, 199, 82)">Selesai</strong>
+                            <strong style="color: rgb(24, 199, 82)">Selesai</strong>
                             @else
-                                <strong style="color: rgb(199, 27, 24)">Belum Selesai</strong>
+                            <strong style="color: rgb(199, 27, 24)">Belum Selesai</strong>
                             @endif
                         </td> --}}
                         <td>
@@ -378,7 +387,8 @@
         {{-- <div id="thanks">Thank you!</div> --}}
         <div id="notices">
 
-            <img style="padding-top: 1px; left: 10px;" src="data:image/png;base64, {!! base64_encode(QrCode::style('round')->format('svg')->size(70)->errorCorrection('H')->generate(123)) !!}">
+            <img style="padding-top: 1px; left: 10px;"
+                src="data:image/png;base64, {!! base64_encode(QrCode::style('round')->format('svg')->size(70)->errorCorrection('H')->generate(123)) !!}">
 
 
             <div class="notice">Dokumen Tidak Bisa di Ubah</div>

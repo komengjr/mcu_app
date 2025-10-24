@@ -304,6 +304,7 @@
                         <td>
                             @php
                                 $lokasi = DB::table('log_lokasi_pasien')
+                                    ->select('master_cabang.master_cabang_name','master_cabang.master_cabang_city','log_lokasi_pasien.*')
                                     ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
                                     ->where('log_lokasi_pasien.mou_peserta_code', $pesertas->mou_peserta_code)->first();
                             @endphp

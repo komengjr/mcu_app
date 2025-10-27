@@ -29,9 +29,11 @@ class PesertaMcuExport implements FromArray, WithHeadings, ShouldAutoSize
             if ($lokasi) {
                 $loc = $lokasi->master_cabang_name;
                 $waktu = $lokasi->created_at;
+                $stat = 'Selesai';
             } else {
                 $loc = "";
                 $waktu = "";
+                $stat = 'Belum Selesai';
             }
 
             $data_arr[] = array(
@@ -42,6 +44,7 @@ class PesertaMcuExport implements FromArray, WithHeadings, ShouldAutoSize
                 "ttl" => $value->mou_peserta_ttl,
                 "jk" => $value->mou_peserta_jk,
                 "departemen" => $value->mou_peserta_departemen,
+                "stat" => $stat,
                 "status" => $loc,
                 "waktu" => $waktu,
             );
@@ -76,6 +79,7 @@ class PesertaMcuExport implements FromArray, WithHeadings, ShouldAutoSize
             'TANGGAL LAHIR',
             'JENIS KELAMIN',
             'DEPARTEMEN',
+            'STATUS MCU',
             'LOKASI MCU',
             'TANGGAL MCU',
         ];

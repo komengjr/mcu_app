@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\McuExport;
+use App\Exports\PesertaMcuExport;
 use App\Imports\PesertaAllImport;
 use App\Imports\PesertaImport;
 use App\Models\Peserta;
@@ -155,7 +156,7 @@ class ApplicationController extends Controller
                 "ttl" => $ttl,
                 "jk" => $jk,
                 "departemen" => $departemen,
-                "status" => $loc."<br>".$waktu,
+                "status" => $loc . "<br>" . $waktu,
             );
         }
         $response = array(
@@ -499,7 +500,15 @@ class ApplicationController extends Controller
         );
         echo json_encode($response);
     }
-
+    public function monitoring_mcu_rekap_download_excel(Request $request)
+    {
+        return route('monitoring_mcu_rekap_download_excel_code', ['code' => $request->code]);
+    }
+    public function monitoring_mcu_rekap_download_excel_code($code)
+    {
+        $company = DB::table('company_mou')->where('company_mou_code',$code)->first();
+        return Excel::download(new PesertaMcuExport($code), 'Report_MCU_' . $company->company_mou_name . '.xlsx');
+    }
     // MCU
     public function medical_check_up($akses)
     {
@@ -2203,7 +2212,6 @@ class ApplicationController extends Controller
     }
     public function laporan_rekap_excel_mcu_kehadiran_peserta_mcu($id)
     {
-
         return Excel::download(new McuExport($id), 'Report_MCU' . $id . '.xlsx');
     }
     public function laporan_rekap_mcu_kehadiran_peserta_mcu_report(Request $request)

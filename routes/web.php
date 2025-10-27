@@ -72,6 +72,8 @@ Route::prefix('application')->group(function () {
     Route::post('monitoring-mcu/rekap-full/detail-lokasi', [ApplicationController::class, 'monitoring_mcu_rekap_full_detail_lokasi'])->name('monitoring_mcu_rekap_full_detail_lokasi');
     Route::post('monitoring-mcu/rekap-full/detail', [ApplicationController::class, 'monitoring_mcu_rekap_full_detail'])->name('monitoring_mcu_rekap_full_detail');
     Route::get('monitoring-mcu/rekap-full/detail/{id}', [ApplicationController::class, 'monitoring_mcu_rekap_full_detail_peserta'])->name('monitoring_mcu_rekap_full_detail_peserta');
+    Route::post('monitoring-mcu/rekap-full/download-excel', [ApplicationController::class, 'monitoring_mcu_rekap_download_excel'])->name('monitoring_mcu_rekap_download_excel');
+    Route::get('monitoring-mcu/rekap-full/download-excel/{code}', [ApplicationController::class, 'monitoring_mcu_rekap_download_excel_code'])->name('monitoring_mcu_rekap_download_excel_code');
 
 
     Route::post('medical-check-up/detail', [ApplicationController::class, 'medical_check_up_detail'])->name('medical_check_up_detail');

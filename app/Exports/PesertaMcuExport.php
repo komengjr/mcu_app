@@ -20,6 +20,7 @@ class PesertaMcuExport implements FromArray, WithHeadings, ShouldAutoSize
     public function array(): array
     {
         $data = DB::table('company_mou_peserta')->where('company_mou_code',$this->nama)->get();
+        $no = 1;
         foreach ($data as $value) {
             $lokasi = DB::table('log_lokasi_pasien')
                 ->select('master_cabang.master_cabang_name', 'master_cabang.master_cabang_city', 'log_lokasi_pasien.*')
@@ -34,7 +35,7 @@ class PesertaMcuExport implements FromArray, WithHeadings, ShouldAutoSize
             }
 
             $data_arr[] = array(
-                "id" => $value->id_mou_peserta,
+                "id" => $no++,
                 "nip" => $value->mou_peserta_nip,
                 "nama_peserta" => $value->mou_peserta_name,
                 "nik" => $value->mou_peserta_nik,

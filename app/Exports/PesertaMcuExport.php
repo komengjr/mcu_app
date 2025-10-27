@@ -36,9 +36,9 @@ class PesertaMcuExport implements FromArray, WithHeadings, ShouldAutoSize
 
             $data_arr[] = array(
                 "id" => $no++,
-                "nip" => '`' . $value->mou_peserta_nip,
+                "nip" => "'" . $value->mou_peserta_nip,
                 "nama_peserta" => $value->mou_peserta_name,
-                "nik" => $value->mou_peserta_nik,
+                "nik" => "'" . $value->mou_peserta_nik,
                 "ttl" => $value->mou_peserta_ttl,
                 "jk" => $value->mou_peserta_jk,
                 "departemen" => $value->mou_peserta_departemen,

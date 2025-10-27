@@ -208,8 +208,7 @@
                                         <div class="col-lg-2 justify-content-between flex-column ">
                                             <div class="mt-2 g-2 float-end">
                                                 <a class="btn btn-sm btn-warning border-300 d-lg-block me-lg-0" href="#!"
-                                                    id="button-download-data-excel"
-                                                    data-code="{{ $datas->company_mou_code }}">
+                                                    id="button-download-data-excel" data-code="{{ $datas->company_mou_code }}">
                                                     <span class="fas fa-file-csv"></span>
                                                     <span class="ms-2 d-none d-md-inline-block">Excel</span></a>
                                                 <a class="btn btn-sm btn-primary d-lg-block mt-lg-2" href="#!"
@@ -419,6 +418,9 @@
         $(document).on("click", "#button-download-data-excel", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
+            $('#button-download-data-excel').html(
+                'Prosess...'
+            );
             $.ajax({
                 url: "{{ route('monitoring_mcu_rekap_download_excel') }}",
                 type: "POST",
@@ -430,11 +432,11 @@
                 dataType: 'html',
             }).done(function (data) {
                 window.location.href = data;
-                // location.reload;
+                $('#button-download-data-excel').html(
+                    '<span class="fas fa-file-csv"></span><span class="ms-2 d-none d-md-inline-block">Excel</span>'
+                );
             }).fail(function () {
-                // $('#menu-monitoring').html(
-                //     '<span class="badge bg-warning m-4">Data Belum Lengkap , Reload.. dalam 3 detik</span>'
-                // );
+
                 // setTimeout(() => {
                 //     location.reload();
                 // }, 2000);

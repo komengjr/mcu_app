@@ -133,21 +133,20 @@ class ApplicationController extends Controller
                 ->where('company_mou_agreement_sub.mou_agreement_code', $record->mou_agreement_code)
                 ->get();
             $status = "";
-            foreach ($pemeriksaan as $pem) {
-                $check = DB::table('log_pemeriksaan_pasien')
-                    ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
-                    ->where('mou_peserta_code', $record->mou_peserta_code)
-                    ->first();
-                if ($check) {
-                    if ($check->log_pemeriksaan_status == 1) {
-                        $status = $status . '<li>' . $pem->master_pemeriksaan_name . ' <span class="fas fa-check-square text-success" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Diperiksa"></span></li>';
-                    } else {
-                        $status = $status . '<li>' . $pem->master_pemeriksaan_name . ' <span class="fas fa-exclamation-circle text-warning" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="' . $check->log_pemeriksaan_deskripsi . '"></span></li>';
-                    }
-                } else {
-                    $status = $status . '<li>' . $pem->master_pemeriksaan_name . ' <span class="fas fa-window-close text-danger" type="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Diperiksa"></span></li>';
-                }
+            $lokasi = DB::table('log_lokasi_pasien')
+                ->select('master_cabang.master_cabang_name', 'master_cabang.master_cabang_city', 'log_lokasi_pasien.*')
+                ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+                ->where('log_lokasi_pasien.mou_peserta_code', $record->mou_peserta_code)->first();
+            if ($lokasi) {
+                $loc = $lokasi->master_cabang_city;
+                $waktu = $lokasi->created_at;
+                $status = 'Sudah MCU';
+            } else {
+                $loc = "";
+                $waktu = "";
+                $status = 'Belum MCU';
             }
+
             $data_arr[] = array(
                 "id" => $id,
                 "nip" => $nip,
@@ -156,7 +155,7 @@ class ApplicationController extends Controller
                 "ttl" => $ttl,
                 "jk" => $jk,
                 "departemen" => $departemen,
-                "status" => $status,
+                "status" => $loc."<br>".$waktu,
             );
         }
         $response = array(

@@ -279,9 +279,7 @@
                     <th>Wilayah</th>
                     <th>Lokasi MCU</th>
                     <th>Tanggal MCU</th>
-                    <th>Status Pemeriksaan</th>
-                    {{-- <th>Status Konsultasi</th> --}}
-                    <th>Status Pengiriman Hasil</th>
+                    <th>Status MCU</th>
                 </tr>
             </thead>
             <tbody id="invoiceItems" style="font-size: 10px;">
@@ -304,7 +302,7 @@
                         <td>
                             @php
                                 $lokasi = DB::table('log_lokasi_pasien')
-                                    ->select('master_cabang.master_cabang_name','master_cabang.master_cabang_city','log_lokasi_pasien.*')
+                                    ->select('master_cabang.master_cabang_name', 'master_cabang.master_cabang_city', 'log_lokasi_pasien.*')
                                     ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
                                     ->where('log_lokasi_pasien.mou_peserta_code', $pesertas->mou_peserta_code)->first();
                             @endphp
@@ -327,59 +325,14 @@
                             @endif
                         </td>
                         <td>
-                            @php
-                                $pemeriksaan = DB::table('company_mou_pemeriksaan')
-                                    ->join(
-                                        'master_pemeriksaan',
-                                        'master_pemeriksaan.master_pemeriksaan_code',
-                                        '=',
-                                        'company_mou_pemeriksaan.master_pemeriksaan_code',
-                                    )
-                                    ->where('company_mou_pemeriksaan.company_mou_code', $pesertas->company_mou_code)
-                                    ->get();
-                            @endphp
-                            @foreach ($pemeriksaan as $pem)
-                                @php
-                                    $check = DB::table('log_pemeriksaan_pasien')
-                                        ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
-                                        ->where('mou_peserta_code', $pesertas->mou_peserta_code)
-                                        ->first();
-                                @endphp
-                                <ul>
-                                    @if ($check)
-                                        <li>{{ $pem->master_pemeriksaan_name }} <strong style="color: rgb(24, 199, 82)">( Selesai
-                                                )</strong></li>
-                                    @else
-                                        <li>{{ $pem->master_pemeriksaan_name }} <strong style="color: rgb(199, 27, 24)">( Belum
-                                                Selesai )</strong></li>
-                                    @endif
-                                </ul>
-                            @endforeach
-                        </td>
-                        {{-- <td>
-                            @php
-                            $konsul = DB::table('log_konsultasi_pasien')
-                            ->where('mou_peserta_code', $pesertas->mou_peserta_code)
-                            ->first();
-                            @endphp
-                            @if ($konsul)
-                            <strong style="color: rgb(24, 199, 82)">Selesai</strong>
+                            @if ($lokasi)
+                                Sudah MCU
                             @else
-                            <strong style="color: rgb(199, 27, 24)">Belum Selesai</strong>
-                            @endif
-                        </td> --}}
-                        <td>
-                            @php
-                                $pengiriman = DB::table('log_pengiriman_pasien')
-                                    ->where('mou_peserta_code', $pesertas->mou_peserta_code)
-                                    ->first();
-                            @endphp
-                            @if ($pengiriman)
-                                <strong style="color: rgb(24, 199, 82)">Selesai</strong>
-                            @else
-                                <strong style="color: rgb(199, 27, 24)">Belum Selesai</strong>
+                                Belum MCU
                             @endif
                         </td>
+
+
                     </tr>
                 @endforeach
             </tbody>

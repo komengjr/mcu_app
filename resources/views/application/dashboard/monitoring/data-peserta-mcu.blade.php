@@ -14,7 +14,7 @@
                     <th>TTL</th>
                     <th>Jenis Kelamin</th>
                     <th>Departemen</th>
-                    <th>Status Pemeriksaan</th>
+                    <th>Status MCU</th>
 
                 </tr>
             </thead>

@@ -76,7 +76,7 @@ class PesertaMcuExport implements FromArray, WithHeadings, ShouldAutoSize
             'Jenis Kelamin',
             'Departemen',
             'Lokasi MCU',
-            'Waktu MCU',
+            'Tanggal MCU',
         ];
     }
 }

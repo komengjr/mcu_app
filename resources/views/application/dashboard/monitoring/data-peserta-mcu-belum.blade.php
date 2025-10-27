@@ -14,9 +14,7 @@
                     <th>Nama Peserta</th>
                     <th>Jenis Kelamin</th>
                     <th>Departemen</th>
-                    <th>Status Pemeriksaan</th>
-                    <th>Status Konsultasi</th>
-                    <th>Status Pengiriman Hasil</th>
+
                 </tr>
             </thead>
             <tbody class="fs--2">
@@ -42,66 +40,7 @@
                                 @endif
                             </td>
                             <td>{{ $pesertas->mou_peserta_departemen }}</td>
-                            <td>
-                                @php
-                                    $pemeriksaan = DB::table('company_mou_agreement_sub')
-                                        ->join(
-                                            'master_pemeriksaan',
-                                            'master_pemeriksaan.master_pemeriksaan_code',
-                                            '=',
-                                            'company_mou_agreement_sub.master_pemeriksaan_code',
-                                        )
-                                        ->where(
-                                            'company_mou_agreement_sub.mou_agreement_code',
-                                            $pesertas->mou_agreement_code,
-                                        )
-                                        ->get();
-                                @endphp
-                                @foreach ($pemeriksaan as $pem)
-                                    @php
-                                        $check = DB::table('log_pemeriksaan_pasien')
-                                            ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
-                                            ->where('mou_peserta_code', $pesertas->mou_peserta_code)
-                                            ->first();
-                                    @endphp
-                                    @if ($check)
-                                        @if ($check->log_pemeriksaan_status == 1)
-                                            <li>{{ $pem->master_pemeriksaan_name }} <span
-                                                    class="fas fa-check-square text-success"></span></li>
-                                        @else
-                                            <li>{{ $pem->master_pemeriksaan_name }} <span
-                                                    class="fas fa-exclamation-circle text-warning"></span></li>
-                                        @endif
-                                    @else
-                                        <li>{{ $pem->master_pemeriksaan_name }} <span
-                                                class="fas fa-window-close text-danger"></span></li>
-                                    @endif
-                                @endforeach
-                            </td>
-                            <td>
-                                @php
-                                    $konsul = DB::table('log_konsultasi_pasien')
-                                        ->where('mou_peserta_code', $pesertas->mou_peserta_code)
-                                        ->first();
-                                @endphp
-                                @if ($konsul)
-                                    <span class="badge bg-primary">Selesai</span>
-                                @else
-                                    <span class="badge bg-danger">Belum Selesai</span>
-                                @endif
-                            </td>
-                            <td>
-                                @php
-                                    $pengiriman = DB::table('log_pengiriman_pasien')
-                                        ->where('mou_peserta_code', $pesertas->mou_peserta_code)
-                                        ->first();
-                                @endphp
-                                @if ($pengiriman)
-                                    <span class="badge bg-primary">Selesai</span>
-                                @else
-                                    <span class="badge bg-danger">Belum Selesai</span>
-                                @endif
-                            </td>
+
                         </tr>
                     @endif
                 @endforeach

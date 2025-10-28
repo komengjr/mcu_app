@@ -31,7 +31,7 @@
     <div class="card mb-3" style="font-family: 'Calibri', sans-serif;">
         <div class="card-body">
             <div class="row flex-between-center">
-                <div class="col-sm-auto mb-2 mb-sm-0">
+                <div class="col-sm-auto mb-2 mb-sm-0" id="loading-download">
                     <h6 class="mb-0">Showing {{ $data->count() }} Project</h6>
                 </div>
                 <div class="col-sm-auto">
@@ -41,10 +41,9 @@
                                 <div class="col-auto"><small>Search by name: </small></div>
                                 <div class="col-auto">
                                     <div class="search">
-                                        <div class="position-relative">
+                                        <div class="position-relative" >
                                             <input class="form-control search-input fuzzy-search" type="search" id="carimcu"
                                                 onkeydown="search(this)" placeholder="Search..." aria-label="Search" />
-                                            {{-- <span class="fas fa-search search-box-icon"></span> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -207,8 +206,9 @@
                                         </div>
                                         <div class="col-lg-2 justify-content-between flex-column ">
                                             <div class="mt-2 g-2 float-end">
-                                                <a class="btn btn-sm btn-warning border-300 d-lg-block me-lg-0" href="#!"
-                                                    id="button-download-data-excel" data-code="{{ $datas->company_mou_code }}">
+                                                <a class="btn btn-sm btn-warning border-300 d-lg-block me-lg-0 {{ $datas->company_mou_code }}"
+                                                    href="#!" id="button-download-data-excel"
+                                                    data-code="{{ $datas->company_mou_code }}">
                                                     <span class="fas fa-file-csv"></span>
                                                     <span class="ms-2 d-none d-md-inline-block">Excel</span></a>
                                                 <a class="btn btn-sm btn-primary d-lg-block mt-lg-2" href="#!"
@@ -418,7 +418,7 @@
         $(document).on("click", "#button-download-data-excel", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
-            $('#button-download-data-excel').html(
+            $('#loading-download').html(
                 'Prosess...'
             );
             $.ajax({
@@ -432,8 +432,8 @@
                 dataType: 'html',
             }).done(function (data) {
                 window.location.href = data;
-                $('#button-download-data-excel').html(
-                    '<span class="fas fa-file-csv"></span><span class="ms-2 d-none d-md-inline-block">Excel</span>'
+                $('#loading-download').html(
+                    '<span class="fas fa-file-csv"></span><span class="ms-2 d-none d-md-inline-block">Berhasil Download</span>'
                 );
             }).fail(function () {
 

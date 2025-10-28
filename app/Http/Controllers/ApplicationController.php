@@ -508,6 +508,7 @@ class ApplicationController extends Controller
     {
         $company = DB::table('company_mou')->where('company_mou_code',$code)->first();
         return Excel::download(new PesertaMcuExport($code), 'Report_MCU_' . $company->company_mou_name . '.xlsx');
+
     }
     // MCU
     public function medical_check_up($akses)

@@ -4,6 +4,9 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.4/css/responsive.bootstrap5.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.4/css/buttons.dataTables.css">
     <link href="{{ asset('vendors/choices/choices.min.css') }}" rel="stylesheet" />
+    <!-- loader-->
+    <link href="{{ asset('asset/css/pace.min.css') }}" rel="stylesheet" />
+    <script src="{{ asset('asset/js/pace.min.js') }}"></script>
 @endsection
 @section('content')
     <div class="row mb-3">
@@ -41,7 +44,7 @@
                                 <div class="col-auto"><small>Search by name: </small></div>
                                 <div class="col-auto">
                                     <div class="search">
-                                        <div class="position-relative" >
+                                        <div class="position-relative">
                                             <input class="form-control search-input fuzzy-search" type="search" id="carimcu"
                                                 onkeydown="search(this)" placeholder="Search..." aria-label="Search" />
                                         </div>
@@ -418,9 +421,28 @@
         $(document).on("click", "#button-download-data-excel", function (e) {
             e.preventDefault();
             var code = $(this).data("code");
-            $('#loading-download').html(
-                'Prosess...'
-            );
+            let timerInterval;
+            Swal.fire({
+                title: "Mohon Menunggu!",
+                html: "I will close in <b></b> milliseconds.",
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                    const timer = Swal.getPopup().querySelector("b");
+                    timerInterval = setInterval(() => {
+                        timer.textContent = `${Swal.getTimerLeft()}`;
+                    }, 100);
+                },
+                willClose: () => {
+                    clearInterval(timerInterval);
+                }
+            }).then((result) => {
+                /* Read more about handling dismissals below */
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    console.log("I was closed by the timer");
+                }
+            });
             $.ajax({
                 url: "{{ route('monitoring_mcu_rekap_download_excel') }}",
                 type: "POST",
@@ -432,9 +454,7 @@
                 dataType: 'html',
             }).done(function (data) {
                 window.location.href = data;
-                $('#loading-download').html(
-                    '<span class="fas fa-file-csv"></span><span class="ms-2 d-none d-md-inline-block">Berhasil Download</span>'
-                );
+
             }).fail(function () {
 
                 // setTimeout(() => {

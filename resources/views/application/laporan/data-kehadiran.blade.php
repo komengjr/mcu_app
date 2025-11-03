@@ -48,7 +48,7 @@
                         <th>MOU Persuahaan</th>
                         <th>Nama Perusahaan</th>
                         <th>Jumlah Peserta</th>
-
+                        <th>Jumlah Peserta Hadir</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -68,6 +68,15 @@
                                         ->count();
                                 @endphp
                                 {{ $total }}
+                            </td>
+                            <td>
+                                @php
+                                    $hadir = DB::table('log_lokasi_pasien')
+                                        ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
+                                        ->where('company_mou_peserta.company_mou_code', $datas->company_mou_code)
+                                        ->count();
+                                @endphp
+                                {{ $hadir }}
                             </td>
 
                             <td>

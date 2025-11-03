@@ -25,7 +25,7 @@
         </div>
         <div class="col-6">
             <label class="form-label" for="inputAddress">Password</label>
-            <input class="form-control" id="inputAddress" type="text" name="password" placeholder="dashboard"
+            <input class="form-control" id="inputAddress" type="text" name="password" placeholder="************"
                 required />
         </div>
 

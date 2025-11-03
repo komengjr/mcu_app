@@ -56,6 +56,7 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('master-user-cabang', [ApplicationController::class, 'master_user_cabang'])->name('master_user_cabang');
     Route::get('master-group-cabang', [ApplicationController::class, 'master_group_cabang'])->name('master_group_cabang');
     Route::get('laporan-rekap-mcu', [ApplicationController::class, 'laporan_rekap_mcu'])->name('laporan_rekap_mcu');
+    Route::get('laporan/laporan-data-kehadiran', [ApplicationController::class, 'laporan_data_kehadiran'])->name('laporan_data_kehadiran');
     Route::get('aplikasi', [ApplicationController::class, 'aplikasi_app'])->name('aplikasi_app');
 });
 Route::prefix('application')->group(function () {
@@ -200,6 +201,8 @@ Route::prefix('application')->group(function () {
     Route::post('laporan-rekap-mcu/kehadiran-peserta-mcu/report-group', [ApplicationController::class, 'laporan_rekap_mcu_kehadiran_peserta_mcu_report_group'])->name('laporan_rekap_mcu_kehadiran_peserta_mcu_report_group');
     Route::post('laporan-rekap-mcu/kehadiran-peserta-mcu/export-data', [ApplicationController::class, 'laporan_rekap_mcu_kehadiran_peserta_mcu_export_data'])->name('laporan_rekap_mcu_kehadiran_peserta_mcu_export_data');
     Route::get('laporan-rekap-mcu/kehadiran-peserta-mcu/export-excel/{id}', [ApplicationController::class, 'laporan_rekap_excel_mcu_kehadiran_peserta_mcu'])->name('laporan_rekap_excel_mcu_kehadiran_peserta_mcu');
+
+    Route::get('laporan/laporan-data-kehadiran/preview/{code}', [ApplicationController::class, 'laporan_data_kehadiran_preview'])->name('laporan_data_kehadiran_preview');
 });
 
 Route::prefix('master-data')->group(function () {

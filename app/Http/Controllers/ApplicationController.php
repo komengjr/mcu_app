@@ -2275,4 +2275,30 @@ class ApplicationController extends Controller
             ->where('company_mou.company_mou_code', $request->code)->first();
         return view('application.laporan.rekap-mcu.data-full-peserta-mcu', ['data' => $data, 'pem' => $pemeriksaan, 'peserta' => $peserta]);
     }
+    // LAPORAN DATA KEHADIRAN
+    public function laporan_data_kehadiran($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            $data = DB::table('company_mou')
+                ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+                ->orderBy('id_company_mou', 'DESC')->get();
+            return view('application.laporan.data-kehadiran', ['data' => $data]);
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
+    public function laporan_data_kehadiran_preview($code)
+    {
+        $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou.company_mou_code', $code)->first();
+        $peserta = DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+            ->where('company_mou_peserta.company_mou_code', $code)->get();
+        $no = 1;
+        $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.menu.mcu.report.report-absensi-mcu', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A4', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);
+        $pdf->output();
+        return $pdf->download($data->company_mou_name . '.pdf');
+    }
 }

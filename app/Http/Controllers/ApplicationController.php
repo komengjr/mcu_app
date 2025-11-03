@@ -2299,6 +2299,6 @@ class ApplicationController extends Controller
         $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.laporan.report.data-kehadiran', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A4', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);
         $pdf->output();
-        return $pdf->download($data->company_mou_name . '.pdf');
+        return $pdf->download($data->master_company_name . ' - ' . $data->company_mou_name . '.pdf');
     }
 }

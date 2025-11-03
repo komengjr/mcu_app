@@ -6,7 +6,7 @@
     <form class="row g-3 p-4" action="{{ route('master_access_mou_reset_password_save') }}" method="post"
         enctype="multipart/form-data">
         @csrf
-        <input type="text" name="code" id="" value="{{ $data->userid }}">
+        <input type="text" name="code" id="" value="{{ $data->userid }}" hidden>
         <div class="col-md-4">
             <label class="form-label" for="inputAddress">Nama Lengkap</label>
             <input class="form-control" id="inputAddress" type="text" name="nama_lengkap" value="{{ $data->fullname }}" readonly/>

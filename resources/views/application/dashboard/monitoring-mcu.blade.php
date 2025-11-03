@@ -454,7 +454,6 @@
                 dataType: 'html',
             }).done(function (data) {
                 window.location.href = data;
-
             }).fail(function () {
 
                 // setTimeout(() => {

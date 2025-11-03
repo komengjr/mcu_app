@@ -106,10 +106,10 @@
                                                 class="far fa-edit"></span>
                                             Pilih Akses MOU</button>
                                         <div class="dropdown-divider"></div>
-                                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-cabang"
-                                            id="button-data-barang-cabang" data-code="123"><span
-                                                class="far fa-folder-open"></span>
-                                            History</button>
+                                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-company"
+                                            id="button-data-reset-password" data-code="{{ $datas->userid }}"><span
+                                                class="fas fa-passport"></span>
+                                            Reset Password</button>
                                     </div>
                                 </div>
                             </td>
@@ -239,6 +239,30 @@
             }).done(function(data) {
                 // $('#menu-company').html(data);
                 location.reload();
+            }).fail(function() {
+                $('#menu-company').html('eror');
+            });
+        });
+        $(document).on("click", "#button-data-reset-password", function(e) {
+            e.preventDefault();
+            var id = $(this).data("id");
+            var code = $(this).data("code");
+            // $('#menu-company').html(
+            //     '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            // );
+            $.ajax({
+                url: "{{ route('master_access_mou_reset_password') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "id": id,
+                    "code": code,
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-company').html(data);
+                // location.reload();
             }).fail(function() {
                 $('#menu-company').html('eror');
             });

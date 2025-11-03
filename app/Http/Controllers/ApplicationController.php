@@ -506,7 +506,7 @@ class ApplicationController extends Controller
     }
     public function monitoring_mcu_rekap_download_excel_code($code)
     {
-        $company = DB::table('company_mou')->where('company_mou_code',$code)->first();
+        $company = DB::table('company_mou')->where('company_mou_code', $code)->first();
         return Excel::download(new PesertaMcuExport($code), 'Report_MCU_' . $company->company_mou_name . '.xlsx');
 
     }
@@ -2025,7 +2025,19 @@ class ApplicationController extends Controller
         DB::table('company_mou_access')->where('id_mou_access', $request->code)->delete();
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data MOU Perusahaan');
     }
-
+    public function master_access_mou_reset_password(Request $request)
+    {
+        $data = DB::table('user_mains')->where('userid', $request->code)->first();
+        return view('application.master-data.mou-akses.form-reset-password', ['data' => $data]);
+    }
+    public function master_access_mou_reset_password_save(Request $request)
+    {
+        DB::table('user_mains')->where('userid', $request->code)->update([
+            'password' => Hash::make($request['password']),
+            'updated_at' => now()
+        ]);
+        return redirect()->back()->withSuccess('Great! Berhasil Update Password');
+    }
     // MASTER USER CABANG
     public function master_user_cabang($akses)
     {

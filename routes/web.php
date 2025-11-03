@@ -171,6 +171,8 @@ Route::prefix('application')->group(function () {
     Route::post('master-access-mou/add-akses-pilih', [ApplicationController::class, 'master_access_mou_add_akses_pilih'])->name('master_access_mou_add_akses_pilih');
     Route::post('master-access-mou/remove-akses', [ApplicationController::class, 'master_access_mou_remove_akses'])->name('master_access_mou_remove_akses');
     Route::post('master-access-mou/remove-akses-save', [ApplicationController::class, 'master_access_mou_remove_akses_save'])->name('master_access_mou_remove_akses_save');
+    Route::post('master-access-mou/reset-password', [ApplicationController::class, 'master_access_mou_reset_password'])->name('master_access_mou_reset_password');
+    Route::post('master-access-mou/reset-password-save', [ApplicationController::class, 'master_access_mou_reset_password_save'])->name('master_access_mou_reset_password_save');
     // PEMERIKSAAN
     Route::post('master-pemeriksaan/add', [ApplicationController::class, 'master_pemeriksaan_add'])->name('master_pemeriksaan_add');
     Route::post('master-pemeriksaan/save', [ApplicationController::class, 'master_pemeriksaan_save'])->name('master_pemeriksaan_save');

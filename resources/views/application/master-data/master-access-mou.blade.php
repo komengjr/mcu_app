@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="card-body border-top p-3">
-            <table id="example" class="table table-striped nowrap" style="width:100%">
+            <table id="example" class="table table-striped" style="width:100%">
                 <thead class="bg-200 text-700">
                     <tr>
                         <th>No</th>

@@ -77,6 +77,7 @@
         /* width: 100%; */
         height: 200px;
     }
+
     .choices .choices__inner {
         background-color: aliceblue;
     }
@@ -133,7 +134,9 @@
                                                     data-options='{"removeItemButton":true,"placeholder":true}'>
                                                     <option value="">Select Cabang</option>
                                                     @foreach ($cabang as $cabangs)
-                                                        <option value="{{ $cabangs->master_cabang_code }}">{{ $cabangs->master_cabang_name }}</option>
+                                                    @if ($cabangs->master_cabang_code != 'COBA')
+                                                    <option value="{{ $cabangs->master_cabang_code }}">{{ $cabangs->master_cabang_name }}</option>
+                                                    @endif
                                                     @endforeach
                                                 </select>
 

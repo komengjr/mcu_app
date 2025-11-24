@@ -508,7 +508,6 @@ class ApplicationController extends Controller
     {
         $company = DB::table('company_mou')->where('company_mou_code', $code)->first();
         return Excel::download(new PesertaMcuExport($code), 'Report_MCU_' . $company->company_mou_name . '.xlsx');
-
     }
     // MCU
     public function medical_check_up($akses)
@@ -748,10 +747,8 @@ class ApplicationController extends Controller
                 ->first();
             if ($log) {
                 $lokasi = '<span class="text-primary">' . $log->master_cabang_name . '</span> <br>' . $log->created_at;
-
             } else {
                 $lokasi = '<span class="badge bg-danger">Belum Check in</span>';
-
             }
             $ttd = DB::table('log_kehadiran_pasien')
                 ->where('mou_peserta_code', $record->mou_peserta_code)
@@ -964,10 +961,8 @@ class ApplicationController extends Controller
                 ->first();
             if ($log) {
                 $lokasi = '<span class="text-primary">' . $log->master_cabang_name . '</span> <br>' . $log->created_at;
-
             } else {
                 $lokasi = '<span class="badge bg-danger">Belum Check in</span>';
-
             }
             $ttd = DB::table('log_kehadiran_pasien')
                 ->where('mou_peserta_code', $record->mou_peserta_code)
@@ -1137,10 +1132,10 @@ class ApplicationController extends Controller
         if ($data) {
             DB::table('log_summary_cabang')->where('company_mou_code', $request->code)
                 ->where('master_cabang_code', Auth::user()->access_cabang)->update([
-                        'summary_cabang_pesentasi' => $request->persentasi,
-                        'summary_cabang_pesentasi_r' => $img,
-                        'summary_cabang_pesentasi_date' => now(),
-                    ]);
+                    'summary_cabang_pesentasi' => $request->persentasi,
+                    'summary_cabang_pesentasi_r' => $img,
+                    'summary_cabang_pesentasi_date' => now(),
+                ]);
         } else {
             DB::table('log_summary_cabang')->insert([
                 'summary_cabang_code' => str::uuid(),
@@ -1166,10 +1161,10 @@ class ApplicationController extends Controller
         if ($data) {
             DB::table('log_summary_cabang')->where('company_mou_code', $request->code)
                 ->where('master_cabang_code', Auth::user()->access_cabang)->update([
-                        'summary_cabang_executive' => $request->executive,
-                        'summary_cabang_executive_r' => $img,
-                        'summary_cabang_executive_date' => now(),
-                    ]);
+                    'summary_cabang_executive' => $request->executive,
+                    'summary_cabang_executive_r' => $img,
+                    'summary_cabang_executive_date' => now(),
+                ]);
         } else {
             DB::table('log_summary_cabang')->insert([
                 'summary_cabang_code' => str::uuid(),
@@ -1194,10 +1189,10 @@ class ApplicationController extends Controller
         if ($data) {
             DB::table('log_summary_cabang')->where('company_mou_code', $request->code)
                 ->where('master_cabang_code', Auth::user()->access_cabang)->update([
-                        'summary_cabang_ht' => $request->healty_talk,
-                        'summary_cabang_ht_r' => $img,
-                        'summary_cabang_ht_date' => now(),
-                    ]);
+                    'summary_cabang_ht' => $request->healty_talk,
+                    'summary_cabang_ht_r' => $img,
+                    'summary_cabang_ht_date' => now(),
+                ]);
         } else {
             DB::table('log_summary_cabang')->insert([
                 'summary_cabang_code' => str::uuid(),
@@ -1307,9 +1302,9 @@ class ApplicationController extends Controller
                     if ($tes) {
                         DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->code)
                             ->where('master_pemeriksaan_code', $value->master_pemeriksaan_code)->update([
-                                    'log_pemeriksaan_status' => 1,
-                                    'log_pemeriksaan_deskripsi' => $request['desc' . $value->master_pemeriksaan_code],
-                                ]);
+                                'log_pemeriksaan_status' => 1,
+                                'log_pemeriksaan_deskripsi' => $request['desc' . $value->master_pemeriksaan_code],
+                            ]);
                     } else {
                         DB::table('log_pemeriksaan_pasien')->insert([
                             'mou_peserta_code' => $request->code,
@@ -1325,9 +1320,9 @@ class ApplicationController extends Controller
                     if ($tes) {
                         DB::table('log_pemeriksaan_pasien')->where('mou_peserta_code', $request->code)
                             ->where('master_pemeriksaan_code', $value->master_pemeriksaan_code)->update([
-                                    'log_pemeriksaan_status' => 0,
-                                    'log_pemeriksaan_deskripsi' => $request['desc' . $value->master_pemeriksaan_code],
-                                ]);
+                                'log_pemeriksaan_status' => 0,
+                                'log_pemeriksaan_deskripsi' => $request['desc' . $value->master_pemeriksaan_code],
+                            ]);
                     } else {
                         DB::table('log_pemeriksaan_pasien')->insert([
                             'mou_peserta_code' => $request->code,
@@ -2291,14 +2286,27 @@ class ApplicationController extends Controller
     {
         $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
             ->where('company_mou.company_mou_code', $code)->first();
-        $peserta = DB::table('company_mou_peserta')
+        // $peserta = DB::table('company_mou_peserta')
+        //     ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+        //     ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+        //     ->where('company_mou_peserta.company_mou_code', $code)->get();
+        // $no = 1;
+        // $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
+        // $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.laporan.report.data-kehadiran', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A4', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);
+        // $pdf->output();
+        // return $pdf->download($data->master_company_name . ' - ' . $data->company_mou_name . '.pdf');
+
+        $html = view('application.laporan.report.report_header')->render(); // header tetap
+        DB::table('company_mou_peserta')
             ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
-            ->where('company_mou_peserta.company_mou_code', $code)->get();
-        $no = 1;
-        $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.laporan.report.data-kehadiran', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A4', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);
-        $pdf->output();
+            ->where('company_mou_peserta.company_mou_code', $code)->orderBy('id_mou_peserta')->chunk(200, function ($peserta) use (&$html) {
+                $html .= view('application.laporan.report.report_body', [
+                    'peserta' => $peserta
+                ])->render();
+            });
+        $html .= view('application.laporan.report.report_footer')->render();
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html)->setPaper('a4', 'landscape');
         return $pdf->download($data->master_company_name . ' - ' . $data->company_mou_name . '.pdf');
     }
 }

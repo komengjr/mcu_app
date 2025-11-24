@@ -2301,7 +2301,7 @@ class ApplicationController extends Controller
             ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
             ->where('company_mou_peserta.company_mou_code', $code)->orderBy('id_mou_peserta')
-            ->chunk(200, function ($peserta) use (&$html, &$no) {
+            ->chunk(500, function ($peserta) use (&$html, &$no) {
                 $html .= view('application.laporan.report.report_body', [
                     'peserta' => $peserta,
                     'no'    => $no,

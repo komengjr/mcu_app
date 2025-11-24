@@ -36,14 +36,16 @@
                 <h3 class="m-0"><span class="badge bg-danger m-0 p-0">Data Kehadiran MCU</span></h3>
             </div>
             <div class="col-auto">
-                <div id="loading" class="mt-3 d-none">
-                    <div class="spinner-border text-warning"></div>
-                    <span class="ms-2 text-warning">Sedang memproses, tunggu sebentar...</span>
-                </div>
+
             </div>
         </div>
     </div>
-    <div id="message" class="mt-3"></div>
+    <div id="loading" class="mt-3 d-none">
+        <div class="spinner-border text-warning"></div>
+        <span class="ms-2 text-warning">Sedang memproses, tunggu sebentar...</span>
+    </div>
+    <div id="message" class="mt-3">
+    </div>
     <div class="card-body border-top p-3">
         <table id="example" class="table table-striped nowrap" style="width:100%">
             <thead class="bg-200 text-700 fs--2">

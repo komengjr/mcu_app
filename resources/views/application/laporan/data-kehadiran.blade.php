@@ -40,12 +40,17 @@
             </div>
         </div>
     </div>
-    <div id="loading" class="mt-3 d-none">
-        <div class="spinner-border text-warning"></div>
-        <span class="ms-2 text-warning">Sedang memproses, tunggu sebentar...</span>
+    <div class="mt-4">
+        <div class="progress" style="height: 30px;">
+            <div id="progressBar"
+                class="progress-bar progress-bar-striped progress-bar-animated"
+                style="width: 0%; font-weight: bold;">
+                0%
+            </div>
+        </div>
     </div>
-    <div id="message" class="mt-3">
-    </div>
+
+    <div id="message" class="mt-3"></div>
     <div class="card-body border-top p-3">
         <table id="example" class="table table-striped nowrap" style="width:100%">
             <thead class="bg-200 text-700 fs--2">
@@ -105,6 +110,7 @@
         </table>
     </div>
 </div>
+</div>
 @endsection
 @section('base.js')
 <div class="modal fade" id="modal-company" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1"
@@ -145,46 +151,52 @@
     $(document).on("click", "#button-download-pdf", function(e) {
         e.preventDefault();
         var code = $(this).data("code");
-        const loading = document.getElementById('loading');
-        const message = document.getElementById('message');
-        loading.classList.remove('d-none');
-        message.innerHTML = '';
+        document.getElementById('message').innerHTML = "";
+        startProgressChecking();
 
         fetch('../../../application/laporan/laporan-data-kehadiran/preview/' + code)
-            .then(response => {
-                loading.classList.add('d-none');
-
-                if (!response.ok) {
-                    message.innerHTML = `<div class="alert alert-danger">
-                    Gagal mengekspor PDF
-                </div>`;
-                    return;
-                }
-
-                return response.blob();
-            })
+            .then(response => response.blob())
             .then(blob => {
-                if (!blob) return;
+                stopProgressChecking();
 
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
 
                 a.href = url;
-                a.download = "Daftar-Kehadiran-MCU.pdf";
-                document.body.appendChild(a);
+                a.download = "users.pdf";
                 a.click();
-                a.remove();
 
-                message.innerHTML = `<div class="alert alert-success">
-                PDF berhasil diunduh!
-            </div>`;
+                document.getElementById('progressBar').style.width = "100%";
+                document.getElementById('progressBar').innerHTML = "100%";
+
+                document.getElementById('message').innerHTML = `
+                <div class="alert alert-success">Export selesai!</div>
+            `;
             })
-            .catch(error => {
-                loading.classList.add('d-none');
-                message.innerHTML = `<div class="alert alert-danger">
-                Error: ${error}
-            </div>`;
+            .catch(err => {
+                stopProgressChecking();
+                document.getElementById('message').innerHTML = `
+                <div class="alert alert-danger">${err}</div>
+            `;
             });
     });
+
+    function startProgressChecking() {
+        progressInterval = setInterval(() => {
+            fetch('../../../export-progress')
+                .then(res => res.json())
+                .then(data => {
+                    let p = data.progress;
+                    const bar = document.getElementById('progressBar');
+
+                    bar.style.width = p + "%";
+                    bar.innerHTML = p + "%";
+                });
+        }, 700); // cek setiap 0.7 detik
+    }
+
+    function stopProgressChecking() {
+        clearInterval(progressInterval);
+    }
 </script>
 @endsection

@@ -9,6 +9,7 @@ use App\Http\Controllers\UploadFileController;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 /*
 |--------------------------------------------------------------------------
@@ -249,4 +250,9 @@ Route::get('template_mail', function () {
         'body' => 123
     ];
     return view('emails.mytestmail', ['details' => $details]);
+});
+Route::get('/export-progress', function () {
+    return response()->json([
+        'progress' => Cache::get('export_progress', 0)
+    ]);
 });

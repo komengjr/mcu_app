@@ -1,7 +1,4 @@
 <tbody id="invoiceItems" style="font-size: 10px;">
-    @php
-    $no = 1;
-    @endphp
     @foreach ($peserta as $pesertas)
     <tr>
         <td>{{ $no++ }}</td>

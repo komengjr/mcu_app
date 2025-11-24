@@ -2295,15 +2295,18 @@ class ApplicationController extends Controller
         // $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.laporan.report.data-kehadiran', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A4', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);
         // $pdf->output();
         // return $pdf->download($data->master_company_name . ' - ' . $data->company_mou_name . '.pdf');
-
+        $no = 1;
         $html = view('application.laporan.report.report_header')->render(); // header tetap
         DB::table('company_mou_peserta')
             ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
-            ->where('company_mou_peserta.company_mou_code', $code)->orderBy('id_mou_peserta')->chunk(200, function ($peserta) use (&$html) {
+            ->where('company_mou_peserta.company_mou_code', $code)->orderBy('id_mou_peserta')
+            ->chunk(200, function ($peserta) use (&$html, &$no) {
                 $html .= view('application.laporan.report.report_body', [
-                    'peserta' => $peserta
+                    'peserta' => $peserta,
+                    'no'    => $no,
                 ])->render();
+                $no += count($peserta);
             });
         $html .= view('application.laporan.report.report_footer')->render();
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html)->setPaper('a4', 'landscape');

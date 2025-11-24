@@ -143,7 +143,8 @@
     $(document).on("click", "#button-download-pdf", function(e) {
         e.preventDefault();
         var code = $(this).data("code");
-
+        const loading = document.getElementById('loading');
+        const message = document.getElementById('message');
         loading.classList.remove('d-none');
         message.innerHTML = '';
 

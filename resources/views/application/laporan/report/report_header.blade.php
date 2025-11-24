@@ -229,7 +229,7 @@
 <body>
     <header class="clearfix">
         <div id="logo">
-
+            <img src="data:image/png;base64, {{ $image }}">
         </div>
         <div id="company">
             {{-- <div id="no_surat">123</div>
@@ -247,13 +247,13 @@
                     <tr>
                         <td>Nama Perusahaan</td>
                         <td>:</td>
-                        <td>123</td>
+                        <td>{{ $data->master_company_name }}</td>
                     </tr>
                     <tr>
                         <td>Project</td>
                         <td>:</td>
                         <td>
-                            123
+                            {{ $data->company_mou_name }}
                         </td>
                     </tr>
                 </table>
@@ -261,7 +261,7 @@
             <div id="invoice">
 
                 <span> <img style="padding-top: 1px; left: 10px;"
-                        src="data:image/png;base64, {!! base64_encode(QrCode::style('round')->format('svg')->size(30)->errorCorrection('H')->generate(123)) !!}"></span><br>
+                        src="data:image/png;base64, {!! base64_encode(QrCode::style('round')->format('svg')->size(30)->errorCorrection('H')->generate($data->company_mou_code)) !!}"></span><br>
             </div>
         </div>
         <table border="1" cellspacing="0" cellpadding="0">

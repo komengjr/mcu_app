@@ -2291,12 +2291,12 @@ class ApplicationController extends Controller
         //     ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
         //     ->where('company_mou_peserta.company_mou_code', $code)->get();
         // $no = 1;
-        // $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
+        $image = base64_encode(file_get_contents(public_path('img/logo-pramita.png')));
         // $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.laporan.report.data-kehadiran', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A4', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);
         // $pdf->output();
         // return $pdf->download($data->master_company_name . ' - ' . $data->company_mou_name . '.pdf');
         $no = 1;
-        $html = view('application.laporan.report.report_header')->render(); // header tetap
+        $html = view('application.laporan.report.report_header',['data'=>$data], compact('image'))->render(); // header tetap
         DB::table('company_mou_peserta')
             ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')

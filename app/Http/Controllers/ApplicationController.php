@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 use League\CommonMark\Extension\CommonMark\Node\Inline\Code;
 use Maatwebsite\Excel\Facades\Excel;
 use Session;
+use iio\libmergepdf\Merger;
 
 class ApplicationController extends Controller
 {
@@ -2295,21 +2296,39 @@ class ApplicationController extends Controller
         // $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadview('application.laporan.report.data-kehadiran', ['data' => $data, 'peserta' => $peserta], compact('image'))->setPaper('A4', 'landscape')->setOptions(['defaultFont' => 'Helvetica']);
         // $pdf->output();
         // return $pdf->download($data->master_company_name . ' - ' . $data->company_mou_name . '.pdf');
+
+
+        $files = [];
         $no = 1;
-        $html = view('application.laporan.report.report_header',['data'=>$data], compact('image'))->render(); // header tetap
+        // $html = view('application.laporan.report.report_header', ['data' => $data], compact('image'))->render(); // header tetap
         DB::table('company_mou_peserta')
             ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
             ->where('company_mou_peserta.company_mou_code', $code)->orderBy('id_mou_peserta')
-            ->chunk(500, function ($peserta) use (&$html, &$no) {
-                $html .= view('application.laporan.report.report_body', [
+            ->chunk(300, function ($peserta) use (&$files, &$no, &$data, &$image) {
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('application.laporan.report.data-kehadiran', [
                     'peserta' => $peserta,
-                    'no'    => $no,
-                ])->render();
-                $no += count($peserta);
+                    'data' => $data,
+                    'no'    => ($no - 1) * 300 + 1
+                ],compact('image'));
+                $file = storage_path("app/tmp/chunk_$no.pdf");
+                $pdf->save($file);
+
+                $files[] = $file;
+                $no++;
             });
-        $html .= view('application.laporan.report.report_footer')->render();
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html)->setPaper('a4', 'landscape');
-        return $pdf->download($data->master_company_name . ' - ' . $data->company_mou_name . '.pdf');
+        $merger = new Merger;
+        foreach ($files as $file) {
+            $merger->addFile($file);
+        }
+        $namafile = $data->master_company_name . ' - ' . $data->company_mou_name . '.pdf';
+        $finalPdf = $merger->merge();
+        return response($finalPdf, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$namafile.'',
+        ]);
+        // $html .= view('application.laporan.report.report_footer')->render();
+        // $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html)->setPaper('a4', 'landscape');
+        // return $pdf->download($data->master_company_name . ' - ' . $data->company_mou_name . '.pdf');
     }
 }

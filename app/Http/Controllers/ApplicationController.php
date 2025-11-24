@@ -2310,7 +2310,7 @@ class ApplicationController extends Controller
                     'peserta' => $peserta,
                     'data' => $data,
                     'no'    => ($no - 1) * 300 + 1
-                ],compact('image'));
+                ],compact('image'))->setPaper('A4', 'landscape');
                 $file = storage_path("app/tmp/chunk_$no.pdf");
                 $pdf->save($file);
 

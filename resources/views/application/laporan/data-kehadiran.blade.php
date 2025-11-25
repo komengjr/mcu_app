@@ -110,7 +110,7 @@
         </table>
     </div>
 </div>
-</div>
+
 @endsection
 @section('base.js')
 <div class="modal fade" id="modal-company" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1"

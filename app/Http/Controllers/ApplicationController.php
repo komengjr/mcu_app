@@ -2313,7 +2313,7 @@ class ApplicationController extends Controller
             ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
             ->where('company_mou_peserta.company_mou_code', $code)->orderBy('id_mou_peserta')
             ->chunk(100, function ($peserta) use (&$processed, $total, $chunkSize, &$files, &$no, &$data, &$image) {
-                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('application.laporan.report.data-kehadiran', [
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('application.laporan.report.report-table', [
                     'peserta' => $peserta,
                     'data' => $data,
                     'no'    => ($no - 1) * 100 + 1

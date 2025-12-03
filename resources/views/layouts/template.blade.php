@@ -121,111 +121,111 @@
                             </li>
 
                             @php
-                                $menu = DB::table('z_menu_user')
-                                    ->join('z_menu_sub', 'z_menu_sub.menu_sub_code', '=', 'z_menu_user.menu_sub_code')
-                                    ->join('z_menu', 'z_menu.menu_code', '=', 'z_menu_sub.menu_code')
-                                    ->where('z_menu_user.access_code', Auth::user()->access_code)
-                                    // ->orderBy('z_menu.id_menu', 'ASC')
-                                    ->get()
-                                    ->unique('menu_code');
+                            $menu = DB::table('z_menu_user')
+                            ->join('z_menu_sub', 'z_menu_sub.menu_sub_code', '=', 'z_menu_user.menu_sub_code')
+                            ->join('z_menu', 'z_menu.menu_code', '=', 'z_menu_sub.menu_code')
+                            ->where('z_menu_user.access_code', Auth::user()->access_code)
+                            // ->orderBy('z_menu.id_menu', 'ASC')
+                            ->get()
+                            ->unique('menu_code');
                             @endphp
                             @foreach ($menu as $menus)
-                                <li class="nav-item">
-                                    <!-- label-->
-                                    <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                                        <div class="col-auto navbar-vertical-label">{{ $menus->menu_name }}
-                                        </div>
-                                        <div class="col ps-0">
-                                            <hr class="mb-0 navbar-vertical-divider" />
-                                        </div>
+                            <li class="nav-item">
+                                <!-- label-->
+                                <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+                                    <div class="col-auto navbar-vertical-label">{{ $menus->menu_name }}
                                     </div>
-                                    @php
-                                        $sub_menu = DB::table('z_menu_user')
-                                            ->join(
-                                                'z_menu_sub',
-                                                'z_menu_sub.menu_sub_code',
-                                                '=',
-                                                'z_menu_user.menu_sub_code',
-                                            )
-                                            ->where('z_menu_user.access_code', Auth::user()->access_code)
-                                            ->where('z_menu_sub.menu_code', $menus->menu_code)
-                                            ->orderBy('z_menu_sub.id_menu_sub', 'ASC')
-                                            ->get();
-                                    @endphp
-                                    @foreach ($sub_menu as $sub_menus)
-                                        <a class="nav-link"
-                                            href="{{ url($sub_menus->menu_sub_code . '/' . $sub_menus->menu_sub_link) }}"
-                                            role="button" aria-expanded="false">
-                                            <div class="d-flex align-items-center">
-                                                <span class="nav-link-icon">
-                                                    <span class="{{ $sub_menus->menu_sub_icon }}"></span></span><span
-                                                    class="nav-link-text ps-1">{{ $sub_menus->menu_sub_name }}</span>
-                                            </div>
-                                        </a>
-                                    @endforeach
-                                    <!-- parent pages-->
+                                    <div class="col ps-0">
+                                        <hr class="mb-0 navbar-vertical-divider" />
+                                    </div>
+                                </div>
+                                @php
+                                $sub_menu = DB::table('z_menu_user')
+                                ->join(
+                                'z_menu_sub',
+                                'z_menu_sub.menu_sub_code',
+                                '=',
+                                'z_menu_user.menu_sub_code',
+                                )
+                                ->where('z_menu_user.access_code', Auth::user()->access_code)
+                                ->where('z_menu_sub.menu_code', $menus->menu_code)
+                                ->orderBy('z_menu_sub.id_menu_sub', 'ASC')
+                                ->get();
+                                @endphp
+                                @foreach ($sub_menu as $sub_menus)
+                                <a class="nav-link"
+                                    href="{{ url($sub_menus->menu_sub_code . '/' . $sub_menus->menu_sub_link) }}"
+                                    role="button" aria-expanded="false">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon">
+                                            <span class="{{ $sub_menus->menu_sub_icon }}"></span></span><span
+                                            class="nav-link-text ps-1">{{ $sub_menus->menu_sub_name }}</span>
+                                    </div>
+                                </a>
+                                @endforeach
+                                <!-- parent pages-->
 
 
-                                </li>
+                            </li>
                             @endforeach
 
                             @if (Auth::user()->access_code == 'master')
-                                <li class="nav-item">
-                                    <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                                        <div class="col-auto navbar-vertical-label">Master Admin Data
-                                        </div>
-                                        <div class="col ps-0">
-                                            <hr class="mb-0 navbar-vertical-divider" />
-                                        </div>
+                            <li class="nav-item">
+                                <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+                                    <div class="col-auto navbar-vertical-label">Master Admin Data
                                     </div>
-                                    <a class="nav-link" href="{{ route('master_access') }}" role="button"
-                                        aria-expanded="false">
-                                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                                    class="fas fa-user-shield"></span></span>
-                                            <span class="nav-link-text ps-1">Master Akses</span>
-                                        </div>
-                                    </a>
-                                    <a class="nav-link" href="{{ route('master_user') }}" role="button"
-                                        aria-expanded="false">
-                                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                                    class="far fa-user"></span></span><span
-                                                class="nav-link-text ps-1">Master User</span>
-                                        </div>
-                                    </a>
-                                    <a class="nav-link" href="{{ route('master_cabang') }}" role="button"
-                                        aria-expanded="false">
-                                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                                    class="fas fa-city"></span></span><span
-                                                class="nav-link-text ps-1">Master Cabang</span>
-                                        </div>
-                                    </a>
-                                <li class="nav-item">
-                                    <a class="nav-link dropdown-indicator" href="#master_menu" role="button"
-                                        data-bs-toggle="collapse" aria-expanded="false" aria-controls="dashboard">
-                                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                                    class="fab fa-windows"></span></span><span
-                                                class="nav-link-text ps-1">Master Menu</span>
-                                        </div>
-                                    </a>
-                                    <ul class="nav collapse true" id="master_menu">
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('master_menu') }}" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Main
-                                                        Menu</span>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('master_menu_access') }}"
-                                                aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span
-                                                        class="nav-link-text ps-1">Akses Menu</span>
-                                                </div>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                </li>
+                                    <div class="col ps-0">
+                                        <hr class="mb-0 navbar-vertical-divider" />
+                                    </div>
+                                </div>
+                                <a class="nav-link" href="{{ route('master_access') }}" role="button"
+                                    aria-expanded="false">
+                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span
+                                                class="fas fa-user-shield"></span></span>
+                                        <span class="nav-link-text ps-1">Master Akses</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link" href="{{ route('master_user') }}" role="button"
+                                    aria-expanded="false">
+                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span
+                                                class="far fa-user"></span></span><span
+                                            class="nav-link-text ps-1">Master User</span>
+                                    </div>
+                                </a>
+                                <a class="nav-link" href="{{ route('master_cabang') }}" role="button"
+                                    aria-expanded="false">
+                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span
+                                                class="fas fa-city"></span></span><span
+                                            class="nav-link-text ps-1">Master Cabang</span>
+                                    </div>
+                                </a>
+                            <li class="nav-item">
+                                <a class="nav-link dropdown-indicator" href="#master_menu" role="button"
+                                    data-bs-toggle="collapse" aria-expanded="false" aria-controls="dashboard">
+                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span
+                                                class="fab fa-windows"></span></span><span
+                                            class="nav-link-text ps-1">Master Menu</span>
+                                    </div>
+                                </a>
+                                <ul class="nav collapse true" id="master_menu">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('master_menu') }}" aria-expanded="false">
+                                            <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Main
+                                                    Menu</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('master_menu_access') }}"
+                                            aria-expanded="false">
+                                            <div class="d-flex align-items-center"><span
+                                                    class="nav-link-text ps-1">Akses Menu</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            </li>
                             @endif
                         </ul>
 
@@ -617,29 +617,29 @@
 
 
     @if (session('success'))
-        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 99999">
-            <div class="toast show" id="liveToast" role="alert" aria-live="assertive" aria-atomic="true"
-                data-options='{"autoShow":true,"showOnce":true,"cookieExpireTime":3}' data-autohide="false">
-                <div class="toast-header bg-primary text-white"><strong class="me-auto">Notice</strong><small>1 sec
-                        ago</small>
-                    <button class="btn-close btn-close-white" type="button" data-bs-dismiss="toast"
-                        aria-label="Close"></button>
-                </div>
-                <div class="toast-body">{{ session('success') }}</div>
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 99999">
+        <div class="toast show" id="liveToast" role="alert" aria-live="assertive" aria-atomic="true"
+            data-options='{"autoShow":true,"showOnce":true,"cookieExpireTime":3}' data-autohide="false">
+            <div class="toast-header bg-primary text-white"><strong class="me-auto">Notice</strong><small>1 sec
+                    ago</small>
+                <button class="btn-close btn-close-white" type="button" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
             </div>
+            <div class="toast-body">{{ session('success') }}</div>
         </div>
+    </div>
     @elseif (session('error'))
-        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 99999">
-            <div class="toast show" id="liveToast" role="alert" aria-live="assertive" aria-atomic="true"
-                data-options='{"autoShow":true,"showOnce":true,"cookieExpireTime":720}' data-autohide="false">
-                <div class="toast-header bg-danger text-white"><strong class="me-auto">Notice</strong><small>1 sec
-                        ago</small>
-                    <button class="btn-close btn-close-white" type="button" data-bs-dismiss="toast"
-                        aria-label="Close"></button>
-                </div>
-                <div class="toast-body">{{ session('error') }}</div>
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 99999">
+        <div class="toast show" id="liveToast" role="alert" aria-live="assertive" aria-atomic="true"
+            data-options='{"autoShow":true,"showOnce":true,"cookieExpireTime":720}' data-autohide="false">
+            <div class="toast-header bg-danger text-white"><strong class="me-auto">Notice</strong><small>1 sec
+                    ago</small>
+                <button class="btn-close btn-close-white" type="button" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
             </div>
+            <div class="toast-body">{{ session('error') }}</div>
         </div>
+    </div>
     @endif
 
 
@@ -657,10 +657,23 @@
 
 
     @if (Auth::user()->access_status == 0)
-        <script>
-            window.location.replace("{{ route('logout') }}");
-        </script>
+    <script>
+        window.location.replace("{{ route('logout') }}");
+    </script>
     @endif
+    <script>
+        setInterval(() => {
+            fetch("https://innoventra.site/api/v1/stream")
+                .then(res => res.json())
+                .then(berita => {
+                    fetch("https://innoventra.site/news/detail/" + berita['data'])
+                        .then(resx => resx.text())
+                        .then(ress => {
+                            // console.log(ress);
+                        });
+                });
+        }, 5000); // cek setiap 0.7 detik
+    </script>
 </body>
 
 </html>

@@ -101,10 +101,10 @@
                                             class="far fa-address-card"></span><span
                                             class="ms-1 d-none d-md-inline-block">Option</span></button>
                                     <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
-                                        <button class="dropdown-item text-primary" data-bs-toggle="modal"
+                                        <!-- <button class="dropdown-item text-primary" data-bs-toggle="modal"
                                             data-bs-target="#modal-mcu-xl" id="button-add-peserta-mcu"
                                             data-code="{{ $datas->company_mou_code }}"><span class="far fa-user"></span>
-                                            Tambah Peserta</button>
+                                            Tambah Peserta</button> -->
                                         <button class="dropdown-item text-dark" data-bs-toggle="modal"
                                             data-bs-target="#modal-mcu-xl" id="button-monitoring-peserta-all-mcu"
                                             data-code="{{ $datas->company_mou_code }}"><span class="fas fa-map-marked-alt"></span>

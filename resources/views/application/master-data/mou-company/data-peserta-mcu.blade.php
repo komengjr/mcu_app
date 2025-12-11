@@ -105,13 +105,18 @@
                                 aria-expanded="false"><span class="fas fa-align-left me-1"
                                     data-fa-transform="shrink-3"></span>Option</button>
                             <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
-                                <button class="dropdown-item text-warning" id="button-update-data-peserta-mcu" data-code="{{$pesertas->mou_peserta_code}}"><span
+                                <button class="dropdown-item text-primary" id="button-update-data-peserta-mcu" data-code="{{$pesertas->mou_peserta_code}}"><span
                                         class="far fa-edit"></span>
                                     Edit Peserta</button>
                                 <div class="dropdown-divider"></div>
-                                <button class="dropdown-item text-danger" id="button-reset-data-signature-mcu" data-code="{{$pesertas->mou_peserta_code}}"><span
+                                <button class="dropdown-item text-warning" id="button-reset-data-signature-mcu" data-code="{{$pesertas->mou_peserta_code}}"><span
                                         class="fas fa-signature"></span>
                                     Reset Signature</button>
+                                <div class="dropdown-divider"></div>
+                                <button class="dropdown-item text-danger" id="button-remove-data-signature-mcu" data-code="{{$pesertas->mou_peserta_code}}"><span
+                                        class="fas fa-trash"></span>
+                                    Hapus Peserta
+                                </button>
                             </div>
                         </div>
                     </td>

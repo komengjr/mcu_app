@@ -157,6 +157,7 @@ Route::prefix('application')->group(function () {
     Route::post('mou-company/update/peserta-mcu', [ApplicationController::class, 'mou_company_update_peserta_mcu'])->name('mou_company_update_peserta_mcu');
     Route::post('mou-company/update/peserta-mcu/save', [ApplicationController::class, 'mou_company_update_peserta_mcu_save'])->name('mou_company_update_peserta_mcu_save');
     Route::post('mou-company/update/peserta-mcu/sreset-signature', [ApplicationController::class, 'mou_company_update_peserta_mcu_reset_signature'])->name('mou_company_update_peserta_mcu_reset_signature');
+    Route::post('mou-company/update/peserta-mcu/remove-peserta', [ApplicationController::class, 'mou_company_update_peserta_mcu_remove_peserta'])->name('mou_company_update_peserta_mcu_remove_peserta');
     // AGREMENT
     Route::post('agreement-perusahaan/add', [ApplicationController::class, 'agreement_perusahaan_add'])->name('agreement_perusahaan_add');
     Route::post('agreement-perusahaan/save', [ApplicationController::class, 'agreement_perusahaan_save'])->name('agreement_perusahaan_save');

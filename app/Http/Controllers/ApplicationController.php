@@ -1852,6 +1852,14 @@ class ApplicationController extends Controller
         ]);
         return 'Berhasil Reset';
     }
+    public function mou_company_update_peserta_mcu_remove_peserta(Request $request){
+        try {
+            DB::table('company_mou_peserta')->where('mou_peserta_code',$request->code)->delete();
+            return 'Berhasil Hapus Peserta';
+        } catch (\Throwable $e) {
+            return 'Gagal Hapus';
+        }
+    }
 
     // AGREEMENT PERUSAHAAN
     public function agreement_perusahaan($akses)

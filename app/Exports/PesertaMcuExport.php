@@ -29,11 +29,11 @@ class PesertaMcuExport implements FromArray, WithHeadings, ShouldAutoSize
             if ($lokasi) {
                 $loc = $lokasi->master_cabang_name;
                 $waktu = $lokasi->created_at;
-                $stat = 'Selesai';
+                $stat = 'Sudah MCU';
             } else {
                 $loc = "";
                 $waktu = "";
-                $stat = 'Belum Selesai';
+                $stat = 'Belum MC';
             }
 
             $data_arr[] = array(

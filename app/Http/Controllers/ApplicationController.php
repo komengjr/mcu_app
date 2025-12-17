@@ -839,6 +839,7 @@ class ApplicationController extends Controller
     public function medical_check_up_prosess_generate_absensi(Request $request)
     {
         $code = DB::table('log_kehadiran_pasien')->where('mou_peserta_code', $request->code)->first();
+        $nowhatsap = DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->first();
         if ($code) {
             $token = $code->log_kehadiran_pasien_token;
         } else {
@@ -854,7 +855,7 @@ class ApplicationController extends Controller
             ]);
         }
 
-        return view('application.menu.mcu.generate-absensi-kehadiran', ['token' => $token]);
+        return view('application.menu.mcu.generate-absensi-kehadiran', ['token' => $token, 'nos' => $nowhatsap]);
     }
     public function medical_check_up_prosess_tambah_pemeriksaan(Request $request)
     {
@@ -1207,6 +1208,55 @@ class ApplicationController extends Controller
             ]);
         }
         return redirect()->back()->withSuccess('Great! Berhasil Update Executive MCU');
+    }
+    public function medical_check_up_send_message_whatsapp_peserta_mcu(Request $request)
+    {
+        $peserta = DB::table('company_mou_peserta')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou_peserta.mou_peserta_code', $request->peserta)->first();
+        if ($peserta->mou_peserta_no_hp == "") {
+            return 'No Tidak Valid';
+        } else {
+            $nomorhp = $peserta->mou_peserta_no_hp;
+            //Terlebih dahulu kita trim dl
+            $nomorhp = trim($nomorhp);
+            //bersihkan dari karakter yang tidak perlu
+            $nomorhp = strip_tags($nomorhp);
+            // Berishkan dari spasi
+            $nomorhp = str_replace(" ", "", $nomorhp);
+            // Berishkan dari -
+            $nomorhp = str_replace("-", "", $nomorhp);
+            // bersihkan dari bentuk seperti  (022) 66677788
+            $nomorhp = str_replace("(", "", $nomorhp);
+            // bersihkan dari format yang ada titik seperti 0811.222.333.4
+            $nomorhp = str_replace(".", "", $nomorhp);
+
+            if (!preg_match('/[^+0-9]/', trim($nomorhp))) {
+                // cek apakah no hp karakter 1-3 adalah +62
+                if (substr(trim($nomorhp), 0, 3) == '+62') {
+                    $nomorhp = trim($nomorhp);
+                }
+                // cek apakah no hp karakter 1 adalah 0
+                elseif (substr($nomorhp, 0, 1) == '0') {
+                    $nomorhp = '+62' . substr($nomorhp, 1);
+                }
+            }
+            $link = url('signaturepad/data-kehadiran-mcu/detail', ['id' => $request->code]);
+            $text = "Halo " . $peserta->mou_peserta_name . "\nAnda Terdaftar Peserta MCU : " . $peserta->master_company_name . " - " . $peserta->company_mou_name . "\n\nPastikan Untuk Melengkapi Data link di bawah ini:\n" . $link . "\n\nSupport By. *www.pramita.co.id*";
+            DB::table('message_wa_mcu')->insert([
+                'message_wa_mcu_code' => str::uuid(),
+                'message_wa_mcu_token' => $peserta->mou_peserta_code,
+                'message_wa_mcu_cabang' => Auth::user()->access_cabang,
+                'message_wa_mcu_number' => $nomorhp,
+                'message_wa_mcu_name' => $peserta->mou_peserta_name,
+                'message_wa_mcu_type' => 'null',
+                'message_wa_mcu_text' => $text,
+                'message_wa_mcu_file' => '-',
+                'message_wa_mcu_status' => 0,
+                'created_at' => now(),
+            ]);
+        }
     }
 
     // MENU SERVICE
@@ -1852,9 +1902,10 @@ class ApplicationController extends Controller
         ]);
         return 'Berhasil Reset';
     }
-    public function mou_company_update_peserta_mcu_remove_peserta(Request $request){
+    public function mou_company_update_peserta_mcu_remove_peserta(Request $request)
+    {
         try {
-            DB::table('company_mou_peserta')->where('mou_peserta_code',$request->code)->delete();
+            DB::table('company_mou_peserta')->where('mou_peserta_code', $request->code)->delete();
             return 'Berhasil Hapus Peserta';
         } catch (\Throwable $e) {
             return 'Gagal Hapus';

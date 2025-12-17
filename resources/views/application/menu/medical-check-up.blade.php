@@ -525,6 +525,30 @@
                 $('#menu-table-peserta-mcu').html('eror');
             });
         });
+        $(document).on("click", "#button-kirim-whatsapp-peserta-mcu", function (e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            var peserta = $(this).data("id");
+            $('#loading-proses-send-message').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('medical_check_up_send_message_whatsapp_peserta_mcu') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code,
+                    "peserta": peserta,
+                },
+                dataType: 'html',
+            }).done(function (data) {
+                $('#loading-proses-send-message').html(data);
+                location.reload();
+            }).fail(function () {
+                $('#loading-proses-send-message').html('eror');
+            });
+        });
     </script>
     <script>
         $(document).on("click", "#button-cetak-data-kehadiran-peserta-mcu", function (e) {

@@ -33,7 +33,7 @@ class PesertaMcuExport implements FromArray, WithHeadings, ShouldAutoSize
             } else {
                 $loc = "";
                 $waktu = "";
-                $stat = 'Belum MC';
+                $stat = 'Belum MCU';
             }
 
             $data_arr[] = array(

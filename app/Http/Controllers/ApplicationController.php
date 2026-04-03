@@ -34,6 +34,7 @@ class ApplicationController extends Controller
             return false;
         }
     }
+    // MONITORING MCU
     public function home($akses)
     {
         if ($this->url_akses($akses) == true) {
@@ -510,6 +511,45 @@ class ApplicationController extends Controller
     {
         $company = DB::table('company_mou')->where('company_mou_code', $code)->first();
         return Excel::download(new PesertaMcuExport($code), 'Report_MCU_' . $company->company_mou_name . '.xlsx');
+    }
+    // MONITORING HASIL
+    public function monitoring_hasil($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            $data = DB::table('monitoring_hasil_pasien')
+                ->where('monitoring_hasil_pasien_user', Auth::user()->userid)->orderBy('id_monitoring_hasil_pasien', 'desc')->get();
+            return view('application.menu.monitoring-hasil', ['data' => $data]);
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
+    public function monitoring_hasil_add_pasien(Request $request)
+    {
+        return view('application.menu.monitoring-hasil.form-add-pasien');
+    }
+    public function monitoring_hasil_save_pasien(Request $request)
+    {
+        try {
+            DB::table('monitoring_hasil_pasien')->insert([
+                'monitoring_hasil_pasien_code' => str::uuid(),
+                'monitoring_hasil_pasien_nama' => $request->nama_lengkap,
+                'monitoring_hasil_pasien_tgl_lahir' => $request->tgl_lahir,
+                'monitoring_hasil_pasien_nik' => $request->no_induk,
+                'monitoring_hasil_pasien_user' => Auth::user()->userid,
+                'monitoring_hasil_pasien_cabang' => 'PA',
+                'monitoring_hasil_pasien_status' => 0,
+                'monitoring_hasil_pasien_type' => 'LAB',
+                'created_at' => now()
+            ]);
+            return 1;
+        } catch (\Throwable $e) {
+            return 0;
+        }
+    }
+    public function monitoring_hasil_detail_pasien(Request $request)
+    {
+        $order = DB::table('monitoring_hasil_pasien')->where('monitoring_hasil_pasien_code', $request->code)->first();
+        return view('application.menu.monitoring-hasil.form-detail-pasien', ['order' => $order]);
     }
     // MCU
     public function medical_check_up($akses)
@@ -2216,6 +2256,38 @@ class ApplicationController extends Controller
     {
         DB::table('group_cabang_detail')->where('id_group_cabang_detail', $request->code)->delete();
         return redirect()->back()->withSuccess('Great! Berhasil menghapus Data Group Cabang');
+    }
+
+    // MASTER UPLOAD HASIL
+    public function master_upload_hasil_pemeriksaan($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            $data = DB::table('monitoring_hasil_pasien')
+                ->select('user_mains.fullname', 'monitoring_hasil_pasien.*')
+                ->join('user_mains', 'user_mains.userid', '=', 'monitoring_hasil_pasien.monitoring_hasil_pasien_user')->orderBy('id_monitoring_hasil_pasien','desc')
+                ->get();
+            return view('application.master-data.master-upload-hasil-pemeriksaan', ['data' => $data]);
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
+    public function master_upload_hasil_pemeriksaan_detail(Request $request)
+    {
+        $cek = DB::table('monitoring_hasil_pasien')->where('monitoring_hasil_pasien_code', $request->code)->first();
+        return view('application.master-data.upload-hasil.form-detail-upload-hasil', ['cek' => $cek]);
+    }
+    public function master_upload_hasil_pemeriksaan_detail_proses(Request $request)
+    {
+        try {
+            DB::table('monitoring_hasil_pasien')->where('monitoring_hasil_pasien_code', $request->no_code)->update([
+                'monitoring_hasil_pasien_reg' => $request->no_reg,
+                'monitoring_hasil_pasien_tgl_periksa' => now(),
+                'monitoring_hasil_pasien_status' => 2,
+            ]);
+            return 1;
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
 
     // LAPORAN REKAP MCU

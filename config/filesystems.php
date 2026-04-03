@@ -14,6 +14,7 @@ return [
     */
 
     'default' => env('FILESYSTEM_DRIVER', 'local'),
+    'publis' => env('FILESYSTEM_DRIVER', 'publis'),
 
     /*
     |--------------------------------------------------------------------------
@@ -53,7 +54,12 @@ return [
             'root' => public_path(),
             'visibility' => 'public',
         ],
-
+        'publis' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public'),
+            'url' => env('APP_URL') . '/storage',
+            'visibility' => 'public',
+        ],
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

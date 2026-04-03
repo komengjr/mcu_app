@@ -20,8 +20,8 @@
     <link rel="icon" type="image/png" sizes="32x32" href="../../assets/img/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../../assets/img/favicons/favicon-16x16.png">
     <link rel="shortcut icon" type="image/x-icon" href="../../assets/img/favicons/favicon.ico">
-    <link rel="manifest" href="../../assets/img/favicons/manifest.json">
-    <meta name="msapplication-TileImage" content="../../assets/img/favicons/mstile-150x150.png">
+    <link rel="manifest" href="{{ asset('asset/img/favicons/manifest.json') }}">
+    <meta name="msapplication-TileImage" content="{{ asset('asset/img/favicons/mstile-150x150.png') }}">
     <meta name="theme-color" content="#ffffff">
     <script src="{{ asset('asset/js/config.js') }}"></script>
     <script src="{{ asset('vendors/overlayscrollbars/OverlayScrollbars.min.js') }}"></script>
@@ -73,11 +73,7 @@
                 }
             </script>
             <div class="row flex-center min-vh-100 py-6 text-center">
-                <div class="col-sm-10 col-md-8 col-lg-6 col-xxl-5"><a class="d-flex flex-center mb-4"
-                        href="../../index.html"><img class="me-2"
-                            src="{{ asset('asset/img/icons/spot-illustrations/falcon.png') }}" alt=""
-                            width="58" /><span
-                            class="font-sans-serif fw-bolder fs-5 d-inline-block">Inventaris</span></a>
+                <div class="col-sm-10 col-md-8 col-lg-6 col-xxl-5">
                     <div class="card">
                         <div class="card-body p-4 p-sm-5">
                             <div class="fw-black lh-1 text-300 fs-error">404</div>
@@ -85,7 +81,7 @@
                                 you're looking for is not found.</p>
                             <hr />
                             <p>Make sure the address is correct and that the page hasn't moved. If you think this is a
-                                mistake, <a href="mailto:info@exmaple.com">contact us</a>.</p><a
+                                mistake.</p><a
                                 class="btn btn-primary btn-sm mt-3" href="{{ url('/', []) }}"><span
                                     class="fas fa-home me-2"></span>Take me home</a>
                         </div>
@@ -103,15 +99,15 @@
     <!-- ===============================================-->
     <!--    JavaScripts-->
     <!-- ===============================================-->
-    <script src="../../vendors/popper/popper.min.js"></script>
-    <script src="../../vendors/bootstrap/bootstrap.min.js"></script>
-    <script src="../../vendors/anchorjs/anchor.min.js"></script>
-    <script src="../../vendors/is/is.min.js"></script>
-    <script src="../../vendors/fontawesome/all.min.js"></script>
-    <script src="../../vendors/lodash/lodash.min.js"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script>
-    <script src="../../vendors/list.js/list.min.js"></script>
-    <script src="../../assets/js/theme.js"></script>
+    <script src="{{ asset('vendors/popper/popper.min.js') }}"></script>
+    <script src="{{ asset('vendors/bootstrap/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('vendors/anchorjs/anchor.min.js') }}"></script>
+    <script src="{{ asset('vendors/is/is.min.js') }}"></script>
+    <script src="{{ asset('vendors/fontawesome/all.min.js') }}"></script>
+    <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
+    <!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script> -->
+    <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
+    <script src="{{ asset('asset/js/theme.js') }}"></script>
 
 </body>
 

@@ -46,6 +46,7 @@ Route::prefix('dashboard')->group(function () {
 Route::prefix('{akses}/application')->group(function () {
     Route::get('home', [ApplicationController::class, 'home'])->name('home');
     Route::get('monitoring-mcu', [ApplicationController::class, 'monitoring_mcu'])->name('monitoring_mcu');
+    Route::get('monitoring-hasil', [ApplicationController::class, 'monitoring_hasil'])->name('monitoring_hasil');
     Route::get('medical-check-up', [ApplicationController::class, 'medical_check_up'])->name('medical_check_up');
     Route::get('menu-service', [ApplicationController::class, 'menu_service'])->name('menu_service');
     Route::get('menu-pengiriman', [ApplicationController::class, 'menu_pengiriman'])->name('menu_pengiriman');
@@ -56,15 +57,24 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('master-access-mou', [ApplicationController::class, 'master_access_mou'])->name('master_access_mou');
     Route::get('master-user-cabang', [ApplicationController::class, 'master_user_cabang'])->name('master_user_cabang');
     Route::get('master-group-cabang', [ApplicationController::class, 'master_group_cabang'])->name('master_group_cabang');
+    Route::get('master-upload-hasil-pemeriksaan', [ApplicationController::class, 'master_upload_hasil_pemeriksaan'])->name('master_upload_hasil_pemeriksaan');
     Route::get('laporan-rekap-mcu', [ApplicationController::class, 'laporan_rekap_mcu'])->name('laporan_rekap_mcu');
     Route::get('laporan/laporan-data-kehadiran', [ApplicationController::class, 'laporan_data_kehadiran'])->name('laporan_data_kehadiran');
     Route::get('aplikasi', [ApplicationController::class, 'aplikasi_app'])->name('aplikasi_app');
 });
 Route::prefix('application')->group(function () {
-    //MONITORING MCU
+    // MONITORING MCU
     Route::post('monitoring-mcu/cari-nama', [ApplicationController::class, 'monitoring_mcu_cari_nama'])->name('monitoring_mcu_cari_nama');
     Route::post('monitoring-mcu/detail', [ApplicationController::class, 'monitoring_mcu_detail'])->name('monitoring_mcu_detail');
     Route::get('monitoring-mcu/detail/{id}', [ApplicationController::class, 'monitoring_mcu_detail_table'])->name('monitoring_mcu_detail_table');
+    // MONITORING HASIL
+    Route::post('monitoring-hasil/add-pasien', [ApplicationController::class, 'monitoring_hasil_add_pasien'])->name('monitoring_hasil_add_pasien');
+    Route::post('monitoring-hasil/save-pasien', [ApplicationController::class, 'monitoring_hasil_save_pasien'])->name('monitoring_hasil_save_pasien');
+    Route::post('monitoring-hasil/detail-pasien', [ApplicationController::class, 'monitoring_hasil_detail_pasien'])->name('monitoring_hasil_detail_pasien');
+    // UPLOAD HASIL
+    Route::post('master-upload-hasil-pemeriksaan/detail-pasien', [ApplicationController::class, 'master_upload_hasil_pemeriksaan_detail'])->name('master_upload_hasil_pemeriksaan_detail');
+    Route::post('master-upload-hasil-pemeriksaan/detail-pasien/proses', [ApplicationController::class, 'master_upload_hasil_pemeriksaan_detail_proses'])->name('master_upload_hasil_pemeriksaan_detail_proses');
+    Route::post('master-upload-hasil-pemeriksaan/detail-pasien/proses_upload', [UploadFileController::class, 'master_upload_hasil_pemeriksaan_detail_proses_upload'])->name('master_upload_hasil_pemeriksaan_detail_proses_upload');
 
     Route::post('monitoring-mcu/detail/belum', [ApplicationController::class, 'monitoring_mcu_detail_belum'])->name('monitoring_mcu_detail_belum');
     Route::post('monitoring-mcu/detail/sudah', [ApplicationController::class, 'monitoring_mcu_detail_sudah'])->name('monitoring_mcu_detail_sudah');
@@ -235,6 +245,10 @@ Route::get('contoh', [SignaturePadController::class, 'contoh']);
 Route::get('signaturepad/data-kehadiran-mcu/detail/{id}', [SignaturePadController::class, 'sign'])->name('sign-data-baru');
 Route::get('absensi/data-kehadiran-mcu/perusahaan/{id}', [SignaturePadController::class, 'sign_perusahaan']);
 Route::post('absensi/data-kehadiran-mcu/perusahaan/cari-peserta/data', [SignaturePadController::class, 'cari_data_peserta'])->name('cari_data_absensi_peserta_mcu');
+
+// PENGAMBILAN SAMPLE
+Route::get('pengambilan-sample/sign/{token}', [SignaturePadController::class, 'pengambilan_sample'])->name('pengambilan_sample');
+Route::post('pengambilan-sample/sign-save', [SignaturePadController::class, 'pengambilan_sample_save'])->name('pengambilan_sample_save');
 
 Route::post('signaturepad', [SignaturePadController::class, 'upload'])->name('signaturepad.upload');
 Route::post('signaturepad-update', [SignaturePadController::class, 'update'])->name('signaturepad.update');

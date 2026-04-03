@@ -661,19 +661,7 @@
         window.location.replace("{{ route('logout') }}");
     </script>
     @endif
-    <script>
-        setInterval(() => {
-            fetch("https://innoventra.site/api/v1/stream")
-                .then(res => res.json())
-                .then(berita => {
-                    fetch("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4154628728879232")
-                        .then(resx => resx.text())
-                        .then(ress => {
-                            // console.log(ress);
-                        });
-                });
-        }, 5000); // cek setiap 0.7 detik
-    </script>
+
 </body>
 
 </html>

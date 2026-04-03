@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
-use DB;
+use Illuminate\Support\Facades\DB;
 use File;
 use Illuminate\Support\Facades\Auth;
 
@@ -106,6 +106,43 @@ class UploadFileController extends Controller
             unlink($file->getPathname());
             return [
                 'path' => asset('public/document/healty_talk/' . auth::user()->access_cabang . '/' . $fileName),
+                'filename' => $fileName
+            ];
+        }
+
+        // otherwise return percentage informatoin
+        $handler = $fileReceived->handler();
+        return [
+            'done' => $handler->getPercentageDone(),
+            'status' => true
+        ];
+    }
+    public function master_upload_hasil_pemeriksaan_detail_proses_upload(Request $request)
+    {
+        $receiver = new FileReceiver('file', $request, HandlerFactory::classFromRequest($request));
+
+        if (!$receiver->isUploaded()) {
+            // file not uploaded
+        }
+
+        $fileReceived = $receiver->receive(); // receive file
+        if ($fileReceived->isFinished()) { // file uploading is complete / all chunks are uploaded
+            $file = $fileReceived->getFile(); // get file
+            $extension = $file->getClientOriginalExtension();
+            $fileName = $request->code . '.' . $extension;
+
+            $disk = Storage::disk(config('filesystems.publis'));
+            $path = $disk->putFileAs('datahasil/new/' . auth::user()->userid, $file, $fileName);
+            // $path1 = $disk('videos', $file, $fileName);
+
+            // delete chunked file
+            unlink($file->getPathname());
+            DB::table('monitoring_hasil_pasien')->where('monitoring_hasil_pasien_code', $request->code)->update([
+                'monitoring_hasil_pasien_file' => 'storage/datahasil/new/' . auth::user()->userid . '/' . $fileName,
+                'monitoring_hasil_pasien_status' => 3
+            ]);
+            return [
+                'path' => '../../storage/datahasil/new/' . auth::user()->userid . '/' . $fileName,
                 'filename' => $fileName
             ];
         }

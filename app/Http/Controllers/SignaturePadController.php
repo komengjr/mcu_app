@@ -197,4 +197,39 @@ class SignaturePadController extends Controller
         }
         return back()->with('success', 'success Full upload signature');
     }
+
+    // PENGMABILAN SAMPLE
+
+    public function pengambilan_sample($token)
+    {
+        $cek = DB::table('monitoring_hasil_pasien')->where('monitoring_hasil_pasien_code', $token)->first();
+        if ($cek) {
+            if ($cek->monitoring_hasil_pasien_status == 0) {
+                return view('application.menu.monitoring-hasil.sign-kurir', ['token' => $token]);
+            } else {
+                return view('application.error.404');
+            }
+        } else {
+            return view('application.error.404');
+        }
+    }
+    public function pengambilan_sample_save(Request $request)
+    {
+        try {
+            DB::table('monitoring_hasil_kurir')->insert([
+                'monitoring_hasil_kurir_code' => str::uuid(),
+                'monitoring_hasil_pasien_code' => $request->token,
+                'monitoring_hasil_kurir_name' => $request->nama_lengkap,
+                'monitoring_hasil_kurir_date' => now(),
+                'monitoring_hasil_kurir_sign' => $request->signed,
+                'created_at' => now(),
+            ]);
+            DB::table('monitoring_hasil_pasien')->where('monitoring_hasil_pasien_code', $request->token)->update([
+                'monitoring_hasil_pasien_status' => 1
+            ]);
+            return 1;
+        } catch (\Throwable $e) {
+            return 0;
+        }
+    }
 }

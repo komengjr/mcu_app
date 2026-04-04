@@ -91,7 +91,7 @@
 
                     </div><a class="navbar-brand" href="#">
                         <div class="d-flex align-items-center py-3"><img class="me-2" src="{{ asset('img/pram.png') }}"
-                                alt="" width="85" /><span class="font-sans-serif fs-2 text-youtube">MCU</span>
+                                alt="" width="85" /><span class="font-sans-serif fs-2 text-youtube"></span>
                         </div>
                     </a>
                 </div>
@@ -242,7 +242,7 @@
                                 class="toggle-line"></span></span></button>
                     <a class="navbar-brand me-1 me-sm-3" href="#">
                         <div class="d-flex align-items-center"><img class="me-2" src="{{ asset('img/pram.png') }}"
-                                alt="" width="80" /><span class="font-sans-serif text-youtube">MCU</span>
+                                alt="" width="80" /><span class="font-sans-serif text-youtube">Monitoring</span>
                         </div>
                     </a>
                     <ul class="navbar-nav align-items-center d-none d-lg-block">

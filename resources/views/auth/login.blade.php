@@ -89,15 +89,13 @@
                             <div class="card">
                                 <div class="card-header bg-circle-shape bg-youtube text-center p-2"><a
                                         class="font-sans-serif fw-bolder fs-4 z-index-1 position-relative link-light light"
-                                        href="#">MONITORING MCU</a></div>
+                                        href="#">HALAMAN LOGIN</a></div>
                                 <div class="card-body p-4">
                                     <div class="row flex-between-center">
                                         <div class="col-auto">
-                                            <h3>Login</h3>
+                                            <h5><span class="badge bg-dark">System V.3</span></h5>
                                         </div>
-                                        <div class="col-auto fs--1 text-600"><span class="mb-0 fw-semi-bold">New
-                                                User?</span> <span><a href="#">Create
-                                                    account</a></span></div>
+                                        <div class="col-auto fs--1 text-600"><span class="mb-0 fw-semi-bold">Help ?</span> <span><a href="#">Hubungi Kami</a></span></div>
                                     </div>
                                     <form action="{{ route('login.post') }}" method="POST">
                                         @csrf

@@ -37,28 +37,19 @@
             </div>
             <div class="col-auto">
                 <div class="btn-group" role="group">
-                    <button class="btn btn-sm btn-falcon-primary dropdown-toggle" id="btnGroupVerticalDrop2"
-                        type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
-                            class="fas fa-align-left me-1" data-fa-transform="shrink-3"></span>Menu Pasien</button>
-                    <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
-                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
-                            id="button-add-pasien" data-code="123"><span class="far fa-edit"></span>
-                            Order Pasien</button>
-                        <!-- <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-cabang"
-                            id="button-data-barang-cabang" data-code="123"><span class="far fa-folder-open"></span>
-                            History</button> -->
-                    </div>
+                    <button class="btn btn-sm btn-falcon-primary" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
+                        id="button-add-pasien" data-code="123"><span class="far fa-edit"></span> Order Pasien</button>
                 </div>
             </div>
         </div>
     </div>
     <div class="card-body border-top p-3">
-        <table id="example" class="table table-striped" style="width:100%">
+        <table id="example" class="table table-striped fs--2" style="width:100%">
             <thead class="bg-200 text-700">
                 <tr>
                     <th>No</th>
                     <th>Nama Pasien / No Reg</th>
+                    <th>Jenis Kelamin</th>
                     <th>Tanggal Lahir</th>
                     <th>Tanggal Order</th>
                     <th>Pengambilan Sample</th>
@@ -75,6 +66,13 @@
                 <tr>
                     <td>{{ $no++ }}</td>
                     <td>{{ $datas->monitoring_hasil_pasien_nama }} <br><span class="badge bg-primary">{{ $datas->monitoring_hasil_pasien_reg }}</span></td>
+                    <td>
+                        @if ($datas->monitoring_hasil_pasien_jk == "L")
+                        Laki - Laki
+                        @elseif ($datas->monitoring_hasil_pasien_jk == "P")
+                        Perempuan
+                        @endif
+                    </td>
                     <td>{{ date("d-m-Y", strtotime($datas->monitoring_hasil_pasien_tgl_lahir)) }}</td>
                     <td>{{ date("d-m-Y H:i:s", strtotime($datas->created_at)) }}</td>
                     <td>

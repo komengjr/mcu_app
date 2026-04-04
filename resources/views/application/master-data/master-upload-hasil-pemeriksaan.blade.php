@@ -42,12 +42,14 @@
         </div>
     </div>
     <div class="card-body border-top p-3">
-        <table id="example" class="table table-striped nowrap" style="width:100%">
+        <table id="example" class="table table-striped fs--2" style="width:100%">
             <thead class="bg-200 text-700">
                 <tr>
                     <th>No</th>
                     <th>Rujukan</th>
                     <th>Nama Pasien / No Reg</th>
+                    <th>Jenis Kelamin</th>
+                    <th>Tanggal Lahir</th>
                     <th>Pengambilan Sample</th>
                     <th>Proses Sample</th>
                     <th>Status Hasil</th>
@@ -63,6 +65,14 @@
                     <td>{{ $no++ }}</td>
                     <td>{{ $datas->fullname }} <br><span class="badge bg-primary">{{ date("d-m-Y H:i:s", strtotime($datas->created_at)) }}</span></td>
                     <td>{{ $datas->monitoring_hasil_pasien_nama }} <br><span class="badge bg-primary">{{ $datas->monitoring_hasil_pasien_reg }}</span></td>
+                    <td>
+                        @if ($datas->monitoring_hasil_pasien_jk == "L")
+                        Laki - Laki
+                        @elseif ($datas->monitoring_hasil_pasien_jk == "P")
+                        Perempuan
+                        @endif
+                    </td>
+                    <td>{{ date("d-m-Y", strtotime($datas->monitoring_hasil_pasien_tgl_lahir)) }}</td>
                     <td>
                         @php
                         $kurir = DB::table('monitoring_hasil_kurir')->where('monitoring_hasil_pasien_code',$datas->monitoring_hasil_pasien_code)->first();

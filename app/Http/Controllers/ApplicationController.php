@@ -534,6 +534,7 @@ class ApplicationController extends Controller
                 'monitoring_hasil_pasien_code' => str::uuid(),
                 'monitoring_hasil_pasien_nama' => $request->nama_lengkap,
                 'monitoring_hasil_pasien_tgl_lahir' => $request->tgl_lahir,
+                'monitoring_hasil_pasien_jk' => $request->jk,
                 'monitoring_hasil_pasien_nik' => $request->no_induk,
                 'monitoring_hasil_pasien_user' => Auth::user()->userid,
                 'monitoring_hasil_pasien_cabang' => 'PA',

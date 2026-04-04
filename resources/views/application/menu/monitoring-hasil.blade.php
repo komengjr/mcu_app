@@ -60,7 +60,8 @@
                     <th>No</th>
                     <th>Nama Pasien / No Reg</th>
                     <th>Tanggal Lahir</th>
-                    <th>Pengambilan Sample Sample</th>
+                    <th>Tanggal Order</th>
+                    <th>Pengambilan Sample</th>
                     <th>Tanggal Proses Sample</th>
                     <th>Status Hasil</th>
                     <th>Action</th>
@@ -73,18 +74,23 @@
                 @foreach ($data as $datas)
                 <tr>
                     <td>{{ $no++ }}</td>
-                    <td>{{ $datas->monitoring_hasil_pasien_nama }} <br>{{ $datas->monitoring_hasil_pasien_reg }}</td>
-                    <td>{{ $datas->monitoring_hasil_pasien_tgl_lahir }}</td>
+                    <td>{{ $datas->monitoring_hasil_pasien_nama }} <br><span class="badge bg-primary">{{ $datas->monitoring_hasil_pasien_reg }}</span></td>
+                    <td>{{ date("d-m-Y", strtotime($datas->monitoring_hasil_pasien_tgl_lahir)) }}</td>
+                    <td>{{ date("d-m-Y H:i:s", strtotime($datas->created_at)) }}</td>
                     <td>
                         @php
-                            $kurir = DB::table('monitoring_hasil_kurir')->where('monitoring_hasil_pasien_code',$datas->monitoring_hasil_pasien_code)->first();
+                        $kurir = DB::table('monitoring_hasil_kurir')->where('monitoring_hasil_pasien_code',$datas->monitoring_hasil_pasien_code)->first();
                         @endphp
                         @if ($kurir)
-                            {{ $kurir->monitoring_hasil_kurir_name }} <br>
-                            {{ $kurir->monitoring_hasil_kurir_date }}
+                        {{ $kurir->monitoring_hasil_kurir_name }} <br>
+                        <small>{{ date("d-m-Y H:i:s", strtotime($kurir->monitoring_hasil_kurir_date)) }}</small>
                         @endif
                     </td>
-                    <td>{{ $datas->monitoring_hasil_pasien_tgl_periksa }}</td>
+                    <td>
+                        @if ($datas->monitoring_hasil_pasien_tgl_periksa != "")
+                        {{ date("d-m-Y H:i:s", strtotime($datas->monitoring_hasil_pasien_tgl_periksa)) }}
+                        @endif
+                    </td>
                     <td class="text-center">
                         @if ($datas->monitoring_hasil_pasien_status == 0)
                         <span class="badge bg-dark">Order Baru</span>

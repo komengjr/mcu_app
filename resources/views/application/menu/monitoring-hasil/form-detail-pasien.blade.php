@@ -20,7 +20,29 @@
             </div>
         </div>
         @elseif ($order->monitoring_hasil_pasien_status == 1)
-        Menunggu Sampel Masih di Proses
+        @php
+        $ttd = DB::table('monitoring_hasil_kurir')->where('monitoring_hasil_pasien_code',$order->monitoring_hasil_pasien_code)->first();
+        @endphp
+        @if ($ttd)
+        <div class="card-body">
+            <h6 class="mb-3 text-primary">Proses Pengantaran : </h6>
+            <p>Pastikan Orderan ini Sudah Benar dan Sesuai dengan Kurir yang akan mengambil Sample</p>
+            <div class="row">
+                <div class="col-6">
+                    <p><strong>Rujukan</strong><br></p>
+
+                    <p><strong>Name Pasien : </strong>{{ $order->monitoring_hasil_pasien_nama }}<br></p>
+                    <p><strong>Tanggal Lahir : </strong>{{ $order->monitoring_hasil_pasien_tgl_lahir }}<br></p>
+                    <p><strong>Date Create : </strong>{{ $order->created_at }}</p>
+                </div>
+                <div class="col-6">
+                    <p><strong>Signature <img src="{{$ttd->monitoring_hasil_kurir_sign}}" width="150" style="background-color: black;"></strong><br></p>
+                    <p><strong>Nama Kurir : </strong>{{$ttd->monitoring_hasil_kurir_name}}<br></p>
+                    <p><strong>Date Signed: </strong>{{ $ttd->monitoring_hasil_kurir_date }}</p>
+                </div>
+            </div>
+        </div>
+        @endif
         @elseif ($order->monitoring_hasil_pasien_status == 2)
         @elseif ($order->monitoring_hasil_pasien_status == 3)
         <iframe src="{{ asset($order->monitoring_hasil_pasien_file) }}" frameborder="0" style="width: 100%; height: 500px;"></iframe>

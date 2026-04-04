@@ -61,18 +61,22 @@
                 @foreach ($data as $datas)
                 <tr>
                     <td>{{ $no++ }}</td>
-                    <td>{{ $datas->fullname }}</td>
-                    <td>{{ $datas->monitoring_hasil_pasien_nama }}</td>
+                    <td>{{ $datas->fullname }} <br><span class="badge bg-primary">{{ date("d-m-Y H:i:s", strtotime($datas->created_at)) }}</span></td>
+                    <td>{{ $datas->monitoring_hasil_pasien_nama }} <br><span class="badge bg-primary">{{ $datas->monitoring_hasil_pasien_reg }}</span></td>
                     <td>
                         @php
                         $kurir = DB::table('monitoring_hasil_kurir')->where('monitoring_hasil_pasien_code',$datas->monitoring_hasil_pasien_code)->first();
                         @endphp
                         @if ($kurir)
                         {{ $kurir->monitoring_hasil_kurir_name }} <br>
-                        {{ $kurir->monitoring_hasil_kurir_date }}
+                        {{ date("d-m-Y H:i:s", strtotime($kurir->monitoring_hasil_kurir_date )) }}
                         @endif
                     </td>
-                    <td>{{ $datas->monitoring_hasil_pasien_tgl_periksa }}</td>
+                    <td>
+                        @if ($datas->monitoring_hasil_pasien_tgl_periksa != "")
+                        {{ date("d-m-Y H:i:s", strtotime($datas->monitoring_hasil_pasien_tgl_periksa)) }}
+                        @endif
+                    </td>
                     <td class="text-center">
                         @if ($datas->monitoring_hasil_pasien_status == 0)
                         <span class="badge bg-dark">Order Baru</span>

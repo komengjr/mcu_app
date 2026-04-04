@@ -6,16 +6,24 @@
     <form id="form-add-pasien" class="row g-3 p-4" method="post" enctype="multipart/form-data">
         @csrf
         <div class="col-md-12">
-            <label class="form-label" for="inputAddress">Nama Lengkap</label>
+            <label class="form-label" for="inputAddress">Nama Lengkap <small class="text-danger">Wajib diisi</small></label>
             <input class="form-control" id="nama_lengkap" type="text" name="nama_lengkap" placeholder="Jhon Doe Example"
                 required />
         </div>
         <div class="col-md-6">
-            <label class="form-label" for="inputAddress">Tanggal Lahir</label>
+            <label class="form-label" for="inputAddress">Tanggal Lahir <small class="text-danger">Wajib diisi</small></label>
             <input class="form-control" id="tgl_lahir" type="date" name="tgl_lahir"
                 required />
         </div>
         <div class="col-md-6">
+            <label class="form-label" for="inputAddress">Jenis Kelamin <small class="text-danger">Wajib diisi</small></label>
+            <select name="jk" class="form-control" id="jk">
+                <option value="">Pilih Jenis Kelamin</option>
+                <option value="L">Laki - Laki</option>
+                <option value="P">Perempuan</option>
+            </select>
+        </div>
+        <div class="col-md-12">
             <label class="form-label" for="inputAddress">NIK</label>
             <input class="form-control" id="inputAddress" type="text" name="no_induk" placeholder="61XXXXXXXXXXXXXX"
                 required />

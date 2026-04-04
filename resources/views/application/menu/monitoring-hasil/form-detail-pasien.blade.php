@@ -36,7 +36,7 @@
                     <p><strong>Date Create : </strong>{{ $order->created_at }}</p>
                 </div>
                 <div class="col-6">
-                    <p><strong>Signature <img src="{{$ttd->monitoring_hasil_kurir_sign}}" width="150" style="background-color: black;"></strong><br></p>
+                    <p><strong>Signature <img src="{{$ttd->monitoring_hasil_kurir_sign}}" width="150"></strong><br></p>
                     <p><strong>Nama Kurir : </strong>{{$ttd->monitoring_hasil_kurir_name}}<br></p>
                     <p><strong>Date Signed: </strong>{{ $ttd->monitoring_hasil_kurir_date }}</p>
                 </div>

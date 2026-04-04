@@ -19,6 +19,7 @@ class MonitoringHasilPasien extends Migration
             $table->string('monitoring_hasil_pasien_nama');
             $table->string('monitoring_hasil_pasien_nik')->nullable();
             $table->string('monitoring_hasil_pasien_tgl_lahir');
+            $table->string('monitoring_hasil_pasien_jk');
             $table->string('monitoring_hasil_pasien_reg')->nullable();
             $table->dateTime('monitoring_hasil_pasien_tgl_periksa')->nullable();
             $table->dateTime('monitoring_hasil_pasien_tgl_selesai')->nullable();

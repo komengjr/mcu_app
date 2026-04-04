@@ -205,11 +205,12 @@
         );
         const nama = document.getElementById('nama_lengkap').value;
         const tgl_lahir = document.getElementById('tgl_lahir').value;
-        if (nama == "" || tgl_lahir == "") {
+        const jk = document.getElementById('jk').value;
+        if (nama == "" || tgl_lahir == "" || jk == "") {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
-                text: "Nama dan Tanggal Lahir Tidak boleh kosong",
+                text: "Nama , Jenis Kelamin dan Tanggal Lahir Tidak boleh kosong",
                 footer: "<a href=\"#\">Why do I have this issue?</a>"
             });
             $('#loading-button').html(

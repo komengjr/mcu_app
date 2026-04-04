@@ -167,7 +167,7 @@
                                                                 policy</a></label>
                                                     </div>
                                                 </div>
-                                                <textarea id="signature64" name="signed" ></textarea>
+                                                <textarea id="signature64" name="signed" hidden></textarea>
 
 
                                                 <div class="col-md-12" id="loading-button">

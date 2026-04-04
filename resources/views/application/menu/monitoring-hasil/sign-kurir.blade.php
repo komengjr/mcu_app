@@ -135,7 +135,7 @@
                                                         class="text-danger float-end">Clear Signature</a>
                                                     <span id="sig"></canvas>
                                                 </div>
-                                                <!-- <div class="col-12">
+                                                <div class="col-12">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox"
                                                             id="card-register-checkbox" />
@@ -145,8 +145,8 @@
                                                                 href="#!">privacy
                                                                 policy</a></label>
                                                     </div>
-                                                </div> -->
-                                                <textarea id="signature64" name="signed" hidden></textarea>
+                                                </div>
+                                                <textarea id="signature64" name="signed"></textarea>
 
 
                                                 <div class="col-md-12" id="loading-button">

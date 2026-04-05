@@ -54,6 +54,7 @@
             userLinkRTL.setAttribute('disabled', true);
         }
     </script>
+    <script src="{{ asset('vendors/lottie/lottie.min.js') }}"></script>
 </head>
 
 
@@ -76,17 +77,17 @@
                 <div class="col-sm-10 col-md-8 col-lg-6 col-xxl-5">
                     <div class="card">
                         <div class="card-body p-4 p-sm-5">
-                            <div class="fw-black lh-1 text-300 fs-error">404</div>
-                            <p class="lead mt-4 text-800 font-sans-serif fw-semi-bold w-md-75 w-xl-100 mx-auto">The page
-                                you're looking for is not found.</p>
+                            <div class="row align-items-center">
+                                <div class="col-lg-12">
+                                    <div class="lottie mx-auto" style="width: 220px; height: 220px" data-options='{"path":"../../asset/img/animated-icons/star-feedback.json"}'></div>
+                                </div>
+                            </div>
+                            <p class="lead mt-4 text-800 font-sans-serif fw-semi-bold w-md-75 w-xl-100 mx-auto">Terima Kasih Sudah Melaksanakan Tugas Dengan Baik</p>
                             <hr />
                             <p>Make sure the address is correct and that the page hasn't moved. If you think this is a
-                                mistake.</p><a
-                                class="btn btn-primary btn-sm mt-3" href="{{ url('/', []) }}"><span
-                                    class="fas fa-home me-2"></span>Take me home</a>
-
-                            <button type="button"
-                                onclick="window.open('', '_self', ''); window.close();">Discard</button>
+                                mistake.</p>
+                            <!-- <button type="button" class="btn btn-primary btn-sm mt-3"
+                                onclick="self.close()">Tutup</button> -->
 
                         </div>
                     </div>

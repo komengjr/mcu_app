@@ -171,7 +171,7 @@
 
 
                                                 <div class="col-md-12" id="loading-button">
-                                                    <button class="btn btn-danger w-100 " id="button-submit-sign-pengambilan-sample" type="button" name="submit">Register</button>
+                                                    <button class="btn btn-danger w-100 " id="button-submit-sign-pengambilan-sample" type="button" name="submit" style="display: none;">Register</button>
                                                 </div>
                                             </div>
                                         </form>
@@ -217,14 +217,14 @@
         saveButton.addEventListener('click', function(event) {
             var data = signaturePad.toDataURL('image/png');
             $('#signature64').html(data);
-            $("#button-submit-selesai").show();
+            $("#button-submit-sign-pengambilan-sample").show();
             $("#save").hide();
         });
 
         cancelButton.addEventListener('click', function(event) {
             signaturePad.clear();
             $("#save").show();
-            $("#button-submit-selesai").hide();
+            $("#button-submit-sign-pengambilan-sample").hide();
         });
     </script>
     <script>

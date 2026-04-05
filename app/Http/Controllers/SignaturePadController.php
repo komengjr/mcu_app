@@ -207,7 +207,7 @@ class SignaturePadController extends Controller
             if ($cek->monitoring_hasil_pasien_status == 0) {
                 return view('application.menu.monitoring-hasil.sign-kurir', ['token' => $token]);
             } else {
-                return view('application.error.404');
+                return view('application.error.close-sign');
             }
         } else {
             return view('application.error.404');

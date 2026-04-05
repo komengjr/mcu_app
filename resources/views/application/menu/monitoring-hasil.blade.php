@@ -52,6 +52,7 @@
                     <th>Jenis Kelamin</th>
                     <th>Tanggal Lahir</th>
                     <th>Tanggal Order</th>
+                    <th>Pemeriksaan</th>
                     <th>Pengambilan Sample</th>
                     <th>Tanggal Proses Sample</th>
                     <th>Status Hasil</th>
@@ -75,6 +76,16 @@
                     </td>
                     <td>{{ date("d-m-Y", strtotime($datas->monitoring_hasil_pasien_tgl_lahir)) }}</td>
                     <td>{{ date("d-m-Y H:i:s", strtotime($datas->created_at)) }}</td>
+                    <td>
+                        @php
+                        $pemeriksaan = DB::table('monitoring_hasil_pemeriksaan')
+                        ->join('master_pemeriksaan','master_pemeriksaan.master_pemeriksaan_code','=','monitoring_hasil_pemeriksaan.master_pemeriksaan_code')
+                        ->where('monitoring_hasil_pasien_code',$datas->monitoring_hasil_pasien_code)->get();
+                        @endphp
+                        @foreach ($pemeriksaan as $pem)
+                        <li>{{ $pem->master_pemeriksaan_name }}</li>
+                        @endforeach
+                    </td>
                     <td>
                         @php
                         $kurir = DB::table('monitoring_hasil_kurir')->where('monitoring_hasil_pasien_code',$datas->monitoring_hasil_pasien_code)->first();
@@ -194,6 +205,67 @@
             $('#menu-mcu').html(data);
         }).fail(function() {
             $('#menu-mcu').html('eror');
+        });
+    });
+    $(document).on("click", "#button-pilih-pemeriksaan-pasien", function(e) {
+        e.preventDefault();
+        var data_registrasi = document.getElementById('token_registrasi').value;
+        var data_pemeriksaan = document.getElementById('data_pemeriksaan').value;
+        const nama = document.getElementById('nama_lengkap').value;
+        const tgl_lahir = document.getElementById('tgl_lahir').value;
+        const jk = document.getElementById('jk').value;
+        if (nama == "" || tgl_lahir == "" || jk == "" || data_pemeriksaan == "") {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Nama , Jenis Kelamin dan Tanggal Lahir Isi Terlebih dahulu",
+                footer: "<a href=\"#\">Why do I have this issue?</a>"
+            });
+            $('#loading-button').html(
+                '<button class="btn btn-primary" type="button" id="button-save-data-pasien"><span class="fas fa-save"></span> Simpan & Kirim</button>'
+            );
+        } else {
+            $('#table-pemeriksaan-pasien').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('monitoring_hasil_save_pemeriksaan') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "data_registrasi": data_registrasi,
+                    "data_pemeriksaan": data_pemeriksaan
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#table-pemeriksaan-pasien').html(data);
+            }).fail(function() {
+                $('#table-pemeriksaan-pasien').html('eror');
+            });
+        }
+    });
+    $(document).on("click", "#button-remove-pemeriksaan_pasien", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        var reg = $(this).data("reg");
+        $('#table-pemeriksaan-pasien').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('monitoring_hasil_remove_pemeriksaan') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code,
+                "reg": reg
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#table-pemeriksaan-pasien').html(data);
+        }).fail(function() {
+            $('#table-pemeriksaan-pasien').html('eror');
         });
     });
     $(document).on("click", "#button-save-data-pasien", function(e) {

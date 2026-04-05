@@ -525,13 +525,43 @@ class ApplicationController extends Controller
     }
     public function monitoring_hasil_add_pasien(Request $request)
     {
-        return view('application.menu.monitoring-hasil.form-add-pasien');
+        $pemeriksaan = DB::table('master_pemeriksaan')->get();
+        $token = str::uuid();
+        return view('application.menu.monitoring-hasil.form-add-pasien', compact('pemeriksaan'), ['token' => $token]);
+    }
+    public function monitoring_hasil_save_pemeriksaan(Request $request)
+    {
+        try {
+            DB::table('monitoring_hasil_pemeriksaan')->insert([
+                'monitoring_hasil_pemeriksaan_code' => str::uuid(),
+                'monitoring_hasil_pasien_code' => $request->data_registrasi,
+                'master_pemeriksaan_code' => $request->data_pemeriksaan,
+                'monitoring_hasil_pemeriksaan_status' => 0,
+                'created_at' => now(),
+            ]);
+            $data = DB::table('monitoring_hasil_pemeriksaan')
+                ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'monitoring_hasil_pemeriksaan.master_pemeriksaan_code')
+                ->where('monitoring_hasil_pasien_code', $request->data_registrasi)->get();
+            return view('application.menu.monitoring-hasil.table-pemeriksaan-pasien', compact('data'));
+        } catch (\Throwable $e) {
+            return 0;
+        }
+        return 123;
+    }
+    public function monitoring_hasil_remove_pemeriksaan(Request $request)
+    {
+        DB::table('monitoring_hasil_pemeriksaan')
+            ->where('monitoring_hasil_pemeriksaan_code', $request->code)->delete();
+        $data = DB::table('monitoring_hasil_pemeriksaan')
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'monitoring_hasil_pemeriksaan.master_pemeriksaan_code')
+            ->where('monitoring_hasil_pasien_code', $request->reg)->get();
+        return view('application.menu.monitoring-hasil.table-pemeriksaan-pasien', compact('data'));
     }
     public function monitoring_hasil_save_pasien(Request $request)
     {
         try {
             DB::table('monitoring_hasil_pasien')->insert([
-                'monitoring_hasil_pasien_code' => str::uuid(),
+                'monitoring_hasil_pasien_code' => $request->token_registrasi,
                 'monitoring_hasil_pasien_nama' => $request->nama_lengkap,
                 'monitoring_hasil_pasien_tgl_lahir' => $request->tgl_lahir,
                 'monitoring_hasil_pasien_jk' => $request->jk,
@@ -2265,7 +2295,7 @@ class ApplicationController extends Controller
         if ($this->url_akses($akses) == true) {
             $data = DB::table('monitoring_hasil_pasien')
                 ->select('user_mains.fullname', 'monitoring_hasil_pasien.*')
-                ->join('user_mains', 'user_mains.userid', '=', 'monitoring_hasil_pasien.monitoring_hasil_pasien_user')->orderBy('id_monitoring_hasil_pasien','desc')
+                ->join('user_mains', 'user_mains.userid', '=', 'monitoring_hasil_pasien.monitoring_hasil_pasien_user')->orderBy('id_monitoring_hasil_pasien', 'desc')
                 ->get();
             return view('application.master-data.master-upload-hasil-pemeriksaan', ['data' => $data]);
         } else {

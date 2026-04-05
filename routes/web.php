@@ -70,6 +70,8 @@ Route::prefix('application')->group(function () {
     Route::get('monitoring-mcu/detail/{id}', [ApplicationController::class, 'monitoring_mcu_detail_table'])->name('monitoring_mcu_detail_table');
     // MONITORING HASIL
     Route::post('monitoring-hasil/add-pasien', [ApplicationController::class, 'monitoring_hasil_add_pasien'])->name('monitoring_hasil_add_pasien');
+    Route::post('monitoring-hasil/save-pemeriksaan', [ApplicationController::class, 'monitoring_hasil_save_pemeriksaan'])->name('monitoring_hasil_save_pemeriksaan');
+    Route::post('monitoring-hasil/remove-pemeriksaan', [ApplicationController::class, 'monitoring_hasil_remove_pemeriksaan'])->name('monitoring_hasil_remove_pemeriksaan');
     Route::post('monitoring-hasil/save-pasien', [ApplicationController::class, 'monitoring_hasil_save_pasien'])->name('monitoring_hasil_save_pasien');
     Route::post('monitoring-hasil/detail-pasien', [ApplicationController::class, 'monitoring_hasil_detail_pasien'])->name('monitoring_hasil_detail_pasien');
     // UPLOAD HASIL

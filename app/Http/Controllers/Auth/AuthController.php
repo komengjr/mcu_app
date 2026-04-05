@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Hash;
 use Illuminate\Support\Str;
+
 class AuthController extends Controller
 {
-    public function fisrt(){
+    public function fisrt()
+    {
         return view('index');
     }
 
@@ -20,18 +22,15 @@ class AuthController extends Controller
         if (Auth::check()) {
 
             return Redirect('dashboard/home');
-
         } else {
             return view('auth.login');
         }
-
     }
 
     public function registration()
     {
 
         return view('auth.registration');
-
     }
 
     public function postLogin(Request $request)
@@ -45,10 +44,10 @@ class AuthController extends Controller
             if (Auth::user()->access_status == 0) {
                 Auth::logout();
                 return redirect()->intended('login')
-                ->withError('Gagal Login');
+                    ->withError('Gagal Login');
             } else {
                 return redirect()->intended('dashboard/home')
-                ->withSuccess('Kamu Berhasil Masuk di Halaman '.Auth::user()->fullname);
+                    ->withSuccess('Kamu Berhasil Masuk di Halaman ' . Auth::user()->fullname);
             }
         }
         return redirect("login")->withError('Username dan Password Tidak Sinkron Mohon Untuk Mengingat Kembali');
@@ -68,7 +67,6 @@ class AuthController extends Controller
         $data = $request->all();
         $check = $this->create($data);
         return redirect("confrim_user")->withSuccess('Great! You have Successfully loggedin');
-
     }
 
     // public function dashboard()
@@ -98,15 +96,17 @@ class AuthController extends Controller
             'password' => Hash::make($data['password']),
 
         ]);
-
     }
-    public function confrim_user(){
+    public function confrim_user()
+    {
         return view('auth.confrim-page');
     }
-    public function register_status(){
+    public function register_status()
+    {
         return view('auth.register_status');
     }
-    public function forget_password(){
+    public function forget_password()
+    {
         return view('auth.forget_password');
     }
 
@@ -118,7 +118,36 @@ class AuthController extends Controller
         Auth::logout();
 
         return Redirect('/');
-
     }
+    public function verifikasi_Login(Request $request)
+    {
 
+        $request->validate([
+            'username' => 'required',
+            'password' => 'required',
+        ]);
+
+        $credentials = $request->only('username', 'password');
+
+        if (Auth::attempt($credentials)) {
+            if (Auth::user()->access_status == 0) {
+                Auth::logout();
+                return '<div class="alert alert-warning alert-dismissible fade show my-2" role="alert"> <strong>Warning !</strong> Bermasalah Pada Akun Anda <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button> </div>';
+                // return redirect()->intended('register_status')
+                //     ->withSuccess('Gagal Login');
+            } else {
+                // return redirect()->intended('dashboard/home')
+                //     ->withSuccess('Kamu Berhasil Masuk di Halaman ' . Auth::user()->fullname);
+                return '<div class="alert alert-success alert-dismissible fade show my-2" role="alert">
+                                            <strong>Greate!</strong> Selamat Datang ' . Auth::user()->fullname . '.
+                                            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            <script>window.location.href = "' . route('dashboard.home') . '";</script>
+                                        </div>';
+            }
+        }
+        return '<div class="alert alert-danger alert-dismissible fade show my-2" role="alert">
+                                            <strong>Error!</strong> Username Dan Password Ada Kesalahan.
+                                            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>';
+    }
 }

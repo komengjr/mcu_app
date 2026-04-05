@@ -34,6 +34,7 @@ Route::controller(AuthController::class)->group(function () {
     // Route::post('post-registration', 'postRegistration')->name('register.post');
     Route::post('post-login', 'postLogin')->name('login.post');
     // Route::get('dashboard', [AuthController::class, 'dashboard']);
+    Route::post('verifikasi-Login', 'verifikasi_Login')->name('verifikasi_Login');
 });
 
 Route::prefix('dashboard')->group(function () {

@@ -1,322 +1,269 @@
 <!DOCTYPE html>
-<html lang="en-US" dir="ltr">
+<html lang="id">
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login | Penilaian Supplier</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/header.png') }}">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #e8f1fc, #ffffff);
+            overflow: hidden;
+            position: relative;
+        }
 
-    <!-- ===============================================-->
-    <!--    Document Title-->
-    <!-- ===============================================-->
-    <title>Medical Check Up | Management System</title>
+        /* === Animated Background === */
+        .background-animation {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
 
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: float 12s ease-in-out infinite;
+        }
 
-    <!-- ===============================================-->
-    <!--    Favicons-->
-    <!-- ===============================================-->
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('img/dashboard.png') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/dashboard.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('img/dashboard.png') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('img/dashboard.png') }}">
-    <link rel="manifest" href="{{ asset('asset/img/favicons/manifest.json') }}">
-    <meta name="msapplication-TileImage" content="{{ asset('img/dashboard.png') }}">
-    <meta name="theme-color" content="#ffffff">
-    <script src="{{ asset('asset/js/config.js') }}"></script>
-    <script src="{{ asset('vendors/overlayscrollbars/OverlayScrollbars.min.js') }}"></script>
+        .bg-shape:nth-child(1) {
+            width: 180px;
+            height: 180px;
+            background: #a0d3ff;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
 
+        .bg-shape:nth-child(2) {
+            width: 250px;
+            height: 250px;
+            background: #f5cba7;
+            bottom: 5%;
+            right: 8%;
+            animation-delay: 3s;
+        }
 
-    <!-- ===============================================-->
-    <!--    Stylesheets-->
-    <!-- ===============================================-->
+        .bg-shape:nth-child(3) {
+            width: 220px;
+            height: 220px;
+            background: #c8e6c9;
+            top: 40%;
+            left: 70%;
+            animation-delay: 5s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+            }
+
+            50% {
+                transform: translateY(-20px) scale(1.05);
+            }
+        }
+
+        /* === Background Illustration === */
+        .background-illustration {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: url('https://pustaka.bca.co.id/Promo/A2C31A68-BC10-4CBD-AB51-85474A36CC50/Detail/ImageListing/20250723_PRAMITA-LAB-SBY-thumb.jpeg') center/cover no-repeat;
+            opacity: 0.15;
+            filter: blur(1px);
+        }
+
+        /* === Login Card === */
+        .login-card {
+            position: relative;
+            z-index: 2;
+            background: rgba(243, 243, 243, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            width: 100%;
+            padding: 1.5rem 1.5rem;
+            margin: 1rem;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-card h2 {
+            font-weight: 600;
+            color: #316bb3;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-card p {
+            text-align: center;
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 2rem;
+        }
+
+        .form-control {
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            border-color: #d0d9e2;
+        }
+
+        .form-control:focus {
+            border-color: #90caf9;
+            box-shadow: 0 0 0 0.25rem rgba(144, 202, 249, 0.25);
+        }
+
+        .btn-primary {
+            background-color: #5a9bd5;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.03);
+            background-color: #4689c4;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .footer-text a {
+            color: #316bb3;
+            text-decoration: none;
+        }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 576px) {
+            .login-card {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Animated background shapes -->
+    <div class="background-animation">
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+    </div>
+
+    <!-- Illustration background -->
+    <div class="background-illustration"></div>
+
+    <!-- Login Card -->
+    <div class="login-card">
+        <div class="text-center mb-4">
+            <img class="mb-2" src="{{ asset('img/pram.png') }}" alt="" width="150">
+            <h3><strong>Monitoring System</strong></h3>
+            <p style="margin-bottom: 0;"> <small>Halaman Login</small></p>
+        </div>
+        <span id="notifikasi-login" class="pb-0 mt-0"></span>
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="username" class="form-label fw-semibold">Username</label>
+                <input type="text" id="username" class="form-control" placeholder="Masukkan username Anda" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label fw-semibold">Kata Sandi</label>
+                <input type="password" id="password" class="form-control" placeholder="Masukkan kata sandi" required>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="rememberMe">
+                    <label for="rememberMe" class="form-check-label">Ingat saya</label>
+                </div>
+                <a href="#" class="text-decoration-none text-primary">Lupa Password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100" id="button-login-system">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Masuk Sekarang
+            </button>
+        </form>
+
+        <div class="footer-text">
+            <strong>Copyright © 2026</strong>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
         integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link
-        href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:300,400,500,600,700,800,900&amp;display=swap"
-        rel="stylesheet">
-    <link href="{{ asset('vendors/overlayscrollbars/OverlayScrollbars.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('asset/css/theme-rtl.min.css') }}" rel="stylesheet" id="style-rtl">
-    <link href="{{ asset('asset/css/theme.min.css') }}" rel="stylesheet" id="style-default">
-    <link href="{{ asset('asset/css/user-rtl.min.css') }}" rel="stylesheet" id="user-style-rtl">
-    <link href="{{ asset('asset/css/user.min.css') }}" rel="stylesheet" id="user-style-default">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
-        var isRTL = JSON.parse(localStorage.getItem('isRTL'));
-        if (isRTL) {
-            var linkDefault = document.getElementById('style-default');
-            var userLinkDefault = document.getElementById('user-style-default');
-            linkDefault.setAttribute('disabled', true);
-            userLinkDefault.setAttribute('disabled', true);
-            document.querySelector('html').setAttribute('dir', 'rtl');
-        } else {
-            var linkRTL = document.getElementById('style-rtl');
-            var userLinkRTL = document.getElementById('user-style-rtl');
-            linkRTL.setAttribute('disabled', true);
-            userLinkRTL.setAttribute('disabled', true);
-        }
+        const form = document.getElementById('loginForm');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const btn = form.querySelector('button');
+
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memeriksa...';
+            btn.disabled = true;
+            $.ajax({
+                url: "{{ route('verifikasi_Login') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "username": username,
+                    "password": password
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#notifikasi-login').html(data);
+                btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Masuk Sekarang';
+                btn.disabled = false;
+            }).fail(function() {
+                console.log('error');
+            });
+        });
     </script>
-</head>
-
-
-<body>
-
-    <!-- ===============================================-->
-    <!--    Main Content-->
-    <!-- ===============================================-->
-    <main class="main" id="top">
-        <div class="container-fluid">
-            <script>
-                var isFluid = JSON.parse(localStorage.getItem('isFluid'));
-                if (isFluid) {
-                    var container = document.querySelector('[data-layout]');
-                    // container.classList.remove('container');
-                    // container.classList.add('container-fluid');
-                }
-            </script>
-            <div class="row min-vh-100 bg-400 bg-shape">
-                <div class="col-6 d-none d-lg-block position-relative">
-                    <div class="bg-holder border border-right-danger"
-                        style="background-image:url(img/cover.png);background-position: 50% 70%;">
-                    </div>
-                    <!--/.bg-holder-->
-
-                </div>
-                <div class="col-sm-10 col-md-6 px-sm-0 align-self-center mx-auto py-5">
-                    <div class="row justify-content-center g-0">
-                        <div class="col-lg-9 col-xl-8 col-xxl-6">
-                            <div class="card">
-                                <div class="card-header bg-circle-shape bg-youtube text-center p-2"><a
-                                        class="font-sans-serif fw-bolder fs-4 z-index-1 position-relative link-light light"
-                                        href="#">HALAMAN LOGIN</a></div>
-                                <div class="card-body p-4">
-                                    <div class="row flex-between-center">
-                                        <div class="col-auto">
-                                            <h5><span class="badge bg-dark">System V.3</span></h5>
-                                        </div>
-                                        <div class="col-auto fs--1 text-600"><span class="mb-0 fw-semi-bold">Help ?</span> <span><a href="#">Hubungi Kami</a></span></div>
-                                    </div>
-                                    <form action="{{ route('login.post') }}" method="POST">
-                                        @csrf
-                                        <div class="mb-3">
-                                            <label class="form-label" for="split-login-email">Username</label>
-                                            <input class="form-control form-control-lg" id="card-email" type="text"
-                                                name="username" required autofocus />
-                                            @if ($errors->has('username'))
-                                                <span class="text-danger">{{ $errors->first('username') }}</span>
-                                            @endif
-                                        </div>
-                                        <div class="mb-3">
-                                            <div class="d-flex justify-content-between">
-                                                <label class="form-label" for="split-login-password">Password</label>
-                                            </div>
-                                            <input class="form-control form-control-lg" id="card-password"
-                                                type="password" name="password" required />
-                                            @if ($errors->has('password'))
-                                                <span class="text-danger">{{ $errors->first('password') }}</span>
-                                            @endif
-                                        </div>
-                                        <div class="row flex-between-center">
-                                            <div class="col-auto">
-                                                <div class="form-check mb-0">
-                                                    <input class="form-check-input" type="checkbox"
-                                                        id="split-checkbox" />
-                                                    <label class="form-check-label mb-0" for="split-checkbox">Remember
-                                                        me</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-auto"><a class="fs--1"
-                                                    href="#">Forgot
-                                                    Password?</a></div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <button class="btn btn-danger d-block w-100 mt-3"id="button-login"
-                                                type="submit" name="submit">Log in</button>
-                                        </div>
-                                    </form>
-                                    <div class="position-relative mt-4">
-                                        <hr class="bg-300" />
-                                        <div class="divider-content-center">Support By</div>
-                                    </div>
-                                    <div class=" g-2 mt-2 d-flex justify-content-between">
-
-                                        <img src="{{ asset('img/pramita.png') }}" alt="" srcset=""
-                                            width="150">
-                                        {{-- <img src="{{ asset('img/logo.png') }}" alt="" srcset=""
-                                            width="150"> --}}
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-    <!-- ===============================================-->
-    <!--    End of Main Content-->
-    <!-- ===============================================-->
-    <div class="offcanvas offcanvas-end settings-panel border-0" id="settings-offcanvas" tabindex="-1"
-        aria-labelledby="settings-offcanvas">
-        <div class="offcanvas-header settings-panel-header bg-shape">
-            <div class="z-index-1 py-1 light">
-                <h5 class="text-white"> <span class="fas fa-palette me-2 fs-0"></span>Settings</h5>
-                <p class="mb-0 fs--1 text-white opacity-75"> Set your own customized style</p>
-            </div>
-            <button class="btn-close btn-close-white z-index-1 mt-0" type="button" data-bs-dismiss="offcanvas"
-                aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body scrollbar-overlay px-card" id="themeController">
-            <h5 class="fs-0">Color Scheme</h5>
-            <p class="fs--1">Choose the perfect color mode for your app.</p>
-            <div class="btn-group d-block w-100 btn-group-navbar-style">
-                <div class="row gx-2">
-                    <div class="col-6">
-                        <input class="btn-check" id="themeSwitcherLight" name="theme-color" type="radio"
-                            value="light" data-theme-control="theme" />
-                        <label class="btn d-inline-block btn-navbar-style fs--1" for="themeSwitcherLight"> <span
-                                class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0"
-                                    src="{{ asset('asset/img/generic/falcon-mode-default.jpg') }}"
-                                    alt="" /></span><span class="label-text">Light</span></label>
-                    </div>
-                    <div class="col-6">
-                        <input class="btn-check" id="themeSwitcherDark" name="theme-color" type="radio"
-                            value="dark" data-theme-control="theme" />
-                        <label class="btn d-inline-block btn-navbar-style fs--1" for="themeSwitcherDark"> <span
-                                class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0"
-                                    src="{{ asset('asset/img/generic/falcon-mode-dark.jpg') }}"
-                                    alt="" /></span><span class="label-text"> Dark</span></label>
-                    </div>
-                </div>
-            </div>
-            <hr />
-            {{-- <div class="d-flex justify-content-between">
-                <div class="d-flex align-items-start"><img class="me-2"
-                        src="{{ asset('asset/img/icons/left-arrow-from-left.svg') }}" width="20"
-                        alt="" />
-                    <div class="flex-1">
-                        <h5 class="fs-0">RTL Mode</h5>
-                        <p class="fs--1 mb-0">Pariatur labore dolorem laboriosam eum at ratione, nesciunt, tenetur
-                            fugiat eligendi minima ducimus iusto animi inventore facilis soluta error repellat amet
-                            reprehenderit?</p>
-                    </div>
-                </div>
-                <div class="form-check form-switch">
-                    <input class="form-check-input ms-0" id="mode-rtl" type="checkbox"
-                        data-theme-control="isRTL" />
-                </div>
-            </div>
-            <hr />
-            <div class="d-flex justify-content-between">
-                <div class="d-flex align-items-start"><img class="me-2"
-                        src="{{ asset('asset/img/icons/arrows-h.svg') }}" width="20" alt="" />
-                    <div class="flex-1">
-                        <h5 class="fs-0">Fluid Layout</h5>
-                        <p class="fs--1 mb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-                    </div>
-                </div>
-                <div class="form-check form-switch">
-                    <input class="form-check-input ms-0" id="mode-fluid" type="checkbox"
-                        data-theme-control="isFluid" />
-                </div>
-            </div>
-            <hr />
-            <h5 class="fs-0 d-flex align-items-center">Vertical Navbar Style</h5>
-            <p class="fs--1 mb-0">Switch between styles for your vertical navbar </p>
-            <div class="btn-group d-block w-100 btn-group-navbar-style">
-                <div class="row gx-2">
-                    <div class="col-6">
-                        <input class="btn-check" id="navbar-style-transparent" type="radio" name="navbarStyle"
-                            value="transparent" data-theme-control="navbarStyle" />
-                        <label class="btn d-block w-100 btn-navbar-style fs--1" for="navbar-style-transparent"> <img
-                                class="img-fluid img-prototype" src="{{ asset('asset/img/generic/default.png') }}"
-                                alt="" /><span class="label-text"> Transparent</span></label>
-                    </div>
-                    <div class="col-6">
-                        <input class="btn-check" id="navbar-style-inverted" type="radio" name="navbarStyle"
-                            value="inverted" data-theme-control="navbarStyle" />
-                        <label class="btn d-block w-100 btn-navbar-style fs--1" for="navbar-style-inverted"> <img
-                                class="img-fluid img-prototype" src="{{ asset('asset/img/generic/inverted.png') }}"
-                                alt="" /><span class="label-text"> Inverted</span></label>
-                    </div>
-                    <div class="col-6">
-                        <input class="btn-check" id="navbar-style-card" type="radio" name="navbarStyle"
-                            value="card" data-theme-control="navbarStyle" />
-                        <label class="btn d-block w-100 btn-navbar-style fs--1" for="navbar-style-card"> <img
-                                class="img-fluid img-prototype" src="{{ asset('asset/img/generic/card.png') }}"
-                                alt="" /><span class="label-text"> Card</span></label>
-                    </div>
-                    <div class="col-6">
-                        <input class="btn-check" id="navbar-style-vibrant" type="radio" name="navbarStyle"
-                            value="vibrant" data-theme-control="navbarStyle" />
-                        <label class="btn d-block w-100 btn-navbar-style fs--1" for="navbar-style-vibrant"> <img
-                                class="img-fluid img-prototype" src="{{ asset('asset/img/generic/vibrant.png') }}"
-                                alt="" /><span class="label-text"> Vibrant</span></label>
-                    </div>
-                </div>
-            </div> --}}
-
-        </div>
-    </div>
-    <a class="card setting-toggle" href="#settings-offcanvas" data-bs-toggle="offcanvas">
-        <div class="card-body d-flex align-items-center py-md-2 px-2 py-1">
-            <div class="bg-soft-primary position-relative rounded-start" style="height:34px;width:28px">
-                <div class="settings-popover"><span class="ripple"><span
-                            class="fa-spin position-absolute all-0 d-flex flex-center"><span
-                                class="icon-spin position-absolute all-0 d-flex flex-center">
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M19.7369 12.3941L19.1989 12.1065C18.4459 11.7041 18.0843 10.8487 18.0843 9.99495C18.0843 9.14118 18.4459 8.28582 19.1989 7.88336L19.7369 7.59581C19.9474 7.47484 20.0316 7.23291 19.9474 7.03131C19.4842 5.57973 18.6843 4.28943 17.6738 3.20075C17.5053 3.03946 17.2527 2.99914 17.0422 3.12011L16.393 3.46714C15.6883 3.84379 14.8377 3.74529 14.1476 3.3427C14.0988 3.31422 14.0496 3.28621 14.0002 3.25868C13.2568 2.84453 12.7055 2.10629 12.7055 1.25525V0.70081C12.7055 0.499202 12.5371 0.297594 12.2845 0.257272C10.7266 -0.105622 9.16879 -0.0653007 7.69516 0.257272C7.44254 0.297594 7.31623 0.499202 7.31623 0.70081V1.23474C7.31623 2.09575 6.74999 2.8362 5.99824 3.25599C5.95774 3.27861 5.91747 3.30159 5.87744 3.32493C5.15643 3.74527 4.26453 3.85902 3.53534 3.45302L2.93743 3.12011C2.72691 2.99914 2.47429 3.03946 2.30587 3.20075C1.29538 4.28943 0.495411 5.57973 0.0322686 7.03131C-0.051939 7.23291 0.0322686 7.47484 0.242788 7.59581L0.784376 7.8853C1.54166 8.29007 1.92694 9.13627 1.92694 9.99495C1.92694 10.8536 1.54166 11.6998 0.784375 12.1046L0.242788 12.3941C0.0322686 12.515 -0.051939 12.757 0.0322686 12.9586C0.495411 14.4102 1.29538 15.7005 2.30587 16.7891C2.47429 16.9504 2.72691 16.9907 2.93743 16.8698L3.58669 16.5227C4.29133 16.1461 5.14131 16.2457 5.8331 16.6455C5.88713 16.6767 5.94159 16.7074 5.99648 16.7375C6.75162 17.1511 7.31623 17.8941 7.31623 18.7552V19.2891C7.31623 19.4425 7.41373 19.5959 7.55309 19.696C7.64066 19.7589 7.74815 19.7843 7.85406 19.8046C9.35884 20.0925 10.8609 20.0456 12.2845 19.7729C12.5371 19.6923 12.7055 19.4907 12.7055 19.2891V18.7346C12.7055 17.8836 13.2568 17.1454 14.0002 16.7312C14.0496 16.7037 14.0988 16.6757 14.1476 16.6472C14.8377 16.2446 15.6883 16.1461 16.393 16.5227L17.0422 16.8698C17.2527 16.9907 17.5053 16.9504 17.6738 16.7891C18.7264 15.7005 19.4842 14.4102 19.9895 12.9586C20.0316 12.757 19.9474 12.515 19.7369 12.3941ZM10.0109 13.2005C8.1162 13.2005 6.64257 11.7893 6.64257 9.97478C6.64257 8.20063 8.1162 6.74905 10.0109 6.74905C11.8634 6.74905 13.3792 8.20063 13.3792 9.97478C13.3792 11.7893 11.8634 13.2005 10.0109 13.2005Z"
-                                        fill="#2A7BE4"></path>
-                                </svg></span></span></span></div>
-            </div><small
-                class="text-uppercase text-primary fw-bold bg-soft-primary py-2 pe-2 ps-1 rounded-end">customize</small>
-        </div>
-    </a>
-
-    @if (session('success'))
-        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 99999">
-            <div class="toast show" id="liveToast" role="alert" aria-live="assertive" aria-atomic="true"
-                data-options='{"autoShow":true,"showOnce":true,"cookieExpireTime":3}' data-autohide="false">
-                <div class="toast-header bg-primary text-white"><strong class="me-auto">Notice</strong><small>1 sec
-                        ago</small>
-                    <button class="btn-close btn-close-white" type="button" data-bs-dismiss="toast"
-                        aria-label="Close"></button>
-                </div>
-                <div class="toast-body">{{ session('success') }}</div>
-            </div>
-        </div>
-    @elseif (session('error'))
-        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 99999">
-            <div class="toast show" id="liveToast" role="alert" aria-live="assertive" aria-atomic="true"
-                data-options='{"autoShow":true,"showOnce":true,"cookieExpireTime":720}' data-autohide="false">
-                <div class="toast-header bg-danger text-white"><strong class="me-auto">Notice</strong><small>1 sec
-                        ago</small>
-                    <button class="btn-close btn-close-white" type="button" data-bs-dismiss="toast"
-                        aria-label="Close"></button>
-                </div>
-                <div class="toast-body">{{ session('error') }}</div>
-            </div>
-        </div>
-    @endif
-
-    <!-- ===============================================-->
-    <!--    JavaScripts-->
-    <!-- ===============================================-->
-
-    <script src="{{ asset('vendors/popper/popper.min.js') }}"></script>
-    <script src="{{ asset('vendors/bootstrap/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('vendors/anchorjs/anchor.min.js') }}"></script>
-    <script src="{{ asset('vendors/is/is.min.js') }}"></script>
-    <script src="{{ asset('vendors/fontawesome/all.min.js') }}"></script>
-    <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
-    {{-- <script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script> --}}
-    <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
-    <script src="{{ asset('asset/js/theme.js') }}"></script>
-
 </body>
 
 </html>

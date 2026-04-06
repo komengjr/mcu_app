@@ -36,7 +36,7 @@
         <form id="form-pemeriksaan-pasien" class="row g-3 py-3">
             <div class="col-md-8">
                 <select name="data_pemeriksaan" class="form-control choices-single-pemeriksaan" id="data_pemeriksaan">
-                    <option value="">Pilih Pemeriksaan</option>
+                    <option value="">Pilih Test Pemeriksaan</option>
                     @foreach ($pemeriksaan as $pem)
                     <option value="{{ $pem->master_test_code }}">{{ $pem->master_test_name }}</option>
                     @endforeach
@@ -51,7 +51,7 @@
                 <thead class="bg-200 text-700">
                     <tr>
                         <th>No</th>
-                        <th>Nama Pemeriksaan</th>
+                        <th>Nama Test Pemeriksaan</th>
                         <th>Action</th>
                     </tr>
                 </thead>

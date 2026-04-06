@@ -6,6 +6,7 @@ use App\Exports\McuExport;
 use App\Exports\PesertaMcuExport;
 use App\Imports\PesertaAllImport;
 use App\Imports\PesertaImport;
+use App\Imports\TestImport;
 use App\Models\Peserta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -2319,6 +2320,41 @@ class ApplicationController extends Controller
         } catch (\Throwable $e) {
             return 0;
         }
+    }
+    // MASTER TEST PEMERIKSAAN
+    public function master_test_pemeriksaan($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            $data = DB::table('master_test')->get();
+            return view('application.master-data.master-test-pemeriksaan', ['data' => $data]);
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
+    public function master_test_pemeriksaan_add_test(Request $request)
+    {
+        return view('application.master-data.test-pemeriksaan.form-add');
+    }
+    public function master_test_pemeriksaan_save_test(Request $request)
+    {
+        try {
+            DB::table('master_test')->insert([
+                'master_test_code' => str::uuid(),
+                'master_test_name' => $request->nama_test,
+                'master_test_type' => 'lab',
+                'created_at' => now()
+            ]);
+            return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data Pemeriksaan');
+        } catch (\Throwable $e) {
+            return redirect()->back()->withError('Failed! Gagal Menambahkan Data Pemeriksaan');
+        }
+    }
+    public function master_test_pemeriksaan_import_test(Request $request){
+        return view('application.master-data.test-pemeriksaan.form-import-test');
+    }
+    public function master_test_pemeriksaan_import_test_save(Request $request){
+        Excel::import(new TestImport, request()->file('file'));
+        return redirect()->back()->withSuccess('Great! Berhasil Imposrt Data Test');
     }
 
     // LAPORAN REKAP MCU

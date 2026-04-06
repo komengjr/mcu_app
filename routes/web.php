@@ -59,6 +59,7 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('master-user-cabang', [ApplicationController::class, 'master_user_cabang'])->name('master_user_cabang');
     Route::get('master-group-cabang', [ApplicationController::class, 'master_group_cabang'])->name('master_group_cabang');
     Route::get('master-upload-hasil-pemeriksaan', [ApplicationController::class, 'master_upload_hasil_pemeriksaan'])->name('master_upload_hasil_pemeriksaan');
+    Route::get('master-test-pemeriksaan', [ApplicationController::class, 'master_test_pemeriksaan'])->name('master_test_pemeriksaan');
     Route::get('laporan-rekap-mcu', [ApplicationController::class, 'laporan_rekap_mcu'])->name('laporan_rekap_mcu');
     Route::get('laporan/laporan-data-kehadiran', [ApplicationController::class, 'laporan_data_kehadiran'])->name('laporan_data_kehadiran');
     Route::get('aplikasi', [ApplicationController::class, 'aplikasi_app'])->name('aplikasi_app');
@@ -78,6 +79,11 @@ Route::prefix('application')->group(function () {
     Route::post('master-upload-hasil-pemeriksaan/detail-pasien', [ApplicationController::class, 'master_upload_hasil_pemeriksaan_detail'])->name('master_upload_hasil_pemeriksaan_detail');
     Route::post('master-upload-hasil-pemeriksaan/detail-pasien/proses', [ApplicationController::class, 'master_upload_hasil_pemeriksaan_detail_proses'])->name('master_upload_hasil_pemeriksaan_detail_proses');
     Route::post('master-upload-hasil-pemeriksaan/detail-pasien/proses_upload', [UploadFileController::class, 'master_upload_hasil_pemeriksaan_detail_proses_upload'])->name('master_upload_hasil_pemeriksaan_detail_proses_upload');
+    // MASTER TEST
+    Route::post('master-test-pemeriksaan/add-test', [ApplicationController::class, 'master_test_pemeriksaan_add_test'])->name('master_test_pemeriksaan_add_test');
+    Route::post('master-test-pemeriksaan/save-test', [ApplicationController::class, 'master_test_pemeriksaan_save_test'])->name('master_test_pemeriksaan_save_test');
+    Route::post('master-test-pemeriksaan/import-test', [ApplicationController::class, 'master_test_pemeriksaan_import_test'])->name('master_test_pemeriksaan_import_test');
+    Route::post('master-test-pemeriksaan/import-test-save', [ApplicationController::class, 'master_test_pemeriksaan_import_test_save'])->name('master_test_pemeriksaan_import_test_save');
 
     Route::post('monitoring-mcu/detail/belum', [ApplicationController::class, 'monitoring_mcu_detail_belum'])->name('monitoring_mcu_detail_belum');
     Route::post('monitoring-mcu/detail/sudah', [ApplicationController::class, 'monitoring_mcu_detail_sudah'])->name('monitoring_mcu_detail_sudah');

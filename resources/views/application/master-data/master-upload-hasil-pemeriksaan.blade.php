@@ -50,6 +50,7 @@
                     <th>Nama Pasien / No Reg</th>
                     <th>Jenis Kelamin</th>
                     <th>Tanggal Lahir</th>
+                    <th>Pemeriksaan</th>
                     <th>Pengambilan Sample</th>
                     <th>Proses Sample</th>
                     <th>Status Hasil</th>
@@ -73,6 +74,16 @@
                         @endif
                     </td>
                     <td>{{ date("d-m-Y", strtotime($datas->monitoring_hasil_pasien_tgl_lahir)) }}</td>
+                    <td>
+                        @php
+                        $pemeriksaan = DB::table('monitoring_hasil_pemeriksaan')
+                        ->join('master_pemeriksaan','master_pemeriksaan.master_pemeriksaan_code','=','monitoring_hasil_pemeriksaan.master_pemeriksaan_code')
+                        ->where('monitoring_hasil_pasien_code',$datas->monitoring_hasil_pasien_code)->get();
+                        @endphp
+                        @foreach ($pemeriksaan as $pem)
+                        <li>{{ $pem->master_pemeriksaan_name }}</li>
+                        @endforeach
+                    </td>
                     <td>
                         @php
                         $kurir = DB::table('monitoring_hasil_kurir')->where('monitoring_hasil_pasien_code',$datas->monitoring_hasil_pasien_code)->first();

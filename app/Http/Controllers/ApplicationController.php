@@ -561,19 +561,24 @@ class ApplicationController extends Controller
     public function monitoring_hasil_save_pasien(Request $request)
     {
         try {
-            DB::table('monitoring_hasil_pasien')->insert([
-                'monitoring_hasil_pasien_code' => $request->token_registrasi,
-                'monitoring_hasil_pasien_nama' => $request->nama_lengkap,
-                'monitoring_hasil_pasien_tgl_lahir' => $request->tgl_lahir,
-                'monitoring_hasil_pasien_jk' => $request->jk,
-                'monitoring_hasil_pasien_nik' => $request->no_induk,
-                'monitoring_hasil_pasien_user' => Auth::user()->userid,
-                'monitoring_hasil_pasien_cabang' => 'PA',
-                'monitoring_hasil_pasien_status' => 0,
-                'monitoring_hasil_pasien_type' => 'LAB',
-                'created_at' => now()
-            ]);
-            return 1;
+            $cek = DB::table('monitoring_hasil_pemeriksaan')->where('monitoring_hasil_pasien_code', $request->token_registrasi)->count();
+            if ($cek == '0') {
+                return 0;
+            } else {
+                DB::table('monitoring_hasil_pasien')->insert([
+                    'monitoring_hasil_pasien_code' => $request->token_registrasi,
+                    'monitoring_hasil_pasien_nama' => $request->nama_lengkap,
+                    'monitoring_hasil_pasien_tgl_lahir' => $request->tgl_lahir,
+                    'monitoring_hasil_pasien_jk' => $request->jk,
+                    'monitoring_hasil_pasien_nik' => $request->no_induk,
+                    'monitoring_hasil_pasien_user' => Auth::user()->userid,
+                    'monitoring_hasil_pasien_cabang' => 'PA',
+                    'monitoring_hasil_pasien_status' => 0,
+                    'monitoring_hasil_pasien_type' => 'LAB',
+                    'created_at' => now()
+                ]);
+                return 1;
+            }
         } catch (\Throwable $e) {
             return 0;
         }
@@ -2349,10 +2354,12 @@ class ApplicationController extends Controller
             return redirect()->back()->withError('Failed! Gagal Menambahkan Data Pemeriksaan');
         }
     }
-    public function master_test_pemeriksaan_import_test(Request $request){
+    public function master_test_pemeriksaan_import_test(Request $request)
+    {
         return view('application.master-data.test-pemeriksaan.form-import-test');
     }
-    public function master_test_pemeriksaan_import_test_save(Request $request){
+    public function master_test_pemeriksaan_import_test_save(Request $request)
+    {
         Excel::import(new TestImport, request()->file('file'));
         return redirect()->back()->withSuccess('Great! Berhasil Imposrt Data Test');
     }

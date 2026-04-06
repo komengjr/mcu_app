@@ -321,8 +321,8 @@
                             location.reload();
                         } else {
                             swalWithBootstrapButtons.fire({
-                                title: "Cancelled",
-                                text: "Failed",
+                                title: "Gagal Menyimpan",
+                                text: "Pastikan Data Pemeriksaan Sudah terisi jangan sampai kosong ya",
                                 icon: "error"
                             });
                             $('#loading-button').html(

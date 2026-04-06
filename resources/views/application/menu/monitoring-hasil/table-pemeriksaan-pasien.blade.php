@@ -2,7 +2,7 @@
     <thead class="bg-200 text-700">
         <tr>
             <th>No</th>
-            <th>Nama Pemeriksaan</th>
+            <th>Nama Test Pemeriksaan</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -13,7 +13,7 @@
     @foreach ($data as $datas)
         <tr>
             <td>{{ $no++ }}</td>
-            <td>{{ $datas->master_pemeriksaan_name }}</td>
+            <td>{{ $datas->master_test_name }}</td>
             <td class="text-end"><button class="btn btn-danger" id="button-remove-pemeriksaan_pasien" data-code="{{ $datas->monitoring_hasil_pemeriksaan_code }}" data-reg="{{ $datas->monitoring_hasil_pasien_code }}"><span class="fas fa-trash"></span>Hapus</button></td>
         </tr>
     @endforeach

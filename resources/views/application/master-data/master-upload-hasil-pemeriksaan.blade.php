@@ -77,11 +77,11 @@
                     <td>
                         @php
                         $pemeriksaan = DB::table('monitoring_hasil_pemeriksaan')
-                        ->join('master_pemeriksaan','master_pemeriksaan.master_pemeriksaan_code','=','monitoring_hasil_pemeriksaan.master_pemeriksaan_code')
+                        ->join('master_test','master_test.master_test_code','=','monitoring_hasil_pemeriksaan.master_test_code')
                         ->where('monitoring_hasil_pasien_code',$datas->monitoring_hasil_pasien_code)->get();
                         @endphp
                         @foreach ($pemeriksaan as $pem)
-                        <li>{{ $pem->master_pemeriksaan_name }}</li>
+                        <li>{{ $pem->master_test_name }}</li>
                         @endforeach
                     </td>
                     <td>

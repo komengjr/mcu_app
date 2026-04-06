@@ -75,14 +75,14 @@
             <tbody>
                 @php
                 $no = 1;
-                $data = DB::table('monitoring_hasil_pemeriksaan')
-                ->join('master_pemeriksaan','master_pemeriksaan.master_pemeriksaan_code','=','monitoring_hasil_pemeriksaan.master_pemeriksaan_code')
+               $data = DB::table('monitoring_hasil_pemeriksaan')
+                ->join('master_test','master_test.master_test_code','=','monitoring_hasil_pemeriksaan.master_test_code')
                 ->where('monitoring_hasil_pasien_code',$cek->monitoring_hasil_pasien_code)->get();
                 @endphp
                 @foreach ($data as $datas)
                 <tr>
                     <td>{{ $no++ }}</td>
-                    <td>{{ $datas->master_pemeriksaan_name }}</td>
+                    <td>{{ $datas->master_test_name }}</td>
                     <td class="text-center">
                         @if ($datas->monitoring_hasil_pemeriksaan_status == '0')
                         <span class="badge bg-danger">Belum</span>
@@ -212,13 +212,13 @@
                 @php
                 $no = 1;
                 $data = DB::table('monitoring_hasil_pemeriksaan')
-                ->join('master_pemeriksaan','master_pemeriksaan.master_pemeriksaan_code','=','monitoring_hasil_pemeriksaan.master_pemeriksaan_code')
+                ->join('master_test','master_test.master_test_code','=','monitoring_hasil_pemeriksaan.master_test_code')
                 ->where('monitoring_hasil_pasien_code',$cek->monitoring_hasil_pasien_code)->get();
                 @endphp
                 @foreach ($data as $datas)
                 <tr>
                     <td>{{ $no++ }}</td>
-                    <td>{{ $datas->master_pemeriksaan_name }}</td>
+                    <td>{{ $datas->master_test_name }}</td>
                     <td class="text-center">
                         @if ($datas->monitoring_hasil_pemeriksaan_status == '0')
                         <span class="badge bg-danger">Belum</span>

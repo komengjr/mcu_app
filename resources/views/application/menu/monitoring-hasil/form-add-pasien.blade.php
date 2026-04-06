@@ -38,7 +38,7 @@
                 <select name="data_pemeriksaan" class="form-control choices-single-pemeriksaan" id="data_pemeriksaan">
                     <option value="">Pilih Pemeriksaan</option>
                     @foreach ($pemeriksaan as $pem)
-                    <option value="{{ $pem->master_pemeriksaan_code }}">{{ $pem->master_pemeriksaan_name }}</option>
+                    <option value="{{ $pem->master_test_code }}">{{ $pem->master_test_name }}</option>
                     @endforeach
                 </select>
             </div>

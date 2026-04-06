@@ -525,7 +525,7 @@ class ApplicationController extends Controller
     }
     public function monitoring_hasil_add_pasien(Request $request)
     {
-        $pemeriksaan = DB::table('master_pemeriksaan')->get();
+        $pemeriksaan = DB::table('master_test')->get();
         $token = str::uuid();
         return view('application.menu.monitoring-hasil.form-add-pasien', compact('pemeriksaan'), ['token' => $token]);
     }
@@ -535,12 +535,12 @@ class ApplicationController extends Controller
             DB::table('monitoring_hasil_pemeriksaan')->insert([
                 'monitoring_hasil_pemeriksaan_code' => str::uuid(),
                 'monitoring_hasil_pasien_code' => $request->data_registrasi,
-                'master_pemeriksaan_code' => $request->data_pemeriksaan,
+                'master_test_code' => $request->data_pemeriksaan,
                 'monitoring_hasil_pemeriksaan_status' => 0,
                 'created_at' => now(),
             ]);
             $data = DB::table('monitoring_hasil_pemeriksaan')
-                ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'monitoring_hasil_pemeriksaan.master_pemeriksaan_code')
+                ->join('master_test', 'master_test.master_test_code', '=', 'monitoring_hasil_pemeriksaan.master_test_code')
                 ->where('monitoring_hasil_pasien_code', $request->data_registrasi)->get();
             return view('application.menu.monitoring-hasil.table-pemeriksaan-pasien', compact('data'));
         } catch (\Throwable $e) {
@@ -553,7 +553,7 @@ class ApplicationController extends Controller
         DB::table('monitoring_hasil_pemeriksaan')
             ->where('monitoring_hasil_pemeriksaan_code', $request->code)->delete();
         $data = DB::table('monitoring_hasil_pemeriksaan')
-            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'monitoring_hasil_pemeriksaan.master_pemeriksaan_code')
+            ->join('master_test', 'master_test.master_test_code', '=', 'monitoring_hasil_pemeriksaan.master_test_code')
             ->where('monitoring_hasil_pasien_code', $request->reg)->get();
         return view('application.menu.monitoring-hasil.table-pemeriksaan-pasien', compact('data'));
     }

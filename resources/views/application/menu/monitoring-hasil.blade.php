@@ -79,11 +79,18 @@
                     <td>
                         @php
                         $pemeriksaan = DB::table('monitoring_hasil_pemeriksaan')
-                       ->join('master_test', 'master_test.master_test_code', '=', 'monitoring_hasil_pemeriksaan.master_test_code')
+                        ->join('master_test', 'master_test.master_test_code', '=', 'monitoring_hasil_pemeriksaan.master_test_code')
                         ->where('monitoring_hasil_pasien_code',$datas->monitoring_hasil_pasien_code)->get();
                         @endphp
                         @foreach ($pemeriksaan as $pem)
-                        <li>{{ $pem->master_test_name }}</li>
+                        <li>
+                            {{ $pem->master_test_name }}
+                            @if ($pem->monitoring_hasil_pemeriksaan_status == "0")
+                            <span class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="right" title="Belum Selesai"><i class="fas fa-window-close"></i></span>
+                            @else
+                            <span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Selesai"><i class="fas fa-check-square"></i></span>
+                            @endif
+                        </li>
                         @endforeach
                     </td>
                     <td>
@@ -322,7 +329,7 @@
                         } else {
                             swalWithBootstrapButtons.fire({
                                 title: "Gagal Menyimpan",
-                                text: "Pastikan Data Pemeriksaan Sudah terisi jangan sampai kosong ya",
+                                text: "Pastikan Data Pemeriksaan Sudah terisi jangan sampai kosong yaa",
                                 icon: "error"
                             });
                             $('#loading-button').html(

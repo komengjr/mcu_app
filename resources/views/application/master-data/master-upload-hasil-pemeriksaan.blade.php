@@ -81,7 +81,14 @@
                         ->where('monitoring_hasil_pasien_code',$datas->monitoring_hasil_pasien_code)->get();
                         @endphp
                         @foreach ($pemeriksaan as $pem)
-                        <li>{{ $pem->master_test_name }}</li>
+                        <li>
+                            {{ $pem->master_test_name }}
+                            @if ($pem->monitoring_hasil_pemeriksaan_status == "0")
+                            <span class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="right" title="Belum Selesai"><i class="fas fa-window-close"></i></span>
+                            @else
+                            <span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Selesai"><i class="fas fa-check-square"></i></span>
+                            @endif
+                        </li>
                         @endforeach
                     </td>
                     <td>
@@ -165,25 +172,27 @@
             $('#menu-mcu').html('eror');
         });
     });
-    $(document).on("click", "#button-edit-pemeriksaan", function(e) {
+    $(document).on("click", "#button-verif-test-pemeriksaan", function(e) {
         e.preventDefault();
         var code = $(this).data("code");
-        $('#menu-pemeriksaan').html(
+        var reg = $(this).data("reg");
+        $('#menu-verifikasi-test-pemeriksaan').html(
             '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
         );
         $.ajax({
-            url: "{{ route('master_pemeriksaan_update') }}",
+            url: "{{ route('master_upload_hasil_pemeriksaan_detail_verif') }}",
             type: "POST",
             cache: false,
             data: {
                 "_token": "{{ csrf_token() }}",
-                "code": code
+                "code": code,
+                "reg": reg
             },
             dataType: 'html',
         }).done(function(data) {
-            $('#menu-pemeriksaan').html(data);
+            $('#menu-verifikasi-test-pemeriksaan').html(data);
         }).fail(function() {
-            $('#menu-pemeriksaan').html('eror');
+            $('#menu-verifikasi-test-pemeriksaan').html('eror');
         });
     });
 </script>

@@ -80,6 +80,7 @@ Route::prefix('application')->group(function () {
     Route::post('master-upload-hasil-pemeriksaan/detail-pasien/proses', [ApplicationController::class, 'master_upload_hasil_pemeriksaan_detail_proses'])->name('master_upload_hasil_pemeriksaan_detail_proses');
     Route::post('master-upload-hasil-pemeriksaan/detail-pasien/proses_upload', [UploadFileController::class, 'master_upload_hasil_pemeriksaan_detail_proses_upload'])->name('master_upload_hasil_pemeriksaan_detail_proses_upload');
     Route::post('master-upload-hasil-pemeriksaan/detail-pasien/verif-test', [ApplicationController::class, 'master_upload_hasil_pemeriksaan_detail_verif'])->name('master_upload_hasil_pemeriksaan_detail_verif');
+    Route::post('master-upload-hasil-pemeriksaan/detail-pasien/unverif-test', [ApplicationController::class, 'master_upload_hasil_pemeriksaan_detail_unverif'])->name('master_upload_hasil_pemeriksaan_detail_unverif');
     // MASTER TEST
     Route::post('master-test-pemeriksaan/add-test', [ApplicationController::class, 'master_test_pemeriksaan_add_test'])->name('master_test_pemeriksaan_add_test');
     Route::post('master-test-pemeriksaan/save-test', [ApplicationController::class, 'master_test_pemeriksaan_save_test'])->name('master_test_pemeriksaan_save_test');

@@ -2334,6 +2334,14 @@ class ApplicationController extends Controller
         ]);
         return view('application.master-data.upload-hasil.table-verif-test', ['reg' => $request->reg]);
     }
+    public function master_upload_hasil_pemeriksaan_detail_unverif(Request $request)
+    {
+        DB::table('monitoring_hasil_pemeriksaan')->where('monitoring_hasil_pemeriksaan_code', $request->code)->update([
+            'monitoring_hasil_pemeriksaan_status' => 0,
+            'updated_at' => now()
+        ]);
+        return view('application.master-data.upload-hasil.table-verif-test', ['reg' => $request->reg]);
+    }
     // MASTER TEST PEMERIKSAAN
     public function master_test_pemeriksaan($akses)
     {

@@ -195,6 +195,29 @@
             $('#menu-verifikasi-test-pemeriksaan').html('eror');
         });
     });
+    $(document).on("click", "#button-unverif-test-pemeriksaan", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        var reg = $(this).data("reg");
+        $('#menu-verifikasi-test-pemeriksaan').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('master_upload_hasil_pemeriksaan_detail_unverif') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code,
+                "reg": reg
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-verifikasi-test-pemeriksaan').html(data);
+        }).fail(function() {
+            $('#menu-verifikasi-test-pemeriksaan').html('eror');
+        });
+    });
 </script>
 <script>
     $(document).on("click", "#button-proses-data-pasien", function(e) {

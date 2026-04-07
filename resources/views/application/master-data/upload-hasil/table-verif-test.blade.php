@@ -28,9 +28,8 @@
             <td class="text-center">
                 @if ($datas->monitoring_hasil_pemeriksaan_status == '0')
                 <button class="btn btn-dark btn-sm" id="button-verif-test-pemeriksaan" data-code="{{ $datas->monitoring_hasil_pemeriksaan_code }}" data-reg="{{ $datas->monitoring_hasil_pasien_code }}">Verif</button>
-
                 @else
-                <button class="btn btn-primary btn-sm" disabled>Done</button>
+                <button class="btn btn-dark btn-sm" id="button-unverif-test-pemeriksaan" data-code="{{ $datas->monitoring_hasil_pemeriksaan_code }}" data-reg="{{ $datas->monitoring_hasil_pasien_code }}">Unverif</button>
                 @endif
             </td>
         </tr>

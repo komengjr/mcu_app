@@ -8,7 +8,7 @@
             @csrf
             <div class="col-md-12">
                 <label class="form-label" for="inputAddress">Nama Lengkap <small class="text-danger">Wajib diisi</small></label>
-                <input class="form-control" id="nama_lengkap" type="text" name="nama_lengkap" placeholder="Jhon Doe Example"
+                <input class="form-control" id="nama_lengkap" type="text" name="nama_lengkap" placeholder="Jhon Doe Example" style="text-transform: uppercase;"
                     required />
                 <input type="text" name="token_registrasi" value="{{ $token }}" id="token_registrasi" hidden>
             </div>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\dashboardController;
+use App\Http\Controllers\GatewayController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\SignaturePadController;
 use App\Http\Controllers\UploadFileController;
@@ -63,6 +64,8 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('laporan-rekap-mcu', [ApplicationController::class, 'laporan_rekap_mcu'])->name('laporan_rekap_mcu');
     Route::get('laporan/laporan-data-kehadiran', [ApplicationController::class, 'laporan_data_kehadiran'])->name('laporan_data_kehadiran');
     Route::get('aplikasi', [ApplicationController::class, 'aplikasi_app'])->name('aplikasi_app');
+
+    Route::get('gateway/pengiriman-notifikasi', [GatewayController::class, 'gateway_pengiriman_notifikasi'])->name('gateway_pengiriman_notifikasi');
 });
 Route::prefix('application')->group(function () {
     // MONITORING MCU
@@ -75,6 +78,7 @@ Route::prefix('application')->group(function () {
     Route::post('monitoring-hasil/remove-pemeriksaan', [ApplicationController::class, 'monitoring_hasil_remove_pemeriksaan'])->name('monitoring_hasil_remove_pemeriksaan');
     Route::post('monitoring-hasil/save-pasien', [ApplicationController::class, 'monitoring_hasil_save_pasien'])->name('monitoring_hasil_save_pasien');
     Route::post('monitoring-hasil/detail-pasien', [ApplicationController::class, 'monitoring_hasil_detail_pasien'])->name('monitoring_hasil_detail_pasien');
+    Route::post('monitoring-hasil/order-kurir', [ApplicationController::class, 'monitoring_hasil_order_kurir'])->name('monitoring_hasil_order_kurir');
     // UPLOAD HASIL
     Route::post('master-upload-hasil-pemeriksaan/detail-pasien', [ApplicationController::class, 'master_upload_hasil_pemeriksaan_detail'])->name('master_upload_hasil_pemeriksaan_detail');
     Route::post('master-upload-hasil-pemeriksaan/detail-pasien/proses', [ApplicationController::class, 'master_upload_hasil_pemeriksaan_detail_proses'])->name('master_upload_hasil_pemeriksaan_detail_proses');
@@ -227,6 +231,14 @@ Route::prefix('application')->group(function () {
     Route::get('laporan-rekap-mcu/kehadiran-peserta-mcu/export-excel/{id}', [ApplicationController::class, 'laporan_rekap_excel_mcu_kehadiran_peserta_mcu'])->name('laporan_rekap_excel_mcu_kehadiran_peserta_mcu');
 
     Route::get('laporan/laporan-data-kehadiran/preview/{code}', [ApplicationController::class, 'laporan_data_kehadiran_preview'])->name('laporan_data_kehadiran_preview');
+
+    // GATEWAY
+    Route::post('gateway/pengiriman-notifikasi/add-penerima', [GatewayController::class, 'gateway_pengiriman_notifikasi_add_penerima'])->name('gateway_pengiriman_notifikasi_add_penerima');
+    Route::post('gateway/pengiriman-notifikasi/save-penerima', [GatewayController::class, 'gateway_pengiriman_notifikasi_save_penerima'])->name('gateway_pengiriman_notifikasi_save_penerima');
+    Route::post('gateway/pengiriman-notifikasi/data-penerima', [GatewayController::class, 'gateway_pengiriman_notifikasi_data_penerima'])->name('gateway_pengiriman_notifikasi_data_penerima');
+    Route::post('gateway/pengiriman-notifikasi/add-aktifitas', [GatewayController::class, 'gateway_pengiriman_notifikasi_add_aktifitas'])->name('gateway_pengiriman_notifikasi_add_aktifitas');
+    Route::post('gateway/pengiriman-notifikasi/save-aktifitas', [GatewayController::class, 'gateway_pengiriman_notifikasi_save_aktifitas'])->name('gateway_pengiriman_notifikasi_save_aktifitas');
+    Route::post('gateway/pengiriman-notifikasi/proses-aktifitas', [GatewayController::class, 'gateway_pengiriman_notifikasi_proses_aktifitas'])->name('gateway_pengiriman_notifikasi_proses_aktifitas');
 });
 
 Route::prefix('master-data')->group(function () {
@@ -267,6 +279,9 @@ Route::post('signaturepad-pilih-pemeriksaan', [SignaturePadController::class, 's
 Route::post('signaturepad-update-pemeriksaan', [SignaturePadController::class, 'update_pemeriksaan'])->name('signaturepad.update_pemeriksaan');
 Route::post('signaturepad-update-pemeriksaan-save', [SignaturePadController::class, 'update_pemeriksaan_save'])->name('signaturepad.update_pemeriksaan_save');
 Route::post('signaturepad-update-save', [SignaturePadController::class, 'save_signiture'])->name('signaturepad.save_signiture');
+
+
+Route::get('notifikasi', [SignaturePadController::class, 'notifikasi'])->name('notifikasi');
 
 
 

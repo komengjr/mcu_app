@@ -22,5 +22,7 @@ Route::prefix('gateway')->group(function () {
     Route::get('email', [ApiController::class, 'gateway_email'])->name('gateway_email');
     Route::get('whatsapp/check/{cabang}', [ApiController::class, 'gateway_whatsapp'])->name('gateway_whatsapp');
     Route::get('whatsapp/verify/{id}', [ApiController::class, 'verify_gateway_whatsapp'])->name('verify_gateway_whatsapp');
+    Route::get('whatsapp/monitoring/{cabang}', [ApiController::class, 'gateway_whatsapp_monitoring'])->name('gateway_whatsapp_monitoring');
+    Route::get('whatsapp/monitoring-verif/{id}', [ApiController::class, 'gateway_whatsapp_monitoring_verif'])->name('gateway_whatsapp_monitoring_verif');
     // Route::post('setup-notification', [DashboardController::class, 'dashboard_setup_notification'])->name('dashboard_setup_notification');
 });

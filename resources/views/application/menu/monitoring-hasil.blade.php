@@ -37,8 +37,10 @@
             </div>
             <div class="col-auto">
                 <div class="btn-group" role="group">
-                    <button class="btn btn-sm btn-falcon-primary" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
+                    <button class="btn btn-sm btn-falcon-primary me-2" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
                         id="button-add-pasien" data-code="123"><span class="far fa-edit"></span> Order Pasien</button>
+                    <button class="btn btn-sm btn-falcon-primary" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
+                        id="button-order-kurir" data-code="123"><span class="fas fa-qrcode"></span> Order Kurir</button>
                 </div>
             </div>
         </div>
@@ -180,6 +182,27 @@
         );
         $.ajax({
             url: "{{ route('monitoring_hasil_add_pasien') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-mcu-xl').html(data);
+        }).fail(function() {
+            $('#menu-mcu-xl').html('eror');
+        });
+    });
+    $(document).on("click", "#button-order-kurir", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        $('#menu-mcu-xl').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('monitoring_hasil_order_kurir') }}",
             type: "POST",
             cache: false,
             data: {

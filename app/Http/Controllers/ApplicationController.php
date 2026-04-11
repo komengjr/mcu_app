@@ -588,6 +588,10 @@ class ApplicationController extends Controller
         $order = DB::table('monitoring_hasil_pasien')->where('monitoring_hasil_pasien_code', $request->code)->first();
         return view('application.menu.monitoring-hasil.form-detail-pasien', ['order' => $order]);
     }
+    public function monitoring_hasil_order_kurir(Request $request){
+        $data = DB::table
+        return view('application.menu.monitoring-hasil.form-order-kurir');
+    }
     // MCU
     public function medical_check_up($akses)
     {

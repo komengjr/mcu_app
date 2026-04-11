@@ -232,4 +232,7 @@ class SignaturePadController extends Controller
             return 0;
         }
     }
+    public function notifikasi(){
+        return view('notifikasi');
+    }
 }

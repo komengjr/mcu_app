@@ -30,10 +30,23 @@ class ApiController extends Controller
         $pesan = DB::table('message_wa_mcu')->where('message_wa_mcu_cabang', $cabang)->where('message_wa_mcu_status', 0)->first();
         return response()->json($pesan);
     }
+
     public function verify_gateway_whatsapp($id)
     {
         DB::table('message_wa_mcu')->where('message_wa_mcu_code', $id)->update([
             'message_wa_mcu_status' => 1,
+            'updated_at' => now()
+        ]);
+    }
+    public function gateway_whatsapp_monitoring($cabang)
+    {
+        $pesan = DB::table('gateway_sender')->where('gateway_sender_cabang', $cabang)->where('gateway_sender_status', 0)->first();
+        return response()->json($pesan);
+    }
+    public function gateway_whatsapp_monitoring_verif($id)
+    {
+        DB::table('gateway_sender')->where('gateway_sender_code', $id)->update([
+            'gateway_sender_status' => 1,
             'updated_at' => now()
         ]);
     }

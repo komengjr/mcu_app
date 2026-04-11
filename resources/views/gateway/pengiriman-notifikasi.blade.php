@@ -301,6 +301,27 @@
             $('#menu-gateway').html('eror');
         });
     });
+    $(document).on("click", "#button-edit-data-penerima", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        $('#menu-data-penerima-notifikasi').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('gateway_pengiriman_notifikasi_edit_data_penerima') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-data-penerima-notifikasi').html(data);
+        }).fail(function() {
+            $('#menu-data-penerima-notifikasi').html('eror');
+        });
+    });
     $(document).on("click", "#button-tambah-aktifitas", function(e) {
         e.preventDefault();
         var code = $(this).data("code");

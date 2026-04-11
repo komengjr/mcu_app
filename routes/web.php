@@ -236,6 +236,8 @@ Route::prefix('application')->group(function () {
     Route::post('gateway/pengiriman-notifikasi/add-penerima', [GatewayController::class, 'gateway_pengiriman_notifikasi_add_penerima'])->name('gateway_pengiriman_notifikasi_add_penerima');
     Route::post('gateway/pengiriman-notifikasi/save-penerima', [GatewayController::class, 'gateway_pengiriman_notifikasi_save_penerima'])->name('gateway_pengiriman_notifikasi_save_penerima');
     Route::post('gateway/pengiriman-notifikasi/data-penerima', [GatewayController::class, 'gateway_pengiriman_notifikasi_data_penerima'])->name('gateway_pengiriman_notifikasi_data_penerima');
+    Route::post('gateway/pengiriman-notifikasi/edit-data-penerima', [GatewayController::class, 'gateway_pengiriman_notifikasi_edit_data_penerima'])->name('gateway_pengiriman_notifikasi_edit_data_penerima');
+    Route::post('gateway/pengiriman-notifikasi/save-data-penerima', [GatewayController::class, 'gateway_pengiriman_notifikasi_save_data_penerima'])->name('gateway_pengiriman_notifikasi_save_data_penerima');
     Route::post('gateway/pengiriman-notifikasi/add-aktifitas', [GatewayController::class, 'gateway_pengiriman_notifikasi_add_aktifitas'])->name('gateway_pengiriman_notifikasi_add_aktifitas');
     Route::post('gateway/pengiriman-notifikasi/save-aktifitas', [GatewayController::class, 'gateway_pengiriman_notifikasi_save_aktifitas'])->name('gateway_pengiriman_notifikasi_save_aktifitas');
     Route::post('gateway/pengiriman-notifikasi/proses-aktifitas', [GatewayController::class, 'gateway_pengiriman_notifikasi_proses_aktifitas'])->name('gateway_pengiriman_notifikasi_proses_aktifitas');

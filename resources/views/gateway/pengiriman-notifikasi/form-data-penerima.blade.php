@@ -3,7 +3,7 @@
         <h4 style="color: white;" class="mb-1" id="staticBackdropLabel">Data Penerima Notifikasi</h4>
         <p class="fs--2 mb-0">Support by <a class="link-600 fw-semi-bold" href="#!">Transforma</a></p>
     </div>
-    <div class="p-4">
+    <div class="p-4" id="menu-data-penerima-notifikasi">
         <table id="data-penerima" class="table table-striped" style="width:100%">
             <thead class="bg-200 text-700">
                 <tr>
@@ -24,7 +24,9 @@
                     <td>{{ $datas->gateway_penerima_name }}</td>
                     <td>{{ $datas->gateway_penerima_jk }}</td>
                     <td>{{ $datas->gateway_penerima_no_hp }}</td>
-                    <td></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" id="button-edit-data-penerima" data-code="{{ $datas->gateway_penerima_code }}">Edit</button>
+                    </td>
                 </tr>
             @endforeach
             </tbody>

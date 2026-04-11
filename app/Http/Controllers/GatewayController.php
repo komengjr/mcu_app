@@ -95,6 +95,20 @@ class GatewayController extends Controller
         $data = DB::table('gateway_penerima')->where('gateway_penerima_cabang', Auth::user()->access_cabang)->get();
         return view('gateway.pengiriman-notifikasi.form-data-penerima', compact('data'));
     }
+    public function gateway_pengiriman_notifikasi_edit_data_penerima(Request $request)
+    {
+        $data = DB::table('gateway_penerima')->where('gateway_penerima_code', $request->code)->first();
+        return view('gateway.pengiriman-notifikasi.update-data-penerima', ['data' => $data]);
+    }
+    public function gateway_pengiriman_notifikasi_save_data_penerima(Request $request)
+    {
+        DB::table('gateway_penerima')->where('gateway_penerima_code', $request->code)->update([
+            'gateway_penerima_name' => $request->nama_lengkap,
+            'gateway_penerima_no_hp' => $request->no_hp,
+            'gateway_penerima_jk' => $request->jk,
+        ]);
+        return redirect()->back()->withSuccess('Great! Berhasil Update Data Penerima');
+    }
     public function gateway_pengiriman_notifikasi_add_aktifitas(Request $request)
     {
         return view('gateway.pengiriman-notifikasi.form-add-aktifitas');

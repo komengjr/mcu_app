@@ -49,6 +49,7 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('home', [ApplicationController::class, 'home'])->name('home');
     Route::get('monitoring-mcu', [ApplicationController::class, 'monitoring_mcu'])->name('monitoring_mcu');
     Route::get('monitoring-hasil', [ApplicationController::class, 'monitoring_hasil'])->name('monitoring_hasil');
+    Route::get('registrasi-pasien', [ApplicationController::class, 'registrasi_pasien'])->name('registrasi_pasien');
     Route::get('medical-check-up', [ApplicationController::class, 'medical_check_up'])->name('medical_check_up');
     Route::get('menu-service', [ApplicationController::class, 'menu_service'])->name('menu_service');
     Route::get('menu-pengiriman', [ApplicationController::class, 'menu_pengiriman'])->name('menu_pengiriman');
@@ -79,7 +80,12 @@ Route::prefix('application')->group(function () {
     Route::post('monitoring-hasil/save-pasien', [ApplicationController::class, 'monitoring_hasil_save_pasien'])->name('monitoring_hasil_save_pasien');
     Route::post('monitoring-hasil/detail-pasien', [ApplicationController::class, 'monitoring_hasil_detail_pasien'])->name('monitoring_hasil_detail_pasien');
     Route::post('monitoring-hasil/order-kurir', [ApplicationController::class, 'monitoring_hasil_order_kurir'])->name('monitoring_hasil_order_kurir');
+    // REGISTRASI PASIEN
+    Route::post('registrasi-pasien/add-data', [ApplicationController::class, 'registrasi_pasien_add_data'])->name('registrasi_pasien_add_data');
+    Route::post('registrasi-pasien/save-data', [ApplicationController::class, 'registrasi_pasien_save_data'])->name('registrasi_pasien_save_data');
     // UPLOAD HASIL
+    Route::post('master-upload-hasil-pemeriksaan/import/pasien-lama', [ApplicationController::class, 'master_upload_hasil_import_pasien_lama'])->name('master_upload_hasil_import_pasien_lama');
+    Route::post('master-upload-hasil-pemeriksaan/import/pasien-lama-save', [ApplicationController::class, 'master_upload_hasil_import_pasien_lama_save'])->name('master_upload_hasil_import_pasien_lama_save');
     Route::post('master-upload-hasil-pemeriksaan/detail-pasien', [ApplicationController::class, 'master_upload_hasil_pemeriksaan_detail'])->name('master_upload_hasil_pemeriksaan_detail');
     Route::post('master-upload-hasil-pemeriksaan/detail-pasien/proses', [ApplicationController::class, 'master_upload_hasil_pemeriksaan_detail_proses'])->name('master_upload_hasil_pemeriksaan_detail_proses');
     Route::post('master-upload-hasil-pemeriksaan/detail-pasien/proses_upload', [UploadFileController::class, 'master_upload_hasil_pemeriksaan_detail_proses_upload'])->name('master_upload_hasil_pemeriksaan_detail_proses_upload');

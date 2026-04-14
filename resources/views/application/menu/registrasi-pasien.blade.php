@@ -2,6 +2,7 @@
 @section('base.css')
 <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.4/css/responsive.bootstrap5.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.4/css/buttons.dataTables.css">
 <link href="{{ asset('vendors/choices/choices.min.css') }}" rel="stylesheet" />
 @endsection
 @section('content')
@@ -13,7 +14,7 @@
                     <img class="ms-3 mx-3" src="{{ asset('img/company.png') }}" alt="" width="50" />
                     <div>
                         <h6 class="text-danger fs--1 mb-0 pt-2">Welcome to </h6>
-                        <h4 class="text-danger fw-bold mb-1">Management <span class="text-danger fw-medium">
+                        <h4 class="text-danger fw-bold mb-1">Management<span class="text-danger fw-medium">
                                 System</span></h4>
                     </div>
                     <img class="ms-n4 d-none d-lg-block "
@@ -21,7 +22,7 @@
                 </div>
                 <div class="col-xl-auto px-3 py-2">
                     <h6 class="text-danger fs--1 mb-0">Menu : </h6>
-                    <h4 class="text-danger fw-bold mb-0">Upload <span class="text-danger fw-medium">Hasil</span>
+                    <h4 class="text-danger fw-bold mb-0">Medical <span class="text-danger fw-medium">Monitoring Hasil</span>
                     </h4>
                 </div>
             </div>
@@ -32,22 +33,14 @@
     <div class="card-header bg-danger">
         <div class="row align-items-center">
             <div class="col">
-                <h3 class="m-0"><span class="badge bg-danger m-0 p-0">Upload Hasil</span></h3>
+                <h3 class="m-0"><span class="badge bg-danger m-0 p-0">List Pasien</span></h3>
             </div>
             <div class="col-auto">
                 <div class="btn-group" role="group">
-                    <button class="btn btn-sm btn-falcon-primary dropdown-toggle" id="btnGroupVerticalDrop2"
-                        type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
-                            class="fas fa-align-left me-1" data-fa-transform="shrink-3"></span>Menu Master</button>
-                    <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
-                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu"
-                            id="button-import-pasien-lama" data-code="123"><span class="far fa-edit"></span>
-                            Import Pasien Lama</button>
-                        <div class="dropdown-divider"></div>
-                        <!-- <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-cabang"
-                            id="button-data-barang-cabang" data-code="123"><span class="far fa-folder-open"></span>
-                            History</button> -->
-                    </div>
+                    <button class="btn btn-sm btn-falcon-primary me-2" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
+                        id="button-registrasi-pasien" data-code="123"><span class="far fa-edit"></span> Registrasi Pasien</button>
+                    <button class="btn btn-sm btn-falcon-primary" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl"
+                        id="button-order-kurir" data-code="123"><span class="fas fa-qrcode"></span> Order Kurir</button>
                 </div>
             </div>
         </div>
@@ -57,13 +50,13 @@
             <thead class="bg-200 text-700">
                 <tr>
                     <th>No</th>
-                    <th>Rujukan</th>
                     <th>Nama Pasien / No Reg</th>
                     <th>Jenis Kelamin</th>
                     <th>Tanggal Lahir</th>
+                    <th>Tanggal Order</th>
                     <th>Pemeriksaan</th>
                     <th>Pengambilan Sample</th>
-                    <th>Proses Sample</th>
+                    <th>Tanggal Proses Sample</th>
                     <th>Status Hasil</th>
                     <th>Action</th>
                 </tr>
@@ -75,7 +68,6 @@
                 @foreach ($data as $datas)
                 <tr>
                     <td>{{ $no++ }}</td>
-                    <td>{{ $datas->fullname }} <br><span class="badge bg-primary">{{ date("d-m-Y H:i:s", strtotime($datas->created_at)) }}</span></td>
                     <td>{{ $datas->monitoring_hasil_pasien_nama }} <br><span class="badge bg-primary">{{ $datas->monitoring_hasil_pasien_reg }}</span></td>
                     <td>
                         @if ($datas->monitoring_hasil_pasien_jk == "L")
@@ -85,10 +77,11 @@
                         @endif
                     </td>
                     <td>{{ date("d-m-Y", strtotime($datas->monitoring_hasil_pasien_tgl_lahir)) }}</td>
+                    <td>{{ date("d-m-Y H:i:s", strtotime($datas->created_at)) }}</td>
                     <td>
                         @php
                         $pemeriksaan = DB::table('monitoring_hasil_pemeriksaan')
-                        ->join('master_test','master_test.master_test_code','=','monitoring_hasil_pemeriksaan.master_test_code')
+                        ->join('master_test', 'master_test.master_test_code', '=', 'monitoring_hasil_pemeriksaan.master_test_code')
                         ->where('monitoring_hasil_pasien_code',$datas->monitoring_hasil_pasien_code)->get();
                         @endphp
                         @foreach ($pemeriksaan as $pem)
@@ -108,7 +101,7 @@
                         @endphp
                         @if ($kurir)
                         {{ $kurir->monitoring_hasil_kurir_name }} <br>
-                        {{ date("d-m-Y H:i:s", strtotime($kurir->monitoring_hasil_kurir_date )) }}
+                        <small>{{ date("d-m-Y H:i:s", strtotime($kurir->monitoring_hasil_kurir_date)) }}</small>
                         @endif
                     </td>
                     <td>
@@ -140,7 +133,7 @@
 @section('base.js')
 <div class="modal fade" id="modal-mcu" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="false">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document" style="max-width: 95%;">
         <div class="modal-content border-0">
             <div class="position-absolute top-0 end-0 mt-3 me-3 z-index-1">
                 <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base"
@@ -150,26 +143,45 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="modal-mcu-xl" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content border-0">
+            <div class="position-absolute top-0 end-0 mt-3 me-3 z-index-1">
+                <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="menu-mcu-xl"></div>
+        </div>
+    </div>
+</div>
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
 <script src="https://cdn.datatables.net/responsive/3.0.4/js/dataTables.responsive.js"></script>
 <script src="https://cdn.datatables.net/responsive/3.0.4/js/responsive.bootstrap5.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.4/js/dataTables.buttons.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.4/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.4/js/buttons.print.min.js"></script>
 <script src="{{ asset('vendors/choices/choices.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     new DataTable('#example', {
         responsive: true
     });
 </script>
 <script>
-    $(document).on("click", "#button-import-pasien-lama", function(e) {
+    $(document).on("click", "#button-registrasi-pasien", function(e) {
         e.preventDefault();
         var code = $(this).data("code");
-        $('#menu-mcu').html(
+        $('#menu-mcu-xl').html(
             '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
         );
         $.ajax({
-            url: "{{ route('master_upload_hasil_import_pasien_lama') }}",
+            url: "{{ route('registrasi_pasien_add_data') }}",
             type: "POST",
             cache: false,
             data: {
@@ -178,9 +190,30 @@
             },
             dataType: 'html',
         }).done(function(data) {
-            $('#menu-mcu').html(data);
+            $('#menu-mcu-xl').html(data);
         }).fail(function() {
-            $('#menu-mcu').html('eror');
+            $('#menu-mcu-xl').html('eror');
+        });
+    });
+    $(document).on("click", "#button-order-kurir", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        $('#menu-mcu-xl').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('monitoring_hasil_order_kurir') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-mcu-xl').html(data);
+        }).fail(function() {
+            $('#menu-mcu-xl').html('eror');
         });
     });
     $(document).on("click", "#button-detail-order-pasien", function(e) {
@@ -190,7 +223,7 @@
             '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
         );
         $.ajax({
-            url: "{{ route('master_upload_hasil_pemeriksaan_detail') }}",
+            url: "{{ route('monitoring_hasil_detail_pasien') }}",
             type: "POST",
             cache: false,
             data: {
@@ -204,15 +237,53 @@
             $('#menu-mcu').html('eror');
         });
     });
-    $(document).on("click", "#button-verif-test-pemeriksaan", function(e) {
+    $(document).on("click", "#button-pilih-pemeriksaan-pasien", function(e) {
+        e.preventDefault();
+        var data_registrasi = document.getElementById('token_registrasi').value;
+        var data_pemeriksaan = document.getElementById('data_pemeriksaan').value;
+        const nama = document.getElementById('nama_lengkap').value;
+        const tgl_lahir = document.getElementById('tgl_lahir').value;
+        const jk = document.getElementById('jk').value;
+        if (nama == "" || tgl_lahir == "" || jk == "" || data_pemeriksaan == "") {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Nama , Jenis Kelamin dan Tanggal Lahir Isi Terlebih dahulu",
+                footer: "<a href=\"#\">Why do I have this issue?</a>"
+            });
+            $('#loading-button').html(
+                '<button class="btn btn-primary" type="button" id="button-save-data-pasien"><span class="fas fa-save"></span> Simpan & Kirim</button>'
+            );
+        } else {
+            $('#table-pemeriksaan-pasien').html(
+                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            );
+            $.ajax({
+                url: "{{ route('monitoring_hasil_save_pemeriksaan') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "data_registrasi": data_registrasi,
+                    "data_pemeriksaan": data_pemeriksaan
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#table-pemeriksaan-pasien').html(data);
+            }).fail(function() {
+                $('#table-pemeriksaan-pasien').html('eror');
+            });
+        }
+    });
+    $(document).on("click", "#button-remove-pemeriksaan_pasien", function(e) {
         e.preventDefault();
         var code = $(this).data("code");
         var reg = $(this).data("reg");
-        $('#menu-verifikasi-test-pemeriksaan').html(
+        $('#table-pemeriksaan-pasien').html(
             '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
         );
         $.ajax({
-            url: "{{ route('master_upload_hasil_pemeriksaan_detail_verif') }}",
+            url: "{{ route('monitoring_hasil_remove_pemeriksaan') }}",
             type: "POST",
             cache: false,
             data: {
@@ -222,48 +293,25 @@
             },
             dataType: 'html',
         }).done(function(data) {
-            $('#menu-verifikasi-test-pemeriksaan').html(data);
+            $('#table-pemeriksaan-pasien').html(data);
         }).fail(function() {
-            $('#menu-verifikasi-test-pemeriksaan').html('eror');
+            $('#table-pemeriksaan-pasien').html('eror');
         });
     });
-    $(document).on("click", "#button-unverif-test-pemeriksaan", function(e) {
-        e.preventDefault();
-        var code = $(this).data("code");
-        var reg = $(this).data("reg");
-        $('#menu-verifikasi-test-pemeriksaan').html(
-            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
-        );
-        $.ajax({
-            url: "{{ route('master_upload_hasil_pemeriksaan_detail_unverif') }}",
-            type: "POST",
-            cache: false,
-            data: {
-                "_token": "{{ csrf_token() }}",
-                "code": code,
-                "reg": reg
-            },
-            dataType: 'html',
-        }).done(function(data) {
-            $('#menu-verifikasi-test-pemeriksaan').html(data);
-        }).fail(function() {
-            $('#menu-verifikasi-test-pemeriksaan').html('eror');
-        });
-    });
-</script>
-<script>
-    $(document).on("click", "#button-proses-data-pasien", function(e) {
+    $(document).on("click", "#button-save-data-pasien", function(e) {
         e.preventDefault();
         $('#loading-button').html(
             '<button class="btn btn-primary" type="button" disabled=""><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Loading...</button>'
         );
-        const no_reg = document.getElementById('no_reg').value;
-
-        if (no_reg == "") {
+        const nama = document.getElementById('nama_lengkap').value;
+        const tgl_lahir = document.getElementById('tgl_lahir').value;
+        const jk = document.getElementById('jk').value;
+        const nama_rujukan = document.getElementById('nama_rujukan').value;
+        if (nama == "" || tgl_lahir == "" || jk == "", nama_rujukan == "") {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
-                text: "No Registrasi Harus diisi",
+                text: "Nama , Jenis Kelamin , Tanggal Lahir dan nama perujuk Tidak boleh kosong",
                 footer: "<a href=\"#\">Why do I have this issue?</a>"
             });
             $('#loading-button').html(
@@ -287,9 +335,9 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    var data = $("#form-proses-pasien").serialize();
+                    var data = $("#form-add-pasien").serialize();
                     $.ajax({
-                        url: "{{ route('master_upload_hasil_pemeriksaan_detail_proses') }}",
+                        url: "{{ route('registrasi_pasien_save_data') }}",
                         type: "POST",
                         cache: false,
                         data: data,
@@ -298,14 +346,14 @@
                         if (data == 1) {
                             swalWithBootstrapButtons.fire({
                                 title: "Sukses!",
-                                text: "Your Data has Been Success.",
+                                text: "Your data has been Success.",
                                 icon: "success"
                             });
                             location.reload();
                         } else {
                             swalWithBootstrapButtons.fire({
-                                title: "Cancelled",
-                                text: "Failed",
+                                title: "Gagal Menyimpan",
+                                text: "Pastikan Data Pemeriksaan Sudah terisi jangan sampai kosong yaa",
                                 icon: "error"
                             });
                             $('#loading-button').html(

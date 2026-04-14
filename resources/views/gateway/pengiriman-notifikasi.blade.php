@@ -28,7 +28,7 @@
                         <div class="d-flex position-relative">
                             <div class="icon-item icon-item-sm border rounded-3 shadow-none me-2"><span class="fas fa-crown text-warning"></span></div>
                             <div class="flex-1"><a class="stretched-link" href="#!">
-                                    <h6 class="text-800 mb-0">Tambah Aktifitas</h6>
+                                    <h6 class="text-800 mb-0">Update Aktifitas</h6>
                                 </a>
                                 <p class="mb-0 fs--2 text-500">Sesuaikan Aktiftas yang ada</p>
                             </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\McuExport;
 use App\Exports\PesertaMcuExport;
+use App\Imports\PasienImport;
 use App\Imports\PesertaAllImport;
 use App\Imports\PesertaImport;
 use App\Imports\TestImport;
@@ -588,9 +589,66 @@ class ApplicationController extends Controller
         $order = DB::table('monitoring_hasil_pasien')->where('monitoring_hasil_pasien_code', $request->code)->first();
         return view('application.menu.monitoring-hasil.form-detail-pasien', ['order' => $order]);
     }
-    public function monitoring_hasil_order_kurir(Request $request){
+    public function monitoring_hasil_order_kurir(Request $request)
+    {
         // $data = DB::table
         return view('application.menu.monitoring-hasil.form-order-kurir');
+    }
+    // REGISTRASI PASIEN
+    public function registrasi_pasien($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            $data = DB::table('monitoring_hasil_pasien')
+                ->where('monitoring_hasil_pasien_user', Auth::user()->userid)
+                ->orderBy('id_monitoring_hasil_pasien', 'desc')->get();
+            return view('application.menu.registrasi-pasien', ['data' => $data]);
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
+    public function registrasi_pasien_add_data(Request $request)
+    {
+        $pemeriksaan = DB::table('master_test')->get();
+        $token = str::uuid();
+        $user = DB::table('user_mains')
+        ->join('master_access','master_access.master_access_code','=','user_mains.access_code')
+        ->where('master_access.master_access_name','=','Rujukan')
+        ->where('user_mains.access_cabang',Auth::user()->access_cabang)
+        ->get();
+        return view('application.menu.registrasi-pasien.form-registrasi', compact('pemeriksaan','user'), ['token' => $token]);
+    }
+    public function registrasi_pasien_save_data(Request $request)
+    {
+        try {
+            $cek = DB::table('monitoring_hasil_pemeriksaan')->where('monitoring_hasil_pasien_code', $request->token_registrasi)->count();
+            if ($cek == '0') {
+                return 0;
+            } else {
+                DB::table('monitoring_hasil_kurir')->insert([
+                    'monitoring_hasil_kurir_code' => str::uuid(),
+                    'monitoring_hasil_pasien_code' => $request->token_registrasi,
+                    'monitoring_hasil_kurir_name' => $request->kurir,
+                    'monitoring_hasil_kurir_date' => now(),
+                    'monitoring_hasil_kurir_sign' => 'null',
+                    'created_at' => now(),
+                ]);
+                DB::table('monitoring_hasil_pasien')->insert([
+                    'monitoring_hasil_pasien_code' => $request->token_registrasi,
+                    'monitoring_hasil_pasien_nama' => $request->nama_lengkap,
+                    'monitoring_hasil_pasien_tgl_lahir' => $request->tgl_lahir,
+                    'monitoring_hasil_pasien_jk' => $request->jk,
+                    'monitoring_hasil_pasien_nik' => $request->no_induk,
+                    'monitoring_hasil_pasien_user' => $request->nama_rujukan,
+                    'monitoring_hasil_pasien_cabang' => 'PA',
+                    'monitoring_hasil_pasien_status' => 1,
+                    'monitoring_hasil_pasien_type' => 'LAB',
+                    'created_at' => now()
+                ]);
+                return 1;
+            }
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
     // MCU
     public function medical_check_up($akses)
@@ -2305,12 +2363,25 @@ class ApplicationController extends Controller
         if ($this->url_akses($akses) == true) {
             $data = DB::table('monitoring_hasil_pasien')
                 ->select('user_mains.fullname', 'monitoring_hasil_pasien.*')
-                ->join('user_mains', 'user_mains.userid', '=', 'monitoring_hasil_pasien.monitoring_hasil_pasien_user')->orderBy('id_monitoring_hasil_pasien', 'desc')
+                ->join('user_mains', 'user_mains.userid', '=', 'monitoring_hasil_pasien.monitoring_hasil_pasien_user')
+                ->orderBy('created_at', 'desc')
                 ->get();
             return view('application.master-data.master-upload-hasil-pemeriksaan', ['data' => $data]);
         } else {
             return Redirect::to('dashboard/home');
         }
+    }
+    public function master_upload_hasil_import_pasien_lama(Request $request){
+        $user = DB::table('user_mains')
+        ->join('master_access','master_access.master_access_code','=','user_mains.access_code')
+        ->where('master_access.master_access_name','=','Rujukan')
+        ->where('user_mains.access_cabang',Auth::user()->access_cabang)
+        ->get();
+        return view('application.master-data.upload-hasil.form-import-pasien',compact('user'));
+    }
+    public function master_upload_hasil_import_pasien_lama_save(Request $request){
+        Excel::import(new PasienImport($request->nama_rujukan), request()->file('file'));
+        return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data Perusahaan');
     }
     public function master_upload_hasil_pemeriksaan_detail(Request $request)
     {

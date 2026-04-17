@@ -519,7 +519,7 @@ class ApplicationController extends Controller
     {
         if ($this->url_akses($akses) == true) {
             $data = DB::table('monitoring_hasil_pasien')
-                ->where('monitoring_hasil_pasien_user', Auth::user()->userid)->orderBy('id_monitoring_hasil_pasien', 'desc')->get();
+                ->where('monitoring_hasil_pasien_user', Auth::user()->userid)->orderBy('created_at', 'desc')->get();
             return view('application.menu.monitoring-hasil', ['data' => $data]);
         } else {
             return Redirect::to('dashboard/home');
@@ -599,7 +599,9 @@ class ApplicationController extends Controller
     {
         if ($this->url_akses($akses) == true) {
             $data = DB::table('monitoring_hasil_pasien')
-                ->where('monitoring_hasil_pasien_user', Auth::user()->userid)
+                ->select('user_mains.fullname', 'monitoring_hasil_pasien.*')
+                ->join('user_mains', 'user_mains.userid', '=', 'monitoring_hasil_pasien.monitoring_hasil_pasien_user')
+                ->where('monitoring_hasil_pasien_cabang',Auth::user()->access_cabang)
                 ->orderBy('id_monitoring_hasil_pasien', 'desc')->get();
             return view('application.menu.registrasi-pasien', ['data' => $data]);
         } else {

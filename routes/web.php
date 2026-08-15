@@ -49,10 +49,16 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('home', [ApplicationController::class, 'home'])->name('home');
     Route::get('monitoring-mcu', [ApplicationController::class, 'monitoring_mcu'])->name('monitoring_mcu');
     Route::get('monitoring-hasil', [ApplicationController::class, 'monitoring_hasil'])->name('monitoring_hasil');
+    Route::get('monitoring-omset', [ApplicationController::class, 'monitoring_omset'])->name('monitoring_omset');
+
     Route::get('registrasi-pasien', [ApplicationController::class, 'registrasi_pasien'])->name('registrasi_pasien');
     Route::get('medical-check-up', [ApplicationController::class, 'medical_check_up'])->name('medical_check_up');
     Route::get('menu-service', [ApplicationController::class, 'menu_service'])->name('menu_service');
     Route::get('menu-pengiriman', [ApplicationController::class, 'menu_pengiriman'])->name('menu_pengiriman');
+
+    Route::get('upload-data-omset', [ApplicationController::class, 'upload_data_omset'])->name('upload_data_omset');
+
+
     Route::get('master-company', [ApplicationController::class, 'master_company'])->name('master_company');
     Route::get('mou-company', [ApplicationController::class, 'mou_company'])->name('mou_company');
     Route::get('agreement-perusahaan', [ApplicationController::class, 'agreement_perusahaan'])->name('agreement_perusahaan');
@@ -64,6 +70,8 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('master-test-pemeriksaan', [ApplicationController::class, 'master_test_pemeriksaan'])->name('master_test_pemeriksaan');
     Route::get('laporan-rekap-mcu', [ApplicationController::class, 'laporan_rekap_mcu'])->name('laporan_rekap_mcu');
     Route::get('laporan/laporan-data-kehadiran', [ApplicationController::class, 'laporan_data_kehadiran'])->name('laporan_data_kehadiran');
+    Route::get('laporan/laporan-data-omset', [ApplicationController::class, 'laporan_data_omset'])->name('laporan_data_omset');
+
     Route::get('aplikasi', [ApplicationController::class, 'aplikasi_app'])->name('aplikasi_app');
 
     Route::get('gateway/pengiriman-notifikasi', [GatewayController::class, 'gateway_pengiriman_notifikasi'])->name('gateway_pengiriman_notifikasi');
@@ -80,9 +88,16 @@ Route::prefix('application')->group(function () {
     Route::post('monitoring-hasil/save-pasien', [ApplicationController::class, 'monitoring_hasil_save_pasien'])->name('monitoring_hasil_save_pasien');
     Route::post('monitoring-hasil/detail-pasien', [ApplicationController::class, 'monitoring_hasil_detail_pasien'])->name('monitoring_hasil_detail_pasien');
     Route::post('monitoring-hasil/order-kurir', [ApplicationController::class, 'monitoring_hasil_order_kurir'])->name('monitoring_hasil_order_kurir');
+    // MONITORING OMSET
+    Route::post('monitoring-omset/data', [ApplicationController::class, 'monitoring_omset_data'])->name('monitoring_omset_data');
+    // Route::post('monitoring-omset/get-mountly', [ApplicationController::class, 'getMonthlyOmsetByYear'])->name('getMonthlyOmsetByYear');
     // REGISTRASI PASIEN
     Route::post('registrasi-pasien/add-data', [ApplicationController::class, 'registrasi_pasien_add_data'])->name('registrasi_pasien_add_data');
     Route::post('registrasi-pasien/save-data', [ApplicationController::class, 'registrasi_pasien_save_data'])->name('registrasi_pasien_save_data');
+    // UPLOAD DATA OMSET
+    Route::post('upload-data-omset/preview', [ApplicationController::class, 'upload_data_omset_preview'])->name('upload_data_omset_preview');
+    Route::post('upload-data-omset/store', [ApplicationController::class, 'upload_data_omset_store'])->name('upload_data_omset_store');
+    Route::post('target-cabang-omset/store', [ApplicationController::class, 'target_cabang_store'])->name('target_cabang_store');
     // UPLOAD HASIL
     Route::post('master-upload-hasil-pemeriksaan/import/pasien-lama', [ApplicationController::class, 'master_upload_hasil_import_pasien_lama'])->name('master_upload_hasil_import_pasien_lama');
     Route::post('master-upload-hasil-pemeriksaan/import/pasien-lama-save', [ApplicationController::class, 'master_upload_hasil_import_pasien_lama_save'])->name('master_upload_hasil_import_pasien_lama_save');
@@ -237,6 +252,8 @@ Route::prefix('application')->group(function () {
     Route::get('laporan-rekap-mcu/kehadiran-peserta-mcu/export-excel/{id}', [ApplicationController::class, 'laporan_rekap_excel_mcu_kehadiran_peserta_mcu'])->name('laporan_rekap_excel_mcu_kehadiran_peserta_mcu');
 
     Route::get('laporan/laporan-data-kehadiran/preview/{code}', [ApplicationController::class, 'laporan_data_kehadiran_preview'])->name('laporan_data_kehadiran_preview');
+
+    Route::post('laporan/laporan-data-kehadiran/filter', [ApplicationController::class, 'laporan_data_kehadiran_filter'])->name('laporan_data_kehadiran_filter');
 
     // GATEWAY
     Route::post('gateway/pengiriman-notifikasi/add-penerima', [GatewayController::class, 'gateway_pengiriman_notifikasi_add_penerima'])->name('gateway_pengiriman_notifikasi_add_penerima');

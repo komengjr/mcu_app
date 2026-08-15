@@ -8,6 +8,7 @@ use App\Imports\PasienImport;
 use App\Imports\PesertaAllImport;
 use App\Imports\PesertaImport;
 use App\Imports\TestImport;
+use App\Models\LaporanOmset;
 use App\Models\Peserta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,7 @@ use League\CommonMark\Extension\CommonMark\Node\Inline\Code;
 use Maatwebsite\Excel\Facades\Excel;
 use Session;
 use iio\libmergepdf\Merger;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class ApplicationController extends Controller
@@ -594,6 +596,192 @@ class ApplicationController extends Controller
         // $data = DB::table
         return view('application.menu.monitoring-hasil.form-order-kurir');
     }
+    // MONITORING HASIL
+    public function monitoring_omset($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+
+            // 1. Ambil daftar cabang aktif dari tabel master_cabang
+            $listCabang = DB::table('master_cabang')
+                ->select('master_cabang_code', 'master_cabang_name')
+                ->orderBy('master_cabang_name', 'asc')
+                ->get();
+
+            // 2. Ambil daftar tahun unik dari tabel laporan_omsets
+            $listTahun = DB::table('laporan_omsets')
+                ->selectRaw('YEAR(tanggal) as tahun')
+                ->whereNotNull('tanggal')
+                ->distinct()
+                ->orderBy('tahun', 'desc')
+                ->pluck('tahun');
+
+            if ($listTahun->isEmpty()) {
+                $listTahun = collect([(int) date('Y')]);
+            }
+            return view('application.menu.monitoring-omset', compact('listTahun', 'listCabang'));
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
+    public function monitoring_omset_data(Request $request)
+    {
+        try {
+            $tahun1 = $request->input('tahun_1', date('Y'));
+            $tahun2 = $request->input('tahun_2');
+            $cabang = $request->input('cabang'); // Mengirim master_cabang_code
+
+            $tahunAktif = array_filter([$tahun1, $tahun2]);
+
+            // -------------------------------------------------------------
+            // A. METRIK SUMMARY REALISASI OMSET
+            // -------------------------------------------------------------
+            $summaryQuery = DB::table('laporan_omsets')
+                ->whereIn(DB::raw('YEAR(tanggal)'), $tahunAktif);
+
+            if (!empty($cabang)) {
+                // Mencocokkan dengan kolom cabang di laporan_omsets
+                $summaryQuery->where('cabang', $cabang);
+            }
+
+            $summaryRaw = $summaryQuery->selectRaw('
+                COALESCE(SUM(total), 0) as total_omset,
+                COUNT(id) as total_transaksi,
+                COUNT(DISTINCT COALESCE(NULLIF(nik, ""), pasien)) as total_pasien
+            ')->first();
+
+            $totalOmset = (float) $summaryRaw->total_omset;
+            $totalTransaksi = (int) $summaryRaw->total_transaksi;
+            $totalPasien = (int) $summaryRaw->total_pasien;
+            $avgOmset = $totalTransaksi > 0 ? ($totalOmset / $totalTransaksi) : 0;
+
+            // -------------------------------------------------------------
+            // B. METRIK TOTAL TARGET & PERSENTASE PENCAPAIAN
+            // -------------------------------------------------------------
+            $targetQuery = DB::table('target_cabangs')
+                ->whereIn('tahun', $tahunAktif);
+
+            if (!empty($cabang)) {
+                // Diikat menggunakan master_cabang_code
+                $targetQuery->where('master_cabang_code', $cabang);
+            }
+
+            $totalTarget = (float) $targetQuery->sum('target');
+            $persenPencapaian = $totalTarget > 0 ? ($totalOmset / $totalTarget) * 100 : 0;
+
+            $summaryData = [
+                'total_omset'       => 'Rp ' . number_format($totalOmset, 0, ',', '.'),
+                'total_transaksi'   => number_format($totalTransaksi, 0, ',', '.'),
+                'total_pasien'      => number_format($totalPasien, 0, ',', '.'),
+                'avg_omset'         => 'Rp ' . number_format($avgOmset, 0, ',', '.'),
+                'total_target'      => 'Rp ' . number_format($totalTarget, 0, ',', '.'),
+                'persen_pencapaian' => number_format($persenPencapaian, 1, ',', '.') . '%'
+            ];
+
+            // -------------------------------------------------------------
+            // C. TREN BULANAN: OMSET VS TARGET PER BULAN (1-12)
+            // -------------------------------------------------------------
+            $bulanLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+            $omsetTahun1 = $this->getMonthlyOmsetByYear($tahun1, $cabang);
+            $omsetTahun2 = !empty($tahun2) ? $this->getMonthlyOmsetByYear($tahun2, $cabang) : null;
+
+            $targetTahun1 = $this->getMonthlyTargetByYear($tahun1, $cabang);
+            $targetTahun2 = !empty($tahun2) ? $this->getMonthlyTargetByYear($tahun2, $cabang) : null;
+
+            $chartMonthlyData = [
+                'labels'         => $bulanLabels,
+                'omset_tahun_1'  => $omsetTahun1,
+                'omset_tahun_2'  => $omsetTahun2,
+                'target_tahun_1' => $targetTahun1,
+                'target_tahun_2' => $targetTahun2,
+            ];
+
+            // -------------------------------------------------------------
+            // D. GRAFIK TIPE OMSET (DOUGHNUT)
+            // -------------------------------------------------------------
+            $tipeQuery = DB::table('laporan_omsets')
+                ->selectRaw('COALESCE(tipe_omset, "Lain-lain") as tipe, COALESCE(SUM(total), 0) as total_omset')
+                ->whereIn(DB::raw('YEAR(tanggal)'), $tahunAktif);
+
+            if (!empty($cabang)) {
+                $tipeQuery->where('cabang', $cabang);
+            }
+
+            $tipeResult = $tipeQuery->groupBy('tipe')->orderBy('total_omset', 'desc')->get();
+
+            $chartTipeData = [
+                'labels' => $tipeResult->pluck('tipe'),
+                'data'   => $tipeResult->pluck('total_omset')->map(fn($val) => (float)$val)
+            ];
+
+            // -------------------------------------------------------------
+            // E. TOP 5 KELOMPOK PELANGGAN
+            // -------------------------------------------------------------
+            $topKelompokQuery = DB::table('laporan_omsets')
+                ->selectRaw('COALESCE(kel_pelanggan, "Tidak Ada Kelompok") as kel_pelanggan, COALESCE(SUM(total), 0) as total')
+                ->whereIn(DB::raw('YEAR(tanggal)'), $tahunAktif);
+
+            if (!empty($cabang)) {
+                $topKelompokQuery->where('cabang', $cabang);
+            }
+
+            $topKelompokData = $topKelompokQuery->groupBy('kel_pelanggan')->orderBy('total', 'desc')->limit(5)->get();
+
+            return response()->json([
+                'status'        => 'success',
+                'summary'       => $summaryData,
+                'chart_monthly' => $chartMonthlyData,
+                'chart_tipe'    => $chartTipeData,
+                'top_kelompok'  => $topKelompokData
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    private function getMonthlyOmsetByYear($tahun, $cabang = null)
+    {
+        $query = DB::table('laporan_omsets')
+            ->selectRaw('MONTH(tanggal) as bulan, COALESCE(SUM(total), 0) as total_omset')
+            ->whereYear('tanggal', $tahun);
+
+        if (!empty($cabang)) {
+            $query->where('cabang', $cabang);
+        }
+
+        $result = $query->groupBy(DB::raw('MONTH(tanggal)'))
+            ->pluck('total_omset', 'bulan')
+            ->toArray();
+
+        $data12Bulan = [];
+        for ($b = 1; $b <= 12; $b++) {
+            $data12Bulan[] = isset($result[$b]) ? (float) $result[$b] : 0;
+        }
+
+        return $data12Bulan;
+    }
+    private function getMonthlyTargetByYear($tahun, $cabang = null)
+    {
+        $query = DB::table('target_cabangs')
+            ->selectRaw('bulan, SUM(target) as total_target')
+            ->where('tahun', $tahun);
+
+        if (!empty($cabang)) {
+            $query->where('master_cabang_code', $cabang);
+        }
+
+        $result = $query->groupBy('bulan')
+            ->pluck('total_target', 'bulan')
+            ->toArray();
+
+        $data12BulanTarget = [];
+        for ($b = 1; $b <= 12; $b++) {
+            $data12BulanTarget[] = isset($result[$b]) ? (float) $result[$b] : 0;
+        }
+
+        return $data12BulanTarget;
+    }
+
     // REGISTRASI PASIEN
     public function registrasi_pasien($akses)
     {
@@ -601,7 +789,7 @@ class ApplicationController extends Controller
             $data = DB::table('monitoring_hasil_pasien')
                 ->select('user_mains.fullname', 'monitoring_hasil_pasien.*')
                 ->join('user_mains', 'user_mains.userid', '=', 'monitoring_hasil_pasien.monitoring_hasil_pasien_user')
-                ->where('monitoring_hasil_pasien_cabang',Auth::user()->access_cabang)
+                ->where('monitoring_hasil_pasien_cabang', Auth::user()->access_cabang)
                 ->orderBy('id_monitoring_hasil_pasien', 'desc')->get();
             return view('application.menu.registrasi-pasien', ['data' => $data]);
         } else {
@@ -613,11 +801,11 @@ class ApplicationController extends Controller
         $pemeriksaan = DB::table('master_test')->get();
         $token = str::uuid();
         $user = DB::table('user_mains')
-        ->join('master_access','master_access.master_access_code','=','user_mains.access_code')
-        ->where('master_access.master_access_name','=','Rujukan')
-        ->where('user_mains.access_cabang',Auth::user()->access_cabang)
-        ->get();
-        return view('application.menu.registrasi-pasien.form-registrasi', compact('pemeriksaan','user'), ['token' => $token]);
+            ->join('master_access', 'master_access.master_access_code', '=', 'user_mains.access_code')
+            ->where('master_access.master_access_name', '=', 'Rujukan')
+            ->where('user_mains.access_cabang', Auth::user()->access_cabang)
+            ->get();
+        return view('application.menu.registrasi-pasien.form-registrasi', compact('pemeriksaan', 'user'), ['token' => $token]);
     }
     public function registrasi_pasien_save_data(Request $request)
     {
@@ -1681,6 +1869,260 @@ class ApplicationController extends Controller
         }
         return view('application.menu.pengiriman.data-pengiriman-whatsapp', ['data' => $data]);
     }
+    // UPLOAD DATA OMSET
+    public function upload_data_omset($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            // Mengambil kode cabang dari user login
+            $userCabang = Auth::user()->access->cabang ?? Auth::user()->cabang ?? 'PA';
+
+            // Mengambil riwayat target cabang user tersebut
+            $listTarget = DB::table('target_cabangs')
+                ->where('master_cabang_code', $userCabang)
+                ->orderBy('tahun', 'desc')
+                ->orderBy('bulan', 'desc')
+                ->get();
+            return view('application.menu.upload-data-omset', compact('listTarget'));
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
+    public function upload_data_omset_preview(Request $request)
+    {
+        $request->validate([
+            'file' => 'required',
+        ]);
+
+        $cabang = Auth::user()->access_cabang;
+
+        $file = $request->file('file');
+        $content = file_get_contents($file->getRealPath());
+
+        if (!str_contains($content, '<?xml') && !str_contains($content, 'urn:schemas-microsoft-com:office:spreadsheet')) {
+            return response()->json(['message' => 'Format file harus XML Spreadsheet (.xls)'], 422);
+        }
+
+        $xml = simplexml_load_string($content);
+        $xml->registerXPathNamespace('ss', 'urn:schemas-microsoft-com:office:spreadsheet');
+
+        $rows = $xml->xpath('//ss:Worksheet[1]//ss:Table/ss:Row');
+
+        // 1. Ekstrak Pemetaan Kolom dari Baris Header (Baris ke-5 / Index 4)
+        $headerMap = [];
+        $headerRow = $rows[4] ?? null;
+
+        if ($headerRow) {
+            $colPos = 0;
+            foreach ($headerRow->xpath('ss:Cell') as $cell) {
+                $attributes = $cell->attributes('ss', true);
+                if (isset($attributes['Index'])) {
+                    $colPos = ((int)$attributes['Index']) - 1;
+                }
+
+                $data = $cell->xpath('ss:Data');
+                if (isset($data[0])) {
+                    $headerName = trim((string)$data[0]);
+                    $headerMap[$headerName] = $colPos;
+                }
+                $colPos++;
+            }
+        }
+
+        // 2. Pembacaan Data Transaksi
+        $previewData = [];
+        $parseDate = fn($val) => !empty($val) && $val !== 'None' ? Carbon::parse($val)->format('Y-m-d') : null;
+
+        // Data dimulai dari baris ke-7 (Index 6)
+        for ($i = 6; $i < count($rows); $i++) {
+            $cells = $rows[$i]->xpath('ss:Cell');
+            $rowData = [];
+            $colPos = 0;
+
+            foreach ($cells as $cell) {
+                $attributes = $cell->attributes('ss', true);
+                if (isset($attributes['Index'])) {
+                    $colPos = ((int)$attributes['Index']) - 1;
+                }
+
+                $data = $cell->xpath('ss:Data');
+                $rowData[$colPos] = isset($data[0]) ? trim((string)$data[0]) : '';
+                $colPos++;
+            }
+
+            // Fungsi pembantu ambil data sesuai nama header gambar
+            $getValue = function ($headerName) use ($headerMap, $rowData) {
+                $idx = $headerMap[$headerName] ?? null;
+                if ($idx !== null && isset($rowData[$idx])) {
+                    $val = $rowData[$idx];
+                    return ($val === 'None') ? '' : $val;
+                }
+                return '';
+            };
+
+            $noreg = $getValue('NOREG');
+
+            // Skip jika bukan baris data (misal baris total atau kosong)
+            if (empty($noreg) || !preg_match('/^[A-Z]{3}\d+$/i', $noreg)) {
+                continue;
+            }
+
+            $previewData[] = [
+                'tanggal'       => $parseDate($getValue('TANGGAL')),
+                'noreg'         => $noreg,
+                'pasien'        => $getValue('PASIEN'),
+                'hp'            => $getValue('HP'),
+                'alamat'        => $getValue('ALAMAT'),
+                'tipe_omset'    => $getValue('TIPE OMSET'),
+                'dob'           => $parseDate($getValue('DOB')),
+                'kel_pelanggan' => $getValue('KEL.PELANGGAN'),
+                'mou'           => $getValue('MOU'),
+                'marketing'     => $getValue('MARKETING'),
+                'bruto'         => (float) ($getValue('BRUTO') ?: 0),
+                'disc'          => (float) ($getValue('DISC') ?: 0),
+                'total'         => (float) ($getValue('TOTAL') ?: 0),
+                'pay'           => (float) ($getValue('PAY') ?: 0),
+                'jml_test'      => (int) ($getValue('JML TEST') ?: 0),
+                'pemeriksaan'   => $getValue('PEMERIKSAAN'),
+                'nik'           => $getValue('NIK'),
+                'jabatan'       => $getValue('JABATAN'),
+                'location'      => $getValue('LOCATION'),
+                'job'           => $getValue('JOB'),
+                'kedatangan'    => (int) ($getValue('KEDATANGAN') ?: 0),
+            ];
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => $previewData
+        ]);
+    }
+    public function upload_data_omset_store(Request $request)
+    {
+        $request->validate([
+            'data'   => 'required|array|min:1',
+        ]);
+
+        $cabang = Auth::user()->access_cabang;
+        $now = now();
+
+        // 1. Ambil semua kombinasi tanggal & noreg yang SUDAH ADA di database untuk cabang terkait
+        // Penggunaan format "YYYY-MM-DD|NOREG" membuat pencarian di memory sangat cepat (O(1))
+        $existingRecords = LaporanOmset::where('cabang', $cabang)
+            ->select('tanggal', 'noreg')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                $key = Carbon::parse($item->tanggal)->format('Y-m-d') . '|' . trim($item->noreg);
+                return [$key => true];
+            });
+
+        $insertData = [];
+        $skippedCount = 0;
+
+        // 2. Filter data: Hanya masukkan data yang BELUM ADA di database
+        foreach ($request->data as $row) {
+            $tanggal = !empty($row['tanggal']) ? Carbon::parse($row['tanggal'])->format('Y-m-d') : null;
+            $noreg   = trim($row['noreg'] ?? '');
+
+            $lookupKey = $tanggal . '|' . $noreg;
+
+            // Jika kombinasi tanggal & noreg sudah ada di database, skip baris ini
+            if ($tanggal && $noreg && isset($existingRecords[$lookupKey])) {
+                $skippedCount++;
+                continue;
+            }
+
+            $insertData[] = [
+                'tanggal'       => $tanggal,
+                'noreg'         => $noreg,
+                'pasien'        => $row['pasien'] ?? null,
+                'hp'            => $row['hp'] ?? null,
+                'alamat'        => $row['alamat'] ?? null,
+                'tipe_omset'    => $row['tipe_omset'] ?? null,
+                'dob'           => $row['dob'] ?? null,
+                'kel_pelanggan' => $row['kel_pelanggan'] ?? null,
+                'mou'           => $row['mou'] ?? null,
+                'marketing'     => $row['marketing'] ?? null,
+                'bruto'         => (float) ($row['bruto'] ?? 0),
+                'disc'          => (float) ($row['disc'] ?? 0),
+                'total'         => (float) ($row['total'] ?? 0),
+                'pay'           => (float) ($row['pay'] ?? 0),
+                'jml_test'      => (int) ($row['jml_test'] ?? 0),
+                'pemeriksaan'   => $row['pemeriksaan'] ?? null,
+                'nik'           => $row['nik'] ?? null,
+                'jabatan'       => $row['jabatan'] ?? null,
+                'location'      => $row['location'] ?? null,
+                'job'           => $row['job'] ?? null,
+                'kedatangan'    => (int) ($row['kedatangan'] ?? 0),
+                'cabang'        => $cabang,
+                'created_at'    => $now,
+                'updated_at'    => $now,
+            ];
+        }
+
+        // Jika semua data yang di-upload ternyata sudah pernah di-import sebelumnya
+        if (empty($insertData)) {
+            return response()->json([
+                'status'  => 'info',
+                'message' => "Seluruh data ($skippedCount data) sudah ada di database dan berhasil dilewati (skipped)."
+            ]);
+        }
+
+        // 3. Simpan data baru yang lolos filter ke database
+        DB::beginTransaction();
+        try {
+            foreach (array_chunk($insertData, 250) as $chunk) {
+                LaporanOmset::insert($chunk);
+            }
+            DB::commit();
+
+            $insertedCount = count($insertData);
+            $message = "$insertedCount data berhasil disimpan.";
+            if ($skippedCount > 0) {
+                $message .= " ($skippedCount data duplikat dilewati).";
+            }
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => $message
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal menyimpan data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    public function target_cabang_store(Request $request)
+    {
+        $request->validate([
+            'tahun'  => 'required|integer',
+            'bulan'  => 'required|integer|between:1,12',
+            'target' => 'required|numeric|min:0',
+        ]);
+
+        // Ambil cabang dari user yang sedang login
+        $userCabang = Auth::user()->access->cabang ?? Auth::user()->cabang ?? 'PA';
+
+        // Update jika cabang, tahun, dan bulan sudah ada. Jika belum, buat record baru.
+        DB::table('target_cabangs')->updateOrInsert(
+            [
+                'master_cabang_code' => $userCabang,
+                'tahun'              => $request->tahun,
+                'bulan'              => $request->bulan,
+            ],
+            [
+                'target'     => $request->target,
+                'updated_at' => now(),
+                'created_at' => now(),
+            ]
+        );
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Target cabang ' . $userCabang . ' berhasil disimpan!'
+        ]);
+    }
 
     // COMPANY MASTER
     public function master_company($akses)
@@ -2373,15 +2815,17 @@ class ApplicationController extends Controller
             return Redirect::to('dashboard/home');
         }
     }
-    public function master_upload_hasil_import_pasien_lama(Request $request){
+    public function master_upload_hasil_import_pasien_lama(Request $request)
+    {
         $user = DB::table('user_mains')
-        ->join('master_access','master_access.master_access_code','=','user_mains.access_code')
-        ->where('master_access.master_access_name','=','Rujukan')
-        ->where('user_mains.access_cabang',Auth::user()->access_cabang)
-        ->get();
-        return view('application.master-data.upload-hasil.form-import-pasien',compact('user'));
+            ->join('master_access', 'master_access.master_access_code', '=', 'user_mains.access_code')
+            ->where('master_access.master_access_name', '=', 'Rujukan')
+            ->where('user_mains.access_cabang', Auth::user()->access_cabang)
+            ->get();
+        return view('application.master-data.upload-hasil.form-import-pasien', compact('user'));
     }
-    public function master_upload_hasil_import_pasien_lama_save(Request $request){
+    public function master_upload_hasil_import_pasien_lama_save(Request $request)
+    {
         Excel::import(new PasienImport($request->nama_rujukan), request()->file('file'));
         return redirect()->back()->withSuccess('Great! Berhasil Menambahkan Data Perusahaan');
     }
@@ -2644,5 +3088,61 @@ class ApplicationController extends Controller
         // $html .= view('application.laporan.report.report_footer')->render();
         // $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html)->setPaper('a4', 'landscape');
         // return $pdf->download($data->master_company_name . ' - ' . $data->company_mou_name . '.pdf');
+    }
+
+    // LAPORAN DATA OMSET
+    public function laporan_data_omset($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            // 1. Ambil daftar cabang dari tabel master_cabang
+            $listCabang = DB::table('master_cabang')
+                ->select('master_cabang_code', 'master_cabang_name')
+                ->orderBy('master_cabang_name', 'asc')
+                ->get();
+
+            // 2. Ambil daftar kelompok pelanggan (DISTINCT) dari tabel laporan_omsets
+            $listKelompok = LaporanOmset::select('kel_pelanggan')
+                ->whereNotNull('kel_pelanggan')
+                ->where('kel_pelanggan', '!=', '')
+                ->distinct()
+                ->orderBy('kel_pelanggan', 'asc')
+                ->pluck('kel_pelanggan');
+            return view('application.laporan.laporan-omset', compact('listCabang', 'listKelompok'));
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
+    public function laporan_data_kehadiran_filter(Request $request)
+    {
+        $query = LaporanOmset::query();
+
+        // 1. Filter Range Tanggal
+        if ($request->filled('tgl_mulai') && $request->filled('tgl_akhir')) {
+            $query->whereBetween('tanggal', [
+                $request->tgl_mulai . ' 00:00:00',
+                $request->tgl_akhir . ' 23:59:59'
+            ]);
+        } elseif ($request->filled('tgl_mulai')) {
+            $query->whereDate('tanggal', '>=', $request->tgl_mulai);
+        } elseif ($request->filled('tgl_akhir')) {
+            $query->whereDate('tanggal', '<=', $request->tgl_akhir);
+        }
+
+        // 2. Filter Cabang (Kosong = ALL)
+        if ($request->filled('cabang')) {
+            $query->where('cabang', $request->cabang);
+        }
+
+        // 3. Filter Kelompok Pelanggan (Kosong = ALL)
+        if ($request->filled('kel_pelanggan')) {
+            $query->where('kel_pelanggan', $request->kel_pelanggan);
+        }
+
+        $data = $query->orderBy('tanggal', 'desc')->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => $data
+        ]);
     }
 }

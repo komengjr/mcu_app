@@ -103,9 +103,7 @@
                     </tr>
                     @endforeach
                     @else
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">Belum ada data target yang disimpan untuk cabang ini.</td>
-                    </tr>
+
                     @endif
                 </tbody>
             </table>

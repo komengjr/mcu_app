@@ -66,6 +66,7 @@
             </div>
         </div>
 
+        <!-- Container Accordion Group Peserta -->
         <div id="container-group-peserta">
             <div class="text-center py-4">
                 <div class="spinner-border text-danger" role="status"></div>
@@ -79,20 +80,8 @@
 <script>
     (function() {
         var activeCode = "{{ $code }}";
-        var rekapInterval = null;
 
-        // Fetch pertama kali
         fetchRekapRealtime(activeCode);
-
-        // Timer Polling setiap 5 detik
-        if (window.rekapInterval) clearInterval(window.rekapInterval);
-        window.rekapInterval = setInterval(function() {
-            if ($('#container-group-peserta').length > 0 && $('#modal-monitoring').is(':visible')) {
-                fetchRekapRealtime(activeCode);
-            } else {
-                clearInterval(window.rekapInterval);
-            }
-        }, 5000);
 
         function fetchRekapRealtime(code) {
             $.ajax({
@@ -101,13 +90,12 @@
                 data: {
                     "_token": "{{ csrf_token() }}",
                     "code": code,
-                    "type": "data" // Memberi tahu controller bahwa ini adalah request JSON
+                    "type": "data"
                 },
                 dataType: "json",
                 success: function(res) {
                     if (res.status === 'success') {
                         let d = res.data;
-                        // Header Text
                         $('#txt-company-name').text(d.company.master_company_name);
                         $('#txt-company-wilayah').text(d.company.master_company_wilayah || '-');
                         $('#txt-company-email').text(d.company.master_company_email || '-');
@@ -118,7 +106,7 @@
                         $('#txt-total-mcu').text(d.totalmcu);
                         $('#txt-sisa-mcu').text(d.sisa_mcu);
                         $('#txt-persentase').text(d.persentase);
-                        // Render komponen
+
                         renderTableCabang(d.cabang);
                         renderGroupsPeserta(d.groups);
                         renderChart(d.groupChart);
@@ -153,33 +141,51 @@
         }
 
         function renderGroupsPeserta(groups) {
-            let html = '';
-            groups.forEach(group => {
+            let html = '<div class="accordion" id="accordionGroupPeserta">';
+
+            groups.forEach((group, gIdx) => {
+                let accordionId = `collapse-group-${gIdx}`;
+                let headingId = `heading-group-${gIdx}`;
+
                 html += `
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h5 class="mb-0 text-warning">Wilayah ${group.group_cabang_name}</h5>
-                    </div>
-                    <div class="card-body border-top p-0 px-1">`;
+                <div class="accordion-item border border-danger mb-3 rounded overflow-hidden">
+                    <h2 class="accordion-header" id="${headingId}">
+                        <button class="accordion-button bg-soft-danger text-danger fw-bold py-3 collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#${accordionId}"
+                                aria-expanded="false"
+                                aria-controls="${accordionId}">
+                            <i class="fas fa-map-marker-alt me-2"></i> Wilayah ${group.group_cabang_name}
+                        </button>
+                    </h2>
+                    <div id="${accordionId}"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="${headingId}"
+                         data-bs-parent="#accordionGroupPeserta">
+                        <div class="accordion-body p-3 bg-light">`;
 
                 group.cabang_list.forEach(cabang => {
                     html += `
-                        <div class="card-body py-2 px-1">
-                            <div class="card px-3 border">
-                                <h6 class="pt-3">${cabang.master_cabang_name}</h6>
-                                <table id="data-${cabang.id_master_cabang}" class="table table-striped nowrap border w-100">
-                                    <thead class="bg-200 text-700 fs--2">
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Nama Peserta</th>
-                                            <th>NIK</th>
-                                            <th>Jenis Kelamin</th>
-                                            <th>Status Pemeriksaan</th>
-                                            <th>Status Pengiriman Hasil</th>
-                                            <th>Status Konsultasi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="fs--2">`;
+                        <div class="card mb-3 border shadow-sm">
+                            <div class="card-header bg-200 py-2">
+                                <h6 class="mb-0 fw-bold text-700"><i class="fas fa-building me-1"></i> ${cabang.master_cabang_name}</h6>
+                            </div>
+                            <div class="card-body p-2">
+                                <div class="table-responsive">
+                                    <table id="data-${cabang.id_master_cabang}" class="table table-striped nowrap border w-100">
+                                        <thead class="bg-200 text-700 fs--2">
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Nama Peserta</th>
+                                                <th>NIK</th>
+                                                <th>Jenis Kelamin</th>
+                                                <th>Status Pemeriksaan</th>
+                                                <th>Status Pengiriman Hasil</th>
+                                                <th>Status Konsultasi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="fs--2">`;
 
                     cabang.peserta.forEach((p, idx) => {
                         let pemList = '<ul class="ps-3 mb-0">';
@@ -204,17 +210,24 @@
                     });
 
                     html += `
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>`;
                 });
 
-                html += `</div></div>`;
+                html += `
+                        </div>
+                    </div>
+                </div>`;
             });
+
+            html += '</div>';
 
             $('#container-group-peserta').html(html);
 
+            // Inisialisasi DataTables untuk tiap tabel dalam Accordion
             groups.forEach(group => {
                 group.cabang_list.forEach(cabang => {
                     let id = `#data-${cabang.id_master_cabang}`;

@@ -180,6 +180,9 @@
             progress.hide();
         }
     </script>
+    <div class="modal-footer bg-light rounded-bottom-3">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><i class="fas fa-times me-1"></i> Close</button>
+    </div>
     @elseif ($cek->monitoring_hasil_pasien_status == '3')
     <form id="form-proses-pasien" class="row g-3 p-4" method="post" enctype="multipart/form-data">
         <div class="col-md-6">
@@ -321,6 +324,8 @@
             progress.hide();
         }
     </script>
-
+    <div class="modal-footer bg-light rounded-bottom-3">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><i class="fas fa-times me-1"></i> Close</button>
+    </div>
     @endif
 </div>

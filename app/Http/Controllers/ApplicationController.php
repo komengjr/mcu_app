@@ -847,11 +847,21 @@ class ApplicationController extends Controller
     }
     public function monitoring_hasil_remove_pemeriksaan(Request $request)
     {
+        // Hapus data berdasarkan master_test_code DAN token registrasi
+        // ATAU berdasarkan primary key jika yang dikirim adalah ID baris
         DB::table('monitoring_hasil_pemeriksaan')
-            ->where('monitoring_hasil_pemeriksaan_code', $request->code)->delete();
+            ->where('monitoring_hasil_pasien_code', $request->reg)
+            ->where(function ($query) use ($request) {
+                $query->where('master_test_code', $request->code)
+                    ->orWhere('monitoring_hasil_pemeriksaan_code', $request->code);
+            })
+            ->delete();
+
         $data = DB::table('monitoring_hasil_pemeriksaan')
             ->join('master_test', 'master_test.master_test_code', '=', 'monitoring_hasil_pemeriksaan.master_test_code')
-            ->where('monitoring_hasil_pasien_code', $request->reg)->get();
+            ->where('monitoring_hasil_pasien_code', $request->reg)
+            ->get();
+
         return view('application.menu.monitoring-hasil.table-pemeriksaan-pasien', compact('data'));
     }
     public function monitoring_hasil_save_pasien(Request $request)
@@ -1102,15 +1112,101 @@ class ApplicationController extends Controller
     public function registrasi_pasien($akses)
     {
         if ($this->url_akses($akses) == true) {
-            $data = DB::table('monitoring_hasil_pasien')
-                ->select('user_mains.fullname', 'monitoring_hasil_pasien.*')
-                ->join('user_mains', 'user_mains.userid', '=', 'monitoring_hasil_pasien.monitoring_hasil_pasien_user')
-                ->where('monitoring_hasil_pasien_cabang', Auth::user()->access_cabang)
-                ->orderBy('id_monitoring_hasil_pasien', 'desc')->get();
-            return view('application.menu.registrasi-pasien', ['data' => $data]);
+
+            return view('application.menu.registrasi-pasien');
         } else {
             return Redirect::to('dashboard/home');
         }
+    }
+    public function registrasi_pasien_get_data(Request $request)
+    {
+        $query = DB::table('monitoring_hasil_pasien')
+            ->select('user_mains.fullname', 'monitoring_hasil_pasien.*')
+            ->join('user_mains', 'user_mains.userid', '=', 'monitoring_hasil_pasien.monitoring_hasil_pasien_user')
+            ->where('monitoring_hasil_pasien_cabang', Auth::user()->access_cabang)
+            ->orderBy('id_monitoring_hasil_pasien', 'desc')
+            ->get();
+
+        $data = [];
+        $no = 1;
+
+        foreach ($query as $item) {
+            // 1. Format Nama & No Reg
+            $namaReg = '<div><span class="fw-bold text-dark">' . e($item->monitoring_hasil_pasien_nama) . '</span><br>'
+                . '<span class="badge bg-primary rounded-1 mt-1">' . e($item->monitoring_hasil_pasien_reg) . '</span></div>';
+
+            // 2. Jenis Kelamin
+            $jk = ($item->monitoring_hasil_pasien_jk == 'L') ? 'Laki-Laki' : (($item->monitoring_hasil_pasien_jk == 'P') ? 'Perempuan' : '-');
+
+            // 3. Tanggal Lahir & Order
+            $tglLahir = $item->monitoring_hasil_pasien_tgl_lahir ? date('d-m-Y', strtotime($item->monitoring_hasil_pasien_tgl_lahir)) : '-';
+            $tglOrder = date('d-m-Y H:i', strtotime($item->created_at));
+
+            // 4. Data Pemeriksaan
+            $pemeriksaanList = DB::table('monitoring_hasil_pemeriksaan')
+                ->join('master_test', 'master_test.master_test_code', '=', 'monitoring_hasil_pemeriksaan.master_test_code')
+                ->where('monitoring_hasil_pasien_code', $item->monitoring_hasil_pasien_code)
+                ->get();
+
+            $htmlPemeriksaan = '<ul class="list-unstyled mb-0">';
+            foreach ($pemeriksaanList as $pem) {
+                $statusBadge = ($pem->monitoring_hasil_pemeriksaan_status == "0")
+                    ? '<span class="badge bg-soft-danger text-danger border border-danger ms-1" data-bs-toggle="tooltip" title="Belum Selesai"><i class="fas fa-times-circle"></i></span>'
+                    : '<span class="badge bg-soft-success text-success border border-success ms-1" data-bs-toggle="tooltip" title="Sudah Selesai"><i class="fas fa-check-circle"></i></span>';
+
+                $htmlPemeriksaan .= '<li class="mb-1 fs--1 text-secondary"><i class="fas fa-vial text-muted me-1"></i>' . e($pem->master_test_name) . ' ' . $statusBadge . '</li>';
+            }
+            $htmlPemeriksaan .= '</ul>';
+
+            // 5. Kurir / Pengambilan Sample
+            $kurir = DB::table('monitoring_hasil_kurir')
+                ->where('monitoring_hasil_pasien_code', $item->monitoring_hasil_pasien_code)
+                ->first();
+
+            $htmlKurir = '-';
+            if ($kurir) {
+                $htmlKurir = '<div><i class="fas fa-truck text-info me-1"></i><strong>' . e($kurir->monitoring_hasil_kurir_name) . '</strong><br>'
+                    . '<small class="text-muted">' . date('d-m-Y H:i', strtotime($kurir->monitoring_hasil_kurir_date)) . '</small></div>';
+            }
+
+            // 6. Tanggal Proses Sample
+            $tglProses = $item->monitoring_hasil_pasien_tgl_periksa ? date('d-m-Y H:i', strtotime($item->monitoring_hasil_pasien_tgl_periksa)) : '<span class="text-muted">-</span>';
+
+            // 7. Status Pasien
+            $statusBadge = '';
+            if ($item->monitoring_hasil_pasien_status == 0) {
+                $statusBadge = '<span class="badge bg-soft-dark text-dark border border-secondary">Order Baru</span>';
+            } elseif ($item->monitoring_hasil_pasien_status == 1) {
+                $statusBadge = '<span class="badge bg-soft-warning text-warning border border-warning">Order Diambil</span>';
+            } elseif ($item->monitoring_hasil_pasien_status == 2) {
+                $statusBadge = '<span class="badge bg-soft-primary text-primary border border-primary">Order Proses</span>';
+            } elseif ($item->monitoring_hasil_pasien_status == 3) {
+                $statusBadge = '<span class="badge bg-soft-success text-success border border-success">Order Selesai</span>';
+            }
+
+            // 8. Action Button (Model Kotak Presisi + Icon + Teks)
+            $btnAction = '
+        <div class="d-flex justify-content-center">
+            <button class="btn btn-primary btn-sm rounded-1 px-2 py-1" id="button-detail-order-pasien" data-code="' . e($item->monitoring_hasil_pasien_code) . '" data-bs-toggle="modal" data-bs-target="#modal-mcu" title="Detail Order">
+                <i class="fas fa-eye"></i>
+            </button>
+        </div>';
+
+            $data[] = [
+                'no'           => $no++,
+                'nama_reg'     => $namaReg,
+                'jk'           => $jk,
+                'tgl_lahir'    => $tglLahir,
+                'tgl_order'    => $tglOrder,
+                'pemeriksaan'  => $htmlPemeriksaan,
+                'sample'       => $htmlKurir,
+                'proses'       => $tglProses,
+                'status'       => $statusBadge,
+                'action'       => $btnAction,
+            ];
+        }
+
+        return response()->json(['data' => $data]);
     }
     public function registrasi_pasien_add_data(Request $request)
     {

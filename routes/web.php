@@ -93,6 +93,7 @@ Route::prefix('application')->group(function () {
     Route::post('monitoring-omset/data', [ApplicationController::class, 'monitoring_omset_data'])->name('monitoring_omset_data');
     // Route::post('monitoring-omset/get-mountly', [ApplicationController::class, 'getMonthlyOmsetByYear'])->name('getMonthlyOmsetByYear');
     // REGISTRASI PASIEN
+    Route::get('registrasi-pasien/get-data', [ApplicationController::class, 'registrasi_pasien_get_data'])->name('registrasi_pasien_get_data');
     Route::post('registrasi-pasien/add-data', [ApplicationController::class, 'registrasi_pasien_add_data'])->name('registrasi_pasien_add_data');
     Route::post('registrasi-pasien/save-data', [ApplicationController::class, 'registrasi_pasien_save_data'])->name('registrasi_pasien_save_data');
     // UPLOAD DATA OMSET

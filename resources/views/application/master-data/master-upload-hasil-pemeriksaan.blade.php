@@ -368,7 +368,7 @@
     $(document).on("click", "#button-proses-data-pasien", function(e) {
         e.preventDefault();
         $('#loading-button').html(
-            '<button class="btn btn-primary" type="button" disabled=""><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Loading...</button>'
+            '<button class="btn btn-primary" type="button" disabled=""><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...</button>'
         );
         const no_reg = document.getElementById('no_reg').value;
 
@@ -409,12 +409,19 @@
                         dataType: 'html',
                     }).done(function(data) {
                         if (data == 1) {
-                            swalWithBootstrapButtons.fire({
+                            // 1. Tutup modal secara otomatis
+                            $('#modal-mcu').modal('hide');
+
+                            // 2. Tampilkan notifikasi sukses (otomatis hilang dalam 1.5 detik)
+                            Swal.fire({
+                                icon: "success",
                                 title: "Sukses!",
                                 text: "Your Data has Been Success.",
-                                icon: "success"
+                                timer: 1500,
+                                showConfirmButton: false
                             });
-                            // Refresh tabel tanpa reload halaman penuh
+
+                            // 3. Refresh data tabel DataTables
                             $('#example').DataTable().ajax.reload();
                         } else {
                             swalWithBootstrapButtons.fire({

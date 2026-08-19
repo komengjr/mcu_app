@@ -1,172 +1,283 @@
 @extends('layouts.template')
+
 @section('base.css')
 <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.4/css/responsive.bootstrap5.css">
 <link href="{{ asset('vendors/choices/choices.min.css') }}" rel="stylesheet" />
+
+<style>
+    /* Gradient Header Modern */
+    .bg-gradient-danger-custom {
+        background: linear-gradient(135deg, #e63757 0%, #b80924 100%);
+    }
+
+    .bg-soft-primary {
+        background-color: #e0f2fe !important;
+    }
+
+    .bg-soft-danger {
+        background-color: #ffe5e7 !important;
+    }
+
+    .bg-soft-success {
+        background-color: #dcfce7 !important;
+    }
+
+    .bg-soft-info {
+        background-color: #e0e7ff !important;
+    }
+
+    .bg-soft-warning {
+        background-color: #fef3c7 !important;
+    }
+
+    .bg-soft-dark {
+        background-color: #f1f5f9 !important;
+    }
+
+    /* Styling Header Tabel & Border */
+    .table-custom thead th {
+        background-color: #f8fafc !important;
+        color: #475569 !important;
+        font-weight: 700 !important;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        letter-spacing: 0.5px;
+        padding-top: 12px !important;
+        padding-bottom: 12px !important;
+    }
+
+    .table-custom tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table-custom tbody tr:hover {
+        background-color: #f1f5f9 !important;
+    }
+
+    /* Mengatur padding filter & pagination DataTables agar tetap rapi meski padding tabel 0 */
+    div.dt-container div.dt-layout-row {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+</style>
 @endsection
+
 @section('content')
-<div class="row mb-3">
-    <div class="col">
-        <div class="card bg-200 shadow border border-danger">
-            <div class="row gx-0 flex-between-center">
-                <div class="col-sm-auto d-flex align-items-center border-bottom">
-                    <img class="ms-3 mx-3" src="{{ asset('img/company.png') }}" alt="" width="50" />
-                    <div>
-                        <h6 class="text-danger fs--1 mb-0 pt-2">Welcome to </h6>
-                        <h4 class="text-danger fw-bold mb-1">Management <span class="text-danger fw-medium">
-                                System</span></h4>
+<!-- Header Card Berwarna Modern -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-3 bg-gradient-danger-custom text-white overflow-hidden">
+            <div class="card-body p-4 position-relative">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center">
+                            <div class="p-3 bg-white bg-opacity-20 rounded-3 me-3">
+                                <img src="{{ asset('img/company.png') }}" alt="Logo" width="45" />
+                            </div>
+                            <div>
+                                <h6 class="text-white-50 text-uppercase fw-semibold mb-0 fs--1">Management System</h6>
+                                <h2 class="text-white fw-bold mb-0">Upload Hasil Pemeriksaan</h2>
+                            </div>
+                        </div>
                     </div>
-                    <img class="ms-n4 d-none d-lg-block "
-                        src="{{ asset('asset/img/illustrations/crm-line-chart.png') }}" alt="" width="150" />
-                </div>
-                <div class="col-xl-auto px-3 py-2">
-                    <h6 class="text-danger fs--1 mb-0">Menu : </h6>
-                    <h4 class="text-danger fw-bold mb-0">Upload <span class="text-danger fw-medium">Hasil</span>
-                    </h4>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <span class="badge bg-white text-danger fs--1 px-3 py-2 rounded-2 shadow-sm">
+                            <i class="fas fa-vials me-1"></i> Monitoring Realtime
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="card mb-3">
-    <div class="card-header bg-danger">
-        <div class="row align-items-center">
+
+<!-- Main Data Card -->
+<div class="card border-0 shadow-sm rounded-3 mb-4">
+    <div class="card-header bg-white border-bottom p-3">
+        <div class="row align-items-center justify-content-between">
             <div class="col">
-                <h3 class="m-0"><span class="badge bg-danger m-0 p-0">Upload Hasil</span></h3>
+                <h5 class="mb-0 text-dark fw-bold"><i class="fas fa-list text-danger me-2"></i>Daftar Hasil Pasien</h5>
             </div>
             <div class="col-auto">
                 <div class="btn-group" role="group">
-                    <button class="btn btn-sm btn-falcon-primary dropdown-toggle" id="btnGroupVerticalDrop2"
-                        type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
-                            class="fas fa-align-left me-1" data-fa-transform="shrink-3"></span>Menu Master</button>
-                    <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
-                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu"
-                            id="button-import-pasien-lama" data-code="123"><span class="far fa-edit"></span>
-                            Import Pasien Lama</button>
-                        <div class="dropdown-divider"></div>
-                        <!-- <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-cabang"
-                            id="button-data-barang-cabang" data-code="123"><span class="far fa-folder-open"></span>
-                            History</button> -->
+                    <button class="btn btn-sm btn-outline-danger rounded-2 px-3 shadow-sm dropdown-toggle" id="btnGroupVerticalDrop2" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-bars me-1"></i> Menu Master
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="btnGroupVerticalDrop2">
+                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-mcu" id="button-import-pasien-lama" data-code="123">
+                            <i class="far fa-edit me-2 text-primary"></i> Import Pasien Lama
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="card-body border-top p-3">
-        <table id="example" class="table table-striped fs--2" style="width:100%">
-            <thead class="bg-200 text-700">
-                <tr>
-                    <th>No</th>
-                    <th>Rujukan</th>
-                    <th>Nama Pasien / No Reg</th>
-                    <th>Jenis Kelamin</th>
-                    <th>Tanggal Lahir</th>
-                    <th>Pemeriksaan</th>
-                    <th>Pengambilan Sample</th>
-                    <th>Proses Sample</th>
-                    <th>Status Hasil</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                $no = 1;
-                @endphp
-                @foreach ($data as $datas)
-                <tr>
-                    <td>{{ $no++ }}</td>
-                    <td>{{ $datas->fullname }} <br><span class="badge bg-primary">{{ date("d-m-Y H:i:s", strtotime($datas->created_at)) }}</span></td>
-                    <td>{{ $datas->monitoring_hasil_pasien_nama }} <br><span class="badge bg-primary">{{ $datas->monitoring_hasil_pasien_reg }}</span></td>
-                    <td>
-                        @if ($datas->monitoring_hasil_pasien_jk == "L")
-                        Laki - Laki
-                        @elseif ($datas->monitoring_hasil_pasien_jk == "P")
-                        Perempuan
-                        @endif
-                    </td>
-                    <td>{{ date("d-m-Y", strtotime($datas->monitoring_hasil_pasien_tgl_lahir)) }}</td>
-                    <td>
-                        @php
-                        $pemeriksaan = DB::table('monitoring_hasil_pemeriksaan')
-                        ->join('master_test','master_test.master_test_code','=','monitoring_hasil_pemeriksaan.master_test_code')
-                        ->where('monitoring_hasil_pasien_code',$datas->monitoring_hasil_pasien_code)->get();
-                        @endphp
-                        @foreach ($pemeriksaan as $pem)
-                        <li>
-                            {{ $pem->master_test_name }}
-                            @if ($pem->monitoring_hasil_pemeriksaan_status == "0")
-                            <span class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="right" title="Belum Selesai"><i class="fas fa-window-close"></i></span>
-                            @else
-                            <span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="right" title="Sudah Selesai"><i class="fas fa-check-square"></i></span>
-                            @endif
-                        </li>
-                        @endforeach
-                    </td>
-                    <td>
-                        @php
-                        $kurir = DB::table('monitoring_hasil_kurir')->where('monitoring_hasil_pasien_code',$datas->monitoring_hasil_pasien_code)->first();
-                        @endphp
-                        @if ($kurir)
-                        {{ $kurir->monitoring_hasil_kurir_name }} <br>
-                        {{ date("d-m-Y H:i:s", strtotime($kurir->monitoring_hasil_kurir_date )) }}
-                        @endif
-                    </td>
-                    <td>
-                        @if ($datas->monitoring_hasil_pasien_tgl_periksa != "")
-                        {{ date("d-m-Y H:i:s", strtotime($datas->monitoring_hasil_pasien_tgl_periksa)) }}
-                        @endif
-                    </td>
-                    <td class="text-center">
-                        @if ($datas->monitoring_hasil_pasien_status == 0)
-                        <span class="badge bg-dark">Order Baru</span>
-                        @elseif($datas->monitoring_hasil_pasien_status == 1)
-                        <span class="badge bg-warning">Order Telah di ambil</span>
-                        @elseif($datas->monitoring_hasil_pasien_status == 2)
-                        <span class="badge bg-primary">Order Proses</span>
-                        @elseif($datas->monitoring_hasil_pasien_status == 3)
-                        <span class="badge bg-success">Order selesai</span>
-                        @endif
-                    </td>
-                    <td class="text-center">
-                        <button class="btn btn-primary btn-sm" id="button-detail-order-pasien" data-code="{{ $datas->monitoring_hasil_pasien_code }}" data-bs-toggle="modal" data-bs-target="#modal-mcu">Detail</button>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+
+    <!-- Table Container tanpa Padding Kiri & Kanan (px-0) agar Full Width -->
+    <div class="card-body px-0 py-3">
+        <div class="table-responsive">
+            <table id="example" class="table table-custom align-middle fs--1 w-100 mb-0">
+                <thead>
+                    <tr>
+                        <th width="3%" class="ps-3">No</th>
+                        <th width="15%">Rujukan</th>
+                        <th width="18%">Nama Pasien / No Reg</th>
+                        <th width="10%">Jenis Kelamin</th>
+                        <th width="9%">Tgl Lahir</th>
+                        <th width="18%">Pemeriksaan</th>
+                        <th width="12%">Pengambilan Sample</th>
+                        <th width="9%">Proses Sample</th>
+                        <th width="8%" class="text-center">Status</th>
+                        <th width="11%" class="text-center pe-3">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loaded via AJAX DataTables -->
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 @endsection
+
 @section('base.js')
-<div class="modal fade" id="modal-mcu" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="false">
+<div class="modal fade" id="modal-mcu" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="false">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content border-0">
-            <div class="position-absolute top-0 end-0 mt-3 me-3 z-index-1">
-                <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base"
-                    data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+        <div class="modal-content border-0 shadow-lg rounded-3">
             <div id="menu-mcu"></div>
         </div>
     </div>
 </div>
+
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
 <script src="https://cdn.datatables.net/responsive/3.0.4/js/dataTables.responsive.js"></script>
 <script src="https://cdn.datatables.net/responsive/3.0.4/js/responsive.bootstrap5.js"></script>
 <script src="{{ asset('vendors/choices/choices.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-    new DataTable('#example', {
-        responsive: true
+    $(document).ready(function() {
+        var table = $('#example').DataTable({
+            responsive: true,
+            ajax: {
+                url: "{{ route('master_upload_hasil_pemeriksaan_get_data') }}",
+                type: "GET",
+                dataSrc: "data"
+            },
+            language: {
+                processing: '<div class="spinner-border text-danger my-3" role="status"><span class="visually-hidden">Loading...</span></div>'
+            },
+            columns: [{
+                    data: 'no',
+                    className: 'ps-3'
+                },
+                {
+                    data: 'rujukan'
+                },
+                {
+                    data: 'nama_reg'
+                },
+                {
+                    data: 'jk'
+                },
+                {
+                    data: 'tgl_lahir'
+                },
+                {
+                    data: 'pemeriksaan'
+                },
+                {
+                    data: 'sample'
+                },
+                {
+                    data: 'proses'
+                },
+                {
+                    data: 'status',
+                    className: 'text-center'
+                },
+                {
+                    data: 'action',
+                    className: 'text-center pe-3',
+                    orderable: false,
+                    searchable: false
+                }
+            ],
+            drawCallback: function() {
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            }
+        });
+
+        // Event Edit Pasien Modal Loader
+        $(document).on("click", "#button-edit-pasien", function(e) {
+            e.preventDefault();
+            var code = $(this).data("code");
+            $('#menu-mcu').html(
+                '<div class="text-center my-5"><div class="spinner-border text-danger" role="status"></div><p class="mt-2 text-muted">Memuat Form Edit...</p></div>'
+            );
+            $.ajax({
+                url: "{{ route('master_upload_hasil_pemeriksaan_edit_pasien') }}",
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": code
+                },
+                dataType: 'html',
+            }).done(function(data) {
+                $('#menu-mcu').html(data);
+            }).fail(function() {
+                $('#menu-mcu').html('<div class="alert alert-danger m-3">Gagal memuat form edit.</div>');
+            });
+        });
+
+        // Event Submit Update Pasien via AJAX
+        $(document).on("submit", "#form-edit-pasien", function(e) {
+            e.preventDefault();
+            let btn = $('#btn-save-edit-pasien');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...');
+
+            $.ajax({
+                url: "{{ route('master_upload_hasil_pemeriksaan_update_pasien') }}",
+                type: "POST",
+                data: $(this).serialize(),
+                dataType: "json",
+                success: function(res) {
+                    btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Simpan Perubahan');
+                    if (res.status === 1) {
+                        $('#modal-mcu').modal('hide');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: res.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        $('#example').DataTable().ajax.reload();
+                    } else {
+                        Swal.fire('Error', res.message, 'error');
+                    }
+                },
+                error: function(xhr) {
+                    btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Simpan Perubahan');
+                    Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
+                }
+            });
+        });
     });
 </script>
+
 <script>
     $(document).on("click", "#button-import-pasien-lama", function(e) {
         e.preventDefault();
         var code = $(this).data("code");
         $('#menu-mcu').html(
-            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            '<div class="text-center my-5"><div class="spinner-border text-danger" role="status"></div></div>'
         );
         $.ajax({
             url: "{{ route('master_upload_hasil_import_pasien_lama') }}",
@@ -180,14 +291,15 @@
         }).done(function(data) {
             $('#menu-mcu').html(data);
         }).fail(function() {
-            $('#menu-mcu').html('eror');
+            $('#menu-mcu').html('<div class="alert alert-danger m-3">Terjadi Kesalahan.</div>');
         });
     });
+
     $(document).on("click", "#button-detail-order-pasien", function(e) {
         e.preventDefault();
         var code = $(this).data("code");
         $('#menu-mcu').html(
-            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+            '<div class="text-center my-5"><div class="spinner-border text-danger" role="status"></div></div>'
         );
         $.ajax({
             url: "{{ route('master_upload_hasil_pemeriksaan_detail') }}",
@@ -201,9 +313,10 @@
         }).done(function(data) {
             $('#menu-mcu').html(data);
         }).fail(function() {
-            $('#menu-mcu').html('eror');
+            $('#menu-mcu').html('<div class="alert alert-danger m-3">Terjadi Kesalahan.</div>');
         });
     });
+
     $(document).on("click", "#button-verif-test-pemeriksaan", function(e) {
         e.preventDefault();
         var code = $(this).data("code");
@@ -227,6 +340,7 @@
             $('#menu-verifikasi-test-pemeriksaan').html('eror');
         });
     });
+
     $(document).on("click", "#button-unverif-test-pemeriksaan", function(e) {
         e.preventDefault();
         var code = $(this).data("code");
@@ -250,8 +364,7 @@
             $('#menu-verifikasi-test-pemeriksaan').html('eror');
         });
     });
-</script>
-<script>
+
     $(document).on("click", "#button-proses-data-pasien", function(e) {
         e.preventDefault();
         $('#loading-button').html(
@@ -301,7 +414,8 @@
                                 text: "Your Data has Been Success.",
                                 icon: "success"
                             });
-                            location.reload();
+                            // Refresh tabel tanpa reload halaman penuh
+                            $('#example').DataTable().ajax.reload();
                         } else {
                             swalWithBootstrapButtons.fire({
                                 title: "Cancelled",
@@ -323,18 +437,18 @@
                             '<button class="btn btn-primary" type="button" id="button-save-data-pasien"><span class="fas fa-save"></span> Simpan & Kirim</button>'
                         );
                     });
-                } else if (result.dismiss === Swal.DismissReason.cancel)
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
                     swalWithBootstrapButtons.fire({
                         title: "Cancelled",
                         text: "Failed",
                         icon: "error"
                     });
-                $('#loading-button').html(
-                    '<button class="btn btn-primary" type="button" id="button-save-data-pasien"><span class="fas fa-save"></span> Simpan & Kirim</button>'
-                );
+                    $('#loading-button').html(
+                        '<button class="btn btn-primary" type="button" id="button-save-data-pasien"><span class="fas fa-save"></span> Simpan & Kirim</button>'
+                    );
+                }
             });
         }
-
     });
 </script>
 @endsection

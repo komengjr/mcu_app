@@ -100,6 +100,9 @@ Route::prefix('application')->group(function () {
     Route::post('upload-data-omset/store', [ApplicationController::class, 'upload_data_omset_store'])->name('upload_data_omset_store');
     Route::post('target-cabang-omset/store', [ApplicationController::class, 'target_cabang_store'])->name('target_cabang_store');
     // UPLOAD HASIL
+    Route::get('master-upload-hasil-pemeriksaan/get-data', [ApplicationController::class, 'master_upload_hasil_pemeriksaan_get_data'])->name('master_upload_hasil_pemeriksaan_get_data');
+    Route::post('master-upload-hasil-pemeriksaan/edit-pasien', [ApplicationController::class, 'editPasien'])->name('master_upload_hasil_pemeriksaan_edit_pasien');
+    Route::post('master-upload-hasil-pemeriksaan/update-pasien', [ApplicationController::class, 'updatePasien'])->name('master_upload_hasil_pemeriksaan_update_pasien');
     Route::post('master-upload-hasil-pemeriksaan/import/pasien-lama', [ApplicationController::class, 'master_upload_hasil_import_pasien_lama'])->name('master_upload_hasil_import_pasien_lama');
     Route::post('master-upload-hasil-pemeriksaan/import/pasien-lama-save', [ApplicationController::class, 'master_upload_hasil_import_pasien_lama_save'])->name('master_upload_hasil_import_pasien_lama_save');
     Route::post('master-upload-hasil-pemeriksaan/detail-pasien', [ApplicationController::class, 'master_upload_hasil_pemeriksaan_detail'])->name('master_upload_hasil_pemeriksaan_detail');

@@ -112,6 +112,7 @@ Route::prefix('application')->group(function () {
     Route::post('master-test-pemeriksaan/import-test', [ApplicationController::class, 'master_test_pemeriksaan_import_test'])->name('master_test_pemeriksaan_import_test');
     Route::post('master-test-pemeriksaan/import-test-save', [ApplicationController::class, 'master_test_pemeriksaan_import_test_save'])->name('master_test_pemeriksaan_import_test_save');
 
+    Route::post('monitoring-mcu/get-data', [ApplicationController::class, 'monitoring_mcu_get_data'])->name('monitoring_mcu_get_data');
     Route::post('monitoring-mcu/detail/belum', [ApplicationController::class, 'monitoring_mcu_detail_belum'])->name('monitoring_mcu_detail_belum');
     Route::post('monitoring-mcu/detail/sudah', [ApplicationController::class, 'monitoring_mcu_detail_sudah'])->name('monitoring_mcu_detail_sudah');
     Route::post('monitoring-mcu/live-mcu-peserta', [ApplicationController::class, 'monitoring_mcu_live_mcu_peserta'])->name('monitoring_mcu_live_mcu_peserta');

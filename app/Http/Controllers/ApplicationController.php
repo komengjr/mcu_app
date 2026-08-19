@@ -51,18 +51,59 @@ class ApplicationController extends Controller
     public function monitoring_mcu($akses)
     {
         if ($this->url_akses($akses) == true) {
-            if (Auth::user()->access_code == 'master') {
-                $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
-                    ->join('company_mou_access', 'company_mou_access.company_mou_code', '=', 'company_mou.company_mou_code')->get();
-            } else {
-                $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
-                    ->join('company_mou_access', 'company_mou_access.company_mou_code', '=', 'company_mou.company_mou_code')
-                    ->where('company_mou_access.userid', Auth::user()->userid)->get();
-            }
-            return view('application.dashboard.monitoring-mcu', ['data' => $data]);
+            return view('application.dashboard.monitoring-mcu');
         } else {
             return Redirect::to('dashboard/home');
         }
+    }
+    public function monitoring_mcu_get_data(Request $request)
+    {
+        $akses = 'monitoring_mcu';
+
+
+        // Query Dasar
+        $query = DB::table('company_mou')
+            ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->join('company_mou_access', 'company_mou_access.company_mou_code', '=', 'company_mou.company_mou_code');
+
+        if (Auth::user()->access_code !== 'master') {
+            $query->where('company_mou_access.userid', Auth::user()->userid);
+        }
+
+        $listmou = $query->get();
+
+        // Olah data beserta kalkulasi totalnya
+        $result = $listmou->map(function ($item) {
+            $total = DB::table('company_mou_peserta')
+                ->where('company_mou_code', $item->company_mou_code)
+                ->count();
+
+            $totalmcu = DB::table('log_lokasi_pasien')
+                ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
+                ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+                ->where('company_mou_peserta.company_mou_code', $item->company_mou_code)
+                ->count();
+
+            $sisaMcu = $total - $totalmcu;
+            $persentase = $total > 0 ? round(($totalmcu / $total) * 100, 2) : 0;
+
+            return [
+                'company_mou_code' => $item->company_mou_code,
+                'company_mou_name' => $item->company_mou_name,
+                'master_company_name' => $item->master_company_name,
+                'start_date' => date('d-m-Y', strtotime($item->company_mou_start)),
+                'end_date' => date('d-m-Y', strtotime($item->company_mou_end)),
+                'total' => $total,
+                'total_mcu' => $totalmcu,
+                'sisa_mcu' => $sisaMcu,
+                'persentase' => $persentase,
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $result
+        ]);
     }
     public function monitoring_mcu_cari_nama(Request $request)
     {

@@ -107,17 +107,53 @@ class ApplicationController extends Controller
     }
     public function monitoring_mcu_cari_nama(Request $request)
     {
-        if (Auth::user()->access_code == 'master') {
-            $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
-                ->join('company_mou_access', 'company_mou_access.company_mou_code', '=', 'company_mou.company_mou_code')
-                ->where('company_mou.company_mou_name', 'like', '%' . $request->code . '%')->get();
-        } else {
-            $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
-                ->join('company_mou_access', 'company_mou_access.company_mou_code', '=', 'company_mou.company_mou_code')
-                ->where('company_mou.company_mou_name', 'like', '%' . $request->code . '%')
-                ->where('company_mou_access.userid', Auth::user()->userid)->get();
+        $keyword = $request->input('code');
+
+        $query = DB::table('company_mou')
+            ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->join('company_mou_access', 'company_mou_access.company_mou_code', '=', 'company_mou.company_mou_code');
+
+        if (Auth::user()->access_code !== 'master') {
+            $query->where('company_mou_access.userid', Auth::user()->userid);
         }
-        return view('application.dashboard.hasil-pencarian-mcu', ['data' => $data]);
+
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('company_mou.company_mou_name', 'LIKE', "%{$keyword}%")
+                    ->orWhere('master_company.master_company_name', 'LIKE', "%{$keyword}%");
+            });
+        }
+
+        $listmou = $query->get();
+
+        $result = $listmou->map(function ($item) {
+            $total = DB::table('company_mou_peserta')
+                ->where('company_mou_code', $item->company_mou_code)
+                ->count();
+
+            $totalmcu = DB::table('log_lokasi_pasien')
+                ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
+                ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+                ->where('company_mou_peserta.company_mou_code', $item->company_mou_code)
+                ->count();
+
+            return [
+                'company_mou_code' => $item->company_mou_code,
+                'company_mou_name' => $item->company_mou_name,
+                'master_company_name' => $item->master_company_name,
+                'start_date' => date('d-m-Y', strtotime($item->company_mou_start)),
+                'end_date' => date('d-m-Y', strtotime($item->company_mou_end)),
+                'total' => $total,
+                'total_mcu' => $totalmcu,
+                'sisa_mcu' => $total - $totalmcu,
+                'persentase' => $total > 0 ? round(($totalmcu / $total) * 100, 2) : 0,
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $result
+        ]);
     }
     public function monitoring_mcu_detail(Request $request)
     {

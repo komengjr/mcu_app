@@ -35,18 +35,17 @@
     <div class="card-body">
         <div class="row flex-between-center">
             <div class="col-sm-auto mb-2 mb-sm-0" id="loading-download">
-                <!-- Diisi via AJAX -->
                 <h6 class="mb-0" id="text-total-project">Showing 0 Project</h6>
             </div>
             <div class="col-sm-auto">
                 <div class="row gx-2 align-items-center">
                     <div class="col-auto">
-                        <form class="row gx-2">
+                        <form class="row gx-2" onsubmit="return false;">
                             <div class="col-auto"><small>Search by name: </small></div>
                             <div class="col-auto">
                                 <div class="search">
                                     <div class="position-relative">
-                                        <input class="form-control search-input fuzzy-search" type="search" id="carimcu" onkeydown="search(this)" placeholder="Search..." aria-label="Search" />
+                                        <input class="form-control search-input fuzzy-search" type="search" id="carimcu" onkeyup="searchMCU(this)" placeholder="Search..." aria-label="Search" />
                                     </div>
                                 </div>
                             </div>
@@ -397,23 +396,47 @@
         });
     });
 
-    function search(ele) {
-        var code = document.getElementById("carimcu").value;
-        $.ajax({
-            url: "{{ route('monitoring_mcu_cari_nama') }}",
-            type: "POST",
-            cache: false,
-            data: {
-                "_token": "{{ csrf_token() }}",
-                "code": code
-            },
-            dataType: 'html',
-        }).done(function(data) {
-            $("#menu-monitoring-mcu").html(data);
-        }).fail(function() {
-            $("#menu-monitoring-mcu").html('<i class="fa fa-info-sign"></i> Something went wrong, Please try again...');
-        });
+    var searchTimer = null;
+
+    function searchMCU(element) {
+        var keyword = $(element).val();
+
+        // Tampilkan indikator loading ringan saat pengguna mengetik
+        $('#menu-monitoring-mcu').html(
+            '<div class="text-center py-5"><div class="spinner-border text-danger" role="status"></div><p class="mt-2 text-600">Mencari project...</p></div>'
+        );
+
+        // Bersihkan timer sebelumnya
+        clearTimeout(searchTimer);
+
+        // Set timer pencarian baru (delay 400ms setelah user berhenti mengetik)
+        searchTimer = setTimeout(function() {
+            $.ajax({
+                url: "{{ route('monitoring_mcu_cari_nama') }}",
+                type: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "code": keyword
+                },
+                dataType: 'json',
+                success: function(res) {
+                    if (res.status === 'success') {
+                        // Update angka 'Showing X Project' secara realtime
+                        $('#text-total-project').text('Showing ' + res.data.length + ' Project');
+
+                        // Render ulang kartu project dengan fungsi yang sudah ada
+                        renderCardMCU(res.data);
+                    } else {
+                        $('#menu-monitoring-mcu').html('<div class="alert alert-danger m-3">Gagal memuat hasil pencarian.</div>');
+                    }
+                },
+                error: function() {
+                    $('#menu-monitoring-mcu').html('<div class="alert alert-danger m-3">Terjadi kesalahan pada server.</div>');
+                }
+            });
+        }, 400);
     }
+
 
     $(document).on("click", "#button-monitoring-pilih-paket", function(e) {
         e.preventDefault();

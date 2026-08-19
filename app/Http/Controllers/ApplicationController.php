@@ -208,42 +208,150 @@ class ApplicationController extends Controller
     }
     public function monitoring_mcu_rekap_full(Request $request)
     {
+        $code = $request->code;
+
+        // Permintaan awal untuk membuka Modal HTML
+        if ($request->type !== 'data') {
+            return view('application.dashboard.monitoring.rekap-full', compact('code'));
+        }
+
+        // --- PROSES AMBIL DATA JSON (POLLING REALTIME) ---
         $data = DB::table('company_mou')
             ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
-            ->where('company_mou.company_mou_code', $request->code)
+            ->where('company_mou.company_mou_code', $code)
             ->first();
-        $cab = DB::table('log_lokasi_pasien')
-            ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
-            ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
-            ->where('company_mou_peserta.company_mou_code', $request->code)->orderBy('master_cabang.id_master_cabang', 'ASC')->get()->unique('master_cabang_city');
-        $cabang = DB::table('log_lokasi_pasien')
-            ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
-            ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
-            ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'master_cabang.master_cabang_code')
-            ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
-            ->where('company_mou_peserta.company_mou_code', $request->code)
-            ->get()
-            ->unique('lokasi_cabang');
-        $totalpeserta = DB::table('company_mou_peserta')->where('company_mou_code', $request->code)->count();
-        $totalmcu = DB::table('log_lokasi_pasien')
-            ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
-            ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
-            ->where('company_mou_peserta.company_mou_code', $request->code)
+
+        if (!$data) {
+            return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan'], 404);
+        }
+
+        $totalpeserta = DB::table('company_mou_peserta')
+            ->where('company_mou_code', $code)
             ->count();
-        $group = DB::table('log_lokasi_pasien')
-            ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
-            ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
-            ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'master_cabang.master_cabang_code')
-            ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
-            ->where('company_mou_peserta.company_mou_code', $request->code)
-            ->get()->unique('group_cabang_code');
-        return view('application.dashboard.monitoring.rekap-full', [
-            'data' => $data,
-            'cabang' => $cabang,
-            'cab' => $cab,
-            'totalpeserta' => $totalpeserta,
-            'totalmcu' => $totalmcu,
-            'group' => $group,
+
+        $totalmcu = DB::table('log_lokasi_pasien as log')
+            ->join('company_mou_peserta as cmp', 'cmp.mou_peserta_code', '=', 'log.mou_peserta_code')
+            ->where('cmp.company_mou_code', $code)
+            ->count();
+
+        $cabang = DB::table('log_lokasi_pasien as log')
+            ->join('company_mou_peserta as cmp', 'cmp.mou_peserta_code', '=', 'log.mou_peserta_code')
+            ->join('master_cabang as mc', 'mc.master_cabang_code', '=', 'log.lokasi_cabang')
+            ->join('group_cabang_detail as gcd', 'gcd.master_cabang_code', '=', 'mc.master_cabang_code')
+            ->join('group_cabang as gc', 'gc.group_cabang_code', '=', 'gcd.group_cabang_code')
+            ->leftJoin('log_summary_cabang as lsc', function ($join) use ($code) {
+                $join->on('lsc.master_cabang_code', '=', 'mc.master_cabang_code')
+                    ->where('lsc.company_mou_code', '=', $code);
+            })
+            ->where('cmp.company_mou_code', $code)
+            ->select(
+                'mc.master_cabang_code',
+                'mc.master_cabang_name',
+                'gc.group_cabang_name',
+                'lsc.summary_cabang_executive',
+                'lsc.summary_cabang_pesentasi',
+                'lsc.summary_cabang_ht',
+                DB::raw('COUNT(log.mou_peserta_code) as total_checkin')
+            )
+            ->groupBy(
+                'mc.master_cabang_code',
+                'mc.master_cabang_name',
+                'gc.group_cabang_name',
+                'lsc.summary_cabang_executive',
+                'lsc.summary_cabang_pesentasi',
+                'lsc.summary_cabang_ht'
+            )
+            ->get();
+
+        $groupChart = DB::table('log_lokasi_pasien as log')
+            ->join('company_mou_peserta as cmp', 'cmp.mou_peserta_code', '=', 'log.mou_peserta_code')
+            ->join('group_cabang_detail as gcd', 'gcd.master_cabang_code', '=', 'log.lokasi_cabang')
+            ->join('group_cabang as gc', 'gc.group_cabang_code', '=', 'gcd.group_cabang_code')
+            ->where('cmp.company_mou_code', $code)
+            ->select('gc.group_cabang_code', 'gc.group_cabang_name', DB::raw('COUNT(log.mou_peserta_code) as total'))
+            ->groupBy('gc.group_cabang_code', 'gc.group_cabang_name')
+            ->get();
+
+        $pesertaRaw = DB::table('log_lokasi_pasien as log')
+            ->join('company_mou_peserta as cmp', 'cmp.mou_peserta_code', '=', 'log.mou_peserta_code')
+            ->join('master_cabang as mc', 'mc.master_cabang_code', '=', 'log.lokasi_cabang')
+            ->join('group_cabang_detail as gcd', 'gcd.master_cabang_code', '=', 'mc.master_cabang_code')
+            ->join('group_cabang as gc', 'gc.group_cabang_code', '=', 'gcd.group_cabang_code')
+            ->leftJoin('log_pengiriman_pasien as lpp', 'lpp.mou_peserta_code', '=', 'cmp.mou_peserta_code')
+            ->leftJoin('log_konsultasi_pasien as lkp', 'lkp.mou_peserta_code', '=', 'cmp.mou_peserta_code')
+            ->where('cmp.company_mou_code', $code)
+            ->select(
+                'cmp.mou_peserta_code',
+                'cmp.mou_peserta_name',
+                'cmp.mou_peserta_nik',
+                'cmp.mou_peserta_jk',
+                'cmp.mou_agreement_code',
+                'mc.master_cabang_code',
+                'mc.id_master_cabang',
+                'mc.master_cabang_name',
+                'gc.group_cabang_code',
+                'gc.group_cabang_name',
+                'lpp.mou_peserta_code as is_pengiriman',
+                'lkp.mou_peserta_code as is_konsul'
+            )
+            ->get();
+
+        $pesertaCodes = $pesertaRaw->pluck('mou_peserta_code')->toArray();
+        $logPemeriksaan = DB::table('log_pemeriksaan_pasien')
+            ->whereIn('mou_peserta_code', $pesertaCodes)
+            ->get()
+            ->groupBy('mou_peserta_code');
+
+        $agreementCodes = $pesertaRaw->pluck('mou_agreement_code')->unique()->toArray();
+        $agreementSubs = DB::table('company_mou_agreement_sub')
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+            ->whereIn('company_mou_agreement_sub.mou_agreement_code', $agreementCodes)
+            ->select('company_mou_agreement_sub.mou_agreement_code', 'master_pemeriksaan.master_pemeriksaan_code', 'master_pemeriksaan.master_pemeriksaan_name')
+            ->get()
+            ->groupBy('mou_agreement_code');
+
+        $pesertaFormatted = $pesertaRaw->map(function ($p) use ($logPemeriksaan, $agreementSubs) {
+            $subs = $agreementSubs[$p->mou_agreement_code] ?? collect();
+            $userLogs = collect($logPemeriksaan[$p->mou_peserta_code] ?? []);
+
+            $p->list_pemeriksaan = $subs->map(function ($sub) use ($userLogs) {
+                $check = $userLogs->where('master_pemeriksaan_code', $sub->master_pemeriksaan_code)->first();
+                return [
+                    'nama' => $sub->master_pemeriksaan_name,
+                    'status' => $check ? ($check->log_pemeriksaan_status == 1 ? 1 : 0) : -1
+                ];
+            });
+
+            return $p;
+        });
+
+        $groups = $pesertaFormatted->groupBy('group_cabang_code')->map(function ($items) {
+            return [
+                'group_cabang_code' => $items->first()->group_cabang_code,
+                'group_cabang_name' => $items->first()->group_cabang_name,
+                'cabang_list' => $items->groupBy('master_cabang_code')->map(function ($cabangItems) {
+                    return [
+                        'id_master_cabang' => $cabangItems->first()->id_master_cabang,
+                        'master_cabang_code' => $cabangItems->first()->master_cabang_code,
+                        'master_cabang_name' => $cabangItems->first()->master_cabang_name,
+                        'peserta' => $cabangItems->values()
+                    ];
+                })->values()
+            ];
+        })->values();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'company' => $data,
+                'totalpeserta' => $totalpeserta,
+                'totalmcu' => $totalmcu,
+                'sisa_mcu' => $totalpeserta - $totalmcu,
+                'persentase' => $totalpeserta > 0 ? round(($totalmcu / $totalpeserta) * 100, 2) : 0,
+                'cabang' => $cabang,
+                'groupChart' => $groupChart,
+                'groups' => $groups
+            ]
         ]);
     }
     public function monitoring_mcu_rekap_full_detail(Request $request)

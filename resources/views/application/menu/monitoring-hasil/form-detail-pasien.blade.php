@@ -45,7 +45,7 @@
         @endif
         @elseif ($order->monitoring_hasil_pasien_status == 2)
         @elseif ($order->monitoring_hasil_pasien_status == 3)
-        <iframe src="{{ asset($order->monitoring_hasil_pasien_file) }}" frameborder="0" style="width: 100%; height: 500px;"></iframe>
+        <iframe src="{{ route('monitoring_hasil_detail_pasien_view_file', ['code' => $order->monitoring_hasil_pasien_code]) }}" frameborder="0" style="width: 100%; height: 500px;"></iframe>
         @endif
     </div>
 </div>

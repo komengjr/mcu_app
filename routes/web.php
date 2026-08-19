@@ -87,6 +87,7 @@ Route::prefix('application')->group(function () {
     Route::post('monitoring-hasil/remove-pemeriksaan', [ApplicationController::class, 'monitoring_hasil_remove_pemeriksaan'])->name('monitoring_hasil_remove_pemeriksaan');
     Route::post('monitoring-hasil/save-pasien', [ApplicationController::class, 'monitoring_hasil_save_pasien'])->name('monitoring_hasil_save_pasien');
     Route::post('monitoring-hasil/detail-pasien', [ApplicationController::class, 'monitoring_hasil_detail_pasien'])->name('monitoring_hasil_detail_pasien');
+    Route::get('monitoring-hasil/view-file/{code}', [ApplicationController::class, 'monitoring_hasil_detail_pasien_view_file'])->name('monitoring_hasil_detail_pasien_view_file');
     Route::post('monitoring-hasil/order-kurir', [ApplicationController::class, 'monitoring_hasil_order_kurir'])->name('monitoring_hasil_order_kurir');
     // MONITORING OMSET
     Route::post('monitoring-omset/data', [ApplicationController::class, 'monitoring_omset_data'])->name('monitoring_omset_data');

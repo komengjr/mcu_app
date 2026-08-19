@@ -22,6 +22,7 @@ use Session;
 use iio\libmergepdf\Merger;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class ApplicationController extends Controller
 {
@@ -882,6 +883,29 @@ class ApplicationController extends Controller
     {
         $order = DB::table('monitoring_hasil_pasien')->where('monitoring_hasil_pasien_code', $request->code)->first();
         return view('application.menu.monitoring-hasil.form-detail-pasien', ['order' => $order]);
+    }
+    public function monitoring_hasil_detail_pasien_view_file($code)
+    {
+        $order = DB::table('monitoring_hasil_pasien')->where('monitoring_hasil_pasien_code', $code)->first();
+
+        if (!$order || !$order->monitoring_hasil_pasien_file) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        $filePath = $order->monitoring_hasil_pasien_file;
+
+        // Opsi A: Jika file tersimpan di disk 'storage/app/public' atau 'storage/app'
+        if (Storage::exists($filePath)) {
+            return Storage::response($filePath);
+        }
+        // Opsi B: Jika nilai kolom di DB berupa path relatif direktori (misal: 'uploads/pdf/sample.pdf')
+        else if (file_exists(storage_path('app/public/' . $filePath))) {
+            return response()->file(storage_path('app/public/' . $filePath));
+        } else if (file_exists(public_path($filePath))) {
+            return response()->file(public_path($filePath));
+        }
+
+        abort(404, 'File fisik tidak ditemukan pada server.');
     }
     public function monitoring_hasil_order_kurir(Request $request)
     {

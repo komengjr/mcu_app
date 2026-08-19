@@ -232,6 +232,12 @@
                                             data-code="{{ $datas->company_mou_code }}">
                                             <span class="fas fa-file-export"></span>
                                             <span class="d-none d-md-inline-block">Export</span></a>
+                                        <a class="btn btn-sm btn-dark d-lg-block mt-lg-2" href="#!"
+                                            id="button-live-mcu-peserta" data-bs-toggle="modal"
+                                            data-bs-target="#modal-monitoring"
+                                            data-code="{{ $datas->company_mou_code }}">
+                                            <span class="fas fa-tv"></span>
+                                            <span class="d-none d-md-inline-block">Live MCU</span></a>
                                     </div>
                                 </div>
                             </div>
@@ -456,6 +462,29 @@
             // setTimeout(() => {
             //     location.reload();
             // }, 2000);
+        });
+    });
+    $(document).on("click", "#button-live-mcu-peserta", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        $('#menu-monitoring').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('monitoring_mcu_live_mcu_peserta') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-monitoring').html(data);
+        }).fail(function() {
+            $('#menu-monitoring').html(
+                '<span class="badge bg-warning m-4">Gagal memuat modal.</span>'
+            );
         });
     });
 </script>

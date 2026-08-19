@@ -114,6 +114,7 @@ Route::prefix('application')->group(function () {
 
     Route::post('monitoring-mcu/detail/belum', [ApplicationController::class, 'monitoring_mcu_detail_belum'])->name('monitoring_mcu_detail_belum');
     Route::post('monitoring-mcu/detail/sudah', [ApplicationController::class, 'monitoring_mcu_detail_sudah'])->name('monitoring_mcu_detail_sudah');
+    Route::post('monitoring-mcu/live-mcu-peserta', [ApplicationController::class, 'monitoring_mcu_live_mcu_peserta'])->name('monitoring_mcu_live_mcu_peserta');
     Route::post('monitoring-mcu/rekap', [ApplicationController::class, 'monitoring_mcu_rekap'])->name('monitoring_mcu_rekap');
     Route::post('monitoring-mcu/rekap-full', [ApplicationController::class, 'monitoring_mcu_rekap_full'])->name('monitoring_mcu_rekap_full');
     Route::post('monitoring-mcu/rekap-full/detail-paket', [ApplicationController::class, 'monitoring_mcu_rekap_full_detail_paket'])->name('monitoring_mcu_rekap_full_detail_paket');

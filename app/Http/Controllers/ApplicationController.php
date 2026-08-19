@@ -206,6 +206,113 @@ class ApplicationController extends Controller
         $dompdf->get_canvas()->page_text(34, 820, "Print by. " . Auth::user()->fullname, $font1, 10, array(0, 0, 0));
         return base64_encode($pdf->stream());
     }
+    public function monitoring_mcu_live_mcu_peserta(Request $request)
+    {
+        $code = $request->code;
+
+        // 1. Jika request dari AJAX pertama kali -> Kembalikan View Modal HTML
+        if ($request->type !== 'data') {
+            return view('application.dashboard.monitoring.live-mcu-peserta', compact('code'));
+        }
+
+        // 2. Ambil data peserta yang sedang MCU
+        $pesertaLive = DB::table('log_lokasi_pasien as log')
+            ->join('company_mou_peserta as cmp', 'cmp.mou_peserta_code', '=', 'log.mou_peserta_code')
+            ->join('master_cabang as mc', 'mc.master_cabang_code', '=', 'log.lokasi_cabang')
+            ->leftJoin('log_pemeriksaan_pasien as lpp', 'lpp.mou_peserta_code', '=', 'cmp.mou_peserta_code')
+            ->where('cmp.company_mou_code', $code)
+            ->select(
+                'cmp.mou_peserta_code',
+                'cmp.mou_peserta_name',
+                'cmp.mou_peserta_nik',
+                'cmp.mou_peserta_jk',
+                'cmp.mou_agreement_code',
+                'mc.master_cabang_name',
+                // Mengambil waktu check-in dari log_lokasi_pasien.created_at
+                'log.created_at as waktu_checkin',
+                // Urutan aktivitas berdasarkan created_at pemeriksaan terbaru atau created_at check-in
+                DB::raw('COALESCE(MAX(lpp.created_at), log.created_at) as aktivitas_terakhir')
+            )
+            ->groupBy(
+                'cmp.mou_peserta_code',
+                'cmp.mou_peserta_name',
+                'cmp.mou_peserta_nik',
+                'cmp.mou_peserta_jk',
+                'cmp.mou_agreement_code',
+                'mc.master_cabang_name',
+                'log.created_at'
+            )
+            // Urutkan dari aktivitas created_at terbaru (paling atas)
+            ->orderBy('aktivitas_terakhir', 'DESC')
+            ->get();
+
+        $pesertaCodes = $pesertaLive->pluck('mou_peserta_code')->toArray();
+
+        $logPemeriksaan = DB::table('log_pemeriksaan_pasien')
+            ->whereIn('mou_peserta_code', $pesertaCodes)
+            ->select('mou_peserta_code', 'master_pemeriksaan_code', 'log_pemeriksaan_status', 'created_at')
+            ->get()
+            ->groupBy('mou_peserta_code');
+
+        $agreementCodes = $pesertaLive->pluck('mou_agreement_code')->unique()->toArray();
+        $agreementSubs = DB::table('company_mou_agreement_sub')
+            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+            ->whereIn('company_mou_agreement_sub.mou_agreement_code', $agreementCodes)
+            ->select('company_mou_agreement_sub.mou_agreement_code', 'master_pemeriksaan.master_pemeriksaan_code', 'master_pemeriksaan.master_pemeriksaan_name')
+            ->get()
+            ->groupBy('mou_agreement_code');
+
+        // Formatter Data
+        $dataFormatted = $pesertaLive->map(function ($p) use ($logPemeriksaan, $agreementSubs) {
+            $subs = $agreementSubs[$p->mou_agreement_code] ?? collect();
+            $userLogs = collect($logPemeriksaan[$p->mou_peserta_code] ?? []);
+
+            $totalPemeriksaan = $subs->count();
+            $selesaiCount = 0;
+
+            $pemeriksaanList = $subs->map(function ($sub) use ($userLogs, &$selesaiCount) {
+                $check = $userLogs->where('master_pemeriksaan_code', $sub->master_pemeriksaan_code)->first();
+                $status = $check ? $check->log_pemeriksaan_status : -1;
+
+                $waktuSelesai = ($check && $status == 1 && $check->created_at)
+                    ? date('H:i:s', strtotime($check->created_at))
+                    : null;
+
+                if ($status == 1) {
+                    $selesaiCount++;
+                }
+
+                return [
+                    'nama' => $sub->master_pemeriksaan_name,
+                    'status' => $status,
+                    'waktu_selesai' => $waktuSelesai
+                ];
+            });
+
+            $progressPercent = $totalPemeriksaan > 0 ? round(($selesaiCount / $totalPemeriksaan) * 100) : 0;
+
+            return [
+                'mou_peserta_code' => $p->mou_peserta_code,
+                'name' => $p->mou_peserta_name,
+                'nik' => $p->mou_peserta_nik,
+                'jk' => $p->mou_peserta_jk,
+                'cabang' => $p->master_cabang_name,
+                // Mengirim waktu checkin dari log_lokasi_pasien.created_at
+                'waktu_checkin' => date('d-m-Y H:i', strtotime($p->waktu_checkin)),
+                'aktivitas_terakhir' => date('d-m-Y H:i:s', strtotime($p->aktivitas_terakhir)),
+                'total_pemeriksaan' => $totalPemeriksaan,
+                'selesai_pemeriksaan' => $selesaiCount,
+                'progress_percent' => $progressPercent,
+                'list_pemeriksaan' => $pemeriksaanList
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'total_sedang_mcu' => $dataFormatted->count(),
+            'data' => $dataFormatted
+        ]);
+    }
     public function monitoring_mcu_rekap_full(Request $request)
     {
         $code = $request->code;

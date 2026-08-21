@@ -164,7 +164,7 @@
 <div class="row mb-3">
     <div class="col-12">
         <div class="card bg-white shadow-sm border-0 rounded-3 overflow-hidden position-relative">
-            <div class="card-body p-4">
+            <div class="card-body px-4">
                 <div class="row align-items-center">
                     <div class="col-md-7 d-flex align-items-center">
                         <div class="p-3 bg-soft-primary rounded-3 text-primary me-3">
@@ -386,7 +386,7 @@
                                         <i class="fas fa-file-export"></i>
                                         <span>Export</span>
                                     </a>
-                                    <a href="#!" class="btn-sq btn-sq-live" id="button-live-mcu-peserta" data-bs-toggle="modal" data-bs-target="#modal-monitoring" data-code="${item.company_mou_code}" title="Live MCU Monitoring">
+                                    <a href="#!" class="btn-sq btn-sq-live" id="button-live-mcu-peserta" data-code="${item.company_mou_code}" title="Live MCU Monitoring">
                                         <i class="fas fa-heartbeat"></i>
                                         <span>Live MCU</span>
                                     </a>
@@ -553,21 +553,31 @@
 
     $(document).on("click", "#button-live-mcu-peserta", function(e) {
         e.preventDefault();
+
         var code = $(this).data("code");
-        showModalLoading();
-        $.ajax({
-            url: "{{ route('monitoring_mcu_live_mcu_peserta') }}",
-            type: "POST",
-            cache: false,
-            data: {
-                "_token": "{{ csrf_token() }}",
-                "code": code
-            },
-            dataType: 'html',
-        }).done(function(data) {
-            $('#menu-monitoring').html(data);
-        }).fail(function() {
-            $('#menu-monitoring').html('<span class="badge bg-warning m-4">Gagal memuat modal.</span>');
+
+        // Generate URL route Laravel dengan mengganti placeholder :code
+        var url = "{{ route('monitoring_mcu_live_mcu_peserta_company', ':code') }}";
+        url = url.replace(':code', code);
+
+        // Tampilkan SweetAlert Loading
+        Swal.fire({
+            title: 'Memuat Data...',
+            text: 'Membuka halaman live monitoring',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+
+                // Beri jeda singkat agar indikator loading sempat terlihat oleh user
+                setTimeout(function() {
+                    // Buka di tab baru
+                    window.open(url, '_blank');
+
+                    // Tutup alert setelah halaman baru terbuka
+                    Swal.close();
+                }, 800);
+            }
         });
     });
 

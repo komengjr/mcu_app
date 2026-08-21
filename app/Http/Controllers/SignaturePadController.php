@@ -20,6 +20,8 @@ class SignaturePadController extends Controller
     {
         $data = DB::table('log_kehadiran_pasien')
             ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_kehadiran_pasien.mou_peserta_code')
+            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
+            ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
             ->where('log_kehadiran_pasien_token', $id)
             ->first();
         if ($data) {
@@ -232,7 +234,8 @@ class SignaturePadController extends Controller
             return 0;
         }
     }
-    public function notifikasi(){
+    public function notifikasi()
+    {
         return view('notifikasi');
     }
 }

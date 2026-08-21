@@ -6,107 +6,187 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <title>Pemeriksaan Selesai | Medical Check Up</title>
 
-    <!-- ===============================================-->
-    <!--    Document Title-->
-    <!-- ===============================================-->
-    <title>Medical Check Up | Management System</title>
-
-
-    <!-- ===============================================-->
-    <!--    Favicons-->
-    <!-- ===============================================-->
+    <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('img/dashboard.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/dashboard.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('img/dashboard.png') }}">
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('img/dashboard.png') }}">
-    <link rel="manifest" href="{{ asset('asset/img/favicons/manifest.json') }}">
-    <meta name="msapplication-TileImage" content="{{ asset('img/dashboard.png') }}">
     <meta name="theme-color" content="#ffffff">
     <script src="{{ asset('asset/js/config.js') }}"></script>
-    {{-- <script src="{{ asset('vendors/overlayscrollbars/OverlayScrollbars.min.js') }}"></script> --}}
 
-
-    <!-- ===============================================-->
-    <!--    Stylesheets-->
-    <!-- ===============================================-->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link
-        href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:300,400,500,600,700,800,900&amp;display=swap"
-        rel="stylesheet">
-    <link href="{{ asset('vendors/overlayscrollbars/OverlayScrollbars.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('asset/css/theme-rtl.min.css') }}" rel="stylesheet" id="style-rtl">
+    <!-- Fonts & Core Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="{{ asset('asset/css/theme.min.css') }}" rel="stylesheet" id="style-default">
-    <link href="{{ asset('asset/css/user-rtl.min.css') }}" rel="stylesheet" id="user-style-rtl">
-    <link href="{{ asset('asset/css/user.min.css') }}" rel="stylesheet" id="user-style-default">
-    <script>
-        var isRTL = JSON.parse(localStorage.getItem('isRTL'));
-        if (isRTL) {
-            var linkDefault = document.getElementById('style-default');
-            var userLinkDefault = document.getElementById('user-style-default');
-            linkDefault.setAttribute('disabled', true);
-            userLinkDefault.setAttribute('disabled', true);
-            document.querySelector('html').setAttribute('dir', 'rtl');
-        } else {
-            var linkRTL = document.getElementById('style-rtl');
-            var userLinkRTL = document.getElementById('user-style-rtl');
-            linkRTL.setAttribute('disabled', true);
-            userLinkRTL.setAttribute('disabled', true);
-        }
-    </script>
-</head>
 
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            background-color: #f8fafc;
+        }
+
+        /* Minimal Card Container */
+        .card-minimal-success {
+            border-radius: 24px !important;
+            border: none !important;
+            box-shadow: 0 20px 40px -15px rgba(230, 0, 38, 0.12) !important;
+            background: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-minimal-success::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #FF3355 0%, #E60026 100%);
+        }
+
+        /* Logo Box */
+        .logo-box {
+            background: #ffffff;
+            padding: 6px 16px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px -3px rgba(0, 0, 0, 0.06);
+            border: 1px solid #F1F5F9;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-box img {
+            max-height: 38px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* Minimal Success Pulse Icon */
+        .icon-circle {
+            width: 76px;
+            height: 76px;
+            background: linear-gradient(135deg, #FF3B5C 0%, #E60026 100%);
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            margin: 0 auto 1.25rem auto;
+            box-shadow: 0 10px 25px -5px rgba(230, 0, 38, 0.35);
+        }
+
+        /* Timer Badge */
+        .timer-badge {
+            background-color: #FFF0F2;
+            color: #900018;
+            border: 1px solid rgba(230, 0, 38, 0.2);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* Action Button */
+        .btn-vibrant-red {
+            background: linear-gradient(135deg, #FF3B5C 0%, #E60026 100%);
+            color: #fff;
+            border: none;
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 8px 20px;
+            box-shadow: 0 8px 20px -5px rgba(230, 0, 38, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-vibrant-red:hover {
+            color: #fff;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
 
 <body>
 
-    <!-- ===============================================-->
-    <!--    Main Content-->
-    <!-- ===============================================-->
     <main class="main" id="top">
-        <div class="container" data-layout="container">
-            <script>
-                var isFluid = JSON.parse(localStorage.getItem('isFluid'));
-                if (isFluid) {
-                    var container = document.querySelector('[data-layout]');
-                    container.classList.remove('container');
-                    container.classList.add('container-fluid');
-                }
-            </script>
-            <div class="row flex-center min-vh-100 py-6">
-                <div class="col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4"><a class="d-flex flex-center mb-4"
-                        href="../../../index.html"><img class="" src="{{ asset('img/pram.png') }}" alt=""
-                            width="158" />
-                        {{-- <span class="font-sans-serif fw-bolder fs-5 d-inline-block"> MCU</span> --}}
-                    </a>
-                    <div class="card">
+        <div class="container">
+            <div class="row flex-center min-vh-100 py-4">
+                <div class="col-sm-9 col-md-7 col-lg-5 col-xl-4 text-center">
+
+                    <!-- Header Logo -->
+                    <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
+                        <div class="logo-box">
+                            <img src="{{ asset('img/pram.png') }}" alt="Logo Utama">
+                        </div>
+                        @if (!empty($data->master_company_logo) && file_exists(public_path('uploads/company_logo/' . $data->master_company_logo)))
+                        <div class="logo-box">
+                            <img src="{{ asset('uploads/company_logo/' . $data->master_company_logo) }}" alt="Logo Company">
+                        </div>
+                        @endif
+                    </div>
+
+                    <!-- Minimal Success Card -->
+                    <div class="card card-minimal-success">
                         <div class="card-body p-4 p-sm-5">
-                            <div class="text-center">
-                                <img class="d-block mx-auto mb-4"
-                                    src="{{ asset('img/kehadiran.png') }}" alt="shield"
-                                    width="100" />
-                                <h4>See you again!</h4>
-                                <p>Thanks for using System. You are <br />Waiting for 3 Sec.</p>
+
+                            <!-- Success Icon -->
+                            <div class="icon-circle">
+                                <span class="fas fa-check"></span>
                             </div>
+
+                            <h3 class="fw-bold text-900 mb-2">Pemeriksaan Selesai!</h3>
+                            <p class="text-600 fs--1 mb-4">
+                                Data status pemeriksaan Anda telah berhasil diperbarui dan tersimpan.
+                            </p>
+
+                            <!-- Timer Alert -->
+                            <div class="timer-badge mb-4">
+                                Halaman menutup otomatis dalam <span id="countdown" class="fw-bold text-danger">3</span> detik
+                            </div>
+
+                            <!-- Close Button -->
+                            <div>
+                                <button onclick="window.close()" class="btn btn-vibrant-red w-100 fs--1">
+                                    Tutup Halaman
+                                </button>
+                            </div>
+
                         </div>
                     </div>
+
+                    <div class="text-400 fs--2 mt-3">
+                        &copy; {{ date('Y') }} MCU Management System
+                    </div>
+
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- ===============================================-->
-    <!--    JavaScripts-->
-    <!-- ===============================================-->
+    <!-- Essential Scripts -->
     <script src="{{ asset('vendors/bootstrap/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('vendors/anchorjs/anchor.min.js') }}"></script>
-    <script src="{{ asset('vendors/is/is.min.js') }}"></script>
     <script src="{{ asset('vendors/fontawesome/all.min.js') }}"></script>
-    <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
-    <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
+
+    <!-- Countdown Timer -->
     <script>
-        setTimeout(() => {
-            window.close();
-        }, 2000);
+        let timeLeft = 3;
+        const countdownElement = document.getElementById('countdown');
+
+        const timer = setInterval(() => {
+            timeLeft--;
+            if (countdownElement) {
+                countdownElement.textContent = timeLeft;
+            }
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                window.close();
+            }
+        }, 1000);
     </script>
 </body>
 

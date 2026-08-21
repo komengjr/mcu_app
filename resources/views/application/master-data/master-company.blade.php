@@ -74,7 +74,22 @@
                 <tr>
                     <td>{{ $no++ }}</td>
                     <td>{{ $datas->master_company_code }}</td>
-                    <td>{{ $datas->master_company_name }}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            @if ($datas->master_company_logo && file_exists(public_path('uploads/company_logo/' . $datas->master_company_logo)))
+                            <img src="{{ asset('uploads/company_logo/' . $datas->master_company_logo) }}"
+                                alt="Logo {{ $datas->master_company_name }}"
+                                class="rounded-circle me-2 border"
+                                style="width: 35px; height: 35px; object-fit: cover;">
+                            @else
+                            <img src="{{ asset('img/company.png') }}"
+                                alt="Default Logo"
+                                class="rounded-circle me-2 border"
+                                style="width: 35px; height: 35px; object-fit: cover;">
+                            @endif
+                            <span class="fw-semi-bold">{{ $datas->master_company_name }}</span>
+                        </div>
+                    </td>
                     <td>{{ $datas->master_company_wilayah }}</td>
                     <td>{{ $datas->master_company_email }}</td>
                     <td>{{ $datas->master_company_phone }}</td>
@@ -94,24 +109,30 @@
                             <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
                                 <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-company"
                                     id="button-edit-company" data-code="{{$datas->master_company_code}}">
-                                    <span class="nav-link-icon">
-                                        <span class="far fa-edit"></span>
-                                    </span>
-                                    Edit Perusahaan</button>
+                                    <span class="nav-link-icon"><span class="far fa-edit"></span></span>
+                                    Edit Perusahaan
+                                </button>
                                 <div class="dropdown-divider"></div>
+
+                                <!-- MENU UPLOAD LOGO -->
+                                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-upload-logo"
+                                    id="button-upload-logo-company" data-code="{{$datas->master_company_code}}">
+                                    <span class="nav-link-icon"><span class="fas fa-image"></span></span>
+                                    Upload Logo
+                                </button>
+                                <div class="dropdown-divider"></div>
+
                                 <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-company-full"
                                     id="button-data-mou-company" data-code="{{$datas->master_company_code}}">
-                                    <span class="nav-link-icon">
-                                        <span class="far fa-folder-open"></span>
-                                    </span>
-                                    MOU Perusahaan</button>
+                                    <span class="nav-link-icon"><span class="far fa-folder-open"></span></span>
+                                    MOU Perusahaan
+                                </button>
                                 <div class="dropdown-divider"></div>
                                 <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-company-full"
                                     id="button-data-location-company" data-code="{{$datas->master_company_code}}">
-                                    <span class="nav-link-icon">
-                                        <span class="fas fa-map-marked"></span>
-                                    </span>
-                                    Lokasi Perusahaan</button>
+                                    <span class="nav-link-icon"><span class="fas fa-map-marked"></span></span>
+                                    Lokasi Perusahaan
+                                </button>
                             </div>
                         </div>
                     </td>
@@ -144,6 +165,19 @@
                     data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div id="menu-company"></div>
+        </div>
+    </div>
+</div>
+<!-- Modal Upload Logo -->
+<div class="modal fade" id="modal-upload-logo" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1"
+    aria-labelledby="modalUploadLogoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0">
+            <div class="position-absolute top-0 end-0 mt-3 me-3 z-index-1">
+                <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="menu-upload-logo"></div>
         </div>
     </div>
 </div>
@@ -336,6 +370,83 @@
             }
         });
 
+    });
+
+    // Load Form Modal Upload Logo
+    $(document).on("click", "#button-upload-logo-company", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        $('#menu-upload-logo').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('master_company_modal_upload_logo') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-upload-logo').html(data);
+        }).fail(function() {
+            $('#menu-upload-logo').html('<div class="p-4 text-center text-danger">Gagal memuat modal.</div>');
+        });
+    });
+
+    // Process Submit Upload Logo
+    $(document).on("submit", "#form-upload-logo", function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        Swal.fire({
+            title: 'Memproses...',
+            text: 'Sedang mengunggah logo perusahaan',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        $.ajax({
+            url: "{{ route('master_company_process_upload_logo') }}",
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: response.message,
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: response.message
+                    });
+                }
+            },
+            error: function(xhr) {
+                var errorMsg = 'Terjadi kesalahan pada sistem.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: errorMsg
+                });
+            }
+        });
     });
 </script>
 @endsection

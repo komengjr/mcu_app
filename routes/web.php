@@ -121,6 +121,8 @@ Route::prefix('application')->group(function () {
     Route::post('monitoring-mcu/detail/belum', [ApplicationController::class, 'monitoring_mcu_detail_belum'])->name('monitoring_mcu_detail_belum');
     Route::post('monitoring-mcu/detail/sudah', [ApplicationController::class, 'monitoring_mcu_detail_sudah'])->name('monitoring_mcu_detail_sudah');
     Route::post('monitoring-mcu/live-mcu-peserta', [ApplicationController::class, 'monitoring_mcu_live_mcu_peserta'])->name('monitoring_mcu_live_mcu_peserta');
+    Route::get('monitoring-mcu/live-data-mcu-peserta/{code}', [ApplicationController::class, 'monitoring_mcu_live_mcu_peserta_company'])->name('monitoring_mcu_live_mcu_peserta_company');
+
     Route::post('monitoring-mcu/rekap', [ApplicationController::class, 'monitoring_mcu_rekap'])->name('monitoring_mcu_rekap');
     Route::post('monitoring-mcu/rekap-full', [ApplicationController::class, 'monitoring_mcu_rekap_full'])->name('monitoring_mcu_rekap_full');
     Route::post('monitoring-mcu/rekap-full/detail-paket', [ApplicationController::class, 'monitoring_mcu_rekap_full_detail_paket'])->name('monitoring_mcu_rekap_full_detail_paket');
@@ -184,6 +186,11 @@ Route::prefix('application')->group(function () {
     Route::post('master-company/data-location-company/add-handle', [ApplicationController::class, 'master_company_data_location_company_add_handle'])->name('master_company_data_location_company_add_handle');
     Route::post('master-company/data-location-company/save-handle', [ApplicationController::class, 'master_company_data_location_company_save_handle'])->name('master_company_data_location_company_save_handle');
     Route::post('master-company/data-location-company/remove-handle', [ApplicationController::class, 'master_company_data_location_company_remove_handle'])->name('master_company_data_location_company_remove_handle');
+    // Route Tampilkan Form Modal Upload Logo
+    Route::post('master-company/modal-upload-logo', [ApplicationController::class, 'modalUploadLogo'])->name('master_company_modal_upload_logo');
+
+    // Route Proses Store Upload Logo
+    Route::post('master-company/process-upload-logo', [ApplicationController::class, 'processUploadLogo'])->name('master_company_process_upload_logo');
     // MOU COMPANY
     Route::post('mou-company/add', [ApplicationController::class, 'mou_company_add'])->name('mou_company_add');
     Route::post('mou-company/save', [ApplicationController::class, 'mou_company_save'])->name('mou_company_save');

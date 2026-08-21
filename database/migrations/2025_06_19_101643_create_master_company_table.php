@@ -23,6 +23,7 @@ class CreateMasterCompanyTable extends Migration
             $table->string('master_company_phone')->nullable();
             $table->string('master_company_email')->nullable();
             $table->string('master_company_level');
+            $table->text('master_company_logo')->nullable();
             $table->string('master_company_user');
             $table->integer('master_company_status');
             $table->timestamps();

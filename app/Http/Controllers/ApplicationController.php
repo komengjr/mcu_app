@@ -22,6 +22,7 @@ use Session;
 use iio\libmergepdf\Merger;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class ApplicationController extends Controller
@@ -412,6 +413,126 @@ class ApplicationController extends Controller
             'total_sedang_mcu' => $dataFormatted->count(),
             'data' => $dataFormatted
         ]);
+    }
+    public function monitoring_mcu_live_mcu_peserta_company(Request $request, $code)
+    {
+        if ($request->type === 'data') {
+            // Ambil SEMUA peserta berdasarkan company_mou_code
+            $pesertaSemua = DB::table('company_mou_peserta as cmp')
+                ->leftJoin('log_lokasi_pasien as log', 'log.mou_peserta_code', '=', 'cmp.mou_peserta_code')
+                ->leftJoin('master_cabang as mc', 'mc.master_cabang_code', '=', 'log.lokasi_cabang')
+                ->leftJoin('log_pemeriksaan_pasien as lpp', 'lpp.mou_peserta_code', '=', 'cmp.mou_peserta_code')
+                ->where('cmp.company_mou_code', $code)
+                ->select(
+                    'cmp.mou_peserta_code',
+                    'cmp.mou_peserta_name',
+                    'cmp.mou_peserta_nik',
+                    'cmp.mou_peserta_jk',
+                    'cmp.mou_agreement_code',
+                    'mc.master_cabang_name',
+                    'log.created_at as waktu_checkin',
+                    DB::raw('COALESCE(MAX(lpp.created_at), log.created_at) as aktivitas_terakhir')
+                )
+                ->groupBy(
+                    'cmp.mou_peserta_code',
+                    'cmp.mou_peserta_name',
+                    'cmp.mou_peserta_nik',
+                    'cmp.mou_peserta_jk',
+                    'cmp.mou_agreement_code',
+                    'mc.master_cabang_name',
+                    'log.created_at'
+                )
+                ->orderBy('aktivitas_terakhir', 'DESC')
+                ->get();
+
+            $pesertaCodes = $pesertaSemua->pluck('mou_peserta_code')->toArray();
+
+            $logPemeriksaan = DB::table('log_pemeriksaan_pasien')
+                ->whereIn('mou_peserta_code', $pesertaCodes)
+                ->select('mou_peserta_code', 'master_pemeriksaan_code', 'log_pemeriksaan_status', 'created_at')
+                ->get()
+                ->groupBy('mou_peserta_code');
+
+            $agreementCodes = $pesertaSemua->pluck('mou_agreement_code')->unique()->toArray();
+            $agreementSubs = DB::table('company_mou_agreement_sub')
+                ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+                ->whereIn('company_mou_agreement_sub.mou_agreement_code', $agreementCodes)
+                ->select('company_mou_agreement_sub.mou_agreement_code', 'master_pemeriksaan.master_pemeriksaan_code', 'master_pemeriksaan.master_pemeriksaan_name')
+                ->get()
+                ->groupBy('mou_agreement_code');
+
+            $dataFormatted = $pesertaSemua->map(function ($p) use ($logPemeriksaan, $agreementSubs) {
+                $subs = $agreementSubs[$p->mou_agreement_code] ?? collect();
+                $userLogs = collect($logPemeriksaan[$p->mou_peserta_code] ?? []);
+
+                $totalPemeriksaan = $subs->count();
+                $selesaiCount = 0;
+
+                $pemeriksaanList = $subs->map(function ($sub) use ($userLogs, &$selesaiCount) {
+                    $check = $userLogs->where('master_pemeriksaan_code', $sub->master_pemeriksaan_code)->first();
+                    $status = $check ? $check->log_pemeriksaan_status : -1;
+
+                    $waktuSelesai = ($check && $status == 1 && $check->created_at)
+                        ? date('H:i:s', strtotime($check->created_at))
+                        : null;
+
+                    if ($status == 1) {
+                        $selesaiCount++;
+                    }
+
+                    return [
+                        'nama' => $sub->master_pemeriksaan_name,
+                        'status' => $status,
+                        'waktu_selesai' => $waktuSelesai
+                    ];
+                });
+
+                $progressPercent = $totalPemeriksaan > 0 ? round(($selesaiCount / $totalPemeriksaan) * 100) : 0;
+
+                // Penanda apakah sudah check-in atau belum
+                $isCheckin = !empty($p->waktu_checkin);
+
+                return [
+                    'mou_peserta_code' => $p->mou_peserta_code,
+                    'name' => $p->mou_peserta_name,
+                    'nik' => $p->mou_peserta_nik,
+                    'jk' => $p->mou_peserta_jk,
+                    'cabang' => $p->master_cabang_name ?? '-',
+                    'is_checkin' => $isCheckin,
+                    'waktu_checkin' => $isCheckin ? date('d-m-Y H:i', strtotime($p->waktu_checkin)) : '-',
+                    'aktivitas_terakhir' => $p->aktivitas_terakhir ? date('d-m-Y H:i:s', strtotime($p->aktivitas_terakhir)) : '-',
+                    'total_pemeriksaan' => $totalPemeriksaan,
+                    'selesai_pemeriksaan' => $selesaiCount,
+                    'progress_percent' => $progressPercent,
+                    'list_pemeriksaan' => $pemeriksaanList
+                ];
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'total_sedang_mcu' => $dataFormatted->count(),
+                'data' => $dataFormatted
+            ]);
+        }
+
+        $company = DB::table('company_mou')
+            ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou.company_mou_code', $code)->first();
+
+        // return view('application.dashboard.monitoring.live-mcu-peserta', compact('code', 'company'));
+        if (Auth::user()->access_code == 'master') {
+            return view('application.dashboard.monitoring.live-mcu-data-pesertta', compact('code', 'company'));
+            # code...
+        } else {
+            $akses  = DB::table('company_mou_access')
+                ->where('company_mou_code', $code)
+                ->where('userid', Auth::user()->userid)->first();
+            if ($akses) {
+                return view('application.dashboard.monitoring.live-mcu-data-pesertta', compact('code', 'company'));
+            } else {
+                return redirect()->route('dashboard.home')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+            }
+        }
     }
     public function monitoring_mcu_rekap_full(Request $request)
     {
@@ -2654,6 +2775,93 @@ class ApplicationController extends Controller
     {
         DB::table('company_location_handle')->where('id_company_location_handle', $requestq->code)->delete();
         return 123;
+    }
+    public function modalUploadLogo(Request $request)
+    {
+        $code = $request->input('code');
+
+        $company = DB::table('master_company')
+            ->where('master_company_code', $code)
+            ->first();
+
+        if (!$company) {
+            return response()->html('<div class="p-4 text-center text-danger">Data perusahaan tidak ditemukan.</div>');
+        }
+
+        return view('application.master-data.company.modal_upload_logo', compact('company'));
+    }
+
+    /**
+     * Memproses Simpan File Logo Perusahaan
+     */
+    public function processUploadLogo(Request $request)
+    {
+        $request->validate([
+            'master_company_code' => 'required',
+            'master_company_logo' => 'required|image|mimes:jpeg,png,jpg,svg|max:2048', // Maksimal 2MB
+        ]);
+
+        try {
+            $code = $request->input('master_company_code');
+
+            $company = DB::table('master_company')
+                ->where('master_company_code', $code)
+                ->first();
+
+            if (!$company) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Data perusahaan tidak ditemukan!'
+                ], 404);
+            }
+
+            if ($request->hasFile('master_company_logo')) {
+                $file = $request->file('master_company_logo');
+
+                // Format nama file: LOGO_KODEPERUSAHAAN_TIMESTAMP.ext
+                $filename = 'LOGO_' . $code . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $destinationPath = public_path('uploads/company_logo');
+
+                // Buat direktori jika belum ada
+                if (!File::exists($destinationPath)) {
+                    File::makeDirectory($destinationPath, 0755, true, true);
+                }
+
+                // Hapus logo lama jika ada
+                if (!empty($company->master_company_logo)) {
+                    $oldLogoPath = $destinationPath . '/' . $company->master_company_logo;
+                    if (File::exists($oldLogoPath)) {
+                        File::delete($oldLogoPath);
+                    }
+                }
+
+                // Pindahkan file ke folder destination
+                $file->move($destinationPath, $filename);
+
+                // Update database
+                DB::table('master_company')
+                    ->where('master_company_code', $code)
+                    ->update([
+                        'master_company_logo' => $filename,
+                        'updated_at' => now(),
+                    ]);
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Logo perusahaan berhasil diunggah!'
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'File logo tidak terdeteksi!'
+            ], 400);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     // COMPANY MOU

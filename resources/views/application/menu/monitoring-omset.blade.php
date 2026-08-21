@@ -89,7 +89,7 @@
         <div class="col-xl-3 col-md-6">
             <div class="card metric-card shadow-sm bg-white p-3">
                 <div class="d-flex align-items-center">
-                    <div class="icon-shape bg-primary bg-opacity-10 text-primary me-3">
+                    <div class="icon-shape bg-primary bg-opacity-10 text-white me-3">
                         <i class="fas fa-wallet"></i>
                     </div>
                     <div>
@@ -104,7 +104,7 @@
         <div class="col-xl-3 col-md-6">
             <div class="card metric-card shadow-sm bg-white p-3">
                 <div class="d-flex align-items-center">
-                    <div class="icon-shape bg-warning bg-opacity-10 text-warning me-3">
+                    <div class="icon-shape bg-warning bg-opacity-10 text-white me-3">
                         <i class="fas fa-bullseye"></i>
                     </div>
                     <div>
@@ -119,7 +119,7 @@
         <div class="col-xl-3 col-md-6">
             <div class="card metric-card shadow-sm bg-white p-3">
                 <div class="d-flex align-items-center">
-                    <div class="icon-shape bg-success bg-opacity-10 text-success me-3">
+                    <div class="icon-shape bg-success bg-opacity-10 text-white me-3">
                         <i class="fas fa-chart-pie"></i>
                     </div>
                     <div>
@@ -134,7 +134,7 @@
         <div class="col-xl-3 col-md-6">
             <div class="card metric-card shadow-sm bg-white p-3">
                 <div class="d-flex align-items-center">
-                    <div class="icon-shape bg-info bg-opacity-10 text-info me-3">
+                    <div class="icon-shape bg-info bg-opacity-10 text-white me-3">
                         <i class="fas fa-receipt"></i>
                     </div>
                     <div>

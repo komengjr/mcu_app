@@ -168,32 +168,36 @@ class ApplicationController extends Controller
     {
         $draw = $request->get('draw');
         $start = $request->get("start");
-        $rowperpage = $request->get("length"); // Rows display per page
+        $rowperpage = $request->get("length");
 
         $columnIndex_arr = $request->get('order');
         $columnName_arr = $request->get('columns');
         $order_arr = $request->get('order');
         $search_arr = $request->get('search');
 
-        $columnIndex = $columnIndex_arr[0]['column']; // Column index
-        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
-        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
-        $searchValue = $search_arr['value']; // Search value
+        $columnIndex = $columnIndex_arr[0]['column'] ?? 0;
+        $columnSortOrder = $order_arr[0]['dir'] ?? 'asc';
+        $searchValue = $search_arr['value'] ?? '';
 
-        // Total records
-        $totalRecords = DB::table('company_mou_peserta')
+        // Total records base
+        $baseQuery = DB::table('company_mou_peserta')
             ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
-            ->where('company_mou_peserta.company_mou_code', $id)->count();
-        $totalRecordswithFilter = DB::table('company_mou_peserta')
-            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
-            ->where('company_mou_peserta.company_mou_code', $id)
-            ->where('company_mou_peserta.mou_peserta_name', 'like', '%' . $searchValue . '%')->count();
+            ->where('company_mou_peserta.company_mou_code', $id);
 
-        // Fetch records
-        $records = DB::table('company_mou_peserta')
-            ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
-            ->where('company_mou_peserta.company_mou_code', $id)
-            ->where('company_mou_peserta.mou_peserta_name', 'like', '%' . $searchValue . '%')
+        $totalRecords = (clone $baseQuery)->count();
+
+        if (!empty($searchValue)) {
+            $baseQuery->where(function ($q) use ($searchValue) {
+                $q->where('company_mou_peserta.mou_peserta_name', 'like', '%' . $searchValue . '%')
+                    ->orWhere('company_mou_peserta.mou_peserta_nip', 'like', '%' . $searchValue . '%')
+                    ->orWhere('company_mou_peserta.mou_peserta_nik', 'like', '%' . $searchValue . '%')
+                    ->orWhere('company_mou_peserta.mou_peserta_departemen', 'like', '%' . $searchValue . '%');
+            });
+        }
+
+        $totalRecordswithFilter = (clone $baseQuery)->count();
+
+        $records = $baseQuery
             ->select('company_mou_peserta.*')
             ->orderBy('id_mou_peserta', $columnSortOrder)
             ->skip($start)
@@ -201,56 +205,74 @@ class ApplicationController extends Controller
             ->get();
 
         $data_arr = array();
-        $no = 1;
-        $pemeriksaan = DB::table('company_mou_agreement_sub')
-            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
-            ->join('company_mou_agreement', 'company_mou_agreement.mou_agreement_code', '=', 'company_mou_agreement_sub.mou_agreement_code')
-            ->where('company_mou_agreement.company_mou_code', $id)->get()->unique('master_pemeriksaan_code');
+        $no = $start + 1;
+
         foreach ($records as $record) {
-            $id = $no++;
-            $nip = $record->mou_peserta_nip;
-            $nama_peserta = $record->mou_peserta_name;
-            $nik = $record->mou_peserta_nik;
-            $ttl = $record->mou_peserta_ttl;
-            $jk = $record->mou_peserta_jk;
-            $departemen = $record->mou_peserta_departemen;
-            $pemeriksaan = DB::table('company_mou_agreement_sub')
-                ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
-                ->where('company_mou_agreement_sub.mou_agreement_code', $record->mou_agreement_code)
-                ->get();
-            $status = "";
+            // Formatting Identitas (NIP & NIK)
+            $nipHtml = '<div class="fw-bold text-dark font-monospace fs--1">' . ($record->mou_peserta_nip ?? '-') . '</div>';
+            if (!empty($record->mou_peserta_nik)) {
+                $nipHtml .= '<div class="text-danger fs--2" title="NIK"><i class="fas fa-id-card me-1"></i>' . $record->mou_peserta_nik . '</div>';
+            }
+
+            // Formatting Nama Peserta
+            $namaHtml = '<div class="fw-bold text-primary">' . $record->mou_peserta_name . '</div>';
+
+            // Formatting Gender / Jenis Kelamin Badge
+            $jkUpper = strtoupper($record->mou_peserta_jk);
+            if ($jkUpper == 'L' || $jkUpper == 'LAKI-LAKI') {
+                $jkHtml = '<span class="badge bg-soft-info text-info rounded-pill px-2 py-1"><i class="fas fa-mars me-1"></i>Laki-laki</span>';
+            } elseif ($jkUpper == 'P' || $jkUpper == 'PEREMPUAN') {
+                $jkHtml = '<span class="badge bg-soft-danger text-danger rounded-pill px-2 py-1"><i class="fas fa-venus me-1"></i>Perempuan</span>';
+            } else {
+                $jkHtml = '<span class="badge bg-soft-secondary text-secondary rounded-pill px-2 py-1">' . ($record->mou_peserta_jk ?? '-') . '</span>';
+            }
+
+            // Check Log Lokasi MCU
             $lokasi = DB::table('log_lokasi_pasien')
-                ->select('master_cabang.master_cabang_name', 'master_cabang.master_cabang_city', 'log_lokasi_pasien.*')
+                ->select('master_cabang.master_cabang_name', 'master_cabang.master_cabang_city', 'log_lokasi_pasien.created_at')
                 ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
                 ->where('log_lokasi_pasien.mou_peserta_code', $record->mou_peserta_code)->first();
+
             if ($lokasi) {
-                $loc = $lokasi->master_cabang_city;
-                $waktu = $lokasi->created_at;
-                $status = 'Sudah MCU';
+                $formattedDate = date('d M Y, H:i', strtotime($lokasi->created_at));
+                $statusHtml = '
+                <div class="d-flex flex-column align-items-start">
+                    <span class="badge bg-soft-success text-success border border-success border-opacity-25 mb-1 px-2 py-1">
+                        <i class="fas fa-check-circle me-1"></i>Sudah MCU
+                    </span>
+                    <small class="text-700 fw-semi-bold fs--2">
+                        <i class="fas fa-map-marker-alt text-danger me-1"></i>' . $lokasi->master_cabang_name . ' (' . $lokasi->master_cabang_city . ')
+                    </small>
+                    <small class="text-400 fs--2">
+                        <i class="fas fa-clock me-1"></i>' . $formattedDate . ' WIB
+                    </small>
+                </div>';
             } else {
-                $loc = "";
-                $waktu = "";
-                $status = 'Belum MCU';
+                $statusHtml = '
+                <span class="badge bg-soft-warning text-warning border border-warning border-opacity-25 px-2 py-1">
+                    <i class="fas fa-hourglass-half me-1"></i>Belum MCU
+                </span>';
             }
 
             $data_arr[] = array(
-                "id" => $id,
-                "nip" => $nip,
-                "nama_peserta" => $nama_peserta,
-                "nik" => $nik,
-                "ttl" => $ttl,
-                "jk" => $jk,
-                "departemen" => $departemen,
-                "status" => $loc . "<br>" . $waktu,
+                "id" => $no++,
+                "nip" => $nipHtml,
+                "nama_peserta" => $namaHtml,
+                "ttl" => '<span class="fs--1 text-700">' . ($record->mou_peserta_ttl ?? '-') . '</span>',
+                "jk" => $jkHtml,
+                "departemen" => '<span class="badge bg-soft-primary text-primary fs--2"><i class="fas fa-briefcase me-1"></i>' . ($record->mou_peserta_departemen ?? '-') . '</span>',
+                "status" => $statusHtml,
             );
         }
+
         $response = array(
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
             "aaData" => $data_arr,
         );
-        echo json_encode($response);
+
+        return response()->json($response);
     }
     public function monitoring_mcu_detail_belum(Request $request)
     {

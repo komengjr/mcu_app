@@ -1664,18 +1664,57 @@ class ApplicationController extends Controller
     }
     public function medical_check_up_data_mointoring_peserta(Request $request)
     {
+        // 1. Ambil daftar jenis pemeriksaan MCU
         $pemeriksaan = DB::table('company_mou_agreement_sub')
             ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
             ->join('company_mou_agreement', 'company_mou_agreement.mou_agreement_code', '=', 'company_mou_agreement_sub.mou_agreement_code')
-            ->where('company_mou_agreement.company_mou_code', $request->code)->get()->unique('master_pemeriksaan_code');
+            ->where('company_mou_agreement.company_mou_code', $request->code)
+            ->get()
+            ->unique('master_pemeriksaan_code');
+
+        // 2. Ambil peserta beserta lokasi & wilayahnya secara langsung (LEFT JOIN)
         $peserta = DB::table('company_mou_peserta')
+            ->select(
+                'company_mou_peserta.*',
+                'company_mou.*',
+                'master_cabang.master_cabang_name',
+                'group_cabang.group_cabang_name'
+            )
             ->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
             ->join('log_lokasi_pasien', 'log_lokasi_pasien.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+            ->leftJoin('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+            ->leftJoin('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+            ->leftJoin('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
             ->where('company_mou_peserta.company_mou_code', $request->code)
-            ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)->get();
-        $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
-            ->where('company_mou.company_mou_code', $request->code)->first();
-        return view('application.menu.mcu.form-monitoring-mcu', ['data' => $data, 'pem' => $pemeriksaan, 'peserta' => $peserta]);
+            ->where('log_lokasi_pasien.lokasi_cabang', Auth::user()->access_cabang)
+            ->get();
+
+        // 3. Ambil data MOU/Company
+        $data = DB::table('company_mou')
+            ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou.company_mou_code', $request->code)
+            ->first();
+
+        // 4. Ambil SEMUA log pemeriksaan peserta terfilter sekaligus (1x Query)
+        $listPesertaCode = $peserta->pluck('mou_peserta_code')->toArray();
+
+        $logs = DB::table('log_pemeriksaan_pasien')
+            ->whereIn('mou_peserta_code', $listPesertaCode)
+            ->get();
+
+        // Mapping log ke Key [mou_peserta_code . '_' . master_pemeriksaan_code]
+        $statusMap = [];
+        foreach ($logs as $log) {
+            $key = $log->mou_peserta_code . '_' . $log->master_pemeriksaan_code;
+            $statusMap[$key] = $log;
+        }
+
+        return view('application.menu.mcu.form-monitoring-mcu', [
+            'data' => $data,
+            'pem' => $pemeriksaan,
+            'peserta' => $peserta,
+            'statusMap' => $statusMap
+        ]);
     }
     public function medical_check_up_prosess(Request $request)
     {

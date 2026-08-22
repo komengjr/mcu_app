@@ -60,6 +60,7 @@
                     <th>Tanggal</th>
                     <th>Agreement</th>
                     <th>Status MOU</th>
+                    <th>Jenis Form</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -99,46 +100,84 @@
                         @endif
                     </td>
                     <td>
-                        <div class="btn-group" role="group">
-                            <button class="btn btn-sm btn-falcon-primary dropdown-toggle" id="btnGroupVerticalDrop2"
-                                type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
-                                    class="fas fa-align-left me-1" data-fa-transform="shrink-3"></span>Option</button>
-                            <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop2">
-                                <button class="dropdown-item text-warning" data-bs-toggle="modal"
-                                    data-bs-target="#modal-company-xl" id="button-edit-agreement"
-                                    data-code="{{$datas->company_mou_code}}"><span class="far fa-edit"></span>
-                                    Edit Agreement</button>
-                                <div class="dropdown-divider"></div>
-                                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-company"
+                        @php
+                        $forms = DB::table('company_mou_form')
+                        ->join('mcu_forms', 'company_mou_form.form_code', '=', 'mcu_forms.form_code')
+                        ->where('company_mou_form.company_mou_code', $datas->company_mou_code)
+                        ->pluck('mcu_forms.form_name');
+                        @endphp
+
+                        @forelse ($forms as $formName)
+                        <span class="badge bg-soft-primary text-primary mb-1 d-block text-start">
+                            <i class="fas fa-file-alt me-1"></i>{{ $formName }}
+                        </span>
+                        @empty
+                        <span class="badge bg-light text-muted border">- Belum Ada Form -</span>
+                        @endforelse
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-falcon-primary dropdown-toggle d-inline-flex align-items-center gap-1 shadow-sm"
+                                id="btnGroupVerticalDrop2" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v fa-fw"></i>
+                                <span>Option</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end py-2 shadow-lg border border-300" aria-labelledby="btnGroupVerticalDrop2">
+
+                                <button class="dropdown-item d-flex align-items-center text-warning fw-semibold" data-bs-toggle="modal"
+                                    data-bs-target="#modal-company-xl" id="button-edit-agreement" data-code="{{ $datas->company_mou_code }}">
+                                    <i class="far fa-edit fa-fw me-2"></i>
+                                    <span>Edit Agreement</span>
+                                </button>
+
+                                <div class="dropdown-divider my-1"></div>
+
+                                <button class="dropdown-item d-flex align-items-center text-800" data-bs-toggle="modal" data-bs-target="#modal-company"
                                     id="button-data-peserta-mcu" data-code="{{ $datas->company_mou_code }}">
-                                    <span class="fas fa-user-friends"></span>
-                                    Peserta MCU</button>
-                                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-company-xl"
+                                    <i class="fas fa-user-friends fa-fw me-2 text-secondary"></i>
+                                    <span>Peserta MCU</span>
+                                </button>
+
+                                <button class="dropdown-item d-flex align-items-center text-800" data-bs-toggle="modal" data-bs-target="#modal-company-xl"
                                     id="button-data-insert-peserta" data-code="{{ $datas->company_mou_code }}">
-                                    <span class="fas fa-file-import"></span>
-                                    Insert Peserta</button>
-                                <button class="dropdown-item text-youtube" data-bs-toggle="modal"
-                                    data-bs-target="#modal-company-xl" id="button-data-setup-paket-mcu"
-                                    data-code="{{ $datas->company_mou_code }}">
-                                    <span class="fas fa-file-import"></span>
-                                    Setup Paket MCU</button>
-                                <div class="dropdown-divider"></div>
-                                <button class="dropdown-item text-primary" data-bs-toggle="modal"
-                                    data-bs-target="#modal-company-sm" id="button-aktifasi-mou"
-                                    data-code="{{ $datas->company_mou_code }}">
-                                    <span class="fab fa-galactic-republic"></span>
-                                    Aktivasi MOU</button>
-                                <button class="dropdown-item text-danger" data-bs-toggle="modal"
-                                    data-bs-target="#modal-company-sm" id="button-non-aktifasi-mou"
-                                    data-code="{{ $datas->company_mou_code }}">
-                                    <span class="fas fa-window-close"></span>
-                                    Non Aktivasi MOU</button>
-                                <div class="dropdown-divider"></div>
-                                <button class="dropdown-item text-success" data-bs-toggle="modal"
-                                    data-bs-target="#modal-company-lg" id="button-generate-absensi-mou"
-                                    data-code="{{ $datas->company_mou_code }}">
-                                    <span class="fas fa-qrcode"></span>
-                                    Generate Absensi</button>
+                                    <i class="fas fa-file-import fa-fw me-2 text-secondary"></i>
+                                    <span>Insert Peserta</span>
+                                </button>
+
+                                <button class="dropdown-item d-flex align-items-center text-youtube" data-bs-toggle="modal"
+                                    data-bs-target="#modal-company-xl" id="button-data-setup-paket-mcu" data-code="{{ $datas->company_mou_code }}">
+                                    <i class="fas fa-boxes fa-fw me-2"></i>
+                                    <span>Setup Paket MCU</span>
+                                </button>
+
+                                <button class="dropdown-item d-flex align-items-center text-info" data-bs-toggle="modal"
+                                    data-bs-target="#modal-company-xl" id="button-data-add-form-pemeriksaan" data-code="{{ $datas->company_mou_code }}">
+                                    <i class="fas fa-notes-medical fa-fw me-2"></i>
+                                    <span>Add Form Pemeriksaan</span>
+                                </button>
+
+                                <div class="dropdown-divider my-1"></div>
+
+                                <button class="dropdown-item d-flex align-items-center text-primary" data-bs-toggle="modal"
+                                    data-bs-target="#modal-company-sm" id="button-aktifasi-mou" data-code="{{ $datas->company_mou_code }}">
+                                    <i class="fab fa-galactic-republic fa-fw me-2"></i>
+                                    <span>Aktivasi MOU</span>
+                                </button>
+
+                                <button class="dropdown-item d-flex align-items-center text-danger" data-bs-toggle="modal"
+                                    data-bs-target="#modal-company-sm" id="button-non-aktifasi-mou" data-code="{{ $datas->company_mou_code }}">
+                                    <i class="fas fa-window-close fa-fw me-2"></i>
+                                    <span>Non Aktivasi MOU</span>
+                                </button>
+
+                                <div class="dropdown-divider my-1"></div>
+
+                                <button class="dropdown-item d-flex align-items-center text-success" data-bs-toggle="modal"
+                                    data-bs-target="#modal-company-lg" id="button-generate-absensi-mou" data-code="{{ $datas->company_mou_code }}">
+                                    <i class="fas fa-qrcode fa-fw me-2"></i>
+                                    <span>Generate Absensi</span>
+                                </button>
+
                             </div>
                         </div>
                     </td>
@@ -517,13 +556,32 @@
     $(document).on("click", "#button-data-setup-paket-mcu", function(e) {
         e.preventDefault();
         var code = $(this).data("code");
+        $('#menu-company-xl').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('mou_company_setup_paket_mcu') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-company-xl').html(data);
+        }).fail(function() {
+            $('#menu-company-xl').html('eror');
+        });
+    });
+    $(document).on("click", "#button-data-add-form-pemeriksaan", function(e) {
         e.preventDefault();
         var code = $(this).data("code");
         $('#menu-company-xl').html(
             '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
         );
         $.ajax({
-            url: "{{ route('mou_company_setup_paket_mcu') }}",
+            url: "{{ route('mou_company_add_form_pemeriksaan') }}",
             type: "POST",
             cache: false,
             data: {

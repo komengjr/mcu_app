@@ -3175,6 +3175,69 @@ class ApplicationController extends Controller
             return 'Gagal Hapus';
         }
     }
+    public function mou_company_add_form_pemeriksaan(Request $request)
+    {
+        $companyMouCode = $request->code;
+
+        // Ambil semua form aktif
+        $forms = DB::table('mcu_forms')
+            ->where('is_active', true)
+            ->orderBy('sort_order', 'asc')
+            ->get();
+
+        // Ambil form_code yang sudah terpilih untuk MOU ini
+        $selectedForms = DB::table('company_mou_form')
+            ->where('company_mou_code', $companyMouCode)
+            ->pluck('form_code')
+            ->toArray();
+
+        return view('application.master-data.mou-company.mou-company-add-form', compact('companyMouCode', 'forms', 'selectedForms'));
+    }
+    public function mou_company_save_form_pemeriksaan(Request $request)
+    {
+        $request->validate([
+            'company_mou_code' => 'required',
+            'form_codes' => 'array',
+        ]);
+
+        $companyMouCode = $request->company_mou_code;
+        $formCodes = $request->form_codes ?? [];
+
+        DB::beginTransaction();
+        try {
+            // Hapus pilihan form lama untuk MOU ini
+            DB::table('company_mou_form')
+                ->where('company_mou_code', $companyMouCode)
+                ->delete();
+
+            // Insert pilihan form baru
+            $insertData = [];
+            foreach ($formCodes as $code) {
+                $insertData[] = [
+                    'company_mou_code' => $companyMouCode,
+                    'form_code' => $code,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+
+            if (!empty($insertData)) {
+                DB::table('company_mou_form')->insert($insertData);
+            }
+
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Berhasil memperbarui Form Pemeriksaan MOU!'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal menyimpan data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
     // AGREEMENT PERUSAHAAN
     public function agreement_perusahaan($akses)

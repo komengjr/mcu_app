@@ -151,7 +151,7 @@
 
                             <!-- Close Button -->
                             <div>
-                                <button onclick="window.close()" class="btn btn-vibrant-red w-100 fs--1">
+                                <button onclick="window.location.href='https://www.google.com'" class="btn btn-vibrant-red w-100 fs--1">
                                     Tutup Halaman
                                 </button>
                             </div>

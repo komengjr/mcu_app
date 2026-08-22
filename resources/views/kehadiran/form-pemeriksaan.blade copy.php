@@ -241,31 +241,7 @@
             border-color: #E60026;
         }
 
-        /* Styling Item Form */
-        .mcu-form-item {
-            background-color: #f8fafc;
-            border: 1px dashed #cbd5e1;
-            border-radius: 10px;
-            padding: 10px 14px;
-            transition: all 0.2s ease-in-out;
-        }
-
-        .mcu-form-item:hover {
-            background-color: #fff0f2;
-            border-color: #ff3355;
-        }
-
-        /* Styling Khusus Jika Form Sudah Diisi (HIJAU) */
-        .mcu-form-item.is-completed {
-            background-color: #f0fdf4 !important;
-            border: 1px solid #86efac !important;
-        }
-
-        .mcu-form-item.is-completed:hover {
-            background-color: #dcfce7 !important;
-            border-color: #4ade80 !important;
-        }
-
+        /* Styling Custom Swal */
         .swal2-styled.swal2-confirm {
             background-color: #E60026 !important;
             border-radius: 8px !important;
@@ -293,6 +269,7 @@
                                     <div class="bg-holder bg-auth-card-shape" style="background-image:url(../../../asset/img/icons/spot-illustrations/half-circle.png); opacity: 0.12;"></div>
 
                                     <div class="z-index-1 w-100 position-relative">
+                                        <!-- Header Logos (Kiri: Logo Utama, Kanan: Logo Company) -->
                                         <div class="d-flex justify-content-between align-items-center w-100 mb-4">
                                             <div class="logo-box">
                                                 <img src="{{ asset('img/pram.png') }}" alt="Logo Utama">
@@ -306,6 +283,7 @@
                                             </div>
                                         </div>
 
+                                        <!-- Informasi Teks Kiri Mode Modern -->
                                         <div class="text-white text-start mt-4">
                                             <div class="badge-accent">
                                                 <span class="fas fa-heartbeat"></span> MCU Management System
@@ -317,6 +295,7 @@
                                                 Peserta Medical Check Up. Mohon periksa kelengkapan nama dan data Anda sebelum menyetujui formulir ini.
                                             </p>
 
+                                            <!-- Card Transparan / Glassmorphism -->
                                             <div class="glass-info-card">
                                                 <div class="quote-border">
                                                     <p class="opacity-95 fs--1 lh-lg mb-0 text-white fw-light italic">
@@ -355,50 +334,14 @@
                                                         <label class="form-label fw-semibold text-700 fs--1 mb-1" for="card-email">Nomor Induk Pegawai</label>
                                                         <input class="form-control" type="text" id="card-email" value="{{ $data->mou_peserta_nip }}" disabled />
                                                     </div>
-
-                                                    <!-- DAFTAR FORM LAMPIRAN PEMERIKSAAN MCU -->
-                                                    @if(isset($mcu_forms) && count($mcu_forms) > 0)
-                                                    <div class="col-12 my-3">
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="flex-grow-1 border-bottom"></div>
-                                                            <span class="px-3 text-400 fs--2 fw-bold tracking-wider text-uppercase">Lampiran Form Pemeriksaan</span>
-                                                            <div class="flex-grow-1 border-bottom"></div>
-                                                        </div>
+                                                    <!-- <div class="col-md-6">
+                                                        <label class="form-label fw-semibold text-700 fs--1 mb-1">Nomor Whatsapp</label>
+                                                        <input class="form-control" type="text" value="{{ $data->mou_peserta_no_hp }}" disabled />
                                                     </div>
-
-                                                    <div class="col-12">
-                                                        <div class="d-flex flex-column gap-2">
-                                                            @foreach ($mcu_forms as $form)
-                                                            <?php
-                                                            // Cek apakah form ini sudah diisi oleh peserta
-                                                            $isAnswered = Illuminate\Support\Facades\DB::table('mcu_peserta_answers')
-                                                                ->where('mou_peserta_code', $data->mou_peserta_code)
-                                                                ->where('id_mcu_form', $form->id_mcu_form)
-                                                                ->where('is_completed', true)
-                                                                ->exists();
-                                                            ?>
-                                                            <div class="mcu-form-item d-flex align-items-center justify-content-between {{ $isAnswered ? 'is-completed' : '' }}" id="form-item-{{ $form->form_code }}">
-                                                                <div class="d-flex align-items-center me-2">
-                                                                    <i class="fas {{ $isAnswered ? 'fa-check-circle text-success' : 'fa-file-medical text-danger' }} fs-0 me-3 form-icon"></i>
-                                                                    <div>
-                                                                        <h6 class="mb-0 text-900 fw-bold fs--1">{{ $form->form_name }}</h6>
-                                                                        <small class="text-500 fs--2 form-status-text">
-                                                                            {{ $isAnswered ? 'Sudah Diisi' : ($form->description ?? 'Formulir Wajib Diisi') }}
-                                                                        </small>
-                                                                    </div>
-                                                                </div>
-                                                                <button type="button"
-                                                                    class="btn btn-sm {{ $isAnswered ? 'btn-outline-success' : 'btn-outline-danger' }} px-3 rounded-pill fw-semibold fs--2 d-flex align-items-center gap-1 btn-open-form btn-form-action"
-                                                                    data-form-code="{{ $form->form_code }}"
-                                                                    data-form-name="{{ $form->form_name }}">
-                                                                    <i class="fas {{ $isAnswered ? 'fa-check' : 'fa-edit' }} btn-icon"></i>
-                                                                    <span class="btn-text">{{ $isAnswered ? 'Selesai' : 'Isi Form' }}</span>
-                                                                </button>
-                                                            </div>
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                    @endif
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold text-700 fs--1 mb-1">Email</label>
+                                                        <input class="form-control" type="text" value="{{ $data->mou_peserta_email }}" disabled />
+                                                    </div> -->
 
                                                     <div class="col-12 my-3">
                                                         <div class="d-flex align-items-center">
@@ -508,8 +451,6 @@
                                                         </div>
                                                     </div>
 
-
-
                                                     <div class="col-12 mt-3">
                                                         <div class="form-check d-flex align-items-center">
                                                             <input class="form-check-input mt-0" type="checkbox" id="card-register-checkbox" required />
@@ -542,35 +483,6 @@
         </div>
     </main>
 
-    <!-- Modal Fullscreen Dynamic MCU Form -->
-    <div class="modal fade" id="mcuFormModal" tabindex="-1" aria-labelledby="mcuFormModalLabel" aria-hidden="true" data-bs-backdrop="static">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content border-0">
-                <div class="modal-header bg-gradient-red-vibrant text-white py-3 px-4">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fas fa-file-medical fs-1"></i>
-                        <h5 class="modal-title text-white fw-bold mb-0" id="mcuFormModalLabel">Formulir Pemeriksaan</h5>
-                    </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-2 bg-light">
-
-                    <div id="modalFormContainer"">
-                        <div class="d-flex justify-content-center align-items-center h-100">
-                            <div class="spinner-border text-danger" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-white border-top px-4 py-3">
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-vibrant-red btn-sm" id="btnSaveForm">Simpan Form</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- JavaScripts -->
     <script src="{{ asset('vendors/bootstrap/bootstrap.min.js') }}"></script>
     <script src="{{ asset('vendors/anchorjs/anchor.min.js') }}"></script>
@@ -585,6 +497,7 @@
             var total = $('#jumlah').val();
 
             if (pilihan === 'off') {
+                // Munculkan Pop-up SweetAlert2 Input Deskripsi saat Klik "No"
                 Swal.fire({
                     title: 'Alasan Tidak Diperiksa',
                     text: 'Tuliskan deskripsi/alasan tidak melakukan ' + namaPemeriksaan,
@@ -609,15 +522,18 @@
                         sendDataAjax(id, userCode, pilihan, ket, total);
                         $('#label_ket_' + id).text('Keterangan: ' + ket);
                     } else {
+                        // Jika batal, uncheck radio button No / Reset Pilihan
                         $('#pem_no_' + id).prop('checked', false);
                     }
                 });
             } else {
+                // Jika pilih "Yes"
                 $('#label_ket_' + id).text('');
                 sendDataAjax(id, userCode, pilihan, '', total);
             }
         }
 
+        // Helper AJAX Request
         function sendDataAjax(id, userCode, pilihan, ket, total) {
             $.ajax({
                 url: "{{ route('signaturepad.update_pemeriksaan') }}",
@@ -655,119 +571,6 @@
                 });
             });
         }
-    </script>
-    <script>
-        var currentActiveFormCode = null;
-
-        $(document).ready(function() {
-            // Event Handler Buka Modal
-            $('.btn-open-form').on('click', function(e) {
-                e.preventDefault();
-
-                var formCode = $(this).data('form-code');
-                var formName = $(this).data('form-name');
-                var userCode = "{{ $data->mou_peserta_code }}";
-
-                currentActiveFormCode = formCode; // Simpan formCode yang sedang aktif
-
-                $('#mcuFormModalLabel').text('Formulir: ' + formName);
-                $('#modalFormContainer').html(`
-                    <div class="d-flex justify-content-center align-items-center h-100 my-5">
-                        <div class="spinner-border text-danger" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                `);
-
-                var formModal = new bootstrap.Modal(document.getElementById('mcuFormModal'));
-                formModal.show();
-
-                $.ajax({
-                    url: "{{ route('signaturepad.get_data_form_pemeriksaan') }}",
-                    type: "GET",
-                    data: {
-                        "form_code": formCode,
-                        "user_code": userCode
-                    },
-                    success: function(response) {
-                        $('#modalFormContainer').html(response);
-                    },
-                    error: function() {
-                        $('#modalFormContainer').html(`
-                            <div class="alert alert-danger text-center my-auto" role="alert">
-                                <i class="fas fa-exclamation-triangle me-2"></i> Gagal memuat item isi formulir.
-                            </div>
-                        `);
-                    }
-                });
-            });
-
-            // Event Handler Simpan Form via Modal
-            $('#btnSaveForm').on('click', function() {
-                var $form = $('#mcuDynamicFormContent');
-
-                // Validasi HTML5 bawaan form (required fields)
-                if (!$form[0].checkValidity()) {
-                    $form[0].reportValidity();
-                    return;
-                }
-
-                var formData = $form.serialize();
-
-                $.ajax({
-                    url: "{{ route('signaturepad.save_data_form_pemeriksaan') }}",
-                    type: "POST",
-                    data: formData,
-                    dataType: "json",
-                    beforeSend: function() {
-                        $('#btnSaveForm').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...');
-                    },
-                    success: function(response) {
-                        $('#btnSaveForm').prop('disabled', false).text('Simpan Form');
-
-                        if (response.status === 'success') {
-                            // Update Tampilan Form Item Menjadi Hijau dan Beri Icon Centang
-                            if (currentActiveFormCode) {
-                                var $itemWrapper = $('#form-item-' + currentActiveFormCode);
-
-                                $itemWrapper.addClass('is-completed');
-                                $itemWrapper.find('.form-icon').removeClass('fa-file-medical text-danger').addClass('fa-check-circle text-success');
-                                $itemWrapper.find('.form-status-text').text('Sudah Diisi');
-
-                                var $btn = $itemWrapper.find('.btn-form-action');
-                                $btn.removeClass('btn-outline-danger').addClass('btn-outline-success');
-                                $btn.find('.btn-icon').removeClass('fa-edit').addClass('fa-check');
-                                $btn.find('.btn-text').text('Selesai');
-                            }
-
-                            // Tutup Modal
-                            var modalEl = document.getElementById('mcuFormModal');
-                            var modal = bootstrap.Modal.getInstance(modalEl);
-                            if (modal) modal.hide();
-
-                            Lobibox.notify('success', {
-                                pauseDelayOnHover: true,
-                                continueDelayOnInactiveTab: true,
-                                position: 'top right',
-                                icon: 'fas fa-check-circle',
-                                msg: response.message
-                            });
-                        }
-                    },
-                    error: function(xhr) {
-                        $('#btnSaveForm').prop('disabled', false).text('Simpan Form');
-
-                        Lobibox.notify('error', {
-                            pauseDelayOnHover: true,
-                            continueDelayOnInactiveTab: true,
-                            position: 'top right',
-                            icon: 'fas fa-times-circle',
-                            msg: 'Gagal menyimpan data formulir.'
-                        });
-                    }
-                });
-            });
-        });
     </script>
 </body>
 

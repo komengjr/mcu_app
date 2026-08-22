@@ -16,6 +16,10 @@ class SignaturePadController extends Controller
     {
         return view('contoh');
     }
+    public function get_data_form_pemeriksaan(Request $request)
+    {
+        return 123;
+    }
     public function sign($id)
     {
         $data = DB::table('log_kehadiran_pasien')
@@ -24,7 +28,6 @@ class SignaturePadController extends Controller
             ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
             ->where('log_kehadiran_pasien_token', $id)
             ->first();
-
         if ($data) {
             if ($data->log_kehadiran_pasien_status == 0) {
                 return view('kehadiran.signature-template', ['data' => $data]);
@@ -32,33 +35,12 @@ class SignaturePadController extends Controller
                 if ($data->mou_peserta_status == 0) {
                     $paket = DB::table('company_mou_agreement')->where('mou_agreement_code', $data->mou_agreement_code)->first();
                     if ($paket) {
-                        $pemeriksaan = DB::table('company_mou_agreement_sub')
-                            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
-                            ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)
-                            ->get();
-
-                        $pemeriksaan1 = DB::table('company_mou_agreement_user')
-                            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_user.master_pemeriksaan_code')
-                            ->where('company_mou_agreement_user.mou_peserta_code', $data->mou_peserta_code)
-                            ->get();
-
-                        // Get Lampiran Form MCU berdasarkan MoU Perusahaan
-                        $mcu_forms = DB::table('company_mou_form')
-                            ->join('mcu_forms', 'mcu_forms.form_code', '=', 'company_mou_form.form_code')
-                            ->where('company_mou_form.company_mou_code', $data->company_mou_code)
-                            ->where('mcu_forms.is_active', true)
-                            ->orderBy('mcu_forms.sort_order', 'asc')
-                            ->get();
-
+                        $pemeriksaan = DB::table('company_mou_agreement_sub')->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+                            ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)->get();
+                        $pemeriksaan1 = DB::table('company_mou_agreement_user')->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_user.master_pemeriksaan_code')
+                            ->where('company_mou_agreement_user.mou_peserta_code', $data->mou_peserta_code)->get();
                         $jumlah = $pemeriksaan->count() + $pemeriksaan1->count();
-
-                        return view('kehadiran.form-pemeriksaan', [
-                            'data' => $data,
-                            'pemeriksaan' => $pemeriksaan,
-                            'pemeriksaan1' => $pemeriksaan1,
-                            'mcu_forms' => $mcu_forms,
-                            'jumlah' => $jumlah
-                        ]);
+                        return view('kehadiran.form-pemeriksaan', ['data' => $data, 'pemeriksaan' => $pemeriksaan, 'pemeriksaan1' => $pemeriksaan1, 'jumlah' => $jumlah]);
                     } else {
                         $paketmcu = DB::table('company_mou_agreement')->where('company_mou_code', $data->company_mou_code)->get();
                         return view('kehadiran.form-paket', ['data' => $data, 'paket' => $paketmcu]);
@@ -71,10 +53,10 @@ class SignaturePadController extends Controller
             }
         } else {
             return '<script>
-                setTimeout(() => {
-                    window.close();
-                }, 100);
-            </script>';
+                        setTimeout(() => {
+                            window.close();
+                        }, 100);
+                    </script>';
         }
     }
     public function sign_perusahaan($id)
@@ -260,13 +242,12 @@ class SignaturePadController extends Controller
     {
         return view('notifikasi');
     }
-    // 1. Method untuk Mengambil Data & Memuat View Form
-    public function get_data_form_pemeriksaan(Request $request)
+    public function getDataFormPemeriksaan(Request $request)
     {
         $formCode = $request->input('form_code');
         $userCode = $request->input('user_code');
 
-        // Ambil detail header form
+        // 1. Ambil detail header form
         $form = DB::table('mcu_forms')
             ->where('form_code', $formCode)
             ->first();
@@ -275,64 +256,19 @@ class SignaturePadController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Formulir tidak ditemukan'], 404);
         }
 
-        // Ambil item form berdasarkan id_mcu_form
+        // 2. Ambil item/pertanyaan form (diurutkan berdasarkan urutan)
         $items = DB::table('mcu_form_items')
-            ->where('id_mcu_form', $form->id_mcu_form)
+            ->where('form_code', $formCode)
             ->orderBy('sort_order', 'asc')
             ->get();
 
-        // Ambil data jawaban dari JSON
-        $savedRecord = DB::table('mcu_peserta_answers')
+        // 3. Ambil jawaban yang sudah pernah diisi oleh peserta (jika ada)
+        $answers = DB::table('mcu_form_answers')
             ->where('mou_peserta_code', $userCode)
-            ->where('id_mcu_form', $form->id_mcu_form)
-            ->first();
-
-        // Decode JSON answers_data ke Array (key: id_mcu_form_item, value: jawaban)
-        $answers = [];
-        if ($savedRecord && $savedRecord->answers_data) {
-            $answers = json_decode($savedRecord->answers_data, true) ?? [];
-        }
+            ->where('form_code', $formCode)
+            ->pluck('answer_value', 'item_code')
+            ->toArray();
 
         return view('kehadiran.form.form-template', compact('form', 'items', 'answers', 'userCode'));
-    }
-
-    // 2. Method untuk Menyimpan/Memperbarui Jawaban Form (AJAX POST)
-    public function save_data_form_pemeriksaan(Request $request)
-    {
-        $request->validate([
-            'id_mcu_form' => 'required',
-            'user_code' => 'required',
-            'answers' => 'nullable|array',
-        ]);
-
-        $idMcuForm = $request->input('id_mcu_form');
-        $userCode = $request->input('user_code');
-        $answers = $request->input('answers', []); // Array jawaban dari form
-
-        try {
-            // Simpan atau Update menggunakan updateOrInsert
-            DB::table('mcu_peserta_answers')->updateOrInsert(
-                [
-                    'mou_peserta_code' => $userCode,
-                    'id_mcu_form' => $idMcuForm,
-                ],
-                [
-                    'answers_data' => json_encode($answers),
-                    'is_completed' => true,
-                    'updated_at' => now(),
-                    'created_at' => now(),
-                ]
-            );
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Data formulir berhasil disimpan!'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Gagal menyimpan data: ' . $e->getMessage()
-            ], 500);
-        }
     }
 }

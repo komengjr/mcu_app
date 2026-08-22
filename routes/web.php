@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\GatewayController;
 use App\Http\Controllers\MasterController;
+use App\Http\Controllers\MasterMcuFormController;
 use App\Http\Controllers\SignaturePadController;
 use App\Http\Controllers\UploadFileController;
 
@@ -71,6 +72,10 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('laporan-rekap-mcu', [ApplicationController::class, 'laporan_rekap_mcu'])->name('laporan_rekap_mcu');
     Route::get('laporan/laporan-data-kehadiran', [ApplicationController::class, 'laporan_data_kehadiran'])->name('laporan_data_kehadiran');
     Route::get('laporan/laporan-data-omset', [ApplicationController::class, 'laporan_data_omset'])->name('laporan_data_omset');
+
+    // Management Master Form
+    Route::get('master-data/master-form', [MasterMcuFormController::class, 'index'])->name('forms.index');
+
 
     Route::get('aplikasi', [ApplicationController::class, 'aplikasi_app'])->name('aplikasi_app');
 
@@ -219,6 +224,9 @@ Route::prefix('application')->group(function () {
     Route::post('mou-company/update/peserta-mcu/save', [ApplicationController::class, 'mou_company_update_peserta_mcu_save'])->name('mou_company_update_peserta_mcu_save');
     Route::post('mou-company/update/peserta-mcu/sreset-signature', [ApplicationController::class, 'mou_company_update_peserta_mcu_reset_signature'])->name('mou_company_update_peserta_mcu_reset_signature');
     Route::post('mou-company/update/peserta-mcu/remove-peserta', [ApplicationController::class, 'mou_company_update_peserta_mcu_remove_peserta'])->name('mou_company_update_peserta_mcu_remove_peserta');
+    Route::post('mou-company/add/form-pemeriksaan', [ApplicationController::class, 'mou_company_add_form_pemeriksaan'])->name('mou_company_add_form_pemeriksaan');
+    Route::post('mou-company/save/form-pemeriksaan', [ApplicationController::class, 'mou_company_save_form_pemeriksaan'])->name('mou_company_save_form_pemeriksaan');
+
     // AGREMENT
     Route::post('agreement-perusahaan/add', [ApplicationController::class, 'agreement_perusahaan_add'])->name('agreement_perusahaan_add');
     Route::post('agreement-perusahaan/save', [ApplicationController::class, 'agreement_perusahaan_save'])->name('agreement_perusahaan_save');
@@ -278,6 +286,14 @@ Route::prefix('application')->group(function () {
     Route::post('gateway/pengiriman-notifikasi/add-aktifitas', [GatewayController::class, 'gateway_pengiriman_notifikasi_add_aktifitas'])->name('gateway_pengiriman_notifikasi_add_aktifitas');
     Route::post('gateway/pengiriman-notifikasi/save-aktifitas', [GatewayController::class, 'gateway_pengiriman_notifikasi_save_aktifitas'])->name('gateway_pengiriman_notifikasi_save_aktifitas');
     Route::post('gateway/pengiriman-notifikasi/proses-aktifitas', [GatewayController::class, 'gateway_pengiriman_notifikasi_proses_aktifitas'])->name('gateway_pengiriman_notifikasi_proses_aktifitas');
+
+    Route::get('/api/forms', [MasterMcuFormController::class, 'getForms'])->name('master-mcu.get-forms');
+    Route::post('/api/forms/save', [MasterMcuFormController::class, 'storeOrUpdateForm'])->name('master-mcu.save-form');
+    Route::delete('/api/forms/{id}', [MasterMcuFormController::class, 'destroyForm'])->name('delete-form');
+
+    Route::get('/api/forms/{formId}/items', [MasterMcuFormController::class, 'getItems'])->name('get-items');
+    Route::post('/api/items/save', [MasterMcuFormController::class, 'storeOrUpdateItem'])->name('master-mcu.save-item');
+    Route::delete('/api/items/{itemId}', [MasterMcuFormController::class, 'destroyItem'])->name('delete-item');
 });
 
 Route::prefix('master-data')->group(function () {
@@ -318,11 +334,19 @@ Route::post('signaturepad-pilih-pemeriksaan', [SignaturePadController::class, 's
 Route::post('signaturepad-update-pemeriksaan', [SignaturePadController::class, 'update_pemeriksaan'])->name('signaturepad.update_pemeriksaan');
 Route::post('signaturepad-update-pemeriksaan-save', [SignaturePadController::class, 'update_pemeriksaan_save'])->name('signaturepad.update_pemeriksaan_save');
 Route::post('signaturepad-update-save', [SignaturePadController::class, 'save_signiture'])->name('signaturepad.save_signiture');
+Route::get('signaturepad/get-data/form', [SignaturePadController::class, 'get_data_form_pemeriksaan'])->name('signaturepad.get_data_form_pemeriksaan');
+Route::post('signaturepad/save-data/form', [SignaturePadController::class, 'save_data_form_pemeriksaan'])->name('signaturepad.save_data_form_pemeriksaan');
 
 
 Route::get('notifikasi', [SignaturePadController::class, 'notifikasi'])->name('notifikasi');
 
+use App\Http\Controllers\PesertaMcuFormController;
 
+Route::prefix('peserta-mcu')->name('peserta-mcu.')->group(function () {
+    Route::get('/fill/{code}', [PesertaMcuFormController::class, 'showWizard'])->name('wizard');
+    Route::get('/api/wizard-data/{code}', [PesertaMcuFormController::class, 'getWizardData'])->name('get-data');
+    Route::post('/api/save-step', [PesertaMcuFormController::class, 'saveStepAnswer'])->name('save-step');
+});
 
 Route::get('template_mail', function () {
     $details = [

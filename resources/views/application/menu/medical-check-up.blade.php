@@ -5,28 +5,25 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.4/css/buttons.dataTables.css">
 <link href="{{ asset('vendors/choices/choices.min.css') }}" rel="stylesheet" />
 <style>
-    /* Styling Card Minimalis & Color Accent */
+    /* Card Minimalis & Accent Modern */
     .card-mcu {
         transition: transform 0.2s ease, box-shadow 0.2s ease;
-        border: 1px solid rgba(0, 0, 0, 0.06) !important;
-        /* background: #fff; */
+        border: 1px solid #e2e8f0 !important;
+        background: #ffffff;
+        border-radius: 10px;
     }
 
     .card-mcu:hover {
         transform: translateY(-4px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+        border-color: #cbd5e1 !important;
     }
 
-    .card-mcu-header {
-        position: relative;
-        overflow: hidden;
-        border-radius: 0.375rem 0.375rem 0 0;
-    }
-
-    .card-mcu-img {
-        height: 140px;
-        object-fit: cover;
-        width: 100%;
+    .badge-company {
+        background-color: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+        font-weight: 600;
     }
 
     .badge-soft-primary {
@@ -39,9 +36,10 @@
         color: #166534;
     }
 
-    .badge-soft-info {
-        background-color: #e0e7ff;
-        color: #3730a3;
+    .mcu-detail-box {
+        background-color: #f8fafc;
+        border: 1px solid #f1f5f9;
+        border-radius: 8px;
     }
 </style>
 @endsection
@@ -69,20 +67,48 @@
     </div>
 </div>
 
-<!-- Filter & Search Bar Card -->
+<!-- Filter Select Perusahaan & Search Bar Card -->
 <div class="card mb-3 shadow-sm border-0">
     <div class="card-body">
         <div class="row g-2 align-items-center justify-content-between">
-            <div class="col-sm-auto">
-                <h6 class="mb-0 text-700">Showing <span id="project-count" class="fw-bold text-primary">{{ $data->count() }}</span> Project(s)</h6>
+            <!-- Filter Select Perusahaan -->
+            <div class="col-md-5 col-sm-6">
+                <label class="form-label fs--2 fw-bold text-600 mb-1" for="mcu-company-filter">
+                    <i class="fas fa-building text-primary me-1"></i> Filter Perusahaan:
+                </label>
+                <select id="mcu-company-filter" class="form-select form-select-sm">
+                    <option value="all">-- Semua Perusahaan --</option>
+                    @php
+                    $uniqueCompanies = $data->pluck('master_company_name')->unique()->filter();
+                    @endphp
+                    @foreach($uniqueCompanies as $company)
+                    <option value="{{ strtolower($company) }}">{{ $company }}</option>
+                    @endforeach
+                </select>
             </div>
-            <div class="col-sm-auto">
-                <div class="input-group input-group-sm" style="width: 280px;">
-                    <span class="input-group-text bg-white border-end-0 text-400">
-                        <span class="fas fa-search"></span>
-                    </span>
-                    <input type="text" id="mcu-search-input" class="form-control border-start-0 ps-0" placeholder="Cari nama project / perusahaan...">
+
+            <!-- Live Search & Info -->
+            <div class="col-md-5 col-sm-6">
+                <div class="d-flex flex-column align-items-sm-end">
+                    <label class="form-label fs--2 fw-bold text-600 mb-1">
+                        Pencarian Agreement / Project:
+                    </label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-end-0 text-400">
+                            <span class="fas fa-search"></span>
+                        </span>
+                        <input type="text" id="mcu-search-input" class="form-control border-start-0 ps-0" placeholder="Cari nama agreement...">
+                    </div>
                 </div>
+            </div>
+
+            <div class="col-12 mt-2 pt-2 border-top d-flex justify-content-between align-items-center">
+                <span class="fs--1 text-600">
+                    Menampilkan <span id="project-count" class="fw-bold text-primary">{{ $data->count() }}</span> Agreement
+                </span>
+                <button type="button" id="btn-reset-filter" class="btn btn-link text-danger p-0 fs--1 text-decoration-none d-none">
+                    <i class="fas fa-undo me-1"></i>Reset Filter
+                </button>
             </div>
         </div>
     </div>
@@ -100,43 +126,54 @@
         data-title="{{ strtolower($datas->company_mou_name) }}"
         data-company="{{ strtolower($datas->master_company_name) }}">
 
-        <div class="card card-mcu h-100 rounded-2 shadow-sm d-flex flex-column justify-content-between">
-            <div class="overflow-hidden">
-                <!-- Image Container with Overlay Badge -->
-                <div class="card-mcu-header">
-                    <img class="card-mcu-img" src="{{ asset('img/company/mcu.jpg') }}" alt="MCU Image" />
-                    <span class="position-absolute top-0 end-0 m-2 badge badge-soft-success rounded-pill px-2 py-1 fs--2">
-                        <i class="fas fa-check-circle me-1"></i>Available
+        <div class="card card-mcu h-100 shadow-sm d-flex flex-column justify-content-between p-3">
+            <div>
+                <!-- Header Perusahaan -->
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge badge-company rounded-2 px-2 py-1 fs--1 text-truncate d-inline-flex align-items-center" style="max-width: 80%;" title="{{ $datas->master_company_name }}">
+                        @php
+                        $logoPath = 'uploads/company_logo/' . $datas->master_company_logo;
+                        $hasLogo = !empty($datas->master_company_logo) && file_exists(public_path($logoPath));
+                        @endphp
+
+                        <img src="{{ asset($hasLogo ? $logoPath : 'uploads/company_logo/default-logo.png') }}"
+                            alt="Logo {{ $datas->master_company_name }}"
+                            class="me-1 rounded-1 bg-white p-2px"
+                            style="width: 18px; height: 18px; object-fit: contain;">
+
+                        <span class="text-truncate">{{ $datas->master_company_name }}</span>
+                    </span>
+                    <span class="badge badge-soft-success rounded-pill px-2 py-1 fs--2">
+                        <i class="fas fa-check-circle me-1"></i>Active
                     </span>
                 </div>
 
-                <!-- Content Body -->
-                <div class="p-3">
-                    <h5 class="fs-0 mb-1 text-truncate" title="{{ $datas->company_mou_name }}">
-                        <a class="text-900 fw-bold" href="#!">{{ $datas->company_mou_name }}</a>
-                    </h5>
-                    <p class="fs--1 text-500 text-truncate mb-2" title="{{ $datas->master_company_name }}">
-                        <i class="fas fa-building me-1 text-primary"></i>{{ $datas->master_company_name }}
-                    </p>
+                <!-- Nama Agreement MOU -->
+                <div class="mb-3">
+                    <h6 class="fs-0 fw-bold mb-0 text-900 line-clamp-2" title="{{ $datas->company_mou_name }}">
+                        <i class="fas fa-file-contract text-danger me-1"></i>{{ $datas->company_mou_name }}
+                    </h6>
+                    <small class="text-400 fs--2">Kode: {{ $datas->company_mou_code }}</small>
+                </div>
 
-                    <div class="p-2 bg-100 rounded-2 mb-2 fs--1">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="text-600">Total Peserta:</span>
-                            <span class="badge badge-soft-primary rounded-pill px-2">{{ $total }} Peserta</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-600">Periode:</span>
-                            <span class="fw-semi-bold text-success fs--2">
-                                {{ date('d/m/Y', strtotime($datas->company_mou_start)) }} - {{ date('d/m/Y', strtotime($datas->company_mou_end)) }}
-                            </span>
-                        </div>
+                <!-- Detail MOU (Peserta & Periode) -->
+                <div class="mcu-detail-box p-2 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1 fs--1">
+                        <span class="text-600"><i class="fas fa-users text-primary me-1"></i>Total Peserta:</span>
+                        <span class="badge badge-soft-primary rounded-pill px-2">{{ $total }} Peserta</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center fs--1">
+                        <span class="text-600"><i class="fas fa-calendar-alt text-success me-1"></i>Periode MOU:</span>
+                        <span class="fw-semibold text-700 fs--2">
+                            {{ date('d/m/Y', strtotime($datas->company_mou_start)) }} - {{ date('d/m/Y', strtotime($datas->company_mou_end)) }}
+                        </span>
                     </div>
                 </div>
             </div>
 
             <!-- Footer Action Buttons -->
-            <div class="p-3 pt-0 border-top-0 d-flex justify-content-between align-items-center">
-                <button class="btn btn-sm btn-outline-primary rounded-pill px-3"
+            <div class="pt-2 border-top d-flex justify-content-between align-items-center">
+                <button class="btn btn-sm btn-outline-danger rounded-pill px-3"
                     data-bs-toggle="modal"
                     data-bs-target="#modal-mcu"
                     id="button-proses-check-up"
@@ -242,17 +279,27 @@
 </script>
 
 <script>
-    // Fitur Live Search Card Filter
     $(document).ready(function() {
-        $('#mcu-search-input').on('keyup input', function() {
-            var value = $(this).val().toLowerCase().trim();
+        // Logika Filter Perusahaan & Search Bar
+        function filterMCUData() {
+            var selectedCompany = $('#mcu-company-filter').val();
+            var searchValue = $('#mcu-search-input').val().toLowerCase().trim();
             var visibleCount = 0;
 
-            $('.mcu-card-item').each(function() {
-                var title = $(this).data('title') || '';
-                var company = $(this).data('company') || '';
+            if (selectedCompany !== 'all' || searchValue !== '') {
+                $('#btn-reset-filter').removeClass('d-none');
+            } else {
+                $('#btn-reset-filter').addClass('d-none');
+            }
 
-                if (title.indexOf(value) > -1 || company.indexOf(value) > -1) {
+            $('.mcu-card-item').each(function() {
+                var cardCompany = ($(this).data('company') || '').toString().toLowerCase();
+                var cardTitle = ($(this).data('title') || '').toString().toLowerCase();
+
+                var isCompanyMatch = (selectedCompany === 'all' || cardCompany === selectedCompany);
+                var isSearchMatch = (searchValue === '' || cardTitle.indexOf(searchValue) > -1 || cardCompany.indexOf(searchValue) > -1);
+
+                if (isCompanyMatch && isSearchMatch) {
                     $(this).show();
                     visibleCount++;
                 } else {
@@ -260,8 +307,24 @@
                 }
             });
 
-            // Update statistik jumlah data yang tampil
             $('#project-count').text(visibleCount);
+        }
+
+        // Trigger saat dropdown perusahaan berubah
+        $('#mcu-company-filter').on('change', function() {
+            filterMCUData();
+        });
+
+        // Trigger saat input pencarian diketik
+        $('#mcu-search-input').on('keyup input', function() {
+            filterMCUData();
+        });
+
+        // Reset Filter
+        $('#btn-reset-filter').on('click', function() {
+            $('#mcu-company-filter').val('all');
+            $('#mcu-search-input').val('');
+            filterMCUData();
         });
     });
 </script>
@@ -626,7 +689,6 @@
         e.preventDefault();
         var page_data = document.getElementById("page_data").value;
         var code = $(this).data("code");
-        console.log(page_data);
 
         if (page_data == "") {
             const Toast = Swal.mixin({

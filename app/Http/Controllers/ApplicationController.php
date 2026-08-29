@@ -10,6 +10,7 @@ use App\Imports\PesertaImport;
 use App\Imports\TestImport;
 use App\Models\LaporanOmset;
 use App\Models\Peserta;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -2180,6 +2181,182 @@ class ApplicationController extends Controller
                 'created_at' => now(),
             ]);
         }
+    }
+    public function medical_check_up_data_pengisian_form(Request $request)
+    {
+        $mou = DB::table('company_mou')
+            ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou.company_mou_code', $request->code)
+            ->first();
+
+        // Mengambil form MCU yang terikat dengan MoU via tabel pivot 'company_mou_form'
+        $forms = DB::table('company_mou_form as cmf')
+            ->join('mcu_forms as mf', 'mf.form_code', '=', 'cmf.form_code')
+            ->where('cmf.company_mou_code', $request->code)
+            ->where('mf.is_active', true)
+            ->orderBy('mf.sort_order', 'asc')
+            ->select('mf.id_mcu_form', 'mf.form_name', 'mf.description')
+            ->get();
+
+        return view('application.menu.mcu.form-pengisan-peserta', [
+            'mou' => $mou,
+            'forms' => $forms
+        ]);
+    }
+    public function medical_check_up_detail_pengisian_form(Request $request)
+    {
+        $idMcuForm = $request->id_mcu_form;
+        $mouCode = $request->mou_code;
+
+        $peserta = DB::table('company_mou_peserta as p')
+            ->leftJoin('mcu_peserta_answers as a', function ($join) use ($idMcuForm) {
+                $join->on('p.mou_peserta_code', '=', 'a.mou_peserta_code')
+                    ->where('a.id_mcu_form', '=', $idMcuForm);
+            })
+            ->where('p.company_mou_code', $mouCode)
+            ->select(
+                'p.mou_peserta_code',
+                'p.mou_peserta_name',
+                'p.mou_peserta_nik',
+                'p.mou_peserta_nip',
+                'p.mou_peserta_departemen',
+                'a.is_completed',
+                'a.updated_at as tanggal_isi'
+            )
+            ->get();
+
+        return view('application.menu.mcu.detail-pengisian-peserta-table', compact('peserta', 'idMcuForm', 'mouCode'));
+    }
+    // Fitur Export Excel sederana via HTTP Headers / CSV/HTML Format
+    public function export_excel_pengisian(Request $request)
+    {
+        $peserta = DB::table('company_mou_peserta as p')
+            ->leftJoin('mcu_peserta_answers as a', function ($join) use ($request) {
+                $join->on('p.mou_peserta_code', '=', 'a.mou_peserta_code')
+                    ->where('a.id_mcu_form', '=', $request->id_mcu_form);
+            })
+            ->where('p.company_mou_code', $request->mou_code)
+            ->select('p.*', 'a.is_completed', 'a.updated_at as tanggal_isi')
+            ->get();
+
+        $fileName = 'Hasil_Pengisian_Form_MCU_' . date('Ymd_His') . '.xls';
+
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=\"$fileName\"");
+
+        echo "<table border='1'>";
+        echo "<tr><th>No</th><th>NIK</th><th>NIP</th><th>Nama Peserta</th><th>Departemen</th><th>Tgl Pengisian</th><th>Status</th></tr>";
+
+        foreach ($peserta as $index => $p) {
+            $status = $p->is_completed === 1 ? 'Selesai' : ($p->is_completed === 0 ? 'Draft' : 'Belum Mengisi');
+            $tgl = $p->tanggal_isi ? date('d/m/Y H:i', strtotime($p->tanggal_isi)) : '-';
+            echo "<tr>
+                <td>" . ($index + 1) . "</td>
+                <td>'" . $p->mou_peserta_nik . "</td>
+                <td>'" . $p->mou_peserta_nip . "</td>
+                <td>" . $p->mou_peserta_name . "</td>
+                <td>" . $p->mou_peserta_departemen . "</td>
+                <td>" . $tgl . "</td>
+                <td>" . $status . "</td>
+              </tr>";
+        }
+        echo "</table>";
+        exit;
+    }
+
+    // Fitur Export PDF menggunakan Dompdf
+    public function export_pdf_pengisian(Request $request)
+    {
+        $peserta = DB::table('company_mou_peserta as p')
+            ->leftJoin('mcu_peserta_answers as a', function ($join) use ($request) {
+                $join->on('p.mou_peserta_code', '=', 'a.mou_peserta_code')
+                    ->where('a.id_mcu_form', '=', $request->id_mcu_form);
+            })
+            ->where('p.company_mou_code', $request->mou_code)
+            ->select('p.*', 'a.is_completed', 'a.updated_at as tanggal_isi')
+            ->get();
+
+        $form = DB::table('mcu_forms')->where('id_mcu_form', $request->id_mcu_form)->first();
+
+        $pdf = Pdf::loadView('application.menu.mcu.export-pdf-pengisian-peserta', compact('peserta', 'form'));
+        return $pdf->download('Laporan_Pengisian_Form_MCU.pdf');
+    }
+    public function export_pdf_peserta(Request $request)
+    {
+        $pesertaCode = $request->peserta_code;
+        $idMcuForm = $request->id_mcu_form;
+
+        // Ambil Data Peserta & Jawaban Form
+        $peserta = DB::table('company_mou_peserta')->where('mou_peserta_code', $pesertaCode)->first();
+        $form = DB::table('mcu_forms')->where('id_mcu_form', $idMcuForm)->first();
+        $answer = DB::table('mcu_peserta_answers')
+            ->where('mou_peserta_code', $pesertaCode)
+            ->where('id_mcu_form', $idMcuForm)
+            ->first();
+
+        // Ambil Item Form
+        $formItems = DB::table('mcu_form_items')
+            ->where('id_mcu_form', $idMcuForm)
+            ->orderBy('sort_order', 'asc')
+            ->get();
+
+        // Decode Jawaban JSON
+        $answersData = $answer ? json_decode($answer->answers_data, true) : [];
+
+        $pdf = Pdf::loadView('application.menu.mcu.export-pdf-single-peserta', compact('peserta', 'form', 'formItems', 'answersData', 'answer'));
+        return $pdf->download('Hasil_MCU_' . $peserta->mou_peserta_name . '_' . $form->form_name . '.pdf');
+    }
+
+    // Controller Export Excel Per Peserta
+    public function export_excel_peserta(Request $request)
+    {
+        $pesertaCode = $request->peserta_code;
+        $idMcuForm = $request->id_mcu_form;
+
+        $peserta = DB::table('company_mou_peserta')->where('mou_peserta_code', $pesertaCode)->first();
+        $form = DB::table('mcu_forms')->where('id_mcu_form', $idMcuForm)->first();
+        $answer = DB::table('mcu_peserta_answers')
+            ->where('mou_peserta_code', $pesertaCode)
+            ->where('id_mcu_form', $idMcuForm)
+            ->first();
+
+        $formItems = DB::table('mcu_form_items')
+            ->where('id_mcu_form', $idMcuForm)
+            ->orderBy('sort_order', 'asc')
+            ->get();
+
+        $answersData = $answer ? json_decode($answer->answers_data, true) : [];
+
+        $fileName = 'Hasil_MCU_' . str_replace(' ', '_', $peserta->mou_peserta_name) . '.xls';
+
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=\"$fileName\"");
+
+        echo "<h3>HASIL PENGISIAN FORM MCU</h3>";
+        echo "<table>";
+        echo "<tr><td><b>Nama Peserta</b></td><td>: {$peserta->mou_peserta_name}</td></tr>";
+        echo "<tr><td><b>NIK / NIP</b></td><td>: {$peserta->mou_peserta_nik} / {$peserta->mou_peserta_nip}</td></tr>";
+        echo "<tr><td><b>Form MCU</b></td><td>: {$form->form_name}</td></tr>";
+        echo "<tr><td><b>Tanggal Pengisian</b></td><td>: " . date('d/m/Y H:i', strtotime($answer->updated_at)) . "</td></tr>";
+        echo "</table><br>";
+
+        echo "<table border='1'>";
+        echo "<tr bgcolor='#f2f2f2'><th>No</th><th>Pertanyaan / Item Pemeriksaan</th><th>Hasil / Jawaban</th><th>Satuan</th></tr>";
+
+        foreach ($formItems as $index => $item) {
+            $val = $answersData[$item->id_mcu_form_item] ?? '-';
+            if (is_array($val)) {
+                $val = implode(', ', $val);
+            }
+            echo "<tr>
+                <td align='center'>" . ($index + 1) . "</td>
+                <td>{$item->item_label}</td>
+                <td>{$val}</td>
+                <td>{$item->unit}</td>
+              </tr>";
+        }
+        echo "</table>";
+        exit;
     }
 
     // MENU SERVICE

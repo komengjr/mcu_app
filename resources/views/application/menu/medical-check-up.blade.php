@@ -225,6 +225,11 @@
                                 <i class="fas fa-upload me-2"></i> Upload Summary
                             </button>
                         </li>
+                        <li>
+                            <button class="dropdown-item text-dark" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl" id="button-pengisian-data-form" data-code="{{ $datas->company_mou_code }}">
+                                <i class="fab fa-wpforms me-2"></i> Data Pengisian Form
+                            </button>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -729,6 +734,29 @@
                 $('#report-kehadiran-mcu').html('eror');
             });
         }
+    });
+</script>
+<script>
+    $(document).on("click", "#button-pengisian-data-form", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        $('#menu-mcu-xl').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('medical_check_up_data_pengisian_form') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-mcu-xl').html(data);
+        }).fail(function() {
+            $('#menu-mcu-xl').html('eror');
+        });
     });
 </script>
 @endsection

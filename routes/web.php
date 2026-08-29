@@ -163,6 +163,12 @@ Route::prefix('application')->group(function () {
     Route::post('medical-check-up/summary-save-executive', [ApplicationController::class, 'medical_check_up_summary_save_executive'])->name('medical_check_up_summary_save_executive');
     Route::post('medical-check-up/summary-save-healty-talk', [ApplicationController::class, 'medical_check_up_summary_save_healty_talk'])->name('medical_check_up_summary_save_healty_talk');
     Route::post('medical-check-up/send-message-whatsapp-peserta-mcu', [ApplicationController::class, 'medical_check_up_send_message_whatsapp_peserta_mcu'])->name('medical_check_up_send_message_whatsapp_peserta_mcu');
+    Route::post('medical-check-up/data-pengisian-form', [ApplicationController::class, 'medical_check_up_data_pengisian_form'])->name('medical_check_up_data_pengisian_form');
+    Route::post('medical-check-up/data-pengisian-form-detail', [ApplicationController::class, 'medical_check_up_detail_pengisian_form'])->name('medical_check_up_detail_pengisian_form');
+    Route::get('medical-check-up/export-excel-pengisian', [ApplicationController::class, 'export_excel_pengisian'])->name('medical_check_up_export_excel_pengisian');
+    Route::get('medical-check-up/export-pdf-pengisian', [ApplicationController::class, 'export_pdf_pengisian'])->name('medical_check_up_export_pdf_pengisian');
+    Route::get('medical-check-up/export-pdf-peserta', [ApplicationController::class, 'export_pdf_peserta'])->name('medical_check_up_export_pdf_peserta');
+    Route::get('medical-check-up/export-excel-peserta', [ApplicationController::class, 'export_excel_peserta'])->name('medical_check_up_export_excel_peserta');
     //MENU SERVICE
     Route::post('menu-servic/pilih-perusahaan', [ApplicationController::class, 'menu_service_pilih_perusahaan'])->name('menu_service_pilih_perusahaan');
     Route::post('menu-servic/pilih-agreement', [ApplicationController::class, 'menu_service_pilih_agreement'])->name('menu_service_pilih_agreement');

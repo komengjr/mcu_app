@@ -9,7 +9,7 @@
     .card-mcu {
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         border: 1px solid #e2e8f0 !important;
-        background: #ffffff;
+        /* background: #ffffff; */
         border-radius: 10px;
     }
 

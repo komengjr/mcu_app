@@ -62,7 +62,7 @@
 
 @section('content')
 <!-- Header Banner Modern -->
-<div class="row mb-4">
+<div class="row mb-3">
     <div class="col-12">
         <div class="card border-0 shadow-sm rounded-3 bg-gradient-danger-custom text-white overflow-hidden">
             <div class="card-body p-4 position-relative">

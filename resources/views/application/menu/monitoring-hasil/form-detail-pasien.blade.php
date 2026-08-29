@@ -24,21 +24,67 @@
         $ttd = DB::table('monitoring_hasil_kurir')->where('monitoring_hasil_pasien_code',$order->monitoring_hasil_pasien_code)->first();
         @endphp
         @if ($ttd)
-        <div class="card-body">
-            <h6 class="mb-3 text-primary">Proses Pengantaran : </h6>
-            <p>Pastikan Orderan ini Sudah Benar dan Sesuai dengan Kurir yang akan mengambil Sample</p>
-            <div class="row">
-                <div class="col-6">
-                    <p><strong>Rujukan</strong><br></p>
+        <div class="card-body p-0">
+            <div class="alert alert-light-primary border border-primary border-dashed rounded-3 p-3 mb-3">
+                <h6 class="fw-bold text-primary mb-1">
+                    <i class="fas fa-truck me-2"></i>Proses Pengantaran
+                </h6>
+                <p class="text-muted small mb-0">
+                    Pastikan orderan ini sudah benar dan sesuai dengan kurir yang akan mengambil sample.
+                </p>
+            </div>
 
-                    <p><strong>Name Pasien : </strong>{{ $order->monitoring_hasil_pasien_nama }}<br></p>
-                    <p><strong>Tanggal Lahir : </strong>{{ $order->monitoring_hasil_pasien_tgl_lahir }}<br></p>
-                    <p><strong>Date Create : </strong>{{ $order->created_at }}</p>
+            <div class="row g-3">
+                <!-- Informasi Rujukan & Pasien -->
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 bg-light h-100">
+                        <span class="badge bg-primary mb-3">Informasi Pasien</span>
+                        <ul class="list-unstyled mb-0 small">
+                            <li class="mb-2 d-flex justify-content-between border-bottom pb-2">
+                                <span class="text-muted">Nama Pasien</span>
+                                <span class="fw-semibold text-end">{{ $order->monitoring_hasil_pasien_nama ?? '-' }}</span>
+                            </li>
+                            <li class="mb-2 d-flex justify-content-between border-bottom pb-2">
+                                <span class="text-muted">Tanggal Lahir</span>
+                                <span class="fw-semibold text-end">{{ $order->monitoring_hasil_pasien_tgl_lahir ? date('d-m-Y', strtotime($order->monitoring_hasil_pasien_tgl_lahir)) : '-' }}</span>
+                            </li>
+                            <li class="d-flex justify-content-between">
+                                <span class="text-muted">Dibuat Pada</span>
+                                <span class="fw-semibold text-end">{{ $order->created_at ? date('d-m-Y H:i', strtotime($order->created_at)) : '-' }}</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="col-6">
-                    <p><strong>Signature <img src="{{$ttd->monitoring_hasil_kurir_sign}}" width="150"></strong><br></p>
-                    <p><strong>Nama Kurir : </strong>{{$ttd->monitoring_hasil_kurir_name}}<br></p>
-                    <p><strong>Date Signed: </strong>{{ $ttd->monitoring_hasil_kurir_date }}</p>
+
+                <!-- Informasi Kurir & TTD -->
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 bg-light h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <span class="badge bg-secondary mb-3">Verifikasi Kurir</span>
+                            <ul class="list-unstyled mb-0 small">
+                                <li class="mb-2 d-flex justify-content-between border-bottom pb-2">
+                                    <span class="text-muted">Nama Kurir</span>
+                                    <span class="fw-semibold text-end">{{ $ttd->monitoring_hasil_kurir_name ?? '-' }}</span>
+                                </li>
+                                <li class="mb-3 d-flex justify-content-between border-bottom pb-2">
+                                    <span class="text-muted">Waktu TTD</span>
+                                    <span class="fw-semibold text-end">{{ !empty($ttd->monitoring_hasil_kurir_date) ? date('d-m-Y H:i', strtotime($ttd->monitoring_hasil_kurir_date)) : '-' }}</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Box Tanda Tangan -->
+                        <div class="text-center pt-2">
+                            <p class="text-muted small mb-1">Tanda Tangan</p>
+                            <div class="border bg-white rounded p-2 d-flex align-items-center justify-content-center" style="min-height: 100px;">
+                                @if(!empty($ttd) && !empty($ttd->monitoring_hasil_kurir_sign))
+                                <img src="{{ $ttd->monitoring_hasil_kurir_sign }}" alt="Signature" class="img-fluid" style="max-height: 80px; object-fit: contain;">
+                                @else
+                                <span class="text-muted fst-italic small">( Belum Ada TTD )</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

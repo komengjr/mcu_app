@@ -185,12 +185,19 @@
                             </label>
                         </div>
 
-                        <!-- Input Select / Dropdown -->
+                        <!-- Input Select / Dropdown Dinamis dari Database -->
                         @elseif($item->field_type == 'select')
                         <select name="answers[{{ $item->id_mcu_form_item }}]" class="form-select form-select-sm mcu-custom-input" {{ $item->is_required ? 'required' : '' }}>
                             <option value="">-- Pilih Hasil --</option>
-                            <option value="Normal" {{ $currentAnswer == 'Normal' ? 'selected' : '' }}>Normal</option>
-                            <option value="Abnormal" {{ $currentAnswer == 'Abnormal' ? 'selected' : '' }}>Abnormal</option>
+
+                            {{-- Mengambil data opsi dinamis dari relasi options --}}
+                            @if(isset($item->options) && $item->options->count() > 0)
+                            @foreach($item->options as $option)
+                            <option value="{{ $option->option_value }}" {{ $currentAnswer == $option->option_value ? 'selected' : '' }}>
+                                {{ $option->option_label }}
+                            </option>
+                            @endforeach
+                            @endif
                         </select>
                         @endif
                     </div>

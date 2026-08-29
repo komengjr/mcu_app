@@ -275,11 +275,24 @@ class SignaturePadController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Formulir tidak ditemukan'], 404);
         }
 
-        // Ambil item form berdasarkan id_mcu_form
+        // Ambil item form beserta opsi pilihan (select options)
         $items = DB::table('mcu_form_items')
             ->where('id_mcu_form', $form->id_mcu_form)
             ->orderBy('sort_order', 'asc')
             ->get();
+
+        // Ambil semua opsi pilihan dari tabel mcu_item_options
+        $itemIds = $items->pluck('id_mcu_form_item');
+        $options = DB::table('mcu_item_options')
+            ->whereIn('id_mcu_form_item', $itemIds)
+            ->get()
+            ->groupBy('id_mcu_form_item');
+
+        // Petakan opsi ke dalam masing-masing item
+        $items->transform(function ($item) use ($options) {
+            $item->options = $options->get($item->id_mcu_form_item, collect());
+            return $item;
+        });
 
         // Ambil data jawaban dari JSON
         $savedRecord = DB::table('mcu_peserta_answers')

@@ -3,7 +3,7 @@
     <input type="hidden" name="id_mcu_form" value="{{ $form->id_mcu_form }}">
     <input type="hidden" name="user_code" value="{{ $userCode }}">
 
-    <!-- Styling Tambahan untuk Form Modal Modern -->
+    <!-- Styling Form Modal -->
     <style>
         .mcu-header-card {
             background: linear-gradient(135deg, #ffffff 0%, #fff5f6 100%);
@@ -64,7 +64,7 @@
             border: 1px solid #e2e8f0;
             border-radius: 8px;
             padding: 6px 14px;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
             cursor: pointer;
         }
 
@@ -81,7 +81,7 @@
             border: none;
             font-weight: 600;
             box-shadow: 0 4px 12px rgba(230, 0, 38, 0.25);
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
         }
 
         .btn-vibrant-save:hover {
@@ -113,7 +113,22 @@
     <div class="row g-2">
         @forelse($items as $item)
         @php
-        $currentAnswer = $answers[$item->id_mcu_form_item] ?? '';
+        $rawAnswer = $answers[$item->id_mcu_form_item] ?? '';
+
+        // Ekstrak nilai jawaban dan catatan jika data tersimpan sebagai Array / Object
+        if (is_array($rawAnswer)) {
+        $val = $rawAnswer['value'] ?? '';
+        $currentNote = $rawAnswer['note'] ?? '';
+        } else {
+        $val = $rawAnswer;
+        $currentNote = $notes[$item->id_mcu_form_item] ?? ($answers[$item->id_mcu_form_item . '_note'] ?? '');
+        }
+
+        $currentAnswer = strtolower(trim((string)$val));
+
+        // Evaluasi kondisi checked untuk 'Ya' dan 'Tidak'
+        $isYes = in_array($currentAnswer, ['ya', 'yes', '1', 'true'], true);
+        $isNo = in_array($currentAnswer, ['tidak', 'no', '0', 'false'], true);
         @endphp
 
         <div class="col-12">
@@ -144,7 +159,7 @@
                             <input type="{{ $item->field_type }}"
                                 name="answers[{{ $item->id_mcu_form_item }}]"
                                 class="form-control form-control-sm mcu-custom-input"
-                                value="{{ $currentAnswer }}"
+                                value="{{ is_array($rawAnswer) ? ($rawAnswer['value'] ?? '') : $rawAnswer }}"
                                 placeholder="Ketik {{ strtolower($item->item_label) }}..."
                                 {{ $item->is_required ? 'required' : '' }}>
                             @if($item->unit)
@@ -158,42 +173,50 @@
                             class="form-control form-control-sm mcu-custom-input"
                             rows="2"
                             placeholder="Tuliskan catatan atau keterangan detail..."
-                            {{ $item->is_required ? 'required' : '' }}>{{ $currentAnswer }}</textarea>
+                            {{ $item->is_required ? 'required' : '' }}>{{ is_array($rawAnswer) ? ($rawAnswer['value'] ?? '') : $rawAnswer }}</textarea>
 
                         <!-- Input Yes / No (Radio Card Toggle) -->
                         @elseif($item->field_type == 'yes_no')
                         <div class="d-flex align-items-center gap-2 pt-1">
                             <label class="mcu-radio-card d-flex align-items-center gap-2 mb-0 fs--1" for="radio_yes_{{ $item->id_mcu_form_item }}">
-                                <input class="form-check-input mt-0"
+                                <input class="form-check-input mt-0 js-yes-no-trigger"
                                     type="radio"
                                     name="answers[{{ $item->id_mcu_form_item }}]"
                                     id="radio_yes_{{ $item->id_mcu_form_item }}"
                                     value="Ya"
-                                    {{ $currentAnswer == 'Ya' ? 'checked' : '' }}
+                                    data-target="#yes_no_note_container_{{ $item->id_mcu_form_item }}"
+                                    {{ $isYes ? 'checked' : '' }}
                                     {{ $item->is_required ? 'required' : '' }}>
                                 <span>Ya</span>
                             </label>
                             <label class="mcu-radio-card d-flex align-items-center gap-2 mb-0 fs--1" for="radio_no_{{ $item->id_mcu_form_item }}">
-                                <input class="form-check-input mt-0"
+                                <input class="form-check-input mt-0 js-yes-no-trigger"
                                     type="radio"
                                     name="answers[{{ $item->id_mcu_form_item }}]"
                                     id="radio_no_{{ $item->id_mcu_form_item }}"
                                     value="Tidak"
-                                    {{ $currentAnswer == 'Tidak' ? 'checked' : '' }}
+                                    data-target="#yes_no_note_container_{{ $item->id_mcu_form_item }}"
+                                    {{ $isNo ? 'checked' : '' }}
                                     {{ $item->is_required ? 'required' : '' }}>
                                 <span>Tidak</span>
                             </label>
                         </div>
 
-                        <!-- Input Select / Dropdown Dinamis dari Database -->
+                        <!-- Textarea Catatan Tambahan (Muncul jika pilih 'Ya') -->
+                        <div id="yes_no_note_container_{{ $item->id_mcu_form_item }}" class="mt-2 {{ $isYes ? '' : 'd-none' }}">
+                            <textarea name="answers_note[{{ $item->id_mcu_form_item }}]"
+                                class="form-control form-control-sm mcu-custom-input"
+                                rows="2"
+                                placeholder="Jelaskan atau beri keterangan detail mengenai 'Ya'...">{{ $currentNote }}</textarea>
+                        </div>
+
+                        <!-- Input Select / Dropdown Dinamis -->
                         @elseif($item->field_type == 'select')
                         <select name="answers[{{ $item->id_mcu_form_item }}]" class="form-select form-select-sm mcu-custom-input" {{ $item->is_required ? 'required' : '' }}>
                             <option value="">-- Pilih Hasil --</option>
-
-                            {{-- Mengambil data opsi dinamis dari relasi options --}}
                             @if(isset($item->options) && $item->options->count() > 0)
                             @foreach($item->options as $option)
-                            <option value="{{ $option->option_value }}" {{ $currentAnswer == $option->option_value ? 'selected' : '' }}>
+                            <option value="{{ $option->option_value }}" {{ (string)$val === (string)$option->option_value ? 'selected' : '' }}>
                                 {{ $option->option_label }}
                             </option>
                             @endforeach
@@ -215,3 +238,21 @@
         @endforelse
     </div>
 </form>
+
+<!-- Script Toggle Textarea Yes/No -->
+<script>
+    document.addEventListener('change', function(e) {
+        if (e.target && e.target.classList.contains('js-yes-no-trigger')) {
+            const targetId = e.target.getAttribute('data-target');
+            const targetContainer = document.querySelector(targetId);
+
+            if (targetContainer) {
+                if (e.target.value === 'Ya') {
+                    targetContainer.classList.remove('d-none');
+                } else {
+                    targetContainer.classList.add('d-none');
+                }
+            }
+        }
+    });
+</script>

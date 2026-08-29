@@ -313,37 +313,55 @@ class SignaturePadController extends Controller
     public function save_data_form_pemeriksaan(Request $request)
     {
         $request->validate([
-            'id_mcu_form' => 'required',
-            'user_code' => 'required',
-            'answers' => 'nullable|array',
+            'id_mcu_form'  => 'required',
+            'user_code'    => 'required',
+            'answers'      => 'nullable|array',
+            'answers_note' => 'nullable|array',
         ]);
 
-        $idMcuForm = $request->input('id_mcu_form');
-        $userCode = $request->input('user_code');
-        $answers = $request->input('answers', []); // Array jawaban dari form
+        $idMcuForm   = $request->input('id_mcu_form');
+        $userCode    = $request->input('user_code');
+        $answers     = $request->input('answers', []);
+        $answersNote = $request->input('answers_note', []);
+
+        $formattedAnswers = [];
+
+        foreach ($answers as $itemId => $value) {
+            $note = $answersNote[$itemId] ?? null;
+
+            // Jika ada catatan (biasanya opsi 'Ya'), bungkus jawaban & catatan ke dalam array
+            if ($value === 'Ya' && !empty($note)) {
+                $formattedAnswers[$itemId] = [
+                    'value' => $value,
+                    'note'  => $note
+                ];
+            } else {
+                // Jika tidak ada catatan, simpan nilainya langsung
+                $formattedAnswers[$itemId] = $value;
+            }
+        }
 
         try {
-            // Simpan atau Update menggunakan updateOrInsert
             DB::table('mcu_peserta_answers')->updateOrInsert(
                 [
                     'mou_peserta_code' => $userCode,
-                    'id_mcu_form' => $idMcuForm,
+                    'id_mcu_form'      => $idMcuForm,
                 ],
                 [
-                    'answers_data' => json_encode($answers),
+                    'answers_data' => json_encode($formattedAnswers),
                     'is_completed' => true,
-                    'updated_at' => now(),
-                    'created_at' => now(),
+                    'updated_at'   => now(),
+                    'created_at'   => now(),
                 ]
             );
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Data formulir berhasil disimpan!'
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal menyimpan data: ' . $e->getMessage()
             ], 500);
         }

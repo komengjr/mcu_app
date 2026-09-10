@@ -26,6 +26,15 @@ class AuthController extends Controller
             return view('auth.login');
         }
     }
+    public function masrketing_login()
+    {
+        if (Auth::check()) {
+
+            return Redirect('marketing/dashboard/home');
+        } else {
+            return view('auth.login_marketing');
+        }
+    }
 
     public function registration()
     {
@@ -143,6 +152,38 @@ class AuthController extends Controller
                                             <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
                                             <script>window.location.href = "' . route('dashboard.home') . '";</script>
                                         </div>';
+            }
+        }
+        return '<div class="alert alert-danger alert-dismissible fade show my-2" role="alert">
+                                            <strong>Error!</strong> Username Dan Password Ada Kesalahan.
+                                            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>';
+    }
+    public function verifikasi_masrketing_login(Request $request)
+    {
+
+        $request->validate([
+            'username' => 'required',
+            'password' => 'required',
+        ]);
+
+        $credentials = $request->only('username', 'password');
+
+        if (Auth::attempt($credentials)) {
+            if (Auth::user()->access_status == 0) {
+                Auth::logout();
+                return '<div class="alert alert-warning alert-dismissible fade show my-2" role="alert"> <strong>Warning !</strong> Bermasalah Pada Akun Anda <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button> </div>';
+            } else {
+                if (Auth::user()->access_login == 'mkt') {
+                    return '<div class="alert alert-success alert-dismissible fade show my-2" role="alert">
+                                                <strong>Greate!</strong> Selamat Datang ' . Auth::user()->fullname . '.
+                                                <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                <script>window.location.href = "' . route('marekitng.dashboard.home') . '";</script>
+                                            </div>';
+                } else {
+                    Auth::logout();
+                    return '<div class="alert alert-warning alert-dismissible fade show my-2" role="alert"> <strong>Warning !</strong> Bermasalah Pada Akun Anda <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button> </div>';
+                }
             }
         }
         return '<div class="alert alert-danger alert-dismissible fade show my-2" role="alert">

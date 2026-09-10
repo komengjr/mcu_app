@@ -4,6 +4,7 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\GatewayController;
+use App\Http\Controllers\MarketingDashboardController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\MasterMcuFormController;
 use App\Http\Controllers\SignaturePadController;
@@ -37,6 +38,8 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('post-login', 'postLogin')->name('login.post');
     // Route::get('dashboard', [AuthController::class, 'dashboard']);
     Route::post('verifikasi-Login', 'verifikasi_Login')->name('verifikasi_Login');
+    Route::get('marketing/login', 'masrketing_login')->name('masrketing_login');
+    Route::post('marketing/verifikasi-login', 'verifikasi_masrketing_login')->name('verifikasi_masrketing_login');
 });
 
 Route::prefix('dashboard')->group(function () {
@@ -45,6 +48,9 @@ Route::prefix('dashboard')->group(function () {
     Route::get('actifity', [dashboardController::class, 'actifity'])->name('dashboard.actifity');
     Route::get('profile', [dashboardController::class, 'profile'])->name('dashboard.profile');
     Route::get('setting', [dashboardController::class, 'setting'])->name('dashboard.setting');
+});
+Route::prefix('marketing')->group(function () {
+    Route::get('dashboard/home', [MarketingDashboardController::class, 'index'])->name('marekitng.dashboard.home');
 });
 Route::prefix('{akses}/application')->group(function () {
     Route::get('home', [ApplicationController::class, 'home'])->name('home');
@@ -72,6 +78,7 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('laporan-rekap-mcu', [ApplicationController::class, 'laporan_rekap_mcu'])->name('laporan_rekap_mcu');
     Route::get('laporan/laporan-data-kehadiran', [ApplicationController::class, 'laporan_data_kehadiran'])->name('laporan_data_kehadiran');
     Route::get('laporan/laporan-data-omset', [ApplicationController::class, 'laporan_data_omset'])->name('laporan_data_omset');
+    Route::get('laporan/laporan-pengisian-form', [ApplicationController::class, 'laporan_pengisian_form'])->name('laporan_pengisian_form');
 
     // Management Master Form
     Route::get('master-data/master-form', [MasterMcuFormController::class, 'index'])->name('forms.index');
@@ -343,6 +350,7 @@ Route::post('signaturepad-update-save', [SignaturePadController::class, 'save_si
 Route::get('signaturepad/get-data/form', [SignaturePadController::class, 'get_data_form_pemeriksaan'])->name('signaturepad.get_data_form_pemeriksaan');
 Route::post('signaturepad/save-data/form', [SignaturePadController::class, 'save_data_form_pemeriksaan'])->name('signaturepad.save_data_form_pemeriksaan');
 
+include('marketing.php');
 
 Route::get('notifikasi', [SignaturePadController::class, 'notifikasi'])->name('notifikasi');
 
@@ -366,4 +374,12 @@ Route::get('/export-progress', function () {
     return response()->json([
         'progress' => Cache::get('export_progress', 0)
     ]);
+});
+
+Route::prefix('laporan')->name('laporan.')->group(function () {
+    Route::get('/get-mou', [ApplicationController::class, 'getMou'])->name('get_mou');
+    Route::get('/get-forms', [ApplicationController::class, 'getForms'])->name('get_forms');
+    Route::get('/get-summary-stats', [ApplicationController::class, 'getSummaryStats'])->name('get_summary_stats');
+    Route::get('/get-participants', [ApplicationController::class, 'getParticipants'])->name('get_participants');
+    Route::get('/get-participant-detail', [ApplicationController::class, 'getParticipantDetail'])->name('get_participant_detail');
 });

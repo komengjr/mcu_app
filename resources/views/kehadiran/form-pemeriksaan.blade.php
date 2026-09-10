@@ -327,7 +327,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="z-index-1 text-white-50 fs--2 text-start mt-4 pt-3 border-top border-white-10">
+                                    <div class="z-index-1 text-white-50 fs--2 text-white mt-4 pt-3 border-top border-white-10">
                                         &copy; {{ date('Y') }} MCU Management System. All rights reserved.
                                     </div>
                                 </div>
@@ -337,7 +337,7 @@
                                     <div class="right-panel-content d-flex align-items-center p-4 p-md-5">
                                         <div class="w-100">
                                             <div class="mb-3">
-                                                <h4 class="fw-bold text-900 mb-1">Status Pemeriksaan</h4>
+                                                <h4 class="fw-bold text-900 mb-1">Status Peserta MCU</h4>
                                                 <p class="text-500 fs--1">Periksa identitas dan perbarui status tindakan pemeriksaan Anda.</p>
                                             </div>
 
@@ -408,15 +408,14 @@
                                                         </div>
                                                     </div>
 
-                                                    <!-- Tabel Pemeriksaan -->
+                                                    <!-- Tabel Pemeriksaan MCU -->
                                                     <div class="col-12">
                                                         <div class="table-responsive scrollbar table-custom-mcu">
                                                             <table class="table table-bordered table-striped fs--1 mb-0">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Nama Pemeriksaan</th>
-                                                                        <th class="text-center" width="60">Yes</th>
-                                                                        <th class="text-center" width="60">No</th>
+                                                                        <th class="text-center" width="130">Action Status</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -439,6 +438,8 @@
                                                                         ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
                                                                         ->where('log_pemeriksaan_status', 0)
                                                                         ->first();
+
+                                                                    if ($cek || $cek1) $hitung++;
                                                                     ?>
                                                                     <tr>
                                                                         <td class="fw-semibold text-800">
@@ -447,17 +448,20 @@
                                                                                 {{ $cek1 && $ket ? 'Keterangan: ' . $ket->log_pemeriksaan_deskripsi : '' }}
                                                                             </small>
                                                                         </td>
-                                                                        <td class="text-center align-middle">
-                                                                            <div class="form-check d-flex justify-content-center m-0">
-                                                                                <input class="form-check-input" id="pem_yes_{{ $pem->master_pemeriksaan_code }}" type="radio" name="pem{{ $pem->master_pemeriksaan_code }}" onclick="MyFunction('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', 'on', '{{ $pem->master_pemeriksaan_name }}')" {{ $cek ? 'checked' : '' }} />
-                                                                            </div>
-                                                                            <?php if ($cek) $hitung++; ?>
-                                                                        </td>
-                                                                        <td class="text-center align-middle">
-                                                                            <div class="form-check d-flex justify-content-center m-0">
-                                                                                <input class="form-check-input" id="pem_no_{{ $pem->master_pemeriksaan_code }}" type="radio" name="pem{{ $pem->master_pemeriksaan_code }}" onclick="MyFunction('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', 'off', '{{ $pem->master_pemeriksaan_name }}')" {{ $cek1 ? 'checked' : '' }} />
-                                                                            </div>
-                                                                            <?php if ($cek1) $hitung++; ?>
+                                                                        <td class="text-center align-middle" id="cell_action_{{ $pem->master_pemeriksaan_code }}">
+                                                                            @if($cek)
+                                                                            <button type="button" class="btn btn-sm btn-success px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                                <i class="fas fa-check-circle me-1"></i> Sudah
+                                                                            </button>
+                                                                            @elseif($cek1)
+                                                                            <button type="button" class="btn btn-sm btn-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                                <i class="fas fa-times-circle me-1"></i> Tidak
+                                                                            </button>
+                                                                            @else
+                                                                            <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                                Pilih Status
+                                                                            </button>
+                                                                            @endif
                                                                         </td>
                                                                     </tr>
                                                                     @endforeach
@@ -481,6 +485,8 @@
                                                                         ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
                                                                         ->where('log_pemeriksaan_status', 0)
                                                                         ->first();
+
+                                                                    if ($cek || $cek1) $hitung++;
                                                                     ?>
                                                                     <tr>
                                                                         <td class="fw-semibold text-danger">
@@ -489,17 +495,20 @@
                                                                                 {{ $cek1 && $ket ? 'Keterangan: ' . $ket->log_pemeriksaan_deskripsi : '' }}
                                                                             </small>
                                                                         </td>
-                                                                        <td class="text-center align-middle">
-                                                                            <div class="form-check d-flex justify-content-center m-0">
-                                                                                <input class="form-check-input" id="pem_yes_{{ $pem->master_pemeriksaan_code }}" type="radio" name="pem{{ $pem->master_pemeriksaan_code }}" onclick="MyFunction('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', 'on', '{{ $pem->master_pemeriksaan_name }}')" {{ $cek ? 'checked' : '' }} />
-                                                                            </div>
-                                                                            <?php if ($cek) $hitung++; ?>
-                                                                        </td>
-                                                                        <td class="text-center align-middle">
-                                                                            <div class="form-check d-flex justify-content-center m-0">
-                                                                                <input class="form-check-input" id="pem_no_{{ $pem->master_pemeriksaan_code }}" type="radio" name="pem{{ $pem->master_pemeriksaan_code }}" onclick="MyFunction('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', 'off', '{{ $pem->master_pemeriksaan_name }}')" {{ $cek1 ? 'checked' : '' }} />
-                                                                            </div>
-                                                                            <?php if ($cek1) $hitung++; ?>
+                                                                        <td class="text-center align-middle" id="cell_action_{{ $pem->master_pemeriksaan_code }}">
+                                                                            @if($cek)
+                                                                            <button type="button" class="btn btn-sm btn-success px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                                <i class="fas fa-check-circle me-1"></i> Sudah
+                                                                            </button>
+                                                                            @elseif($cek1)
+                                                                            <button type="button" class="btn btn-sm btn-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                                <i class="fas fa-times-circle me-1"></i> Tidak
+                                                                            </button>
+                                                                            @else
+                                                                            <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                                Pilih Status
+                                                                            </button>
+                                                                            @endif
                                                                         </td>
                                                                     </tr>
                                                                     @endforeach
@@ -507,8 +516,6 @@
                                                             </table>
                                                         </div>
                                                     </div>
-
-
 
                                                     <div class="col-12 mt-3">
                                                         <div class="form-check d-flex align-items-center">
@@ -555,7 +562,7 @@
                 </div>
                 <div class="modal-body p-2 bg-light">
 
-                    <div id="modalFormContainer"">
+                    <div id="modalFormContainer">
                         <div class="d-flex justify-content-center align-items-center h-100">
                             <div class="spinner-border text-danger" role="status">
                                 <span class="visually-hidden">Loading...</span>
@@ -581,41 +588,86 @@
     <script src="{{ asset('asset/notifications/js/notifications.min.js') }}"></script>
 
     <script>
-        function MyFunction(id, userCode, pilihan, namaPemeriksaan) {
+        $(document).ready(function() {
+            // Popup Panduan Otomatis Saat Membuka Halaman
+            Swal.fire({
+                title: 'Panduan Pengisian Formulir',
+                html: `
+                    <div class="text-start fs--1 lh-base">
+                        <p class="mb-2">Selamat datang! Silakan ikuti petunjuk berikut untuk menyelesaikan form ini:</p>
+                        <ol class="ps-3 mb-0">
+                            <li class="mb-2"><strong>Periksa Data Peserta:</strong> Pastikan Nama Lengkap dan NIP Anda sudah sesuai pada kolom informasi.</li>
+                            <li class="mb-2"><strong>Isi Form Lampiran:</strong> Jika terdapat section Lampiran Form Pemeriksaan, klik tombol <b>Isi Form</b> untuk melengkapinya.</li>
+                            <li class="mb-2"><strong>Status Pemeriksaan:</strong> Klik tombol aksi pada daftar pemeriksaan untuk memperbarui status (Sudah/Tidak melakukan). Opsi ini digunakan untuk memonitor progres pemeriksaan MCU Anda.</li>
+                        </ol>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Saya Mengerti',
+                confirmButtonColor: '#E60026',
+                allowOutsideClick: false
+            });
+        });
+
+        // Function Action Swal untuk Status Pemeriksaan
+        function openActionSwal(id, userCode, namaPemeriksaan) {
             var total = $('#jumlah').val();
 
-            if (pilihan === 'off') {
-                Swal.fire({
-                    title: 'Alasan Tidak Diperiksa',
-                    text: 'Tuliskan deskripsi/alasan tidak melakukan ' + namaPemeriksaan,
-                    input: 'textarea',
-                    inputPlaceholder: 'Tuliskan alasan di sini...',
-                    inputAttributes: {
-                        'aria-label': 'Tuliskan alasan di sini'
-                    },
-                    showCancelButton: true,
-                    confirmButtonText: 'Simpan',
-                    cancelButtonText: 'Batal',
-                    confirmButtonColor: '#E60026',
-                    cancelButtonColor: '#6c757d',
-                    inputValidator: (value) => {
-                        if (!value || !value.trim()) {
-                            return 'Anda harus mengisi deskripsi/alasan!';
+            Swal.fire({
+                title: 'Status Pemeriksaan',
+                text: 'Pilih status untuk ' + namaPemeriksaan + ':',
+                icon: 'question',
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonText: 'Sudah Melakukan',
+                denyButtonText: 'Tidak / Belum',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#198754',
+                denyButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Jika memilih "Sudah Melakukan"
+                    $('#label_ket_' + id).text('');
+                    sendDataAjax(id, userCode, 'on', '', total);
+
+                    $('#cell_action_' + id).html(`
+                        <button type="button" class="btn btn-sm btn-success px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('${id}','${userCode}', '${namaPemeriksaan}')">
+                            <i class="fas fa-check-circle me-1"></i> Sudah
+                        </button>
+                    `);
+                } else if (result.isDenied) {
+                    // Jika memilih "Tidak / Belum", munculkan Swal Input Keterangan
+                    Swal.fire({
+                        title: 'Alasan Tidak/Belum Diperiksa',
+                        text: 'Tuliskan deskripsi/alasan tidak melakukan ' + namaPemeriksaan,
+                        input: 'textarea',
+                        inputPlaceholder: 'Tuliskan alasan di sini...',
+                        showCancelButton: true,
+                        confirmButtonText: 'Simpan',
+                        cancelButtonText: 'Batal',
+                        confirmButtonColor: '#E60026',
+                        cancelButtonColor: '#6c757d',
+                        inputValidator: (value) => {
+                            if (!value || !value.trim()) {
+                                return 'Anda harus mengisi deskripsi/alasan!';
+                            }
                         }
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        var ket = result.value;
-                        sendDataAjax(id, userCode, pilihan, ket, total);
-                        $('#label_ket_' + id).text('Keterangan: ' + ket);
-                    } else {
-                        $('#pem_no_' + id).prop('checked', false);
-                    }
-                });
-            } else {
-                $('#label_ket_' + id).text('');
-                sendDataAjax(id, userCode, pilihan, '', total);
-            }
+                    }).then((resKet) => {
+                        if (resKet.isConfirmed) {
+                            var ket = resKet.value;
+                            sendDataAjax(id, userCode, 'off', ket, total);
+                            $('#label_ket_' + id).text('Keterangan: ' + ket);
+
+                            $('#cell_action_' + id).html(`
+                                <button type="button" class="btn btn-sm btn-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('${id}','${userCode}', '${namaPemeriksaan}')">
+                                    <i class="fas fa-times-circle me-1"></i> Tidak
+                                </button>
+                            `);
+                        }
+                    });
+                }
+            });
         }
 
         function sendDataAjax(id, userCode, pilihan, ket, total) {

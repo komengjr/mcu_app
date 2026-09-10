@@ -4195,4 +4195,229 @@ class ApplicationController extends Controller
             'data'   => $data
         ]);
     }
+    // LAPORAN DATA OMSET
+    public function laporan_pengisian_form($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            // 1. Ambil daftar cabang dari tabel master_cabang
+            $companies = DB::table('master_company')
+                ->select('master_company_code', 'master_company_name')
+                ->get();
+            return view('application.laporan.laporan-pengisian-form', compact('companies'));
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
+    // 2. Fetch MoU berdasarkan Company Code
+    public function getMou(Request $request)
+    {
+        $mou = DB::table('company_mou')
+            ->where('master_company_code', $request->company_code)
+            ->select('company_mou_code', 'company_mou_name')
+            ->get();
+
+        return response()->json($mou);
+    }
+
+    // 3. Fetch Form berdasarkan MoU Code
+    public function getForms(Request $request)
+    {
+        $forms = DB::table('company_mou_form as cmf')
+            ->leftJoin('mcu_forms as mf', 'cmf.form_code', '=', 'mf.form_code') // Asumsi master nama form ada di mcu_forms
+            ->where('cmf.company_mou_code', $request->mou_code)
+            ->select('cmf.form_code', DB::raw('COALESCE(mf.form_name, cmf.form_code) as form_name'))
+            ->get();
+
+        return response()->json($forms);
+    }
+
+    // 4. Hitung Ringkasan Statistik
+    public function getSummaryStats(Request $request)
+    {
+        $mouCode = $request->mou_code;
+        $formCode = $request->form_code;
+
+        $idMcuForm = DB::table('mcu_forms')->where('form_code', $formCode)->value('id_mcu_form');
+
+        $total = DB::table('company_mou_peserta')
+            ->where('company_mou_code', $mouCode)
+            ->count();
+
+        $sudah = DB::table('mcu_peserta_answers')
+            ->where('id_mcu_form', $idMcuForm)
+            ->where('is_completed', true)
+            ->whereIn('mou_peserta_code', function ($q) use ($mouCode) {
+                $q->select('mou_peserta_code')->from('company_mou_peserta')->where('company_mou_code', $mouCode);
+            })
+            ->count();
+
+        $belum = $total - $sudah;
+
+        return response()->json([
+            'total' => $total,
+            'sudah' => $sudah,
+            'belum' => $belum < 0 ? 0 : $belum
+        ]);
+    }
+
+    // 5. DataTables ServerSide
+    // Method getParticipants Tanpa Package Yajra DataTables
+    public function getParticipants(Request $request)
+    {
+        $mouCode = $request->mou_code;
+        $formCode = $request->form_code;
+        $isCompleted = $request->is_completed;
+
+        $idMcuForm = DB::table('mcu_forms')->where('form_code', $formCode)->value('id_mcu_form');
+
+        $answeredPesertaCodes = DB::table('mcu_peserta_answers')
+            ->where('id_mcu_form', $idMcuForm)
+            ->where('is_completed', true)
+            ->pluck('mou_peserta_code')
+            ->toArray();
+
+        $query = DB::table('company_mou_peserta')
+            ->where('company_mou_code', $mouCode);
+
+        if ($isCompleted == 1) {
+            $query->whereIn('mou_peserta_code', $answeredPesertaCodes);
+        } else {
+            $query->whereNotIn('mou_peserta_code', $answeredPesertaCodes);
+        }
+
+        // Server-side manual untuk DataTables
+        $totalData = $query->count();
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 10);
+        $searchValue = $request->input('search.value');
+
+        if (!empty($searchValue)) {
+            $query->where(function ($q) use ($searchValue) {
+                $q->where('mou_peserta_name', 'like', "%{$searchValue}%")
+                    ->orWhere('mou_peserta_nip', 'like', "%{$searchValue}%")
+                    ->orWhere('mou_peserta_nik', 'like', "%{$searchValue}%")
+                    ->orWhere('mou_peserta_departemen', 'like', "%{$searchValue}%");
+            });
+        }
+
+        $filteredData = $query->count();
+        $records = $query->offset($start)->limit($length)->get();
+
+        $data = [];
+        foreach ($records as $index => $row) {
+            $nestedData = [];
+            $nestedData['DT_RowIndex'] = $start + $index + 1;
+            $nestedData['nip_nik'] = $row->mou_peserta_nip . ' / ' . $row->mou_peserta_nik;
+            $nestedData['mou_peserta_name'] = $row->mou_peserta_name;
+            $nestedData['mou_peserta_departemen'] = $row->mou_peserta_departemen;
+            $nestedData['kontak'] = ($row->mou_peserta_no_hp ?? '-') . ' / ' . ($row->mou_peserta_email ?? '-');
+            $nestedData['status_badge'] = $isCompleted == 1
+                ? '<span class="badge bg-success">Sudah Mengisi</span>'
+                : '<span class="badge bg-danger">Belum Mengisi</span>';
+            $nestedData['action'] = '<button class="btn btn-xs btn-primary btn-view-detail" data-peserta-code="' . $row->mou_peserta_code . '"><i class="fas fa-eye me-1"></i> Detail</button>';
+
+            $data[] = $nestedData;
+        }
+
+        return response()->json([
+            "draw"            => intval($request->input('draw')),
+            "recordsTotal"    => intval($totalData),
+            "recordsFiltered" => intval($filteredData),
+            "data"            => $data
+        ]);
+    }
+    public function getParticipantDetail(Request $request)
+    {
+        $pesertaCode = $request->peserta_code;
+        $formCode = $request->form_code;
+
+        // 1. Ambil Data Peserta
+        $peserta = DB::table('company_mou_peserta')
+            ->where('mou_peserta_code', $pesertaCode)
+            ->first();
+
+        if (!$peserta) {
+            return response()->json('<div class="alert alert-danger">Data peserta tidak ditemukan.</div>', 404);
+        }
+
+        // 2. Ambil Master Form berdasarkan form_code
+        $form = DB::table('mcu_forms')
+            ->where('form_code', $formCode)
+            ->first();
+
+        if (!$form) {
+            return response()->json('<div class="alert alert-warning">Formulir tidak ditemukan.</div>', 404);
+        }
+
+        // 3. Ambil Master Items/Pertanyaan untuk Form ini (diurutkan berdasarkan sort_order)
+        $formItems = DB::table('mcu_form_items')
+            ->where('id_mcu_form', $form->id_mcu_form)
+            ->orderBy('sort_order', 'asc')
+            ->get();
+
+        // 4. Ambil Jawaban Peserta
+        $answerRecord = DB::table('mcu_peserta_answers')
+            ->where('mou_peserta_code', $pesertaCode)
+            ->where('id_mcu_form', $form->id_mcu_form)
+            ->first();
+
+        // 5. Render Header Informasi Peserta
+        $html = '
+    <div class="mb-3 p-3 bg-light rounded border">
+        <table class="table table-borderless table-sm mb-0">
+            <tr><td width="30%" class="fw-bold">Nama Peserta</td><td>: ' . e($peserta->mou_peserta_name) . '</td></tr>
+            <tr><td class="fw-bold">NIP / NIK</td><td>: ' . e($peserta->mou_peserta_nip) . ' / ' . e($peserta->mou_peserta_nik) . '</td></tr>
+            <tr><td class="fw-bold">Departemen</td><td>: ' . e($peserta->mou_peserta_departemen) . '</td></tr>
+            <tr><td class="fw-bold">Formulir</td><td>: ' . e($form->form_name) . '</td></tr>
+            <tr><td class="fw-bold">Status Pengisian</td><td>: ' . ($answerRecord && $answerRecord->is_completed ? '<span class="badge bg-success">Selesai</span>' : '<span class="badge bg-warning text-dark">Belum Selesai</span>') . '</td></tr>
+        </table>
+    </div>
+    <hr>';
+
+        // 6. Map Master Items dengan Jawaban dari JSON
+        if (!$answerRecord || empty($answerRecord->answers_data)) {
+            $html .= '<div class="alert alert-warning text-center">Peserta belum mengisi formulir ini.</div>';
+        } else {
+            $answersData = json_decode($answerRecord->answers_data, true) ?? [];
+
+            $html .= '<div class="table-responsive"><table class="table table-striped table-bordered align-middle">
+            <thead class="table-secondary">
+                <tr>
+                    <th width="5%" class="text-center">No</th>
+                    <th>Item / Pertanyaan Examination</th>
+                    <th>Jawaban</th>
+                </tr>
+            </thead>
+            <tbody>';
+
+            if ($formItems->isEmpty()) {
+                $html .= '<tr><td colspan="3" class="text-center text-muted">Tidak ada master item pertanyaan untuk form ini.</td></tr>';
+            } else {
+                foreach ($formItems as $index => $item) {
+                    // Ambil nilai jawaban berdasarkan id_mcu_form_item atau fallback ke key index
+                    $rawAnswer = $answersData[$item->id_mcu_form_item]
+                        ?? $answersData[$item->item_label]
+                        ?? '-';
+
+                    // Format tampilan jika berupa Array
+                    $displayAnswer = is_array($rawAnswer) ? implode(', ', $rawAnswer) : $rawAnswer;
+
+                    // Tambahkan satuan/unit jika ketersediaan unit diset (contoh: 120/80 mmHg atau 70 kg)
+                    if (!empty($item->unit) && $displayAnswer !== '-') {
+                        $displayAnswer .= ' ' . $item->unit;
+                    }
+
+                    $html .= '<tr>
+                    <td class="text-center">' . ($index + 1) . '</td>
+                    <td class="fw-semibold">' . e($item->item_label) . '</td>
+                    <td>' . e($displayAnswer) . '</td>
+                </tr>';
+                }
+            }
+
+            $html .= '</tbody></table></div>';
+        }
+
+        return response()->json($html);
+    }
 }

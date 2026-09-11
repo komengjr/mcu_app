@@ -2354,7 +2354,111 @@ class ApplicationController extends Controller
         echo "</table>";
         exit;
     }
+    public function medical_check_up_panggil_antrian_peserta(Request $request)
+    {
+        $code = $request->code; // company_mou_code
 
+        $mou = DB::table('company_mou')
+            ->where('company_mou_code', $code)
+            ->first();
+
+        // Ambil daftar peserta
+        // Ambil daftar peserta yang BELUM SELESAI
+        $pesertaList = DB::table('log_antrian_peserta as log')
+            ->join('company_mou_peserta as peserta', 'log.mou_peserta_code', '=', 'peserta.mou_peserta_code')
+            ->select(
+                'peserta.mou_peserta_code',
+                'peserta.mou_peserta_name',
+                'peserta.mou_peserta_nip',
+                'peserta.mou_peserta_departemen',
+                DB::raw('MAX(log.nomor_antrian) as nomor_antrian'),
+                DB::raw('MAX(log.status_antrian) as status_antrian'),
+                DB::raw('MAX(log.nama_pos_pemeriksaan) as nama_pos_pemeriksaan'),
+                DB::raw('MAX(log.panggilan_ke) as panggilan_ke')
+            )
+            ->where('log.company_mou_code', $code)
+            ->where('log.status_antrian', '!=', 'Selesai') // Filter: Hilangkan yang sudah Selesai
+            ->groupBy(
+                'peserta.mou_peserta_code',
+                'peserta.mou_peserta_name',
+                'peserta.mou_peserta_nip',
+                'peserta.mou_peserta_departemen'
+            )
+            ->orderBy('nomor_antrian', 'asc')
+            ->get();
+
+        return view('application.menu.antrian.modal-panggil', compact('mou', 'pesertaList', 'code'));
+    }
+
+    public function prosesPanggil(Request $request)
+    {
+        $mouCode = $request->company_mou_code;
+        $pesertaCode = $request->mou_peserta_code;
+        $posPemeriksaan = $request->nama_pos_pemeriksaan;
+
+        // Ambil data antrian peserta
+        $antrian = DB::table('log_antrian_peserta')
+            ->where('company_mou_code', $mouCode)
+            ->where('mou_peserta_code', $pesertaCode)
+            ->first();
+
+        if (!$antrian) {
+            return response()->json(['status' => 'error', 'message' => 'Data antrian tidak ditemukan!']);
+        }
+
+        // Hitung berapa kali dipanggil
+        $panggilanKe = $antrian->panggilan_ke + 1;
+
+        // Update Log Antrian Utama untuk Display Realtime
+        DB::table('log_antrian_peserta')
+            ->where('log_antrian_id', $antrian->log_antrian_id)
+            ->update([
+                'nama_pos_pemeriksaan' => $posPemeriksaan,
+                'status_antrian'       => 'Dipanggil',
+                'panggilan_ke'         => $panggilanKe,
+                'operator_user_id'     => auth()->id() ?? 'Admin',
+                'waktu_panggil'        => now(),
+                'updated_at'           => now(),
+            ]);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Berhasil memanggil antrian ' . $antrian->nomor_antrian,
+            'data'    => [
+                'nomor_antrian' => $antrian->nomor_antrian,
+                'pos'           => $posPemeriksaan,
+                'panggilan_ke'  => $panggilanKe
+            ]
+        ]);
+    }
+    // Proses Selesaikan Pasien
+    public function selesaikanPasien(Request $request)
+    {
+        $mouCode = $request->company_mou_code;
+        $pesertaCode = $request->mou_peserta_code;
+
+        $antrian = DB::table('log_antrian_peserta')
+            ->where('company_mou_code', $mouCode)
+            ->where('mou_peserta_code', $pesertaCode)
+            ->first();
+
+        if (!$antrian) {
+            return response()->json(['status' => 'error', 'message' => 'Data antrian tidak ditemukan!']);
+        }
+
+        DB::table('log_antrian_peserta')
+            ->where('log_antrian_id', $antrian->log_antrian_id)
+            ->update([
+                'status_antrian'   => 'Selesai',
+                'operator_user_id' => auth()->id() ?? 'Admin',
+                'updated_at'       => now(),
+            ]);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => "Pasien {$antrian->nomor_antrian} berhasil diselesaikan."
+        ]);
+    }
     // MENU SERVICE
     public function menu_service($akses)
     {
@@ -2890,7 +2994,18 @@ class ApplicationController extends Controller
             'message' => 'Target cabang ' . $userCabang . ' berhasil disimpan!'
         ]);
     }
-
+    // UPLOAD DATA OMSET
+    public function menu_pemeriksaan_dokter($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            // Query disesuaikan ke tabel master_company
+            $companies = DB::table('master_company')
+                ->get();
+            return view('application.menu.menu-pemeriksaan-dokter', compact('companies'));
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
     // COMPANY MASTER
     public function master_company($akses)
     {

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AntrianController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\dashboardController;
@@ -7,6 +8,7 @@ use App\Http\Controllers\GatewayController;
 use App\Http\Controllers\MarketingDashboardController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\MasterMcuFormController;
+use App\Http\Controllers\PemeriksaanDokterController;
 use App\Http\Controllers\SignaturePadController;
 use App\Http\Controllers\UploadFileController;
 
@@ -64,6 +66,7 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('menu-pengiriman', [ApplicationController::class, 'menu_pengiriman'])->name('menu_pengiriman');
 
     Route::get('upload-data-omset', [ApplicationController::class, 'upload_data_omset'])->name('upload_data_omset');
+    Route::get('menu/pemeriksaan-dokter', [ApplicationController::class, 'menu_pemeriksaan_dokter'])->name('menu_pemeriksaan_dokter');
 
 
     Route::get('master-company', [ApplicationController::class, 'master_company'])->name('master_company');
@@ -176,6 +179,9 @@ Route::prefix('application')->group(function () {
     Route::get('medical-check-up/export-pdf-pengisian', [ApplicationController::class, 'export_pdf_pengisian'])->name('medical_check_up_export_pdf_pengisian');
     Route::get('medical-check-up/export-pdf-peserta', [ApplicationController::class, 'export_pdf_peserta'])->name('medical_check_up_export_pdf_peserta');
     Route::get('medical-check-up/export-excel-peserta', [ApplicationController::class, 'export_excel_peserta'])->name('medical_check_up_export_excel_peserta');
+    Route::post('medical-check-up/panggil-antrian-peserta', [ApplicationController::class, 'medical_check_up_panggil_antrian_peserta'])->name('medical_check_up_panggil_antrian_peserta');
+    Route::post('medical-check-up/proses-panggil', [ApplicationController::class, 'prosesPanggil'])->name('medical_check_up_proses_panggil_antrian');
+    Route::post('medical-check-up/selesaikan-pasien', [ApplicationController::class, 'selesaikanPasien'])->name('medical_check_up_selesaikan_pasien');
     //MENU SERVICE
     Route::post('menu-servic/pilih-perusahaan', [ApplicationController::class, 'menu_service_pilih_perusahaan'])->name('menu_service_pilih_perusahaan');
     Route::post('menu-servic/pilih-agreement', [ApplicationController::class, 'menu_service_pilih_agreement'])->name('menu_service_pilih_agreement');
@@ -382,4 +388,16 @@ Route::prefix('laporan')->name('laporan.')->group(function () {
     Route::get('/get-summary-stats', [ApplicationController::class, 'getSummaryStats'])->name('get_summary_stats');
     Route::get('/get-participants', [ApplicationController::class, 'getParticipants'])->name('get_participants');
     Route::get('/get-participant-detail', [ApplicationController::class, 'getParticipantDetail'])->name('get_participant_detail');
+});
+
+Route::prefix('pemeriksaan-dokter')->name('pemeriksaan.')->group(function () {
+    Route::get('/get-mou', [PemeriksaanDokterController::class, 'getMou'])->name('get_mou');
+    Route::get('/get-participants', [PemeriksaanDokterController::class, 'getParticipants'])->name('get_participants');
+    Route::get('/get-summary-stats', [PemeriksaanDokterController::class, 'getSummaryStats'])->name('get_summary_stats');
+    Route::get('/get-detail', [PemeriksaanDokterController::class, 'getDetail'])->name('get_detail');
+    Route::post('/store', [PemeriksaanDokterController::class, 'store'])->name('store');
+});
+Route::prefix('v3')->name('mcu.')->group(function () {
+    Route::get('/display/{code}', [AntrianController::class, 'index'])->name('display');
+    Route::get('/display-data/{code}', [AntrianController::class, 'getDisplayData'])->name('display.data');
 });

@@ -133,21 +133,76 @@ class SignaturePadController extends Controller
     }
     public function update(Request $request)
     {
-        DB::table('log_kehadiran_pasien')->where('log_kehadiran_pasien_token', $request->token)->update([
-            'log_kehadiran_pasien_sign' => $request->signed,
-            'log_kehadiran_pasien_token' => $request->token,
-            'log_kehadiran_pasien_status' => 1,
-            'log_kehadiran_pasien_time' => now(),
-        ]);
-        $cek = DB::table('log_lokasi_pasien')->where('mou_peserta_code', $request->peserta)->first();
-        if (!$cek) {
-            DB::table('log_lokasi_pasien')->insert([
-                'mou_peserta_code' => $request->peserta,
-                'lokasi_cabang' => $request->cabang,
-                'log_lokasi_status' => 1,
-                'created_at' => now()
-            ]);
+        $peserta = DB::table('company_mou_peserta')
+            ->where('mou_peserta_code', $request->peserta)
+            ->first();
+
+        if (!$peserta) {
+            return redirect()->back()->withError('Data peserta tidak ditemukan.');
         }
+
+        $mouCode = $peserta->company_mou_code;
+
+        // 2. Transaksi Database untuk memastikan nomor antrian konsisten (tidak ada bentrok/duplicate)
+        DB::transaction(function () use ($request, $mouCode) {
+
+            // Update tanda tangan / absensi kehadiran
+            DB::table('log_kehadiran_pasien')->where('log_kehadiran_pasien_token', $request->token)->update([
+                'log_kehadiran_pasien_sign'   => $request->signed,
+                'log_kehadiran_pasien_token'  => $request->token,
+                'log_kehadiran_pasien_status' => 1,
+                'log_kehadiran_pasien_time'   => now(),
+            ]);
+
+            // Insert log lokasi jika belum ada
+            $cekLokasi = DB::table('log_lokasi_pasien')->where('mou_peserta_code', $request->peserta)->first();
+            if (!$cekLokasi) {
+                DB::table('log_lokasi_pasien')->insert([
+                    'mou_peserta_code'  => $request->peserta,
+                    'lokasi_cabang'     => $request->cabang,
+                    'log_lokasi_status' => 1,
+                    'created_at'        => now()
+                ]);
+            }
+
+            // 3. Cek apakah peserta sudah memiliki nomor antrian sebelumnya di MOU ini
+            $existingLog = DB::table('log_antrian_peserta')
+                ->where('company_mou_code', $mouCode)
+                ->where('mou_peserta_code', $request->peserta)
+                ->first();
+
+            if ($existingLog) {
+                // Jika sudah pernah punya, gunakan nomor antrian yang sudah ada
+                $nomorAntrian = $existingLog->nomor_antrian;
+            } else {
+                // Hitung urutan terakhir berdasarkan company_mou_code
+                $lastQueueCount = DB::table('log_antrian_peserta')
+                    ->where('company_mou_code', $mouCode)
+                    ->distinct('mou_peserta_code')
+                    ->count('mou_peserta_code');
+
+                $nextNumber = $lastQueueCount + 1;
+
+                // Format Nomor Antrian (Contoh: MCU-001, MCU-002)
+                $nomorAntrian = 'MCU-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+
+                // Insert log antrian awal saat peserta selesai sign/check-in
+                DB::table('log_antrian_peserta')->insert([
+                    'log_antrian_code'     => 'LOG-' . Str::upper(Str::random(10)),
+                    'company_mou_code'     => $mouCode,
+                    'mou_peserta_code'     => $request->peserta,
+                    'nomor_antrian'        => $nomorAntrian,
+                    'nama_pos_pemeriksaan' => 'Pendaftaran / Registration',
+                    'status_antrian'       => 'Menunggu',
+                    'panggilan_ke'         => 0,
+                    'operator_user_id'     => auth()->id() ?? null,
+                    'waktu_panggil'        => now(),
+                    'created_at'           => now(),
+                    'updated_at'           => now(),
+                ]);
+            }
+        });
+
         return redirect()->back()->withSuccess('Great! Berhasil Check In Peserta MCU');
     }
     public function signaturepad_pilih_pemeriksaan(Request $request)

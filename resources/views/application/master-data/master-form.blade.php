@@ -51,7 +51,7 @@
                         <th scope="col">Pertanyaan / Label</th>
                         <th scope="col">Tipe Input</th>
                         <th scope="col">Satuan</th>
-                        <th scope="col">Opsi (Select)</th>
+                        <th scope="col">Opsi (Select / Checkbox)</th>
                         <th scope="col" style="width: 180px;">Aksi</th>
                     </tr>
                 </thead>
@@ -121,12 +121,14 @@
                             <option value="text">Teks Singkat</option>
                             <option value="number">Angka</option>
                             <option value="select">Dropdown (Select)</option>
+                            <option value="checkbox">Checkbox (Pilihan Ganda)</option>
                             <option value="textarea">Teks Panjang (Textarea)</option>
                         </select>
                     </div>
                     <div class="mb-3 d-none" id="optionsContainer">
-                        <label for="options_input" class="form-label font-weight-bold">Opsi Dropdown (Pisahkan koma):</label>
+                        <label for="options_input" class="form-label font-weight-bold" id="options_label">Opsi Pilihan (Pisahkan koma):</label>
                         <input type="text" id="options_input" class="form-control" placeholder="Contoh: Normal, Abnormal, Ringan">
+                        <small class="text-muted">Gunakan tanda koma (,) sebagai pemisah antar opsi jawaban.</small>
                     </div>
                     <div class="mb-3">
                         <label for="unit" class="form-label font-weight-bold">Satuan (Opsional)</label>
@@ -150,7 +152,6 @@
     const csrfToken = '{{ csrf_token() }}';
     let currentActiveFormId = null;
 
-    // Inisialisasi Instance Bootstrap 5 Modal (Tanpa jQuery)
     let modalFormInstance = null;
     let modalItemInstance = null;
 
@@ -245,7 +246,9 @@
     // --- 2. PROSES ITEM PERTANYAAN ---
     function loadItems(formId, formName) {
         currentActiveFormId = formId;
-        document.getElementById('selectedFormTitle').innerText = `Item Pertanyaan: ${formName}`;
+        if (formName) {
+            document.getElementById('selectedFormTitle').innerText = `Item Pertanyaan: ${formName}`;
+        }
         document.getElementById('cardItems').classList.remove('d-none');
 
         fetch(`{{ url('application/api/forms') }}/${formId}/items`)
@@ -258,7 +261,7 @@
                         <tr>
                             <td>${item.sort_order}</td>
                             <td><strong>${item.item_label}</strong></td>
-                            <td><span class="badge bg-primary">${item.field_type.toUpperCase()}</span></td>
+                            <td><span class="badge ${item.field_type === 'checkbox' ? 'bg-warning text-dark' : 'bg-primary'}">${item.field_type.toUpperCase()}</span></td>
                             <td>${item.unit || '-'}</td>
                             <td>${optionsBadge || '-'}</td>
                             <td>
@@ -275,8 +278,14 @@
     function toggleSelectOptions() {
         const val = document.getElementById('field_type').value;
         const container = document.getElementById('optionsContainer');
-        if (val === 'select') container.classList.remove('d-none');
-        else container.classList.add('d-none');
+        const label = document.getElementById('options_label');
+
+        if (val === 'select' || val === 'checkbox') {
+            container.classList.remove('d-none');
+            label.innerText = val === 'checkbox' ? 'Opsi Checkbox (Pisahkan koma):' : 'Opsi Dropdown (Pisahkan koma):';
+        } else {
+            container.classList.add('d-none');
+        }
     }
 
     function openModalItem(data = null) {
@@ -305,9 +314,13 @@
         const formData = new FormData(this);
 
         const rawOptions = document.getElementById('options_input').value;
-        if (rawOptions) {
+        const fieldType = document.getElementById('field_type').value;
+
+        if ((fieldType === 'select' || fieldType === 'checkbox') && rawOptions) {
             rawOptions.split(',').forEach(opt => {
-                formData.append('options[]', opt.trim());
+                if (opt.trim() !== '') {
+                    formData.append('options[]', opt.trim());
+                }
             });
         }
 

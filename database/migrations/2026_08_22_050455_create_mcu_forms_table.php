@@ -33,7 +33,7 @@ class CreateMcuFormsTable extends Migration
 
             $table->string('item_label'); // e.g., "Sering Sakit Kepala?", "Tekanan Darah"
             // Tipe Input: text, number, yes_no (Radio), select (Dropdown), textarea
-            $table->enum('field_type', ['text', 'number', 'yes_no', 'select', 'textarea']);
+            $table->enum('field_type', ['text', 'number', 'yes_no', 'select', 'checkbox', 'textarea']);
             $table->string('unit')->nullable(); // e.g., mmHg, kg, cm
             $table->boolean('is_required')->default(true);
             $table->integer('sort_order')->default(0);

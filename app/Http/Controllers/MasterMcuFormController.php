@@ -70,7 +70,8 @@ class MasterMcuFormController extends Controller
         $request->validate([
             'id_mcu_form' => 'required|exists:mcu_forms,id_mcu_form',
             'item_label'  => 'required|string|max:255',
-            'field_type'  => 'required|in:text,number,yes_no,select,textarea',
+            // 1. Tambahkan 'checkbox' ke dalam aturan validasi 'in'
+            'field_type'  => 'required|in:text,number,yes_no,select,checkbox,textarea',
         ]);
 
         $item = McuFormItem::updateOrCreate(
@@ -84,8 +85,8 @@ class MasterMcuFormController extends Controller
             ]
         );
 
-        // Olah Opsi untuk Tipe Input 'select'
-        if ($request->field_type === 'select') {
+        // 2. Olah Opsi untuk Tipe Input 'select' maupun 'checkbox'
+        if (in_array($request->field_type, ['select', 'checkbox'])) {
             $item->options()->delete();
             if ($request->has('options') && is_array($request->options)) {
                 foreach ($request->options as $optLabel) {
@@ -99,6 +100,7 @@ class MasterMcuFormController extends Controller
                 }
             }
         } else {
+            // Hapus opsi jika tipe input diubah ke selain 'select' atau 'checkbox'
             $item->options()->delete();
         }
 

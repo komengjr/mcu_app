@@ -275,7 +275,7 @@ class SignaturePadController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Formulir tidak ditemukan'], 404);
         }
 
-        // Ambil item form beserta opsi pilihan (select options)
+        // Ambil item form
         $items = DB::table('mcu_form_items')
             ->where('id_mcu_form', $form->id_mcu_form)
             ->orderBy('sort_order', 'asc')
@@ -288,25 +288,32 @@ class SignaturePadController extends Controller
             ->get()
             ->groupBy('id_mcu_form_item');
 
-        // Petakan opsi ke dalam masing-masing item
+        // Petakan opsi ke masing-masing item (dijamin berbentuk Collection)
         $items->transform(function ($item) use ($options) {
-            $item->options = $options->get($item->id_mcu_form_item, collect());
+            $itemOptions = $options->get($item->id_mcu_form_item);
+            $item->options = $itemOptions ? collect($itemOptions) : collect();
             return $item;
         });
 
-        // Ambil data jawaban dari JSON
+        // Ambil data jawaban tersimpan
         $savedRecord = DB::table('mcu_peserta_answers')
             ->where('mou_peserta_code', $userCode)
             ->where('id_mcu_form', $form->id_mcu_form)
             ->first();
 
-        // Decode JSON answers_data ke Array (key: id_mcu_form_item, value: jawaban)
         $answers = [];
-        if ($savedRecord && $savedRecord->answers_data) {
-            $answers = json_decode($savedRecord->answers_data, true) ?? [];
+        $notes = [];
+
+        if ($savedRecord) {
+            if (!empty($savedRecord->answers_data)) {
+                $answers = json_decode($savedRecord->answers_data, true) ?? [];
+            }
+            if (isset($savedRecord->answers_note) && !empty($savedRecord->answers_note)) {
+                $notes = json_decode($savedRecord->answers_note, true) ?? [];
+            }
         }
 
-        return view('kehadiran.form.form-template', compact('form', 'items', 'answers', 'userCode'));
+        return view('kehadiran.form.form-template', compact('form', 'items', 'answers', 'notes', 'userCode'));
     }
 
     // 2. Method untuk Menyimpan/Memperbarui Jawaban Form (AJAX POST)
@@ -327,32 +334,52 @@ class SignaturePadController extends Controller
         $formattedAnswers = [];
 
         foreach ($answers as $itemId => $value) {
-            $note = $answersNote[$itemId] ?? null;
+            $note = isset($answersNote[$itemId]) ? trim($answersNote[$itemId]) : null;
 
-            // Jika ada catatan (biasanya opsi 'Ya'), bungkus jawaban & catatan ke dalam array
-            if ($value === 'Ya' && !empty($note)) {
+            // 1. Penanganan Input Checkbox (Array Opsi Pilihan Ganda)
+            if (is_array($value)) {
+                $cleanValues = array_values(array_filter($value, function ($v) {
+                    return !is_null($v) && $v !== '';
+                }));
+
+                $formattedAnswers[$itemId] = $cleanValues;
+            }
+            // 2. Penanganan Input Yes/No (Jika 'Ya' dan ada catatan isian)
+            elseif ($value === 'Ya' && !empty($note)) {
                 $formattedAnswers[$itemId] = [
-                    'value' => $value,
+                    'value' => 'Ya',
                     'note'  => $note
                 ];
-            } else {
-                // Jika tidak ada catatan, simpan nilainya langsung
-                $formattedAnswers[$itemId] = $value;
+            }
+            // 3. Penanganan Input Biasa (Text, Number, Select, Textarea, atau 'Tidak')
+            else {
+                $formattedAnswers[$itemId] = is_string($value) ? trim($value) : $value;
             }
         }
 
         try {
+            // Cek keberadaan data untuk menangani created_at secara presisi
+            $exists = DB::table('mcu_peserta_answers')
+                ->where('mou_peserta_code', $userCode)
+                ->where('id_mcu_form', $idMcuForm)
+                ->exists();
+
+            $payload = [
+                'answers_data' => json_encode($formattedAnswers),
+                'is_completed' => true,
+                'updated_at'   => now(),
+            ];
+
+            if (!$exists) {
+                $payload['created_at'] = now();
+            }
+
             DB::table('mcu_peserta_answers')->updateOrInsert(
                 [
                     'mou_peserta_code' => $userCode,
                     'id_mcu_form'      => $idMcuForm,
                 ],
-                [
-                    'answers_data' => json_encode($formattedAnswers),
-                    'is_completed' => true,
-                    'updated_at'   => now(),
-                    'created_at'   => now(),
-                ]
+                $payload
             );
 
             return response()->json([

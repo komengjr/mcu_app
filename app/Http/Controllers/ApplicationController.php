@@ -489,8 +489,6 @@ class ApplicationController extends Controller
                 });
 
                 $progressPercent = $totalPemeriksaan > 0 ? round(($selesaiCount / $totalPemeriksaan) * 100) : 0;
-
-                // Penanda apakah sudah check-in atau belum
                 $isCheckin = !empty($p->waktu_checkin);
 
                 return [
@@ -520,12 +518,10 @@ class ApplicationController extends Controller
             ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
             ->where('company_mou.company_mou_code', $code)->first();
 
-        // return view('application.dashboard.monitoring.live-mcu-peserta', compact('code', 'company'));
         if (Auth::user()->access_code == 'master') {
             return view('application.dashboard.monitoring.live-mcu-data-pesertta', compact('code', 'company'));
-            # code...
         } else {
-            $akses  = DB::table('company_mou_access')
+            $akses = DB::table('company_mou_access')
                 ->where('company_mou_code', $code)
                 ->where('userid', Auth::user()->userid)->first();
             if ($akses) {

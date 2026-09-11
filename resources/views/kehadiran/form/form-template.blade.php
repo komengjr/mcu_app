@@ -59,7 +59,8 @@
             background-color: #fff !important;
         }
 
-        .mcu-radio-card {
+        .mcu-radio-card,
+        .mcu-checkbox-card {
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
@@ -68,7 +69,8 @@
             cursor: pointer;
         }
 
-        .mcu-radio-card:has(input:checked) {
+        .mcu-radio-card:has(input:checked),
+        .mcu-checkbox-card:has(input:checked) {
             background-color: #fff0f2;
             border-color: #ff4d6d;
             color: #c80022;
@@ -115,16 +117,28 @@
         @php
         $rawAnswer = $answers[$item->id_mcu_form_item] ?? '';
 
-        // Ekstrak nilai jawaban dan catatan jika data tersimpan sebagai Array / Object
+        // Ekstrak nilai jawaban dan catatan secara aman
         if (is_array($rawAnswer)) {
-        $val = $rawAnswer['value'] ?? '';
+        $val = $rawAnswer['value'] ?? $rawAnswer;
         $currentNote = $rawAnswer['note'] ?? '';
         } else {
         $val = $rawAnswer;
         $currentNote = $notes[$item->id_mcu_form_item] ?? ($answers[$item->id_mcu_form_item . '_note'] ?? '');
         }
 
-        $currentAnswer = strtolower(trim((string)$val));
+        $currentAnswer = is_string($val) ? strtolower(trim($val)) : '';
+
+        // Parsing nilai terpilih untuk Checkbox (Handling array / JSON string / CSV)
+        $selectedCheckboxes = [];
+        if ($item->field_type === 'checkbox') {
+        if (is_array($val)) {
+        $selectedCheckboxes = $val;
+        } elseif (is_string($val) && trim($val) !== '') {
+        $decoded = json_decode($val, true);
+        $selectedCheckboxes = is_array($decoded) ? $decoded : explode(',', $val);
+        }
+        $selectedCheckboxes = array_map('trim', array_filter((array)$selectedCheckboxes));
+        }
 
         // Evaluasi kondisi checked untuk 'Ya' dan 'Tidak'
         $isYes = in_array($currentAnswer, ['ya', 'yes', '1', 'true'], true);
@@ -145,7 +159,7 @@
                         <!-- Label Item -->
                         <label class="form-label fw-bold text-800 fs--1 mb-0 pt-1">
                             {{ $item->item_label }}
-                            @if($item->is_required)
+                            @if(isset($item->is_required) && $item->is_required)
                             <span class="text-danger">*</span>
                             @endif
                         </label>
@@ -159,9 +173,9 @@
                             <input type="{{ $item->field_type }}"
                                 name="answers[{{ $item->id_mcu_form_item }}]"
                                 class="form-control form-control-sm mcu-custom-input"
-                                value="{{ is_array($rawAnswer) ? ($rawAnswer['value'] ?? '') : $rawAnswer }}"
+                                value="{{ is_array($val) ? '' : $val }}"
                                 placeholder="Ketik {{ strtolower($item->item_label) }}..."
-                                {{ $item->is_required ? 'required' : '' }}>
+                                {{ (isset($item->is_required) && $item->is_required) ? 'required' : '' }}>
                             @if($item->unit)
                             <span class="input-group-text fs--2 bg-light fw-semibold text-600">{{ $item->unit }}</span>
                             @endif
@@ -173,7 +187,7 @@
                             class="form-control form-control-sm mcu-custom-input"
                             rows="2"
                             placeholder="Tuliskan catatan atau keterangan detail..."
-                            {{ $item->is_required ? 'required' : '' }}>{{ is_array($rawAnswer) ? ($rawAnswer['value'] ?? '') : $rawAnswer }}</textarea>
+                            {{ (isset($item->is_required) && $item->is_required) ? 'required' : '' }}>{{ is_array($val) ? '' : $val }}</textarea>
 
                         <!-- Input Yes / No (Radio Card Toggle) -->
                         @elseif($item->field_type == 'yes_no')
@@ -186,7 +200,7 @@
                                     value="Ya"
                                     data-target="#yes_no_note_container_{{ $item->id_mcu_form_item }}"
                                     {{ $isYes ? 'checked' : '' }}
-                                    {{ $item->is_required ? 'required' : '' }}>
+                                    {{ (isset($item->is_required) && $item->is_required) ? 'required' : '' }}>
                                 <span>Ya</span>
                             </label>
                             <label class="mcu-radio-card d-flex align-items-center gap-2 mb-0 fs--1" for="radio_no_{{ $item->id_mcu_form_item }}">
@@ -197,7 +211,7 @@
                                     value="Tidak"
                                     data-target="#yes_no_note_container_{{ $item->id_mcu_form_item }}"
                                     {{ $isNo ? 'checked' : '' }}
-                                    {{ $item->is_required ? 'required' : '' }}>
+                                    {{ (isset($item->is_required) && $item->is_required) ? 'required' : '' }}>
                                 <span>Tidak</span>
                             </label>
                         </div>
@@ -212,7 +226,7 @@
 
                         <!-- Input Select / Dropdown Dinamis -->
                         @elseif($item->field_type == 'select')
-                        <select name="answers[{{ $item->id_mcu_form_item }}]" class="form-select form-select-sm mcu-custom-input" {{ $item->is_required ? 'required' : '' }}>
+                        <select name="answers[{{ $item->id_mcu_form_item }}]" class="form-select form-select-sm mcu-custom-input" {{ (isset($item->is_required) && $item->is_required) ? 'required' : '' }}>
                             <option value="">-- Pilih Hasil --</option>
                             @if(isset($item->options) && $item->options->count() > 0)
                             @foreach($item->options as $option)
@@ -222,6 +236,29 @@
                             @endforeach
                             @endif
                         </select>
+
+                        <!-- Input Checkbox (Pilihan Ganda Dinamis) -->
+                        @elseif($item->field_type == 'checkbox')
+                        <div class="d-flex flex-wrap align-items-center gap-2 pt-1">
+                            @if(isset($item->options) && $item->options->count() > 0)
+                            @foreach($item->options as $option)
+                            @php
+                            $isChecked = in_array((string)$option->option_value, $selectedCheckboxes, true);
+                            @endphp
+                            <label class="mcu-checkbox-card d-flex align-items-center gap-2 mb-0 fs--1" for="chk_{{ $item->id_mcu_form_item }}_{{ $loop->index }}">
+                                <input class="form-check-input mt-0"
+                                    type="checkbox"
+                                    name="answers[{{ $item->id_mcu_form_item }}][]"
+                                    id="chk_{{ $item->id_mcu_form_item }}_{{ $loop->index }}"
+                                    value="{{ $option->option_value }}"
+                                    {{ $isChecked ? 'checked' : '' }}>
+                                <span>{{ $option->option_label }}</span>
+                            </label>
+                            @endforeach
+                            @else
+                            <span class="text-muted fs--2 italic">Tidak ada opsi pilihan.</span>
+                            @endif
+                        </div>
                         @endif
                     </div>
 

@@ -22,7 +22,6 @@
             font-size: 0.78rem;
         }
 
-        /* Header Styling */
         .header-card {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: #ffffff;
@@ -67,7 +66,6 @@
             }
         }
 
-        /* Colorful Micro Card Styling */
         .card-peserta-micro {
             border-radius: 10px;
             background: #ffffff;
@@ -76,7 +74,6 @@
             height: 100%;
             border: 1px solid #e2e8f0;
             border-top: 4px solid #cbd5e1;
-            /* Default Gray */
         }
 
         .card-peserta-micro:hover {
@@ -84,22 +81,18 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
         }
 
-        /* Varian Warna Card Berdasarkan Status */
         .card-status-belum {
             border-top-color: #94a3b8 !important;
-            /* Slate / Abu-abu */
             background: linear-gradient(180deg, #f8fafc 0%, #ffffff 40%);
         }
 
         .card-status-proses {
             border-top-color: #f59e0b !important;
-            /* Amber / Kuning Orang tua */
             background: linear-gradient(180deg, #fffbeb 0%, #ffffff 40%);
         }
 
         .card-status-selesai {
             border-top-color: #10b981 !important;
-            /* Emerald / Hijau */
             background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 40%);
         }
 
@@ -109,7 +102,6 @@
             background-color: #e2e8f0;
         }
 
-        /* Pill Pemeriksaan */
         .pemeriksaan-pill-xs {
             font-size: 0.62rem;
             padding: 2px 6px;
@@ -120,14 +112,12 @@
             gap: 3px;
         }
 
-        /* Status Selesai MCU -> bg-primary */
         .status-done {
             background-color: #0d6efd !important;
             color: #ffffff !important;
             border: 1px solid #0d6efd;
         }
 
-        /* Status Belum MCU -> Light */
         .status-pending {
             background-color: #f8fafc !important;
             color: #64748b !important;
@@ -160,7 +150,6 @@
             <div class="row align-items-center g-2">
                 <div class="col-md-8">
                     <div class="d-flex align-items-center gap-3">
-                        <!-- Logo Perusahaan / Fallback Icon -->
                         @if(!empty($company->master_company_logo))
                         <img src="{{ asset('uploads/company_logo/' . $company->master_company_logo) }}" alt="Logo" class="company-logo shadow-sm">
                         @else
@@ -226,7 +215,7 @@
             </div>
         </div>
 
-        <!-- Grid Container Card (Menggunakan col-12 col-sm-4 col-md-3 col-xl-2) -->
+        <!-- Grid Container Card -->
         <div id="liveDataContainer" class="row g-2">
             <!-- Card Peserta akan di-render di sini -->
         </div>
@@ -241,6 +230,19 @@
         const routeUrl = "{{ route('monitoring_mcu_live_mcu_peserta_company', ['code' => $code]) }}";
         let rawPesertaData = [];
         let currentFilter = 'all';
+
+        // Limit data awal berdasarkan kategori
+        const INITIAL_LIMITS = {
+            'all': 100,
+            'belum': 100,
+            'proses': 50,
+            'selesai': 100
+        };
+
+        // State limit yang aktif
+        let currentLimits = {
+            ...INITIAL_LIMITS
+        };
 
         function fetchLiveData() {
             $.ajax({
@@ -329,14 +331,16 @@
                 return;
             }
 
-            dataList.forEach(peserta => {
+            const limit = currentLimits[currentFilter] || 100;
+            const slicedData = dataList.slice(0, limit);
+
+            slicedData.forEach(peserta => {
                 let pemeriksaanHtml = '';
 
                 if (!peserta.is_checkin) {
                     pemeriksaanHtml = `<span class="text-muted fst-italic" style="font-size:0.63rem;">Belum Check-In</span>`;
                 } else {
                     peserta.list_pemeriksaan.forEach(item => {
-                        // Menggunakan operator '==' agar kompatibel jika tipe berupa string "1"
                         if (item.status == 1) {
                             pemeriksaanHtml += `
                                 <span class="pemeriksaan-pill-xs status-done shadow-sm" title="Selesai ${item.waktu_selesai}">
@@ -353,7 +357,6 @@
                     });
                 }
 
-                // Badge Status & Styling Border Card
                 let statusBadge = '';
                 let cardColorClass = '';
 
@@ -370,7 +373,6 @@
 
                 const genderIcon = peserta.jk === 'L' ? '<i class="fa-solid fa-mars text-info me-1"></i>' : '<i class="fa-solid fa-venus text-danger me-1"></i>';
 
-                // Grid Card col-12 col-sm-4 col-md-3 col-xl-2 (Layout col-md-2 / 6 card per baris)
                 const card = `
                     <div class="col-12 col-sm-4 col-md-3 col-xl-2">
                         <div class="card card-peserta-micro ${cardColorClass} p-2">
@@ -408,17 +410,35 @@
                 `;
                 container.append(card);
             });
+
+            // Tombol Load More untuk menampilkan data sisa
+            if (dataList.length > limit) {
+                const sisaData = dataList.length - limit;
+                const loadMoreBtn = `
+                    <div class="col-12 text-center my-3">
+                        <button id="btnLoadMore" class="btn btn-outline-primary btn-sm px-4 rounded-pill fw-semibold shadow-sm">
+                            <i class="fa-solid fa-chevron-down me-1"></i> Lihat Data Selebihnya (${sisaData} data lagi)
+                        </button>
+                    </div>
+                `;
+                container.append(loadMoreBtn);
+            }
         }
 
-        // Logic Filter Tab (Sudah Diperbaiki agar Button Aktif Berwarna & Kembali Normal Jika Diklik Lain)
+        // Handler untuk menambah limit saat tombol "Lihat Data Selebihnya" diklik
+        $(document).on('click', '#btnLoadMore', function() {
+            const step = currentFilter === 'proses' ? 50 : 100;
+            currentLimits[currentFilter] += step;
+            applyFilterAndSearch();
+        });
+
+        // Handler Filter Tab
         $('.filter-btn').on('click', function() {
-            // 1. Reset SEMUA tombol ke gaya outline awal
             $('[data-filter="all"]').attr('class', 'btn btn-outline-dark btn-filter filter-btn');
             $('[data-filter="belum"]').attr('class', 'btn btn-outline-secondary btn-filter filter-btn');
             $('[data-filter="proses"]').attr('class', 'btn btn-outline-warning btn-filter filter-btn');
             $('[data-filter="selesai"]').attr('class', 'btn btn-outline-success btn-filter filter-btn');
 
-            // 2. Terapkan warna solid penuh pada tombol yang sedang aktif diklik
             const target = $(this).data('filter');
             if (target === 'all') {
                 $(this).attr('class', 'btn btn-dark btn-filter filter-btn active');

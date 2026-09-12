@@ -195,7 +195,7 @@ class SignaturePadController extends Controller
                     'nama_pos_pemeriksaan' => 'Pendaftaran / Registration',
                     'status_antrian'       => 'Menunggu',
                     'panggilan_ke'         => 0,
-                    'operator_user_id'     => auth()->id() ?? null,
+                    'operator_user_id'     => $request->cabang,
                     'waktu_panggil'        => now(),
                     'created_at'           => now(),
                     'updated_at'           => now(),
@@ -447,5 +447,49 @@ class SignaturePadController extends Controller
                 'message' => 'Gagal menyimpan data: ' . $e->getMessage()
             ], 500);
         }
+    }
+    public function cekStatusAntrian(Request $request)
+    {
+        $userCode = $request->user_code;
+
+        // Ambil history status terbaru dari log_pemanggilan_pos
+        $logs = DB::table('log_pemanggilan_pos')
+            ->where('mou_peserta_code', $userCode)
+            ->orderBy('id_log_pemanggilan', 'asc')
+            ->get();
+
+        // Kelompokkan data status per jenis pemeriksaan (menimpa array lama ke terbaru)
+        $latestLogs = [];
+        foreach ($logs as $log) {
+            $latestLogs[$log->master_pemeriksaan_code] = $log->status_antrian;
+        }
+
+        // Generate Element Badge Status ke dalam format HTML
+        $statusHtml = [];
+        foreach ($latestLogs as $code => $status) {
+            switch ($status) {
+                case 'Dipanggil':
+                    $badge = '<span class="badge bg-warning text-dark px-2 py-1"><i class="fas fa-bullhorn me-1"></i> Dipanggil</span>';
+                    break;
+                case 'Sedang Diperiksa':
+                    $badge = '<span class="badge bg-info text-white px-2 py-1"><i class="fas fa-user-md me-1"></i> Diperiksa</span>';
+                    break;
+                case 'Selesai':
+                    $badge = '<span class="badge bg-success px-2 py-1"><i class="fas fa-check-circle me-1"></i> Selesai</span>';
+                    break;
+                case 'Lewat/Skip':
+                    $badge = '<span class="badge bg-secondary px-2 py-1"><i class="fas fa-forward me-1"></i> Di-skip</span>';
+                    break;
+                default:
+                    $badge = '<span class="badge bg-light text-muted border px-2 py-1"><i class="fas fa-clock me-1"></i> Menunggu</span>';
+                    break;
+            }
+            $statusHtml[$code] = $badge;
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $statusHtml
+        ]);
     }
 }

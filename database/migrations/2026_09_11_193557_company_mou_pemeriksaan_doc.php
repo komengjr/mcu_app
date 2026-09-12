@@ -24,6 +24,7 @@ class CompanyMouPemeriksaanDoc extends Migration
             $table->integer('nadi_hr')->nullable();
             $table->integer('spo2')->nullable();
             $table->string('pemeriksa')->nullable();
+            $table->string('dokter_penginput')->nullable(); // Kolom baru ditambahkan
             $table->timestamps();
         });
     }

@@ -2,7 +2,7 @@
     <h5 class="modal-title text-white fw-bold mb-0">
         <i class="fas fa-bullhorn me-2"></i>Panggil & Kelola Antrian Peserta MCU
     </h5>
-    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button> -->
 </div>
 
 <div class="modal-body p-4">
@@ -22,13 +22,9 @@
                     <i class="fas fa-clinic-medical text-danger me-1"></i> Pilih Pos / Poli Pemeriksaan Saat Ini:
                 </label>
                 <select id="select_pos_pemeriksaan" class="form-select form-select-sm fw-bold border-primary">
-                    <option value="Registrasi / Pendaftaran">Registrasi / Pendaftaran</option>
-                    <option value="Poli Vital Sign (Tensi/Tinggi/Berat)">Poli Vital Sign (Tensi/Tinggi/Berat)</option>
-                    <option value="Laboratorium / Sampel Darah">Laboratorium / Sampel Darah</option>
-                    <option value="Radiologi / Rontgen">Radiologi / Rontgen</option>
-                    <option value="Pemeriksaan Dokter / Fisik">Pemeriksaan Dokter / Fisik</option>
-                    <option value="Audiometri / Spirometri">Audiometri / Spirometri</option>
-                    <option value="EKG / Jantung">EKG / Jantung</option>
+                    <option value="Registrasi / Pendaftaran 1">Registrasi / Pendaftaran ( 1 )</option>
+                    <option value="Registrasi / Pendaftaran 2">Registrasi / Pendaftaran ( 2 )</option>
+
                 </select>
             </div>
         </div>

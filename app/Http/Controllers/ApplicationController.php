@@ -2377,6 +2377,7 @@ class ApplicationController extends Controller
                 DB::raw('MAX(log.panggilan_ke) as panggilan_ke')
             )
             ->where('log.company_mou_code', $code)
+            ->where('log.operator_user_id', Auth::user()->access_cabang)
             ->where('log.status_antrian', '!=', 'Selesai') // Filter: Hilangkan yang sudah Selesai
             ->groupBy(
                 'peserta.mou_peserta_code',
@@ -2416,7 +2417,7 @@ class ApplicationController extends Controller
                 'nama_pos_pemeriksaan' => $posPemeriksaan,
                 'status_antrian'       => 'Dipanggil',
                 'panggilan_ke'         => $panggilanKe,
-                'operator_user_id'     => auth()->id() ?? 'Admin',
+                'operator_user_id'     => Auth::user()->access_cabang,
                 'waktu_panggil'        => now(),
                 'updated_at'           => now(),
             ]);
@@ -2458,6 +2459,31 @@ class ApplicationController extends Controller
             'status'  => 'success',
             'message' => "Pasien {$antrian->nomor_antrian} berhasil diselesaikan."
         ]);
+    }
+    public function pemanggilanPosPemeriksaan(Request $request)
+    {
+        $companyMouCode = $request->code;
+
+        // Mengambil cabang user/session yang login (sesuaikan jika menggunakan Auth::user()->cabang_id / session)
+        $cabang = Auth::user()->access_cabang;
+
+        // Mengambil daftar pos pemeriksaan unik berdasarkan company_mou_code
+        $posPemeriksaan = DB::table('company_mou_agreement as cma')
+            ->join('company_mou_agreement_sub as cmas', 'cma.mou_agreement_code', '=', 'cmas.mou_agreement_code')
+            ->join('master_pemeriksaan as mp', 'cmas.master_pemeriksaan_code', '=', 'mp.master_pemeriksaan_code')
+            ->where('cma.company_mou_code', $companyMouCode)
+            ->select(
+                'mp.master_pemeriksaan_code',
+                'mp.master_pemeriksaan_name'
+            )
+            ->distinct()
+            ->get();
+
+        return view('application.menu.mcu.data-pos-pemeriksaan', compact(
+            'companyMouCode',
+            'posPemeriksaan',
+            'cabang'
+        ));
     }
     // MENU SERVICE
     public function menu_service($akses)

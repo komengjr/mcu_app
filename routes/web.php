@@ -182,6 +182,7 @@ Route::prefix('application')->group(function () {
     Route::post('medical-check-up/panggil-antrian-peserta', [ApplicationController::class, 'medical_check_up_panggil_antrian_peserta'])->name('medical_check_up_panggil_antrian_peserta');
     Route::post('medical-check-up/proses-panggil', [ApplicationController::class, 'prosesPanggil'])->name('medical_check_up_proses_panggil_antrian');
     Route::post('medical-check-up/selesaikan-pasien', [ApplicationController::class, 'selesaikanPasien'])->name('medical_check_up_selesaikan_pasien');
+    Route::post('medical-check-up/pemanggilan-pos-pemeriksaan', [ApplicationController::class, 'pemanggilanPosPemeriksaan'])->name('medical_check_up_pemanggilan_pos_pemeriksaan');
     //MENU SERVICE
     Route::post('menu-servic/pilih-perusahaan', [ApplicationController::class, 'menu_service_pilih_perusahaan'])->name('menu_service_pilih_perusahaan');
     Route::post('menu-servic/pilih-agreement', [ApplicationController::class, 'menu_service_pilih_agreement'])->name('menu_service_pilih_agreement');
@@ -355,6 +356,7 @@ Route::post('signaturepad-update-pemeriksaan-save', [SignaturePadController::cla
 Route::post('signaturepad-update-save', [SignaturePadController::class, 'save_signiture'])->name('signaturepad.save_signiture');
 Route::get('signaturepad/get-data/form', [SignaturePadController::class, 'get_data_form_pemeriksaan'])->name('signaturepad.get_data_form_pemeriksaan');
 Route::post('signaturepad/save-data/form', [SignaturePadController::class, 'save_data_form_pemeriksaan'])->name('signaturepad.save_data_form_pemeriksaan');
+Route::get('signaturepad/cek-status-antrian', [SignaturePadController::class, 'cekStatusAntrian'])->name('signaturepad.cek_status_antrian');
 
 include('marketing.php');
 
@@ -398,6 +400,22 @@ Route::prefix('pemeriksaan-dokter')->name('pemeriksaan.')->group(function () {
     Route::post('/store', [PemeriksaanDokterController::class, 'store'])->name('store');
 });
 Route::prefix('v3')->name('mcu.')->group(function () {
-    Route::get('/display/{code}', [AntrianController::class, 'index'])->name('display');
-    Route::get('/display-data/{code}', [AntrianController::class, 'getDisplayData'])->name('display.data');
+    Route::get('/display/{cabang}/{code}', [AntrianController::class, 'index'])->name('display');
+    Route::get('/display-data/{cabang}/{code}', [AntrianController::class, 'getDisplayData'])->name('display.data');
+});
+
+use App\Http\Controllers\OperatorAntrianController;
+
+Route::prefix('v3/operator')->name('operator.')->group(function () {
+    // Halaman Utama Panel Operator
+    Route::get('/{cabang}/{mou_code}/{pos_code}', [OperatorAntrianController::class, 'index'])->name('index');
+
+    // API AJAX Actions
+    Route::get('/data/{cabang}/{mou_code}/{pos_code}', [OperatorAntrianController::class, 'getData'])->name('data');
+    // Action Antrian Pos (POST)
+    Route::post('/panggil', [OperatorAntrianController::class, 'panggilNext'])->name('panggil');
+    Route::post('/panggil-ulang', [OperatorAntrianController::class, 'panggilUlang'])->name('panggil.ulang');
+    Route::post('/proses', [OperatorAntrianController::class, 'mulaiProses'])->name('proses');
+    Route::post('/selesai', [OperatorAntrianController::class, 'selesaiProses'])->name('selesai');
+    Route::post('/skip', [OperatorAntrianController::class, 'skipAntrian'])->name('skip');
 });

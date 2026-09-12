@@ -205,6 +205,12 @@
                                 <i class="fas fa-bullhorn text-primary me-2"></i> Panggil Antrian Peserta
                             </button>
                         </li>
+                        <!-- ITEM BARU: Pemanggilan Berdasarkan Pos Pemeriksaan -->
+                        <li>
+                            <button class="dropdown-item text-dark" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl" id="button-pemanggilan-pos-pemeriksaan" data-code="{{ $datas->company_mou_code }}">
+                                <i class="fas fa-clinic-medical text-success me-2"></i> Pemanggilan Pos Pemeriksaan
+                            </button>
+                        </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -783,6 +789,27 @@
             $('#menu-mcu-xl').html(data);
         }).fail(function() {
             $('#menu-mcu-xl').html('<div class="alert alert-danger m-3">Gagal memuat data panggil antrian.</div>');
+        });
+    });
+    $(document).on("click", "#button-pemanggilan-pos-pemeriksaan", function(e) {
+        e.preventDefault();
+        var code = $(this).data("code");
+        $('#menu-mcu-xl').html(
+            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+        $.ajax({
+            url: "{{ route('medical_check_up_pemanggilan_pos_pemeriksaan') }}",
+            type: "POST",
+            cache: false,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code
+            },
+            dataType: 'html',
+        }).done(function(data) {
+            $('#menu-mcu-xl').html(data);
+        }).fail(function() {
+            $('#menu-mcu-xl').html('<div class="alert alert-danger m-3">Gagal memuat data pemanggilan pos pemeriksaan.</div>');
         });
     });
 </script>

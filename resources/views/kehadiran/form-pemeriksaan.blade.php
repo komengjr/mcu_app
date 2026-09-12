@@ -241,7 +241,6 @@
             border-color: #E60026;
         }
 
-        /* Styling Item Form */
         .mcu-form-item {
             background-color: #f8fafc;
             border: 1px dashed #cbd5e1;
@@ -255,7 +254,6 @@
             border-color: #ff3355;
         }
 
-        /* Styling Khusus Jika Form Sudah Diisi (HIJAU) */
         .mcu-form-item.is-completed {
             background-color: #f0fdf4 !important;
             border: 1px solid #86efac !important;
@@ -336,9 +334,42 @@
                                 <div class="col-md-7 right-panel-gradient-border">
                                     <div class="right-panel-content d-flex align-items-center p-4 p-md-5">
                                         <div class="w-100">
-                                            <div class="mb-3">
-                                                <h4 class="fw-bold text-900 mb-1">Status Peserta MCU</h4>
-                                                <p class="text-500 fs--1">Periksa identitas dan perbarui status tindakan pemeriksaan Anda.</p>
+                                            <?php
+                                            if (!isset($noAntrian)) {
+                                                $getAntrian = Illuminate\Support\Facades\DB::table('log_antrian_peserta')
+                                                    ->where('mou_peserta_code', $data->mou_peserta_code)
+                                                    ->first();
+                                                $noAntrian = $getAntrian->nomor_antrian ?? $getAntrian->log_antrian_peserta_nomor ?? $getAntrian->no_antrian ?? '-';
+                                            }
+                                            ?>
+
+                                            <!-- Container Responsive Flex: Mobile (turun ke bawah), Desktop (sejajar horizontal) -->
+                                            <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4 pb-3 border-bottom">
+
+                                                <!-- Sisi Kiri: Judul Status Peserta -->
+                                                <div>
+                                                    <h4 class="fw-bold text-900 mb-1">Status Peserta MCU</h4>
+                                                    <p class="text-500 fs--1 mb-0">Periksa identitas dan perbarui status tindakan pemeriksaan Anda.</p>
+                                                </div>
+
+                                                <!-- Sisi Kanan / Bawah (Mobile): Ticket Badge Presisi -->
+                                                <div class="d-flex align-items-center justify-content-between justify-content-md-end border border-danger border-dashed px-3 py-2 rounded-3 text-nowrap w-100 w-md-auto"
+                                                    style="background-color: #FFFDF7; border-color: #FFB3C1 !important;">
+
+                                                    <!-- Icon Ticket -->
+                                                    <i class="fas fa-ticket-alt text-danger me-3" style="font-size: 1.5rem;"></i>
+
+                                                    <!-- Detail Label & Nomor -->
+                                                    <div class="d-flex flex-column align-items-end">
+                                                        <span class="fs--2 fw-bold text-muted text-uppercase tracking-wider mb-1" style="line-height: 1; font-size: 0.65rem;">
+                                                            NO. ANTRIAN
+                                                        </span>
+                                                        <span class="text-danger fw-black text-nowrap" style="font-weight: 900 !important; font-size: 1.25rem; line-height: 1; letter-spacing: 1px;">
+                                                            {{ $noAntrian }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
                                             </div>
 
                                             <form method="POST" action="{{ route('signaturepad.update_pemeriksaan_save') }}">
@@ -370,7 +401,6 @@
                                                         <div class="d-flex flex-column gap-2">
                                                             @foreach ($mcu_forms as $form)
                                                             <?php
-                                                            // Cek apakah form ini sudah diisi oleh peserta
                                                             $isAnswered = Illuminate\Support\Facades\DB::table('mcu_peserta_answers')
                                                                 ->where('mou_peserta_code', $data->mou_peserta_code)
                                                                 ->where('id_mcu_form', $form->id_mcu_form)
@@ -400,11 +430,18 @@
                                                     </div>
                                                     @endif
 
+                                                    <!-- HEADER STATUS PEMERIKSAAN + BUTTON REFRESH AJAX -->
                                                     <div class="col-12 my-3">
                                                         <div class="d-flex align-items-center">
                                                             <div class="flex-grow-1 border-bottom"></div>
-                                                            <span class="px-3 text-400 fs--2 fw-bold tracking-wider text-uppercase">Daftar Status Pemeriksaan</span>
-                                                            <div class="flex-grow-1 border-bottom"></div>
+                                                            <span class="px-2 text-400 fs--2 fw-bold tracking-wider text-uppercase">Daftar Status Pemeriksaan</span>
+
+                                                            <!-- Button Refresh Status Antrian -->
+                                                            <button type="button" id="btn-refresh-status" class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2 ms-1 shadow-sm d-flex align-items-center gap-1">
+                                                                <i class="fas fa-sync-alt icon-refresh"></i> <span style="font-size: 0.68rem;">Cek Antrian</span>
+                                                            </button>
+
+                                                            <div class="flex-grow-1 border-bottom ms-2"></div>
                                                         </div>
                                                     </div>
 
@@ -415,6 +452,7 @@
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Nama Pemeriksaan</th>
+                                                                        <th class="text-center" width="140">Status Antrian</th>
                                                                         <th class="text-center" width="130">Action Status</th>
                                                                     </tr>
                                                                 </thead>
@@ -440,25 +478,54 @@
                                                                         ->first();
 
                                                                     if ($cek || $cek1) $hitung++;
+
+                                                                    // Query langsung ke log_pemanggilan_pos
+                                                                    $logPemanggilan = Illuminate\Support\Facades\DB::table('log_pemanggilan_pos')
+                                                                        ->where('mou_peserta_code', $data->mou_peserta_code)
+                                                                        ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
+                                                                        ->first();
+
+                                                                    $statusPos = $logPemanggilan->status_antrian ?? ($pem->status_antrian ?? 'Menunggu');
                                                                     ?>
                                                                     <tr>
                                                                         <td class="fw-semibold text-800">
                                                                             {{ $pem->master_pemeriksaan_name }}
-                                                                            <small class="d-block text-muted fw-normal" id="label_ket_{{ $pem->master_pemeriksaan_code }}">
+                                                                            <small class="d-block text-muted fw-normal" id="label_ket_{{ trim($pem->master_pemeriksaan_code) }}">
                                                                                 {{ $cek1 && $ket ? 'Keterangan: ' . $ket->log_pemeriksaan_deskripsi : '' }}
                                                                             </small>
                                                                         </td>
-                                                                        <td class="text-center align-middle" id="cell_action_{{ $pem->master_pemeriksaan_code }}">
+
+                                                                        <!-- BADGE STATUS ANTRIAN DENGAN ID UNIQUE AJAX -->
+                                                                        <td class="text-center align-middle" id="status_antrian_{{ trim($pem->master_pemeriksaan_code) }}">
+                                                                            @switch($statusPos)
+                                                                            @case('Dipanggil')
+                                                                            <span class="badge bg-warning text-dark px-2 py-1"><i class="fas fa-bullhorn me-1"></i> Dipanggil</span>
+                                                                            @break
+                                                                            @case('Sedang Diperiksa')
+                                                                            <span class="badge bg-info text-white px-2 py-1"><i class="fas fa-user-md me-1"></i> Diperiksa</span>
+                                                                            @break
+                                                                            @case('Selesai')
+                                                                            <span class="badge bg-success px-2 py-1"><i class="fas fa-check-circle me-1"></i> Selesai</span>
+                                                                            @break
+                                                                            @case('Lewat/Skip')
+                                                                            <span class="badge bg-secondary px-2 py-1"><i class="fas fa-forward me-1"></i> Di-skip</span>
+                                                                            @break
+                                                                            @default
+                                                                            <span class="badge bg-light text-muted border px-2 py-1"><i class="fas fa-clock me-1"></i> Menunggu</span>
+                                                                            @endswitch
+                                                                        </td>
+
+                                                                        <td class="text-center align-middle" id="cell_action_{{ trim($pem->master_pemeriksaan_code) }}">
                                                                             @if($cek)
-                                                                            <button type="button" class="btn btn-sm btn-success px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                            <button type="button" class="btn btn-sm btn-success px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ trim($pem->master_pemeriksaan_code) }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
                                                                                 <i class="fas fa-check-circle me-1"></i> Sudah
                                                                             </button>
                                                                             @elseif($cek1)
-                                                                            <button type="button" class="btn btn-sm btn-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                            <button type="button" class="btn btn-sm btn-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ trim($pem->master_pemeriksaan_code) }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
                                                                                 <i class="fas fa-times-circle me-1"></i> Tidak
                                                                             </button>
                                                                             @else
-                                                                            <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                            <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ trim($pem->master_pemeriksaan_code) }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
                                                                                 Pilih Status
                                                                             </button>
                                                                             @endif
@@ -487,25 +554,54 @@
                                                                         ->first();
 
                                                                     if ($cek || $cek1) $hitung++;
+
+                                                                    // Query langsung ke log_pemanggilan_pos untuk item Additional
+                                                                    $logPemanggilanAdd = Illuminate\Support\Facades\DB::table('log_pemanggilan_pos')
+                                                                        ->where('mou_peserta_code', $data->mou_peserta_code)
+                                                                        ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
+                                                                        ->first();
+
+                                                                    $statusPosAdd = $logPemanggilanAdd->status_antrian ?? ($pem->status_antrian ?? 'Menunggu');
                                                                     ?>
                                                                     <tr>
                                                                         <td class="fw-semibold text-danger">
                                                                             {{ $pem->master_pemeriksaan_name }} <span class="badge bg-danger-subtle text-danger ms-1">Additional</span>
-                                                                            <small class="d-block text-muted fw-normal" id="label_ket_{{ $pem->master_pemeriksaan_code }}">
+                                                                            <small class="d-block text-muted fw-normal" id="label_ket_{{ trim($pem->master_pemeriksaan_code) }}">
                                                                                 {{ $cek1 && $ket ? 'Keterangan: ' . $ket->log_pemeriksaan_deskripsi : '' }}
                                                                             </small>
                                                                         </td>
-                                                                        <td class="text-center align-middle" id="cell_action_{{ $pem->master_pemeriksaan_code }}">
+
+                                                                        <!-- BADGE STATUS ANTRIAN ADDITIONAL DENGAN ID UNIQUE AJAX -->
+                                                                        <td class="text-center align-middle" id="status_antrian_{{ trim($pem->master_pemeriksaan_code) }}">
+                                                                            @switch($statusPosAdd)
+                                                                            @case('Dipanggil')
+                                                                            <span class="badge bg-warning text-dark px-2 py-1"><i class="fas fa-bullhorn me-1"></i> Dipanggil</span>
+                                                                            @break
+                                                                            @case('Sedang Diperiksa')
+                                                                            <span class="badge bg-info text-white px-2 py-1"><i class="fas fa-user-md me-1"></i> Diperiksa</span>
+                                                                            @break
+                                                                            @case('Selesai')
+                                                                            <span class="badge bg-success px-2 py-1"><i class="fas fa-check-circle me-1"></i> Selesai</span>
+                                                                            @break
+                                                                            @case('Lewat/Skip')
+                                                                            <span class="badge bg-secondary px-2 py-1"><i class="fas fa-forward me-1"></i> Di-skip</span>
+                                                                            @break
+                                                                            @default
+                                                                            <span class="badge bg-light text-muted border px-2 py-1"><i class="fas fa-clock me-1"></i> Menunggu</span>
+                                                                            @endswitch
+                                                                        </td>
+
+                                                                        <td class="text-center align-middle" id="cell_action_{{ trim($pem->master_pemeriksaan_code) }}">
                                                                             @if($cek)
-                                                                            <button type="button" class="btn btn-sm btn-success px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                            <button type="button" class="btn btn-sm btn-success px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ trim($pem->master_pemeriksaan_code) }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
                                                                                 <i class="fas fa-check-circle me-1"></i> Sudah
                                                                             </button>
                                                                             @elseif($cek1)
-                                                                            <button type="button" class="btn btn-sm btn-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                            <button type="button" class="btn btn-sm btn-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ trim($pem->master_pemeriksaan_code) }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
                                                                                 <i class="fas fa-times-circle me-1"></i> Tidak
                                                                             </button>
                                                                             @else
-                                                                            <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $pem->master_pemeriksaan_code }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                            <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ trim($pem->master_pemeriksaan_code) }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
                                                                                 Pilih Status
                                                                             </button>
                                                                             @endif
@@ -561,7 +657,6 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-2 bg-light">
-
                     <div id="modalFormContainer">
                         <div class="d-flex justify-content-center align-items-center h-100">
                             <div class="spinner-border text-danger" role="status">
@@ -589,27 +684,105 @@
 
     <script>
         $(document).ready(function() {
-            // Popup Panduan Otomatis Saat Membuka Halaman
+            <?php
+            // Fallback Ambil No Antrian langsung di Blade jika controller belum passing $noAntrian
+            $getAntrian = Illuminate\Support\Facades\DB::table('log_antrian_peserta')
+                ->where('mou_peserta_code', $data->mou_peserta_code)
+                ->first();
+
+            $nomorAntrianFix = $noAntrian
+                ?? $getAntrian->nomor_antrian
+                ?? $getAntrian->log_antrian_peserta_nomor
+                ?? $getAntrian->no_antrian
+                ?? '-';
+            ?>
+
+            var noAntrian = "{{ $nomorAntrianFix }}";
+            var tanggalAntrian = "{{ date('d-m-Y H:i') }}";
+
+            // Swal Modal Pertama (Sangat Tebal)
             Swal.fire({
                 title: 'Panduan Pengisian Formulir',
                 html: `
-                    <div class="text-start fs--1 lh-base">
-                        <p class="mb-2">Selamat datang! Silakan ikuti petunjuk berikut untuk menyelesaikan form ini:</p>
-                        <ol class="ps-3 mb-0">
-                            <li class="mb-2"><strong>Periksa Data Peserta:</strong> Pastikan Nama Lengkap dan NIP Anda sudah sesuai pada kolom informasi.</li>
-                            <li class="mb-2"><strong>Isi Form Lampiran:</strong> Jika terdapat section Lampiran Form Pemeriksaan, klik tombol <b>Isi Form</b> untuk melengkapinya.</li>
-                            <li class="mb-2"><strong>Status Pemeriksaan:</strong> Klik tombol aksi pada daftar pemeriksaan untuk memperbarui status (Sudah/Tidak melakukan). Opsi ini digunakan untuk memonitor progres pemeriksaan MCU Anda.</li>
-                        </ol>
+                <div class="mb-3 p-3 text-center" style="background-color: #fdfbf7; border: 2px dashed #cbd5e1; border-radius: 12px; font-family: 'Courier New', Courier, monospace;">
+                    <div class="fw-bold text-uppercase fs--2 text-muted tracking-wider mb-1">=== NO. ANTRIAN MCU ===</div>
+                    <div class="text-danger" style="font-size: 2.8rem; font-weight: 900; line-height: 1; letter-spacing: 2px;">
+                        ${noAntrian}
                     </div>
-                `,
+                    <div class="fs--2 text-secondary mt-2">
+                        <i class="far fa-clock me-1"></i>${tanggalAntrian} WIB
+                    </div>
+                    <div class="fs--2 text-muted border-top border-secondary border-opacity-25 mt-2 pt-1">
+                        Simpan & perhatikan nomor ini saat pemanggilan
+                    </div>
+                </div>
+
+                <div class="text-start fs--1 lh-base">
+                    <p class="mb-2 fw-semibold text-900">Petunjuk Pengisian:</p>
+                    <ol class="ps-3 mb-0">
+                        <li class="mb-2"><strong>Periksa Data Peserta:</strong> Pastikan Nama Lengkap dan NIP Anda sudah sesuai pada kolom informasi.</li>
+                        <li class="mb-2"><strong>Isi Form Lampiran:</strong> Jika terdapat section Lampiran Form Pemeriksaan, klik tombol <b>Isi Form</b> untuk melengkapinya.</li>
+                        <li class="mb-2"><strong>Status Pemeriksaan:</strong> Klik tombol aksi pada daftar pemeriksaan untuk memperbarui status (Sudah/Tidak melakukan). Opsi ini digunakan untuk memonitor progres pemeriksaan MCU Anda.</li>
+                    </ol>
+                </div>
+            `,
                 icon: 'info',
                 confirmButtonText: 'Saya Mengerti',
                 confirmButtonColor: '#E60026',
                 allowOutsideClick: false
             });
-        });
 
-        // Function Action Swal untuk Status Pemeriksaan
+            // AJAX Refresh Status Antrian POS
+            $('#btn-refresh-status').on('click', function(e) {
+                e.preventDefault();
+                var $btn = $(this);
+                var $icon = $btn.find('.icon-refresh');
+                var userCode = "{{ $data->mou_peserta_code }}";
+
+                $icon.addClass('fa-spin');
+                $btn.prop('disabled', true);
+
+                $.ajax({
+                    url: "{{ route('signaturepad.cek_status_antrian') }}",
+                    type: "GET",
+                    data: {
+                        user_code: userCode
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $.each(response.data, function(code, htmlBadge) {
+                                $('#status_antrian_' + $.trim(code)).html(htmlBadge);
+                            });
+
+                            Lobibox.notify('info', {
+                                pauseDelayOnHover: true,
+                                continueDelayOnInactiveTab: true,
+                                position: 'top right',
+                                icon: 'fas fa-sync',
+                                msg: 'Status antrian berhasil diperbarui'
+                            });
+                        }
+                    },
+                    error: function() {
+                        Lobibox.notify('error', {
+                            pauseDelayOnHover: true,
+                            continueDelayOnInactiveTab: true,
+                            position: 'top right',
+                            icon: 'fas fa-times-circle',
+                            msg: 'Gagal mengecek status antrian'
+                        });
+                    },
+                    complete: function() {
+                        $icon.removeClass('fa-spin');
+                        $btn.prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
         function openActionSwal(id, userCode, namaPemeriksaan) {
             var total = $('#jumlah').val();
 
@@ -627,17 +800,15 @@
                 cancelButtonColor: '#6c757d'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Jika memilih "Sudah Melakukan"
-                    $('#label_ket_' + id).text('');
+                    $('#label_ket_' + $.trim(id)).text('');
                     sendDataAjax(id, userCode, 'on', '', total);
 
-                    $('#cell_action_' + id).html(`
+                    $('#cell_action_' + $.trim(id)).html(`
                         <button type="button" class="btn btn-sm btn-success px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('${id}','${userCode}', '${namaPemeriksaan}')">
                             <i class="fas fa-check-circle me-1"></i> Sudah
                         </button>
                     `);
                 } else if (result.isDenied) {
-                    // Jika memilih "Tidak / Belum", munculkan Swal Input Keterangan
                     Swal.fire({
                         title: 'Alasan Tidak/Belum Diperiksa',
                         text: 'Tuliskan deskripsi/alasan tidak melakukan ' + namaPemeriksaan,
@@ -657,9 +828,9 @@
                         if (resKet.isConfirmed) {
                             var ket = resKet.value;
                             sendDataAjax(id, userCode, 'off', ket, total);
-                            $('#label_ket_' + id).text('Keterangan: ' + ket);
+                            $('#label_ket_' + $.trim(id)).text('Keterangan: ' + ket);
 
-                            $('#cell_action_' + id).html(`
+                            $('#cell_action_' + $.trim(id)).html(`
                                 <button type="button" class="btn btn-sm btn-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('${id}','${userCode}', '${namaPemeriksaan}')">
                                     <i class="fas fa-times-circle me-1"></i> Tidak
                                 </button>
@@ -712,7 +883,6 @@
         var currentActiveFormCode = null;
 
         $(document).ready(function() {
-            // Event Handler Buka Modal
             $('.btn-open-form').on('click', function(e) {
                 e.preventDefault();
 
@@ -720,7 +890,7 @@
                 var formName = $(this).data('form-name');
                 var userCode = "{{ $data->mou_peserta_code }}";
 
-                currentActiveFormCode = formCode; // Simpan formCode yang sedang aktif
+                currentActiveFormCode = formCode;
 
                 $('#mcuFormModalLabel').text('Formulir: ' + formName);
                 $('#modalFormContainer').html(`
@@ -754,11 +924,9 @@
                 });
             });
 
-            // Event Handler Simpan Form via Modal
             $('#btnSaveForm').on('click', function() {
                 var $form = $('#mcuDynamicFormContent');
 
-                // Validasi HTML5 bawaan form (required fields)
                 if (!$form[0].checkValidity()) {
                     $form[0].reportValidity();
                     return;
@@ -778,7 +946,6 @@
                         $('#btnSaveForm').prop('disabled', false).text('Simpan Form');
 
                         if (response.status === 'success') {
-                            // Update Tampilan Form Item Menjadi Hijau dan Beri Icon Centang
                             if (currentActiveFormCode) {
                                 var $itemWrapper = $('#form-item-' + currentActiveFormCode);
 
@@ -792,7 +959,6 @@
                                 $btn.find('.btn-text').text('Selesai');
                             }
 
-                            // Tutup Modal
                             var modalEl = document.getElementById('mcuFormModal');
                             var modal = bootstrap.Modal.getInstance(modalEl);
                             if (modal) modal.hide();

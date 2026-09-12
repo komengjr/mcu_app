@@ -28,6 +28,7 @@ class SignaturePadController extends Controller
             ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
             ->where('log_kehadiran_pasien_token', $id)
             ->first();
+
         if ($data) {
             if ($data->log_kehadiran_pasien_status == 0) {
                 return view('kehadiran.signature-template', ['data' => $data]);
@@ -35,12 +36,56 @@ class SignaturePadController extends Controller
                 if ($data->mou_peserta_status == 0) {
                     $paket = DB::table('company_mou_agreement')->where('mou_agreement_code', $data->mou_agreement_code)->first();
                     if ($paket) {
-                        $pemeriksaan = DB::table('company_mou_agreement_sub')->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
-                            ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)->get();
-                        $pemeriksaan1 = DB::table('company_mou_agreement_user')->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_user.master_pemeriksaan_code')
-                            ->where('company_mou_agreement_user.mou_peserta_code', $data->mou_peserta_code)->get();
+
+                        // Ambil Nomor Antrian dari log_antrian_peserta
+                        $antrianData = DB::table('log_antrian_peserta')
+                            ->where('mou_peserta_code', $data->mou_peserta_code)
+                            ->first();
+
+                        $noAntrian = $antrianData->nomor_antrian
+                            ?? $antrianData->log_antrian_peserta_nomor
+                            ?? $antrianData->no_antrian
+                            ?? '-';
+
+                        // 1. Query Pemeriksaan Utama
+                        $pemeriksaan = DB::table('company_mou_agreement_sub')
+                            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
+                            ->select('master_pemeriksaan.*')
+                            ->addSelect([
+                                'status_antrian' => DB::table('log_pemanggilan_pos')
+                                    ->select('status_antrian')
+                                    ->where('mou_peserta_code', $data->mou_peserta_code)
+                                    ->whereRaw('TRIM(log_pemanggilan_pos.master_pemeriksaan_code) = TRIM(master_pemeriksaan.master_pemeriksaan_code)')
+                                    ->orderBy('id_log_pemanggilan', 'desc')
+                                    ->limit(1)
+                            ])
+                            ->where('company_mou_agreement_sub.mou_agreement_code', $data->mou_agreement_code)
+                            ->get();
+
+                        // 2. Query Pemeriksaan Additional
+                        $pemeriksaan1 = DB::table('company_mou_agreement_user')
+                            ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_user.master_pemeriksaan_code')
+                            ->select('master_pemeriksaan.*')
+                            ->addSelect([
+                                'status_antrian' => DB::table('log_pemanggilan_pos')
+                                    ->select('status_antrian')
+                                    ->where('mou_peserta_code', $data->mou_peserta_code)
+                                    ->whereRaw('TRIM(log_pemanggilan_pos.master_pemeriksaan_code) = TRIM(master_pemeriksaan.master_pemeriksaan_code)')
+                                    ->orderBy('id_log_pemanggilan', 'desc')
+                                    ->limit(1)
+                            ])
+                            ->where('company_mou_agreement_user.mou_peserta_code', $data->mou_peserta_code)
+                            ->get();
+
                         $jumlah = $pemeriksaan->count() + $pemeriksaan1->count();
-                        return view('kehadiran.form-pemeriksaan', ['data' => $data, 'pemeriksaan' => $pemeriksaan, 'pemeriksaan1' => $pemeriksaan1, 'jumlah' => $jumlah]);
+
+                        return view('kehadiran.form-pemeriksaan', [
+                            'data' => $data,
+                            'pemeriksaan' => $pemeriksaan,
+                            'pemeriksaan1' => $pemeriksaan1,
+                            'jumlah' => $jumlah,
+                            'noAntrian' => $noAntrian
+                        ]);
                     } else {
                         $paketmcu = DB::table('company_mou_agreement')->where('company_mou_code', $data->company_mou_code)->get();
                         return view('kehadiran.form-paket', ['data' => $data, 'paket' => $paketmcu]);
@@ -52,11 +97,7 @@ class SignaturePadController extends Controller
                 return view('kehadiran.done');
             }
         } else {
-            return '<script>
-                        setTimeout(() => {
-                            window.close();
-                        }, 100);
-                    </script>';
+            return '<script>setTimeout(() => { window.close(); }, 100);</script>';
         }
     }
     public function sign_perusahaan($id)

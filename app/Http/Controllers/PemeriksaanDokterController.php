@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PemeriksaanDokterController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function getMou(Request $request)
     {
         $companyCode = $request->input('company_code');
@@ -161,6 +166,7 @@ class PemeriksaanDokterController extends Controller
             'nadi_hr'      => $request->input('nadi_hr'),
             'spo2'         => $request->input('spo2'),
             'pemeriksa'    => $request->input('pemeriksa'),
+            'dokter_penginput'    => Auth::user()->fullname,
             'updated_at'   => now(),
         ];
 

@@ -370,14 +370,17 @@ Route::prefix('peserta-mcu')->name('peserta-mcu.')->group(function () {
     Route::post('/api/save-step', [PesertaMcuFormController::class, 'saveStepAnswer'])->name('save-step');
 });
 
-Route::get('template_mail', function () {
-    $details = [
-        'name' => '123',
-        'title' => '123',
-        'body' => 123
-    ];
-    return view('emails.mytestmail', ['details' => $details]);
+Route::get('geter', function () {
+    return view('geter');
 });
+// Route::get('template_mail', function () {
+//     $details = [
+//         'name' => '123',
+//         'title' => '123',
+//         'body' => 123
+//     ];
+//     return view('emails.mytestmail', ['details' => $details]);
+// });
 Route::get('/export-progress', function () {
     return response()->json([
         'progress' => Cache::get('export_progress', 0)

@@ -338,6 +338,17 @@
                         name: 'mou_peserta_departemen'
                     },
                     {
+                        data: 'dokter_penginput', // Kolom Dokter Penginput
+                        name: 'dokter_penginput',
+                        orderable: true,
+                        searchable: true,
+                        render: function(data) {
+                            return data && data !== '-' ?
+                                `<span class="fw-semibold text-dark"><i class="fas fa-user-md me-1 text-primary"></i>${data}</span>` :
+                                '<span class="text-muted fs-7">-</span>';
+                        }
+                    },
+                    {
                         data: 'status_badge',
                         name: 'status_badge',
                         orderable: false,

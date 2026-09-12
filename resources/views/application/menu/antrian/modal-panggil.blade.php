@@ -1,8 +1,9 @@
-<div class="modal-header bg-primary text-white p-3">
+<div class="modal-header bg-primary text-white p-3 d-flex justify-content-between align-items-center">
     <h5 class="modal-title text-white fw-bold mb-0">
         <i class="fas fa-bullhorn me-2"></i>Panggil & Kelola Antrian Peserta MCU
     </h5>
-    <!-- <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button> -->
+    <!-- Tombol Open New Tab TV Display di Header -->
+
 </div>
 
 <div class="modal-body p-4">
@@ -24,7 +25,6 @@
                 <select id="select_pos_pemeriksaan" class="form-select form-select-sm fw-bold border-primary">
                     <option value="Registrasi / Pendaftaran 1">Registrasi / Pendaftaran ( 1 )</option>
                     <option value="Registrasi / Pendaftaran 2">Registrasi / Pendaftaran ( 2 )</option>
-
                 </select>
             </div>
         </div>
@@ -106,7 +106,13 @@
     </div>
 </div>
 
-<div class="modal-footer bg-light p-3">
+<div class="modal-footer bg-light p-3 d-flex justify-content-between">
+    <!-- Tombol Open New Tab TV Display di Footer -->
+    <a href="{{ url('v3/display/' . Auth::user()->access_cabang . '/' . $mou->company_mou_code) }}"
+        target="_blank"
+        class="btn btn-outline-primary btn-sm fw-bold">
+        <i class="fas fa-external-link-alt me-1"></i> Buka TV Display (Tab Baru)
+    </a>
     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
 </div>
 

@@ -2451,7 +2451,7 @@ class ApplicationController extends Controller
             ->where('log_antrian_id', $antrian->log_antrian_id)
             ->update([
                 'status_antrian'   => 'Selesai',
-                'operator_user_id' => auth()->id() ?? 'Admin',
+                'operator_user_id' => Auth::user()->access_cabang,
                 'updated_at'       => now(),
             ]);
 

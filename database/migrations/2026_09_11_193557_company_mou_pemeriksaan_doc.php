@@ -23,8 +23,13 @@ class CompanyMouPemeriksaanDoc extends Migration
             $table->string('tensi')->nullable();
             $table->integer('nadi_hr')->nullable();
             $table->integer('spo2')->nullable();
+
+            // Field Tambahan Sesuai Form & Controller
+            $table->text('catatan_dokter')->nullable();
+            $table->string('kesimpulan')->nullable(); // Menampung: Fit, Fit with Note, Temporary Unfit, Unfit
+
             $table->string('pemeriksa')->nullable();
-            $table->string('dokter_penginput')->nullable(); // Kolom baru ditambahkan
+            $table->string('dokter_penginput')->nullable();
             $table->timestamps();
         });
     }

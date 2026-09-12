@@ -31,6 +31,8 @@ class PemeriksaanDokterController extends Controller
         $length = $request->input('length', 10);
         $searchValue = $request->input('search.value');
 
+        $currentUser = Auth::user()->fullname ?? Auth::user()->name;
+
         // Query Dasar
         $baseQuery = DB::table('company_mou_peserta')
             ->leftJoin('company_mou_pemeriksaan_doc', 'company_mou_peserta.mou_peserta_code', '=', 'company_mou_pemeriksaan_doc.mou_peserta_code')
@@ -45,7 +47,8 @@ class PemeriksaanDokterController extends Controller
                 $q->where('company_mou_peserta.mou_peserta_name', 'like', "%{$searchValue}%")
                     ->orWhere('company_mou_peserta.mou_peserta_nik', 'like', "%{$searchValue}%")
                     ->orWhere('company_mou_peserta.mou_peserta_nip', 'like', "%{$searchValue}%")
-                    ->orWhere('company_mou_peserta.mou_peserta_departemen', 'like', "%{$searchValue}%");
+                    ->orWhere('company_mou_peserta.mou_peserta_departemen', 'like', "%{$searchValue}%")
+                    ->orWhere('company_mou_pemeriksaan_doc.dokter_penginput', 'like', "%{$searchValue}%");
             });
         }
 
@@ -60,7 +63,8 @@ class PemeriksaanDokterController extends Controller
                 'company_mou_peserta.mou_peserta_nip',
                 'company_mou_peserta.mou_peserta_name',
                 'company_mou_peserta.mou_peserta_departemen',
-                'company_mou_pemeriksaan_doc.id_pemeriksaan_doc'
+                'company_mou_pemeriksaan_doc.id_pemeriksaan_doc',
+                'company_mou_pemeriksaan_doc.dokter_penginput'
             ])
             ->skip($start)
             ->take($length)
@@ -73,29 +77,35 @@ class PemeriksaanDokterController extends Controller
 
             if ($row->id_pemeriksaan_doc) {
                 $statusBadge = '<span class="badge bg-success-subtle text-success border border-success"><i class="fas fa-check-circle me-1"></i>Sudah Diperiksa</span>';
-                $btnText = 'Edit Periksa';
-                $btnClass = 'btn-outline-warning';
+
+                // Cek apakah dokter penginput sama dengan user yang login
+                if ($row->dokter_penginput === $currentUser) {
+                    $actionBtn = '<button class="btn btn-sm btn-outline-warning btn-input-pemeriksaan" data-peserta-code="' . $row->mou_peserta_code . '">
+                                <i class="fas fa-edit me-1"></i> Edit Periksa
+                              </button>';
+                } else {
+                    $actionBtn = '<button class="btn btn-sm btn-secondary opacity-50" disabled title="Hanya ' . e($row->dokter_penginput) . ' yang dapat mengubah data ini">
+                                <i class="fas fa-lock me-1"></i> Terkunci
+                              </button>';
+                }
             } else {
                 $statusBadge = '<span class="badge bg-warning-subtle text-warning border border-warning"><i class="fas fa-clock me-1"></i>Belum Diperiksa</span>';
-                $btnText = 'Input Periksa';
-                $btnClass = 'btn-primary';
-            }
-
-            $actionBtn = '<button class="btn btn-sm ' . $btnClass . ' btn-input-pemeriksaan" data-peserta-code="' . $row->mou_peserta_code . '">
-                            <i class="fas fa-stethoscope me-1"></i> ' . $btnText . '
+                $actionBtn = '<button class="btn btn-sm btn-primary btn-input-pemeriksaan" data-peserta-code="' . $row->mou_peserta_code . '">
+                            <i class="fas fa-stethoscope me-1"></i> Input Periksa
                           </button>';
+            }
 
             $formattedData[] = [
                 'DT_RowIndex'            => $start + $index + 1,
                 'nip_nik'                => $nipNik,
                 'mou_peserta_name'       => $row->mou_peserta_name,
                 'mou_peserta_departemen' => $row->mou_peserta_departemen ?? '-',
+                'dokter_penginput'       => $row->dokter_penginput ?? '-',
                 'status_badge'           => $statusBadge,
                 'action'                 => $actionBtn,
             ];
         }
 
-        // Format standar DataTables Server-Side JSON
         return response()->json([
             'draw'            => intval($draw),
             'recordsTotal'    => $recordsTotal,
@@ -144,36 +154,46 @@ class PemeriksaanDokterController extends Controller
 
     public function store(Request $request)
     {
+        // 1. Validasi Input
         $request->validate([
             'mou_peserta_code' => 'required',
-            'berat_badan'      => 'required|numeric',
             'tinggi_badan'     => 'required|numeric',
+            'berat_badan'      => 'required|numeric',
             'tensi'            => 'required|string',
+            'nadi'             => 'nullable|numeric',
+            'respirasi'        => 'nullable|numeric',
+            'suhu'             => 'nullable|numeric',
+            'catatan_dokter'   => 'nullable|string',
+            'kesimpulan'       => 'required|string',
         ]);
 
         $pesertaCode = $request->input('mou_peserta_code');
 
+        // 2. Cek eksistensi data untuk penanganan created_at
         $exists = DB::table('company_mou_pemeriksaan_doc')
             ->where('mou_peserta_code', $pesertaCode)
             ->exists();
 
+        // 3. Mapping Payload Data
         $payload = [
-            'berat_badan'  => $request->input('berat_badan'),
-            'tinggi_badan' => $request->input('tinggi_badan'),
-            'rr_nafas'     => $request->input('rr_nafas'),
-            'suhu'         => $request->input('suhu'),
-            'tensi'        => $request->input('tensi'),
-            'nadi_hr'      => $request->input('nadi_hr'),
-            'spo2'         => $request->input('spo2'),
-            'pemeriksa'    => $request->input('pemeriksa'),
-            'dokter_penginput'    => Auth::user()->fullname,
-            'updated_at'   => now(),
+            'tinggi_badan'     => $request->input('tinggi_badan'),
+            'berat_badan'      => $request->input('berat_badan'),
+            'tensi'            => $request->input('tensi'),
+            'nadi_hr'          => $request->input('nadi'),
+            'rr_nafas'         => $request->input('respirasi'),
+            'suhu'             => $request->input('suhu'),
+            'catatan_dokter'   => $request->input('catatan_dokter'),
+            'kesimpulan'       => $request->input('kesimpulan'),
+            'pemeriksa'        => Auth::user()->fullname,
+            'dokter_penginput' => Auth::user()->fullname ?? Auth::user()->name,
+            'updated_at'       => now(),
         ];
 
         if (!$exists) {
             $payload['created_at'] = now();
         }
 
+        // 4. Update atau Insert ke Database
         DB::table('company_mou_pemeriksaan_doc')->updateOrInsert(
             ['mou_peserta_code' => $pesertaCode],
             $payload

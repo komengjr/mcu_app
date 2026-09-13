@@ -9,7 +9,7 @@ class AntrianController extends Controller
 {
     public function index($cabang, $code)
     {
-        // Ambil data MOU dan Master Company
+        // 1. Ambil data MOU dan Master Company
         $mou = DB::table('company_mou')
             ->leftJoin('master_company', 'company_mou.master_company_code', '=', 'master_company.master_company_code')
             ->select(
@@ -24,7 +24,17 @@ class AntrianController extends Controller
             abort(404, 'MOU Code tidak ditemukan.');
         }
 
-        return view('public.display', compact('mou', 'code', 'cabang'));
+        // 2. Ambil token absensi perusahaan berdasarkan company_mou_code
+        $tokenData = DB::table('company_mou_peserta_token_absensi')
+            ->where('company_mou_code', $code)
+            ->orderBy('created_at', 'desc') // Ambil token terbaru
+            ->first();
+
+        // Pastikan tokenCode terisi jika datanya ada
+        $tokenCode = $tokenData ? $tokenData->company_mou_token_code : null;
+
+        // 3. Kirim variabel tokenCode ke view public.display
+        return view('public.display', compact('mou', 'code', 'cabang', 'tokenCode'));
     }
 
     /**
@@ -32,8 +42,8 @@ class AntrianController extends Controller
      */
     public function getDisplayData($cabang, $code)
     {
-        // 1. Ambil Antrian yang SEDANG DIPANGGIL / DIPERIKSA
-        $currentCall = DB::table('log_antrian_peserta as log')
+        // 1. Query dasar untuk reuse
+        $baseQuery = DB::table('log_antrian_peserta as log')
             ->leftJoin('company_mou_peserta as peserta', 'log.mou_peserta_code', '=', 'peserta.mou_peserta_code')
             ->select(
                 'log.nomor_antrian',
@@ -46,11 +56,30 @@ class AntrianController extends Controller
             )
             ->where('log.company_mou_code', $code)
             ->where('log.operator_user_id', $cabang)
-            ->whereIn('log.status_antrian', ['Dipanggil', 'Sedang Diperiksa'])
+            ->whereIn('log.status_antrian', ['Dipanggil', 'Sedang Diperiksa']);
+
+        // 2. Ambil panggilan aktif Registrasi / Pendaftaran 1
+        $pos1 = (clone $baseQuery)
+            ->where('log.nama_pos_pemeriksaan', 'Registrasi / Pendaftaran 1')
             ->orderBy('log.updated_at', 'desc')
             ->first();
 
-        // 2. Ambil 5 Panggilan Terakhir
+        // 3. Ambil panggilan aktif Registrasi / Pendaftaran 2
+        $pos2 = (clone $baseQuery)
+            ->where('log.nama_pos_pemeriksaan', 'Registrasi / Pendaftaran 2')
+            ->orderBy('log.updated_at', 'desc')
+            ->first();
+
+        // 4. Ambil panggilan paling terbaru secara keseluruhan (Untuk trigger suara TTS di frontend)
+        $current = DB::table('log_antrian_peserta as log')
+            ->select('log.nomor_antrian', 'log.nama_pos_pemeriksaan', 'log.panggilan_ke')
+            ->where('log.company_mou_code', $code)
+            ->where('log.operator_user_id', $cabang)
+            ->where('log.status_antrian', 'Dipanggil')
+            ->orderBy('log.updated_at', 'desc')
+            ->first();
+
+        // 5. Ambil 5 Panggilan Terakhir
         $recentCalls = DB::table('log_antrian_peserta as log')
             ->leftJoin('company_mou_peserta as peserta', 'log.mou_peserta_code', '=', 'peserta.mou_peserta_code')
             ->select(
@@ -67,7 +96,7 @@ class AntrianController extends Controller
             ->limit(5)
             ->get();
 
-        // 3. Tambahan: Ambil 5-10 Antrian MENUNGGU
+        // 6. Ambil Antrian MENUNGGU
         $waitingCalls = DB::table('log_antrian_peserta as log')
             ->leftJoin('company_mou_peserta as peserta', 'log.mou_peserta_code', '=', 'peserta.mou_peserta_code')
             ->select(
@@ -83,7 +112,7 @@ class AntrianController extends Controller
             ->limit(10)
             ->get();
 
-        // 4. Rekap Total Antrian Hari Ini Per Pos Pemeriksaan
+        // 7. Rekap Total Antrian Hari Ini Per Pos Pemeriksaan
         $posStats = DB::table('log_antrian_peserta')
             ->select('nama_pos_pemeriksaan', DB::raw('COUNT(*) as total'))
             ->where('company_mou_code', $code)
@@ -94,15 +123,27 @@ class AntrianController extends Controller
 
         return response()->json([
             'status'  => 'success',
-            'current' => $currentCall ? [
-                'nomor_antrian' => $currentCall->nomor_antrian,
-                'nama_peserta'  => $currentCall->mou_peserta_name ?? '-',
-                'nip'           => ($currentCall->mou_peserta_nip ?? '-') . ' / ' . ($currentCall->mou_peserta_nik ?? '-'),
-                'pos'           => $currentCall->nama_pos_pemeriksaan,
-                'panggilan_ke'  => $currentCall->panggilan_ke,
+            'pos1'    => $pos1 ? [
+                'nomor_antrian' => $pos1->nomor_antrian,
+                'nama_peserta'  => $pos1->mou_peserta_name ?? '-',
+                'nip'           => ($pos1->mou_peserta_nip ?? '-') . ' / ' . ($pos1->mou_peserta_nik ?? '-'),
+                'pos'           => $pos1->nama_pos_pemeriksaan,
+                'panggilan_ke'  => $pos1->panggilan_ke,
+            ] : null,
+            'pos2'    => $pos2 ? [
+                'nomor_antrian' => $pos2->nomor_antrian,
+                'nama_peserta'  => $pos2->mou_peserta_name ?? '-',
+                'nip'           => ($pos2->mou_peserta_nip ?? '-') . ' / ' . ($pos2->mou_peserta_nik ?? '-'),
+                'pos'           => $pos2->nama_pos_pemeriksaan,
+                'panggilan_ke'  => $pos2->panggilan_ke,
+            ] : null,
+            'current' => $current ? [
+                'nomor_antrian' => $current->nomor_antrian,
+                'pos'           => $current->nama_pos_pemeriksaan,
+                'panggilan_ke'  => $current->panggilan_ke,
             ] : null,
             'recent'  => $recentCalls,
-            'waiting' => $waitingCalls, // Data dikirimkan di JSON response
+            'waiting' => $waitingCalls,
             'stats'   => $posStats
         ]);
     }

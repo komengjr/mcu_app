@@ -74,16 +74,15 @@
             margin: 0;
         }
 
-        /* Layout Grid 1/5 & 4/5 Presisi Simetris */
-        .col-videotron {
-            flex: 0 0 calc(25% - 0.425rem);
-            max-width: calc(25% - 0.425rem);
+        .col-info-absensi {
+            flex: 0 0 calc(28% - 0.425rem);
+            max-width: calc(28% - 0.425rem);
             height: 100%;
         }
 
         .col-queue-system {
-            flex: 0 0 calc(75% - 0.425rem);
-            max-width: calc(75% - 0.425rem);
+            flex: 0 0 calc(72% - 0.425rem);
+            max-width: calc(72% - 0.425rem);
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -100,48 +99,98 @@
             overflow: hidden;
         }
 
-        .videotron-card {
+        .info-card {
             border: 3px solid var(--border-cyan);
             height: 100%;
-            background: #000;
+            background: #ffffff;
+            padding: 1rem;
+            overflow-y: auto;
         }
 
-        .videotron-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .qr-container {
+            background: #ffffff;
+            border: 2px dashed var(--border-cyan);
+            border-radius: 14px;
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .qr-image {
+            width: 130px;
+            height: 130px;
+            object-fit: contain;
+        }
+
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            background: rgba(224, 242, 254, 0.4);
+            border-left: 3px solid var(--border-cyan);
+            padding: 6px 10px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .step-number {
+            background: var(--border-cyan);
+            color: #ffffff;
+            font-weight: 800;
+            border-radius: 50%;
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.68rem;
+            margin-top: 1px;
+        }
+
+        /* Container 2 Outlet Pendaftaran */
+        .outlets-container {
+            display: flex;
+            gap: 0.85rem;
+            flex: 1.15;
+            min-height: 0;
         }
 
         .active-call-card {
             background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
             border: 3px solid var(--border-rose);
             box-shadow: 0 8px 25px rgba(244, 63, 94, 0.12);
-            flex: 1.1;
+            flex: 1;
             min-height: 0;
         }
 
         .pos-badge {
-            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+            background: linear-gradient(90deg, #0284c7 0%, #0369a1 100%);
             color: #ffffff;
             font-weight: 800;
-            font-size: clamp(1rem, 1.4vw, 1.5rem);
-            padding: 6px 24px;
+            font-size: clamp(0.9rem, 1.1vw, 1.2rem);
+            padding: 5px 18px;
             border-radius: 50px;
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
             display: inline-block;
         }
 
         .queue-number-huge {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(3.2rem, 7.5vh, 6rem);
+            font-size: clamp(2.5rem, 5.5vh, 4.5rem);
             font-weight: 900;
             color: #0284c7;
-            text-shadow: 3px 3px 0px #bae6fd;
+            text-shadow: 2px 2px 0px #bae6fd;
             line-height: 1;
         }
 
         .patient-name-text {
-            font-size: clamp(1.2rem, 2.2vh, 1.8rem);
+            font-size: clamp(1rem, 1.8vh, 1.4rem);
             font-weight: 800;
             color: #0f172a;
             white-space: nowrap;
@@ -261,7 +310,7 @@
             <i class="fas fa-play-circle me-2"></i> KLIK UNTUK MENGAKTIFKAN DISPLAY
         </div>
         <p class="text-white fs-5 mb-0">
-            <i class="fas fa-info-circle me-1"></i> Klik area layar untuk mengaktifkan panggilan suara & video.
+            <i class="fas fa-info-circle me-1"></i> Klik area layar untuk mengaktifkan suara pemanggilan.
         </p>
     </div>
 
@@ -297,43 +346,123 @@
         <!-- Main Body Grid -->
         <main class="main-content">
 
-            <!-- BAGIAN KIRI (1/5): VIDEOTRON PORTRAIT -->
-            <section class="col-videotron">
-                <div class="card-custom videotron-card">
-                    <video class="videotron-video" autoplay loop muted playsinline id="videotron-player">
-                        <source src="{{ asset('video/antrian.mp4') }}" type="video/mp4">
-                    </video>
+            <!-- BAGIAN KIRI: QR CODE & PANDUAN PENGGUNAAN -->
+            <section class="col-info-absensi">
+                <div class="card-custom info-card">
+                    <div class="qr-container mb-2">
+                        <span class="badge bg-primary px-3 py-1 mb-2 fw-bold text-uppercase">
+                            <i class="fas fa-qrcode me-1"></i> Scan Absensi MCU
+                        </span>
+                        <div class="d-flex justify-content-center my-1">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode(url('absensi/data-kehadiran-mcu/perusahaan/' . $tokenCode)) }}"
+                                alt="QR Absensi MCU"
+                                class="qr-image shadow-sm border rounded">
+                        </div>
+                        <small class="text-muted d-block fw-bold mt-1" style="font-size: 0.7rem;">
+                            Scan QR di atas untuk absensi mandiri
+                        </small>
+                    </div>
+
+                    <div class="mt-1">
+                        <h6 class="fw-bold text-primary mb-2 text-uppercase d-flex align-items-center" style="font-size: 0.8rem;">
+                            <i class="fas fa-list-ol me-2"></i> Panduan Alur Peserta:
+                        </h6>
+
+                        <div class="step-list">
+                            <div class="step-item">
+                                <span class="step-number">1</span>
+                                <div>Scan QR Code absensi menggunakan HP Anda.</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">2</span>
+                                <div>Halaman project perusahaan akan muncul di layar HP.</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">3</span>
+                                <div>Pilih dan masukkan <strong>Cabang Tujuan</strong> lokasi MCU.</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">4</span>
+                                <div>Masukkan <strong>NIP Pegawai</strong> yang telah terdaftar.</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">5</span>
+                                <div>Lakukan pengecekan data diri, jika benar klik lanjutkan.</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">6</span>
+                                <div>Lakukan <strong>Tanda Tangan Online</strong> untuk konfirmasi kehadiran.</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">7</span>
+                                <div>Setelah di-submit, Anda akan mendapatkan <strong>Nomor Antrian</strong>.</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">8</span>
+                                <div>Tunggu petugas memanggil nomor antrian Anda di layar display.</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <!-- BAGIAN KANAN (4/5): DISPLAY ANTRIAN & LIST -->
+            <!-- BAGIAN KANAN: DISPLAY ANTRIAN (2 OUTLET) & LIST -->
             <section class="col-queue-system">
 
-                <!-- PANGGILAN AKTIF SEKARANG -->
-                <div class="card-custom active-call-card p-3 text-center justify-content-between">
-                    <div>
-                        <span class="badge bg-danger text-white fs-6 px-4 py-2 rounded-pill fw-bold shadow-sm">
-                            <i class="fas fa-bullhorn me-2"></i> DIPANGGIL SEKARANG
-                        </span>
-                    </div>
+                <!-- DUA KOTAK OUTLET PENDAFTARAN -->
+                <div class="outlets-container">
 
-                    <div class="my-auto py-1">
-                        <div id="display-pos-name" class="pos-badge mb-2">
-                            MENUNGGU PANGGILAN...
+                    <!-- OUTLET 1: PENDAFTARAN 1 -->
+                    <div class="card-custom active-call-card p-3 text-center justify-content-between">
+                        <div>
+                            <span class="badge bg-danger text-white fs-7 px-3 py-1 rounded-pill fw-bold shadow-sm">
+                                <i class="fas fa-bullhorn me-1"></i> DIPANGGIL SEKARANG
+                            </span>
                         </div>
 
-                        <div id="display-queue-number" class="queue-number-huge my-1">
-                            ---
+                        <div class="my-auto py-1">
+                            <div class="pos-badge mb-2">
+                                PENDAFTARAN 1
+                            </div>
+
+                            <div id="pos1-queue-number" class="queue-number-huge my-1">
+                                ---
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-top border-secondary border-opacity-25">
+                            <div id="pos1-patient-name" class="patient-name-text mb-1">-</div>
+                            <div id="pos1-patient-nip" class="fs-7 text-primary fw-bold">NIP / NIK: -</div>
                         </div>
                     </div>
 
-                    <div class="pt-2 border-top border-secondary border-opacity-25">
-                        <div id="display-patient-name" class="patient-name-text mb-1">-</div>
-                        <div id="display-patient-nip" class="fs-6 text-primary fw-bold">NIP / NIK: -</div>
+                    <!-- OUTLET 2: PENDAFTARAN 2 -->
+                    <div class="card-custom active-call-card p-3 text-center justify-content-between">
+                        <div>
+                            <span class="badge bg-danger text-white fs-7 px-3 py-1 rounded-pill fw-bold shadow-sm">
+                                <i class="fas fa-bullhorn me-1"></i> DIPANGGIL SEKARANG
+                            </span>
+                        </div>
+
+                        <div class="my-auto py-1">
+                            <div class="pos-badge mb-2">
+                                PENDAFTARAN 2
+                            </div>
+
+                            <div id="pos2-queue-number" class="queue-number-huge my-1">
+                                ---
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-top border-secondary border-opacity-25">
+                            <div id="pos2-patient-name" class="patient-name-text mb-1">-</div>
+                            <div id="pos2-patient-nip" class="fs-7 text-primary fw-bold">NIP / NIK: -</div>
+                        </div>
                     </div>
+
                 </div>
 
-                <!-- TABEL SPILIT: PANGGILAN TERAKHIR & MENUNGGU -->
+                <!-- TABEL SPLIT: PANGGILAN TERAKHIR & MENUNGGU -->
                 <div class="tables-split-container">
 
                     <!-- Table Riwayat Dipanggil (Kiri) -->
@@ -392,7 +521,7 @@
         <!-- Footer Running Text -->
         <footer class="footer-panel d-flex align-items-center">
             <marquee class="fs-6 text-dark fw-bold" behavior="scroll" direction="left" scrollamount="6">
-                <i class="fas fa-umbrella-beach text-primary me-2"></i> Selamat datang di Pelayanan Medical Check Up (MCU). Mohon perhatikan nomor antrian dan nama Anda pada layar monitor. Harap membawa dokumen kelengkapan MCU saat memasuki ruangan pemeriksaan.
+                <i class="fas fa-info-circle text-primary me-2"></i> Selamat datang di Pelayanan Medical Check Up (MCU). Silakan melakukan scan QR Code di sebelah kiri untuk pendaftaran absensi mandiri, pengisian tanda tangan, dan pengambilan nomor antrian. Harap perhatikan panggilan nomor antrian Anda di layar display.
             </marquee>
         </footer>
 
@@ -412,11 +541,6 @@
         $('#audio-banner').on('click', function() {
             audioAllowed = true;
             $(this).fadeOut(300);
-
-            const videoElem = document.getElementById('videotron-player');
-            if (videoElem) {
-                videoElem.muted = false;
-            }
 
             let testAudio = new Audio("{{ asset('sound/sound.mp3') }}");
             testAudio.play().then(() => {
@@ -454,18 +578,11 @@
             window.speechSynthesis.onvoiceschanged = loadVoices;
         }
 
-        // Panggilan Suara & Otomasi Mute/Unmute Videotron
+        // Panggilan Suara
         function playCallVoice(nomorAntrian, posName) {
             if (!audioAllowed) {
                 $('#audio-banner').fadeIn(200);
                 return;
-            }
-
-            const videoElem = document.getElementById('videotron-player');
-
-            // 1. MUTE Suara Videotron saat panggilan dimulai
-            if (videoElem) {
-                videoElem.muted = true;
             }
 
             let bell = new Audio("{{ asset('sound/sound.mp3') }}");
@@ -500,33 +617,12 @@
                                 speech.voice = selectedVoice;
                             }
 
-                            // 2. UNMUTE Videotron saat panggilan selesai[cite: 2]
-                            speech.onend = function() {
-                                if (videoElem) {
-                                    videoElem.muted = false;
-                                }
-                            };
-
-                            // Fallback jika Terjadi Error pada Suara
-                            speech.onerror = function() {
-                                if (videoElem) {
-                                    videoElem.muted = false;
-                                }
-                            };
-
                             window.speechSynthesis.speak(speech);
-                        } else {
-                            if (videoElem) {
-                                videoElem.muted = false;
-                            }
                         }
                     }, 1200);
                 }).catch(err => {
                     console.warn("Autoplay terhalang sistem:", err);
                     $('#audio-banner').fadeIn(200);
-                    if (videoElem) {
-                        videoElem.muted = false;
-                    }
                 });
             }
         }
@@ -539,27 +635,39 @@
                 dataType: 'json',
                 success: function(res) {
                     if (res.status === 'success') {
-                        // 1. Antrian Aktif Dipanggil
+
+                        // Update Pendaftaran 1 (Poli/Pos 1)
+                        if (res.pos1) {
+                            $('#pos1-queue-number').text(res.pos1.nomor_antrian);
+                            $('#pos1-patient-name').text(res.pos1.nama_peserta);
+                            $('#pos1-patient-nip').text('NIP / NIK: ' + res.pos1.nip);
+                        } else {
+                            $('#pos1-queue-number').text('---');
+                            $('#pos1-patient-name').text('-');
+                            $('#pos1-patient-nip').text('NIP / NIK: -');
+                        }
+
+                        // Update Pendaftaran 2 (Poli/Pos 2)
+                        if (res.pos2) {
+                            $('#pos2-queue-number').text(res.pos2.nomor_antrian);
+                            $('#pos2-patient-name').text(res.pos2.nama_peserta);
+                            $('#pos2-patient-nip').text('NIP / NIK: ' + res.pos2.nip);
+                        } else {
+                            $('#pos2-queue-number').text('---');
+                            $('#pos2-patient-name').text('-');
+                            $('#pos2-patient-nip').text('NIP / NIK: -');
+                        }
+
+                        // Trigger Suara jika ada Panggilan Terbaru dari salah satu pos
                         if (res.current) {
-                            $('#display-pos-name').text(res.current.pos);
-                            $('#display-queue-number').text(res.current.nomor_antrian);
-                            $('#display-patient-name').text(res.current.nama_peserta);
-                            $('#display-patient-nip').text('NIP / NIK: ' + res.current.nip);
-
                             let currentQueueKey = `${res.current.nomor_antrian}_${res.current.pos}_${res.current.panggilan_ke}`;
-
                             if (lastQueueKey !== currentQueueKey) {
                                 lastQueueKey = currentQueueKey;
                                 playCallVoice(res.current.nomor_antrian, res.current.pos);
                             }
-                        } else {
-                            $('#display-pos-name').text('MENUNGGU PANGGILAN...');
-                            $('#display-queue-number').text('---');
-                            $('#display-patient-name').text('-');
-                            $('#display-patient-nip').text('NIP / NIK: -');
                         }
 
-                        // 2. List Panggilan Terakhir
+                        // List Panggilan Terakhir
                         let htmlRecent = '';
                         if (res.recent && res.recent.length > 0) {
                             $.each(res.recent, function(i, item) {
@@ -582,7 +690,7 @@
                         }
                         $('#recent-calls-tbody').html(htmlRecent);
 
-                        // 3. List Antrian Menunggu
+                        // List Antrian Menunggu
                         let htmlWaiting = '';
                         if (res.waiting && res.waiting.length > 0) {
                             $.each(res.waiting, function(i, item) {

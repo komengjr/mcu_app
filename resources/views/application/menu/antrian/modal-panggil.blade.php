@@ -1,9 +1,12 @@
 <div class="modal-header bg-primary text-white p-3 d-flex justify-content-between align-items-center">
-    <h5 class="modal-title text-white fw-bold mb-0">
+    <h5 class="modal-title text-white fw-bold mb-0 d-flex align-items-center">
         <i class="fas fa-bullhorn me-2"></i>Panggil & Kelola Antrian Peserta MCU
     </h5>
-    <!-- Tombol Open New Tab TV Display di Header -->
 
+    <!-- TOMBOL REFRESH ANTRIAN -->
+    <button type="button" id="btn_refresh_antrian" class="btn btn-sm btn-light text-primary fw-bold shadow-sm">
+        <i class="fas fa-sync-alt me-1 icon-refresh"></i> Refresh Antrian
+    </button>
 </div>
 
 <div class="modal-body p-4">
@@ -45,7 +48,7 @@
             </thead>
             <tbody>
                 @forelse($pesertaList as $p)
-                <tr>
+                <tr class="antrian-row">
                     <td>
                         <span class="badge bg-primary fs-0 px-2 py-1">{{ $p->nomor_antrian }}</span>
                     </td>
@@ -55,7 +58,7 @@
                         <small class="text-muted">{{ $p->mou_peserta_departemen ?? '-' }}</small>
                     </td>
                     <td>
-                        <span class="badge bg-light text-dark border">{{ $p->nama_pos_pemeriksaan ?? 'Pendaftaran' }}</span>
+                        <span class="badge bg-light text-dark border badge-pos-text">{{ $p->nama_pos_pemeriksaan ?? 'Pendaftaran' }}</span>
                     </td>
                     <td>
                         @if($p->status_antrian == 'Dipanggil')
@@ -69,25 +72,29 @@
                     <td class="text-center">
                         <div class="btn-group btn-group-sm" role="group">
 
-                            <!-- Tombol Panggil / Panggil Ulang (HANYA MUNCUL JIKA BELUM SELESAI) -->
                             @if($p->status_antrian != 'Selesai')
+                            <!-- Tombol Panggil -->
                             <button type="button"
                                 class="btn btn-danger btn-panggil-aksi fw-bold"
                                 data-peserta="{{ $p->mou_peserta_code }}"
                                 data-nomor="{{ $p->nomor_antrian }}"
-                                data-nama="{{ $p->mou_peserta_name }}">
-                                <i class="fas fa-bullhorn me-1"></i> {{ $p->status_antrian == 'Dipanggil' ? 'Panggil Ulang' : 'Panggil' }}
+                                data-nama="{{ $p->mou_peserta_name }}"
+                                data-pos-terakhir="{{ $p->nama_pos_pemeriksaan }}"
+                                data-status="{{ $p->status_antrian }}">
+                                <i class="fas fa-bullhorn me-1"></i>
+                                <span class="text-btn-panggil">{{ $p->status_antrian == 'Dipanggil' ? 'Panggil Ulang' : 'Panggil' }}</span>
                             </button>
 
-                            <!-- Tombol Selesai Pasien -->
+                            <!-- Tombol Selesai (Di-handle dinamis via JS) -->
                             <button type="button"
                                 class="btn btn-success btn-selesai-aksi fw-bold"
                                 data-peserta="{{ $p->mou_peserta_code }}"
-                                data-nomor="{{ $p->nomor_antrian }}">
+                                data-nomor="{{ $p->nomor_antrian }}"
+                                data-pos-terakhir="{{ $p->nama_pos_pemeriksaan }}"
+                                data-status="{{ $p->status_antrian }}">
                                 <i class="fas fa-check me-1"></i> Selesai
                             </button>
                             @else
-                            <!-- Badge Keterangan Pasien Selesai -->
                             <span class="badge bg-light text-success border border-success p-2">
                                 <i class="fas fa-check-double me-1"></i> Pemeriksaan Selesai
                             </span>
@@ -107,7 +114,6 @@
 </div>
 
 <div class="modal-footer bg-light p-3 d-flex justify-content-between">
-    <!-- Tombol Open New Tab TV Display di Footer -->
     <a href="{{ url('v3/display/' . Auth::user()->access_cabang . '/' . $mou->company_mou_code) }}"
         target="_blank"
         class="btn btn-outline-primary btn-sm fw-bold">
@@ -119,8 +125,80 @@
 <script>
     $(document).ready(function() {
         const mouCode = "{{ $code }}";
+        const storageKey = 'selected_pos_mcu_' + mouCode;
 
-        // 1. Eksekusi Panggil
+        // 1. Restore nilai pilihan dropdown dari localStorage
+        let savedPos = localStorage.getItem(storageKey);
+        if (savedPos) {
+            $('#select_pos_pemeriksaan').val(savedPos);
+        }
+
+        // 2. Logika validasi tombol Panggil & Tombol Selesai berdasarkan Pos yang dipilih
+        function validateButtonsByPos() {
+            let currentSelectedPos = $('#select_pos_pemeriksaan').val();
+
+            // Loop untuk Tombol Panggil
+            $('.btn-panggil-aksi').each(function() {
+                let btn = $(this);
+                let posTerakhir = btn.data('pos-terakhir');
+                let status = btn.data('status');
+
+                if (status === 'Dipanggil' && posTerakhir) {
+                    if (posTerakhir !== currentSelectedPos) {
+                        btn.prop('disabled', true);
+                        btn.addClass('btn-secondary').removeClass('btn-danger');
+                        btn.attr('title', 'Sedang dipanggil di ' + posTerakhir);
+                        btn.find('.text-btn-panggil').text('Dipanggil di ' + (posTerakhir.includes('1') ? 'Pendaftaran 1' : 'Pendaftaran 2'));
+                    } else {
+                        btn.prop('disabled', false);
+                        btn.addClass('btn-danger').removeClass('btn-secondary');
+                        btn.removeAttr('title');
+                        btn.find('.text-btn-panggil').text('Panggil Ulang');
+                    }
+                } else {
+                    btn.prop('disabled', false);
+                    btn.addClass('btn-danger').removeClass('btn-secondary');
+                    btn.find('.text-btn-panggil').text('Panggil');
+                }
+            });
+
+            // Loop untuk Tombol Selesai (Hanya aktif jika dipanggil oleh pos yang sama)
+            $('.btn-selesai-aksi').each(function() {
+                let btnSelesai = $(this);
+                let posTerakhir = btnSelesai.data('pos-terakhir');
+                let status = btnSelesai.data('status');
+
+                // Jika statusnya dipanggil tetapi bukan oleh pos saat ini, Sembunyikan/Disable tombol Selesai
+                if (status === 'Dipanggil' && posTerakhir && posTerakhir !== currentSelectedPos) {
+                    btnSelesai.hide(); // Sembunyikan tombol agar tidak bisa diklik pos lain
+                } else {
+                    btnSelesai.show(); // Tampilkan jika pos-nya sesuai atau statusnya masih Menunggu/baru akan di-panggil
+                }
+            });
+        }
+
+        validateButtonsByPos();
+
+        // 3. Simpan state dropdown & validasi tombol saat dropdown diganti
+        $('#select_pos_pemeriksaan').off('change').on('change', function() {
+            let val = $(this).val();
+            localStorage.setItem(storageKey, val);
+            validateButtonsByPos();
+        });
+
+        // 4. ACTION REFRESH MODAL DATA
+        $('#btn_refresh_antrian').off('click').on('click', function(e) {
+            e.preventDefault();
+            let btn = $(this);
+            let icon = btn.find('.icon-refresh');
+
+            icon.addClass('fa-spin');
+            btn.prop('disabled', true);
+
+            $('#button-panggil-antrian-peserta-mcu[data-code="' + mouCode + '"]').trigger('click');
+        });
+
+        // 5. Eksekusi Panggil
         $('.btn-panggil-aksi').off('click').on('click', function(e) {
             e.preventDefault();
             let btn = $(this);
@@ -141,20 +219,23 @@
                 success: function(res) {
                     btn.prop('disabled', false);
                     if (res.status === 'success') {
-                        // Refresh modal content
                         $('#button-panggil-antrian-peserta-mcu[data-code="' + mouCode + '"]').trigger('click');
                     } else {
                         alert(res.message);
                     }
+                },
+                error: function() {
+                    btn.prop('disabled', false);
                 }
             });
         });
 
-        // 2. Eksekusi Selesaikan Pasien
+        // 6. Eksekusi Selesaikan Pasien
         $('.btn-selesai-aksi').off('click').on('click', function(e) {
             e.preventDefault();
             let btn = $(this);
             let pesertaCode = btn.data('peserta');
+            let posPemeriksaan = $('#select_pos_pemeriksaan').val();
 
             btn.prop('disabled', true);
 
@@ -164,16 +245,19 @@
                 data: {
                     "_token": "{{ csrf_token() }}",
                     "company_mou_code": mouCode,
-                    "mou_peserta_code": pesertaCode
+                    "mou_peserta_code": pesertaCode,
+                    "nama_pos_pemeriksaan": posPemeriksaan
                 },
                 success: function(res) {
                     btn.prop('disabled', false);
                     if (res.status === 'success') {
-                        // Refresh modal content
                         $('#button-panggil-antrian-peserta-mcu[data-code="' + mouCode + '"]').trigger('click');
                     } else {
                         alert(res.message);
                     }
+                },
+                error: function() {
+                    btn.prop('disabled', false);
                 }
             });
         });

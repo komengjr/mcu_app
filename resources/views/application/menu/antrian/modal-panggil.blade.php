@@ -4,14 +4,16 @@
     </h5>
 
     <!-- TOMBOL REFRESH ANTRIAN -->
-    <button type="button" id="btn_refresh_antrian" class="btn btn-sm btn-light text-primary fw-bold shadow-sm">
-        <i class="fas fa-sync-alt me-1 icon-refresh"></i> Refresh Antrian
-    </button>
+
 </div>
 
 <div class="modal-body p-4">
     <!-- Bio MOU & Pilihan Pos -->
-    <div class="row g-3 mb-4">
+    <button type="button" id="btn_refresh_antrian" class="btn btn-sm btn-warning text-white fw-bold">
+        <i class="fas fa-sync-alt me-1 icon-refresh"></i> Refresh Antrian
+    </button>
+    <hr>
+    <div class="row g-3 mb-3">
         <div class="col-md-6">
             <div class="card bg-light border-0 p-3 rounded-3">
                 <small class="text-muted fw-bold">PROJECT / AGREEMENT</small>
@@ -32,9 +34,9 @@
             </div>
         </div>
     </div>
-
     <!-- Tabel Daftar Antrian Peserta -->
     <div class="table-responsive">
+
         <table id="table_panggil_antrian" class="table table-hover table-striped align-middle w-100">
             <thead class="table-dark">
                 <tr>

@@ -182,6 +182,7 @@ Route::prefix('application')->group(function () {
     Route::post('medical-check-up/panggil-antrian-peserta', [ApplicationController::class, 'medical_check_up_panggil_antrian_peserta'])->name('medical_check_up_panggil_antrian_peserta');
     Route::post('medical-check-up/proses-panggil', [ApplicationController::class, 'prosesPanggil'])->name('medical_check_up_proses_panggil_antrian');
     Route::post('medical-check-up/selesaikan-pasien', [ApplicationController::class, 'selesaikanPasien'])->name('medical_check_up_selesaikan_pasien');
+    Route::get('medical-check-up/refresh-table/{company_mou_code}', [ApplicationController::class, 'refreshTableAntrian'])->name('medical_check_up_refresh_table_antrian');
     Route::post('medical-check-up/pemanggilan-pos-pemeriksaan', [ApplicationController::class, 'pemanggilanPosPemeriksaan'])->name('medical_check_up_pemanggilan_pos_pemeriksaan');
     //MENU SERVICE
     Route::post('menu-servic/pilih-perusahaan', [ApplicationController::class, 'menu_service_pilih_perusahaan'])->name('menu_service_pilih_perusahaan');

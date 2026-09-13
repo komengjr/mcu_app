@@ -2460,6 +2460,18 @@ class ApplicationController extends Controller
             'message' => "Pasien {$antrian->nomor_antrian} berhasil diselesaikan."
         ]);
     }
+    public function refreshTableAntrian($company_mou_code)
+    {
+        // Ambil data antrian peserta berdasarkan company_mou_code dari tabel log_antrian_peserta
+        $pesertaList = DB::table('log_antrian_peserta')
+            ->where('company_mou_code', $company_mou_code)
+            ->where('operator_user_id', Auth::user()->access_cabang)
+            ->orderBy('nomor_antrian', 'asc') // Urutkan berdasarkan nomor antrian
+            ->get();
+
+        // Mengembalikan partial view khusus baris <tbody>
+        return view('application.menu.antrian.table-antrian-rows', compact('pesertaList'));
+    }
     public function pemanggilanPosPemeriksaan(Request $request)
     {
         $companyMouCode = $request->code;

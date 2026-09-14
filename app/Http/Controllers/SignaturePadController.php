@@ -452,44 +452,158 @@ class SignaturePadController extends Controller
     {
         $userCode = $request->user_code;
 
-        // Ambil history status terbaru dari log_pemanggilan_pos
+        // 1. Ambil log panggilan peserta
         $logs = DB::table('log_pemanggilan_pos')
             ->where('mou_peserta_code', $userCode)
             ->orderBy('id_log_pemanggilan', 'asc')
             ->get();
 
-        // Kelompokkan data status per jenis pemeriksaan (menimpa array lama ke terbaru)
         $latestLogs = [];
         foreach ($logs as $log) {
-            $latestLogs[$log->master_pemeriksaan_code] = $log->status_antrian;
+            $latestLogs[trim($log->master_pemeriksaan_code)] = $log->status_antrian;
         }
 
-        // Generate Element Badge Status ke dalam format HTML
+        // 2. Ambil seluruh list kode pemeriksaan peserta dari log_pemeriksaan_pasien
+        // (Atau sesuaikan nama tabel relasi pemeriksaan peserta Anda)
+        $allPemeriksaan = DB::table('log_pemeriksaan_pasien')
+            ->where('mou_peserta_code', $userCode)
+            ->pluck('master_pemeriksaan_code')
+            ->toArray();
+
+        // Jika dari log_pemeriksaan_pasien juga belum ada, gabungkan dengan key dari log_pemanggilan_pos
+        $allCodes = array_unique(array_merge($allPemeriksaan, array_keys($latestLogs)));
+
         $statusHtml = [];
-        foreach ($latestLogs as $code => $status) {
+        foreach ($allCodes as $code) {
+            $cleanCode = trim($code);
+            if (empty($cleanCode)) continue;
+
+            // Jika log di-delete, $status otomatis kembali ke 'Menunggu'
+            $status = $latestLogs[$cleanCode] ?? 'Menunggu';
+
             switch ($status) {
                 case 'Dipanggil':
                     $badge = '<span class="badge bg-warning text-dark px-2 py-1"><i class="fas fa-bullhorn me-1"></i> Dipanggil</span>';
                     break;
+
                 case 'Sedang Diperiksa':
                     $badge = '<span class="badge bg-info text-white px-2 py-1"><i class="fas fa-user-md me-1"></i> Diperiksa</span>';
                     break;
+
                 case 'Selesai':
                     $badge = '<span class="badge bg-success px-2 py-1"><i class="fas fa-check-circle me-1"></i> Selesai</span>';
                     break;
+
                 case 'Lewat/Skip':
-                    $badge = '<span class="badge bg-secondary px-2 py-1"><i class="fas fa-forward me-1"></i> Di-skip</span>';
+                    $badge = '
+                    <div class="d-flex flex-column align-items-center gap-1">
+                        <span class="badge bg-secondary px-2 py-1"><i class="fas fa-forward me-1"></i> Di-skip</span>
+                        <button type="button" class="btn btn-xs btn-outline-warning rounded-pill py-0 px-2 mt-1" style="font-size: 0.65rem;" onclick="resetAntrianMenunggu(\'' . $cleanCode . '\', \'' . $userCode . '\')">
+                            <i class="fas fa-undo me-1"></i> Kembalikan
+                        </button>
+                    </div>';
                     break;
-                default:
-                    $badge = '<span class="badge bg-light text-muted border px-2 py-1"><i class="fas fa-clock me-1"></i> Menunggu</span>';
+
+                default: // Menunggu / Log Dihapus
+                    $badge = '
+                    <div class="d-flex flex-column align-items-center gap-1">
+                        <span class="badge bg-light text-muted border px-2 py-1"><i class="fas fa-clock me-1"></i> Menunggu</span>
+                        <button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0 px-2 mt-1" style="font-size: 0.65rem;" onclick="cekAntrianDipanggil(\'' . $cleanCode . '\', \'' . $userCode . '\')">
+                            <i class="fas fa-search me-1"></i> Cek Antrian
+                        </button>
+                    </div>';
                     break;
             }
-            $statusHtml[$code] = $badge;
+
+            $statusHtml[$cleanCode] = $badge;
         }
 
         return response()->json([
             'status' => 'success',
-            'data' => $statusHtml
+            'data'   => $statusHtml
+        ]);
+    }
+    public function cekAntrianDipanggil(Request $request)
+    {
+        $pemCode  = $request->pem_code;
+        $userCode = $request->user_code;
+
+        // 1. Ambil nomor antrian milik peserta dari tabel log_antrian_peserta
+        $myAntrian = DB::table('log_antrian_peserta')
+            ->where('mou_peserta_code', $userCode)
+            ->value('nomor_antrian');
+
+        // 2. Ambil data pemanggilan yang aktif saat ini di pos pemeriksaan terkait
+        $currentCalling = DB::table('log_pemanggilan_pos')
+            ->where('master_pemeriksaan_code', $pemCode)
+            ->whereIn('status_antrian', ['Dipanggil', 'Sedang Diperiksa'])
+            ->orderBy('id_log_pemanggilan', 'desc')
+            ->first();
+
+        if ($currentCalling) {
+            $noAntrianDipanggil = $currentCalling->nomor_antrian ?? '-';
+
+            // Parsing prefix & angka dari nomor antrian (Contoh: "MCU-0002" -> Prefix: "MCU-", Angka: 2)
+            preg_match('/^([^0-9]*)([0-9]+)$/', $noAntrianDipanggil, $matchCalling);
+            $prefix     = $matchCalling[1] ?? '';
+            $numCalling = isset($matchCalling[2]) ? (int)$matchCalling[2] : 0;
+
+            preg_match('/[0-9]+$/', $myAntrian ?? '', $matchMyQueue);
+            $numMyQueue = isset($matchMyQueue[0]) ? (int)$matchMyQueue[0] : 0;
+
+            // 3. Generate list antrian berikutnya di antara antrian dipanggil & antrian peserta
+            $nextQueues = [];
+            if ($numMyQueue > $numCalling && $numCalling > 0) {
+                $digitLength = strlen($matchCalling[2] ?? '4'); // Menjaga format digit seperti '0003'
+
+                for ($i = $numCalling + 1; $i < $numMyQueue; $i++) {
+                    $nextQueues[] = $prefix . str_pad($i, $digitLength, '0', STR_PAD_LEFT);
+                }
+            }
+
+            // Hitung selisih antrian di depan
+            $sisaAntrian = ($numMyQueue > $numCalling && $numCalling > 0) ? ($numMyQueue - $numCalling - 1) : 0;
+
+            return response()->json([
+                'status'               => 'success',
+                'no_antrian_dipanggil' => $noAntrianDipanggil,
+                'no_antrian_saya'      => $myAntrian ?? '-',
+                'sisa_antrian'         => $sisaAntrian,
+                'daftar_antrian_next'  => $nextQueues,
+                'status_pos'           => $currentCalling->status_antrian
+            ]);
+        }
+
+        return response()->json([
+            'status'  => 'empty',
+            'message' => 'Belum ada antrian yang dipanggil di pos ini.'
+        ]);
+    }
+
+    /**
+     * Reset status antrian dari Skip/Lewat kembali ke Menunggu
+     */
+    public function resetAntrianMenunggu(Request $request)
+    {
+        $userCode = $request->user_code;
+        $pemCode  = $request->pem_code;
+
+        // Hapus log panggilan agar status kembali ke Menunggu
+        $deleted = DB::table('log_pemanggilan_pos')
+            ->where('mou_peserta_code', $userCode)
+            ->where('master_pemeriksaan_code', $pemCode)
+            ->delete();
+
+        if ($deleted) {
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Status antrian berhasil dikembalikan ke Menunggu.'
+            ]);
+        }
+
+        return response()->json([
+            'status'  => 'error',
+            'message' => 'Gagal mengubah status antrian atau data log tidak ditemukan.'
         ]);
     }
 }

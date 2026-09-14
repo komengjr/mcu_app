@@ -358,6 +358,8 @@ Route::post('signaturepad-update-save', [SignaturePadController::class, 'save_si
 Route::get('signaturepad/get-data/form', [SignaturePadController::class, 'get_data_form_pemeriksaan'])->name('signaturepad.get_data_form_pemeriksaan');
 Route::post('signaturepad/save-data/form', [SignaturePadController::class, 'save_data_form_pemeriksaan'])->name('signaturepad.save_data_form_pemeriksaan');
 Route::get('signaturepad/cek-status-antrian', [SignaturePadController::class, 'cekStatusAntrian'])->name('signaturepad.cek_status_antrian');
+Route::get('signaturepad/cek-antrian-dipanggil', [SignaturePadController::class, 'cekAntrianDipanggil'])->name('signaturepad.cek_panggilan_antrian');
+Route::post('signaturepad/reset-antrian-menunggu', [SignaturePadController::class, 'resetAntrianMenunggu'])->name('signaturepad.reset_antrian_dipanggil');
 
 include('marketing.php');
 

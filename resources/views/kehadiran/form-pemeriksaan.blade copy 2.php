@@ -343,24 +343,33 @@
                                             }
                                             ?>
 
+                                            <!-- Container Responsive Flex: Mobile (turun ke bawah), Desktop (sejajar horizontal) -->
                                             <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4 pb-3 border-bottom">
+
+                                                <!-- Sisi Kiri: Judul Status Peserta -->
                                                 <div>
                                                     <h4 class="fw-bold text-900 mb-1">Status Peserta MCU</h4>
                                                     <p class="text-500 fs--1 mb-0">Periksa identitas dan perbarui status tindakan pemeriksaan Anda.</p>
                                                 </div>
 
+                                                <!-- Sisi Kanan / Bawah (Mobile): Ticket Badge Presisi -->
                                                 <div class="d-flex align-items-center justify-content-between justify-content-md-end border border-danger border-dashed px-3 py-2 rounded-3 text-nowrap w-100 w-md-auto"
                                                     style="background-color: #FFFDF7; border-color: #FFB3C1 !important;">
+
+                                                    <!-- Icon Ticket -->
                                                     <i class="fas fa-ticket-alt text-danger me-3" style="font-size: 1.5rem;"></i>
+
+                                                    <!-- Detail Label & Nomor -->
                                                     <div class="d-flex flex-column align-items-end">
                                                         <span class="fs--2 fw-bold text-muted text-uppercase tracking-wider mb-1" style="line-height: 1; font-size: 0.65rem;">
                                                             NO. ANTRIAN
                                                         </span>
-                                                        <span class="text-danger fw-black text-nowrap" id="text-no-antrian" style="font-weight: 900 !important; font-size: 1.25rem; line-height: 1; letter-spacing: 1px;">
+                                                        <span class="text-danger fw-black text-nowrap" style="font-weight: 900 !important; font-size: 1.25rem; line-height: 1; letter-spacing: 1px;">
                                                             {{ $noAntrian }}
                                                         </span>
                                                     </div>
                                                 </div>
+
                                             </div>
 
                                             <form method="POST" action="{{ route('signaturepad.update_pemeriksaan_save') }}">
@@ -429,7 +438,7 @@
 
                                                             <!-- Button Refresh Status Antrian -->
                                                             <button type="button" id="btn-refresh-status" class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2 ms-1 shadow-sm d-flex align-items-center gap-1">
-                                                                <i class="fas fa-sync-alt icon-refresh"></i> <span style="font-size: 0.68rem;">Refresh Status</span>
+                                                                <i class="fas fa-sync-alt icon-refresh"></i> <span style="font-size: 0.68rem;">Cek Antrian</span>
                                                             </button>
 
                                                             <div class="flex-grow-1 border-bottom ms-2"></div>
@@ -451,30 +460,28 @@
                                                                     <?php $hitung = 0; ?>
                                                                     @foreach ($pemeriksaan as $pem)
                                                                     <?php
-                                                                    $cleanCode = trim($pem->master_pemeriksaan_code);
-                                                                    $userCode  = $data->mou_peserta_code;
-
                                                                     $ket = Illuminate\Support\Facades\DB::table('log_pemeriksaan_pasien')
-                                                                        ->where('mou_peserta_code', $userCode)
+                                                                        ->where('mou_peserta_code', $data->mou_peserta_code)
                                                                         ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
                                                                         ->first();
 
                                                                     $cek = Illuminate\Support\Facades\DB::table('log_pemeriksaan_pasien')
-                                                                        ->where('mou_peserta_code', $userCode)
+                                                                        ->where('mou_peserta_code', $data->mou_peserta_code)
                                                                         ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
                                                                         ->where('log_pemeriksaan_status', 1)
                                                                         ->first();
 
                                                                     $cek1 = Illuminate\Support\Facades\DB::table('log_pemeriksaan_pasien')
-                                                                        ->where('mou_peserta_code', $userCode)
+                                                                        ->where('mou_peserta_code', $data->mou_peserta_code)
                                                                         ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
                                                                         ->where('log_pemeriksaan_status', 0)
                                                                         ->first();
 
                                                                     if ($cek || $cek1) $hitung++;
 
+                                                                    // Query langsung ke log_pemanggilan_pos
                                                                     $logPemanggilan = Illuminate\Support\Facades\DB::table('log_pemanggilan_pos')
-                                                                        ->where('mou_peserta_code', $userCode)
+                                                                        ->where('mou_peserta_code', $data->mou_peserta_code)
                                                                         ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
                                                                         ->first();
 
@@ -482,14 +489,14 @@
                                                                     ?>
                                                                     <tr>
                                                                         <td class="fw-semibold text-800">
-                                                                            <span class="nama-pemeriksaan">{{ $pem->master_pemeriksaan_name }}</span>
-                                                                            <small class="d-block text-muted fw-normal" id="label_ket_{{ $cleanCode }}">
+                                                                            {{ $pem->master_pemeriksaan_name }}
+                                                                            <small class="d-block text-muted fw-normal" id="label_ket_{{ trim($pem->master_pemeriksaan_code) }}">
                                                                                 {{ $cek1 && $ket ? 'Keterangan: ' . $ket->log_pemeriksaan_deskripsi : '' }}
                                                                             </small>
                                                                         </td>
 
-                                                                        <!-- BADGE STATUS ANTRIAN DENGAN ACTION DYNAMIC -->
-                                                                        <td class="text-center align-middle" id="status_antrian_{{ $cleanCode }}">
+                                                                        <!-- BADGE STATUS ANTRIAN DENGAN ID UNIQUE AJAX -->
+                                                                        <td class="text-center align-middle" id="status_antrian_{{ trim($pem->master_pemeriksaan_code) }}">
                                                                             @switch($statusPos)
                                                                             @case('Dipanggil')
                                                                             <span class="badge bg-warning text-dark px-2 py-1"><i class="fas fa-bullhorn me-1"></i> Dipanggil</span>
@@ -501,34 +508,24 @@
                                                                             <span class="badge bg-success px-2 py-1"><i class="fas fa-check-circle me-1"></i> Selesai</span>
                                                                             @break
                                                                             @case('Lewat/Skip')
-                                                                            <div class="d-flex flex-column align-items-center gap-1">
-                                                                                <span class="badge bg-secondary px-2 py-1"><i class="fas fa-forward me-1"></i> Di-skip</span>
-                                                                                <button type="button" class="btn btn-xs btn-outline-warning rounded-pill py-0 px-2 mt-1" style="font-size: 0.65rem;" onclick="resetAntrianMenunggu('{{ $cleanCode }}', '{{ $userCode }}')">
-                                                                                    <i class="fas fa-undo me-1"></i> Kembalikan
-                                                                                </button>
-                                                                            </div>
+                                                                            <span class="badge bg-secondary px-2 py-1"><i class="fas fa-forward me-1"></i> Di-skip</span>
                                                                             @break
                                                                             @default
-                                                                            <div class="d-flex flex-column align-items-center gap-1">
-                                                                                <span class="badge bg-light text-muted border px-2 py-1"><i class="fas fa-clock me-1"></i> Menunggu</span>
-                                                                                <button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0 px-2 mt-1" style="font-size: 0.65rem;" onclick="cekAntrianDipanggil('{{ $cleanCode }}', '{{ $userCode }}')">
-                                                                                    <i class="fas fa-search me-1"></i> Cek Antrian
-                                                                                </button>
-                                                                            </div>
+                                                                            <span class="badge bg-light text-muted border px-2 py-1"><i class="fas fa-clock me-1"></i> Menunggu</span>
                                                                             @endswitch
                                                                         </td>
 
-                                                                        <td class="text-center align-middle" id="cell_action_{{ $cleanCode }}">
+                                                                        <td class="text-center align-middle" id="cell_action_{{ trim($pem->master_pemeriksaan_code) }}">
                                                                             @if($cek)
-                                                                            <button type="button" class="btn btn-sm btn-success px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $cleanCode }}','{{ $userCode }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                            <button type="button" class="btn btn-sm btn-success px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ trim($pem->master_pemeriksaan_code) }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
                                                                                 <i class="fas fa-check-circle me-1"></i> Sudah
                                                                             </button>
                                                                             @elseif($cek1)
-                                                                            <button type="button" class="btn btn-sm btn-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $cleanCode }}','{{ $userCode }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                            <button type="button" class="btn btn-sm btn-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ trim($pem->master_pemeriksaan_code) }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
                                                                                 <i class="fas fa-times-circle me-1"></i> Tidak
                                                                             </button>
                                                                             @else
-                                                                            <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $cleanCode }}','{{ $userCode }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                            <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ trim($pem->master_pemeriksaan_code) }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
                                                                                 Pilih Status
                                                                             </button>
                                                                             @endif
@@ -539,30 +536,28 @@
                                                                     <!-- PEMERIKSAAN ADDITIONAL -->
                                                                     @foreach ($pemeriksaan1 as $pem)
                                                                     <?php
-                                                                    $cleanCodeAdd = trim($pem->master_pemeriksaan_code);
-                                                                    $userCode     = $data->mou_peserta_code;
-
                                                                     $ket = Illuminate\Support\Facades\DB::table('log_pemeriksaan_pasien')
-                                                                        ->where('mou_peserta_code', $userCode)
+                                                                        ->where('mou_peserta_code', $data->mou_peserta_code)
                                                                         ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
                                                                         ->first();
 
                                                                     $cek = Illuminate\Support\Facades\DB::table('log_pemeriksaan_pasien')
-                                                                        ->where('mou_peserta_code', $userCode)
+                                                                        ->where('mou_peserta_code', $data->mou_peserta_code)
                                                                         ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
                                                                         ->where('log_pemeriksaan_status', 1)
                                                                         ->first();
 
                                                                     $cek1 = Illuminate\Support\Facades\DB::table('log_pemeriksaan_pasien')
-                                                                        ->where('mou_peserta_code', $userCode)
+                                                                        ->where('mou_peserta_code', $data->mou_peserta_code)
                                                                         ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
                                                                         ->where('log_pemeriksaan_status', 0)
                                                                         ->first();
 
                                                                     if ($cek || $cek1) $hitung++;
 
+                                                                    // Query langsung ke log_pemanggilan_pos untuk item Additional
                                                                     $logPemanggilanAdd = Illuminate\Support\Facades\DB::table('log_pemanggilan_pos')
-                                                                        ->where('mou_peserta_code', $userCode)
+                                                                        ->where('mou_peserta_code', $data->mou_peserta_code)
                                                                         ->where('master_pemeriksaan_code', $pem->master_pemeriksaan_code)
                                                                         ->first();
 
@@ -570,15 +565,14 @@
                                                                     ?>
                                                                     <tr>
                                                                         <td class="fw-semibold text-danger">
-                                                                            <span class="nama-pemeriksaan">{{ $pem->master_pemeriksaan_name }}</span>
-                                                                            <span class="badge bg-danger-subtle text-danger ms-1">Additional</span>
-                                                                            <small class="d-block text-muted fw-normal" id="label_ket_{{ $cleanCodeAdd }}">
+                                                                            {{ $pem->master_pemeriksaan_name }} <span class="badge bg-danger-subtle text-danger ms-1">Additional</span>
+                                                                            <small class="d-block text-muted fw-normal" id="label_ket_{{ trim($pem->master_pemeriksaan_code) }}">
                                                                                 {{ $cek1 && $ket ? 'Keterangan: ' . $ket->log_pemeriksaan_deskripsi : '' }}
                                                                             </small>
                                                                         </td>
 
-                                                                        <!-- BADGE STATUS ANTRIAN ADDITIONAL -->
-                                                                        <td class="text-center align-middle" id="status_antrian_{{ $cleanCodeAdd }}">
+                                                                        <!-- BADGE STATUS ANTRIAN ADDITIONAL DENGAN ID UNIQUE AJAX -->
+                                                                        <td class="text-center align-middle" id="status_antrian_{{ trim($pem->master_pemeriksaan_code) }}">
                                                                             @switch($statusPosAdd)
                                                                             @case('Dipanggil')
                                                                             <span class="badge bg-warning text-dark px-2 py-1"><i class="fas fa-bullhorn me-1"></i> Dipanggil</span>
@@ -590,34 +584,24 @@
                                                                             <span class="badge bg-success px-2 py-1"><i class="fas fa-check-circle me-1"></i> Selesai</span>
                                                                             @break
                                                                             @case('Lewat/Skip')
-                                                                            <div class="d-flex flex-column align-items-center gap-1">
-                                                                                <span class="badge bg-secondary px-2 py-1"><i class="fas fa-forward me-1"></i> Di-skip</span>
-                                                                                <button type="button" class="btn btn-xs btn-outline-warning rounded-pill py-0 px-2 mt-1" style="font-size: 0.65rem;" onclick="resetAntrianMenunggu('{{ $cleanCodeAdd }}', '{{ $userCode }}')">
-                                                                                    <i class="fas fa-undo me-1"></i> Kembalikan
-                                                                                </button>
-                                                                            </div>
+                                                                            <span class="badge bg-secondary px-2 py-1"><i class="fas fa-forward me-1"></i> Di-skip</span>
                                                                             @break
                                                                             @default
-                                                                            <div class="d-flex flex-column align-items-center gap-1">
-                                                                                <span class="badge bg-light text-muted border px-2 py-1"><i class="fas fa-clock me-1"></i> Menunggu</span>
-                                                                                <button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0 px-2 mt-1" style="font-size: 0.65rem;" onclick="cekAntrianDipanggil('{{ $cleanCodeAdd }}', '{{ $userCode }}')">
-                                                                                    <i class="fas fa-search me-1"></i> Cek Antrian
-                                                                                </button>
-                                                                            </div>
+                                                                            <span class="badge bg-light text-muted border px-2 py-1"><i class="fas fa-clock me-1"></i> Menunggu</span>
                                                                             @endswitch
                                                                         </td>
 
-                                                                        <td class="text-center align-middle" id="cell_action_{{ $cleanCodeAdd }}">
+                                                                        <td class="text-center align-middle" id="cell_action_{{ trim($pem->master_pemeriksaan_code) }}">
                                                                             @if($cek)
-                                                                            <button type="button" class="btn btn-sm btn-success px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $cleanCodeAdd }}','{{ $userCode }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                            <button type="button" class="btn btn-sm btn-success px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ trim($pem->master_pemeriksaan_code) }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
                                                                                 <i class="fas fa-check-circle me-1"></i> Sudah
                                                                             </button>
                                                                             @elseif($cek1)
-                                                                            <button type="button" class="btn btn-sm btn-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $cleanCodeAdd }}','{{ $userCode }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                            <button type="button" class="btn btn-sm btn-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ trim($pem->master_pemeriksaan_code) }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
                                                                                 <i class="fas fa-times-circle me-1"></i> Tidak
                                                                             </button>
                                                                             @else
-                                                                            <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ $cleanCodeAdd }}','{{ $userCode }}', '{{ $pem->master_pemeriksaan_name }}')">
+                                                                            <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1 fs--2 rounded-pill shadow-none" onclick="openActionSwal('{{ trim($pem->master_pemeriksaan_code) }}','{{ $data->mou_peserta_code }}', '{{ $pem->master_pemeriksaan_name }}')">
                                                                                 Pilih Status
                                                                             </button>
                                                                             @endif
@@ -699,49 +683,9 @@
     <script src="{{ asset('asset/notifications/js/notifications.min.js') }}"></script>
 
     <script>
-        // Tracker agar nomor & pos antrian yang sama tidak berbunyi dipanggil berulang kali
-        var calledItems = {};
-
-        /**
-         * Fungsi pemanggilan suara Text-to-Speech (Bahasa Indonesia)
-         */
-        function playCallSound(noAntrian, outletName) {
-            if (!('speechSynthesis' in window)) {
-                console.warn("Browser tidak mendukung fitur Web Speech API.");
-                return;
-            }
-
-            // Hentikan suara pemanggilan sebelumnya jika masih ada di antrean
-            window.speechSynthesis.cancel();
-
-            var textToSpeak = "Nomor antrian, " + noAntrian + ". Silakan menuju ke " + outletName + ".";
-            var utterance = new SpeechSynthesisUtterance(textToSpeak);
-
-            utterance.lang = 'id-ID';
-            utterance.rate = 0.9;
-            utterance.pitch = 1.0;
-
-            var voices = window.speechSynthesis.getVoices();
-            var idVoice = voices.find(function(voice) {
-                return voice.lang.includes('id') || voice.lang.includes('ID');
-            });
-
-            if (idVoice) {
-                utterance.voice = idVoice;
-            }
-
-            window.speechSynthesis.speak(utterance);
-        }
-
-        // Inisialisasi daftar suara browser (khusus Chromium/Chrome)
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = function() {
-                window.speechSynthesis.getVoices();
-            };
-        }
-
         $(document).ready(function() {
             <?php
+            // Fallback Ambil No Antrian langsung di Blade jika controller belum passing $noAntrian
             $getAntrian = Illuminate\Support\Facades\DB::table('log_antrian_peserta')
                 ->where('mou_peserta_code', $data->mou_peserta_code)
                 ->first();
@@ -756,7 +700,7 @@
             var noAntrian = "{{ $nomorAntrianFix }}";
             var tanggalAntrian = "{{ date('d-m-Y H:i') }}";
 
-            // Swal Modal Panduan Pengisian
+            // Swal Modal Pertama (Sangat Tebal)
             Swal.fire({
                 title: 'Panduan Pengisian Formulir',
                 html: `
@@ -788,9 +732,9 @@
                 allowOutsideClick: false
             });
 
-            // AJAX Refresh Status Antrian POS & Voice Trigger
+            // AJAX Refresh Status Antrian POS
             $('#btn-refresh-status').on('click', function(e) {
-                if (e) e.preventDefault();
+                e.preventDefault();
                 var $btn = $(this);
                 var $icon = $btn.find('.icon-refresh');
                 var userCode = "{{ $data->mou_peserta_code }}";
@@ -808,30 +752,16 @@
                     success: function(response) {
                         if (response.status === 'success') {
                             $.each(response.data, function(code, htmlBadge) {
-                                var cleanCode = $.trim(code);
-                                var $cell = $('#status_antrian_' + cleanCode);
-                                $cell.html(htmlBadge);
-
-                                // Deteksi jika status antrian berubah menjadi "Dipanggil"
-                                if (htmlBadge.indexOf('Dipanggil') !== -1) {
-                                    var trackKey = userCode + '_' + cleanCode;
-                                    var outletName = $cell.closest('tr').find('.nama-pemeriksaan').text().trim();
-
-                                    // Mainkan suara hanya jika belum pernah berbunyi untuk sesi ini
-                                    if (!calledItems[trackKey]) {
-                                        calledItems[trackKey] = true;
-                                        playCallSound(noAntrian, outletName);
-                                    }
-                                }
+                                $('#status_antrian_' + $.trim(code)).html(htmlBadge);
                             });
 
-                            // Lobibox.notify('info', {
-                            //     pauseDelayOnHover: true,
-                            //     continueDelayOnInactiveTab: true,
-                            //     position: 'top right',
-                            //     icon: 'fas fa-sync',
-                            //     msg: 'Status antrian berhasil diperbarui'
-                            // });
+                            Lobibox.notify('info', {
+                                pauseDelayOnHover: true,
+                                continueDelayOnInactiveTab: true,
+                                position: 'top right',
+                                icon: 'fas fa-sync',
+                                msg: 'Status antrian berhasil diperbarui'
+                            });
                         }
                     },
                     error: function() {
@@ -849,137 +779,7 @@
                     }
                 });
             });
-
-            // Auto-polling pemanggilan status antrian setiap 15 detik
-            setInterval(function() {
-                $('#btn-refresh-status').click();
-            }, 15000);
         });
-
-        // Function Cek Antrian Yang Sedang Dipanggil saat ini
-        function cekAntrianDipanggil(pemCode, userCode) {
-            $.ajax({
-                url: "{{ route('signaturepad.cek_panggilan_antrian') }}",
-                type: "GET",
-                data: {
-                    pem_code: pemCode,
-                    user_code: userCode
-                },
-                dataType: "json",
-                success: function(response) {
-                    if (response.status === 'success') {
-                        let nextList = (response.daftar_antrian_next && response.daftar_antrian_next.length > 0) ?
-                            response.daftar_antrian_next.join(', ') :
-                            '-';
-
-                        Swal.fire({
-                            title: 'Status Antrian Pos',
-                            html: `
-                        <div class="my-2 p-3 text-center" style="background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px;">
-                            <span class="fs--2 text-uppercase text-muted fw-bold">Sedang Dipanggil saat ini:</span>
-                            <div class="text-danger fw-black my-1" style="font-size: 2.2rem; font-weight: 900;">
-                                ${response.no_antrian_dipanggil}
-                            </div>
-                            <span class="badge bg-warning text-dark mb-2">${response.status_pos}</span>
-
-                            <hr class="my-2" style="border-top: 1px dashed #cbd5e1;">
-
-                            <div class="row text-start mt-2">
-                                <div class="col-6 mb-2">
-                                    <small class="text-muted d-block">Nomor Antrian Anda:</small>
-                                    <strong class="text-primary fs-0">${response.no_antrian_saya}</strong>
-                                </div>
-                                <div class="col-6 mb-2">
-                                    <small class="text-muted d-block">Sisa Antrian Di Depan:</small>
-                                    <strong class="text-dark fs-0">${response.sisa_antrian} Orang</strong>
-                                </div>
-                                <div class="col-12 mt-1">
-                                    <small class="text-muted d-block">Antrian Selanjutnya:</small>
-                                    <span class="badge bg-light text-dark border px-2 py-1 mt-1">${nextList}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `,
-                            confirmButtonText: 'Tutup',
-                            confirmButtonColor: '#E60026'
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Informasi Antrian',
-                            text: response.message || 'Belum ada antrian dipanggil di pos ini.',
-                            icon: 'info',
-                            confirmButtonText: 'Tutup',
-                            confirmButtonColor: '#E60026'
-                        });
-                    }
-                },
-                error: function() {
-                    Lobibox.notify('error', {
-                        pauseDelayOnHover: true,
-                        continueDelayOnInactiveTab: true,
-                        position: 'top right',
-                        icon: 'fas fa-times-circle',
-                        msg: 'Gagal mengecek antrian dipanggil'
-                    });
-                }
-            });
-        }
-
-        // Function Reset Status Antrian dari Skip/Lewat menjadi Menunggu
-        function resetAntrianMenunggu(pemCode, userCode) {
-            Swal.fire({
-                title: 'Kembalikan Antrian?',
-                text: 'Status antrian Anda akan dikembalikan ke Menunggu.',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Kembalikan',
-                cancelButtonText: 'Batal',
-                confirmButtonColor: '#ffc107',
-                cancelButtonColor: '#6c757d'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "{{ route('signaturepad.reset_antrian_dipanggil') }}",
-                        type: "POST",
-                        data: {
-                            "_token": "{{ csrf_token() }}",
-                            pem_code: pemCode,
-                            user_code: userCode
-                        },
-                        dataType: "json",
-                        success: function(response) {
-                            if (response.status === 'success') {
-                                Lobibox.notify('success', {
-                                    pauseDelayOnHover: true,
-                                    continueDelayOnInactiveTab: true,
-                                    position: 'top right',
-                                    icon: 'fas fa-check-circle',
-                                    msg: response.message
-                                });
-                                location.reload();
-                            } else {
-                                Lobibox.notify('error', {
-                                    pauseDelayOnHover: true,
-                                    continueDelayOnInactiveTab: true,
-                                    position: 'top right',
-                                    icon: 'fas fa-times-circle',
-                                    msg: response.message
-                                });
-                            }
-                        },
-                        error: function() {
-                            Lobibox.notify('error', {
-                                pauseDelayOnHover: true,
-                                continueDelayOnInactiveTab: true,
-                                position: 'top right',
-                                icon: 'fas fa-times-circle',
-                                msg: 'Gagal mereset status antrian'
-                            });
-                        }
-                    });
-                }
-            });
-        }
     </script>
 
     <script>
@@ -1079,7 +879,6 @@
             });
         }
     </script>
-
     <script>
         var currentActiveFormCode = null;
 

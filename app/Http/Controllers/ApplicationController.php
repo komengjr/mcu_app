@@ -4498,7 +4498,7 @@ class ApplicationController extends Controller
             return response()->json('<div class="alert alert-warning">Formulir tidak ditemukan.</div>', 404);
         }
 
-        // 3. Ambil Master Items/Pertanyaan untuk Form ini (diurutkan berdasarkan sort_order)
+        // 3. Ambil Master Items/Pertanyaan
         $formItems = DB::table('mcu_form_items')
             ->where('id_mcu_form', $form->id_mcu_form)
             ->orderBy('sort_order', 'asc')
@@ -4510,7 +4510,14 @@ class ApplicationController extends Controller
             ->where('id_mcu_form', $form->id_mcu_form)
             ->first();
 
-        // 5. Render Header Informasi Peserta
+        // 5. Load Opsi Pertanyaan (mcu_item_options) untuk pencocokan Label
+        $itemIds = $formItems->pluck('id_mcu_form_item')->toArray();
+        $allOptions = DB::table('mcu_item_options')
+            ->whereIn('id_mcu_form_item', $itemIds)
+            ->get()
+            ->groupBy('id_mcu_form_item');
+
+        // 6. Render Header Informasi Peserta
         $html = '
     <div class="mb-3 p-3 bg-light rounded border">
         <table class="table table-borderless table-sm mb-0">
@@ -4523,37 +4530,79 @@ class ApplicationController extends Controller
     </div>
     <hr>';
 
-        // 6. Map Master Items dengan Jawaban dari JSON
+        // 7. Map Master Items dengan Jawaban dari JSON
         if (!$answerRecord || empty($answerRecord->answers_data)) {
             $html .= '<div class="alert alert-warning text-center">Peserta belum mengisi formulir ini.</div>';
         } else {
-            $answersData = json_decode($answerRecord->answers_data, true) ?? [];
+            // Safe Decode JSON
+            $rawJson = $answerRecord->answers_data;
+            $answersData = is_string($rawJson) ? json_decode($rawJson, true) : $rawJson;
+            if (is_string($answersData)) {
+                $answersData = json_decode($answersData, true);
+            }
+            $answersData = $answersData ?? [];
 
             $html .= '<div class="table-responsive"><table class="table table-striped table-bordered align-middle">
-            <thead class="table-secondary">
-                <tr>
-                    <th width="5%" class="text-center">No</th>
-                    <th>Item / Pertanyaan Examination</th>
-                    <th>Jawaban</th>
-                </tr>
-            </thead>
-            <tbody>';
+        <thead class="table-secondary">
+            <tr>
+                <th width="5%" class="text-center">No</th>
+                <th>Item / Pertanyaan Examination</th>
+                <th>Jawaban</th>
+            </tr>
+        </thead>
+        <tbody>';
 
             if ($formItems->isEmpty()) {
                 $html .= '<tr><td colspan="3" class="text-center text-muted">Tidak ada master item pertanyaan untuk form ini.</td></tr>';
             } else {
                 foreach ($formItems as $index => $item) {
-                    // Ambil nilai jawaban berdasarkan id_mcu_form_item atau fallback ke key index
-                    $rawAnswer = $answersData[$item->id_mcu_form_item]
+                    $itemIdStr = (string) $item->id_mcu_form_item;
+
+                    // Ambil nilai mentah dari JSON berdasarkan ID Item / Label
+                    $rawAnswer = $answersData[$itemIdStr]
+                        ?? $answersData[$item->id_mcu_form_item]
                         ?? $answersData[$item->item_label]
-                        ?? '-';
+                        ?? null;
 
-                    // Format tampilan jika berupa Array
-                    $displayAnswer = is_array($rawAnswer) ? implode(', ', $rawAnswer) : $rawAnswer;
+                    $displayAnswer = '-';
 
-                    // Tambahkan satuan/unit jika ketersediaan unit diset (contoh: 120/80 mmHg atau 70 kg)
-                    if (!empty($item->unit) && $displayAnswer !== '-') {
-                        $displayAnswer .= ' ' . $item->unit;
+                    if ($rawAnswer !== null && $rawAnswer !== '') {
+                        $options = $allOptions->get($item->id_mcu_form_item) ?? collect();
+
+                        // Jika item tipe select/checkbox/yes_no yang mempunyai options di tabel mcu_item_options
+                        if ($options->isNotEmpty()) {
+                            if (is_array($rawAnswer)) {
+                                // Jika jawaban berupa array (misal Checkbox)
+                                $labels = [];
+                                foreach ($rawAnswer as $val) {
+                                    $matchedOpt = $options->first(function ($opt) use ($val) {
+                                        return (string)$opt->id_mcu_item_option === (string)$val
+                                            || (string)$opt->option_value === (string)$val;
+                                    });
+                                    $labels[] = $matchedOpt ? $matchedOpt->option_label : $val;
+                                }
+                                $displayAnswer = implode(', ', $labels);
+                            } else {
+                                // Jika jawaban single value (Select / Radio)
+                                $matchedOpt = $options->first(function ($opt) use ($rawAnswer) {
+                                    return (string)$opt->id_mcu_item_option === (string)$rawAnswer
+                                        || (string)$opt->option_value === (string)$rawAnswer;
+                                });
+                                $displayAnswer = $matchedOpt ? $matchedOpt->option_label : ucfirst((string)$rawAnswer);
+                            }
+                        } else {
+                            // Jika tipe input biasa (text, number, textarea, yes_no tanpa option table)
+                            if (is_array($rawAnswer)) {
+                                $displayAnswer = implode(', ', $rawAnswer);
+                            } else {
+                                $displayAnswer = ucfirst((string)$rawAnswer);
+                            }
+                        }
+
+                        // Tambahkan satuan jika ada
+                        if (!empty($item->unit) && $displayAnswer !== '-') {
+                            $displayAnswer .= ' ' . $item->unit;
+                        }
                     }
 
                     $html .= '<tr>

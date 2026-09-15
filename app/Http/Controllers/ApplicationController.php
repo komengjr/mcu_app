@@ -4344,7 +4344,7 @@ class ApplicationController extends Controller
             'data'   => $data
         ]);
     }
-    // LAPORAN DATA OMSET
+    // LAPORAN PENGISIAN FORM
     public function laporan_pengisian_form($akses)
     {
         if ($this->url_akses($akses) == true) {
@@ -4617,5 +4617,227 @@ class ApplicationController extends Controller
         }
 
         return response()->json($html);
+    }
+    // LAPORAN HASIL PEMERIKSAAN
+    public function laporan_hasil_pemeriksaan_dokter($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            // 1. Ambil daftar cabang dari tabel master_cabang
+            $companies = DB::table('master_company')
+                ->select('master_company_code', 'master_company_name')
+                ->get();
+            return view('application.laporan.laporan-hasil-pemeriksaan', compact('companies'));
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
+    public function getDokter(Request $request)
+    {
+        $dokterList = DB::table('company_mou_pemeriksaan_doc')
+            ->join('company_mou_peserta', 'company_mou_pemeriksaan_doc.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+            ->where('company_mou_peserta.company_mou_code', $request->mou_code)
+            ->whereNotNull('company_mou_pemeriksaan_doc.dokter_penginput')
+            ->select('company_mou_pemeriksaan_doc.dokter_penginput')
+            ->distinct()
+            ->get();
+
+        return response()->json($dokterList);
+    }
+    // 1. Update method getData() untuk menambahkan tombol Print Perorangan pada kolom Action
+    public function getData(Request $request)
+    {
+        $query = DB::table('company_mou_pemeriksaan_doc')
+            ->join('company_mou_peserta', 'company_mou_pemeriksaan_doc.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+            ->where('company_mou_peserta.company_mou_code', $request->mou_code)
+            ->select([
+                'company_mou_pemeriksaan_doc.id_pemeriksaan_doc',
+                'company_mou_pemeriksaan_doc.mou_peserta_code',
+                'company_mou_peserta.mou_peserta_nik',
+                'company_mou_peserta.mou_peserta_nip',
+                'company_mou_peserta.mou_peserta_name',
+                'company_mou_peserta.mou_peserta_departemen',
+                'company_mou_pemeriksaan_doc.dokter_penginput',
+                'company_mou_pemeriksaan_doc.kesimpulan',
+                'company_mou_pemeriksaan_doc.created_at'
+            ]);
+
+        if ($request->dokter_penginput && $request->dokter_penginput !== 'all') {
+            $query->where('company_mou_pemeriksaan_doc.dokter_penginput', $request->dokter_penginput);
+        }
+
+        $data = $query->orderBy('company_mou_pemeriksaan_doc.created_at', 'desc')->get();
+
+        $formattedData = $data->map(function ($item, $index) {
+            $status = strtolower($item->kesimpulan ?? '');
+
+            if (str_contains($status, 'fit with note')) {
+                $badge = '<span class="badge bg-warning text-dark">Fit with Note</span>';
+            } elseif (str_contains($status, 'unfit')) {
+                $badge = '<span class="badge bg-danger">Unfit</span>';
+            } elseif (str_contains($status, 'fit')) {
+                $badge = '<span class="badge bg-success">Fit</span>';
+            } else {
+                $badge = '<span class="badge bg-secondary">' . ($item->kesimpulan ?? '-') . '</span>';
+            }
+
+            $urlPrintPerorangan = route('laporan.pemeriksaan.print_perorangan_pdf', $item->mou_peserta_code);
+
+            return [
+                'no' => $index + 1,
+                'nip_nik' => ($item->mou_peserta_nip ?? '-') . ' / ' . ($item->mou_peserta_nik ?? '-'),
+                'nama_pasien' => $item->mou_peserta_name,
+                'tgl_pemeriksaan' => date('d/m/Y H:i', strtotime($item->created_at)),
+                'dokter_penginput' => $item->dokter_penginput ?? '-',
+                'kesimpulan' => $badge,
+                'action' => '
+                <button class="btn btn-sm btn-info btn-view-detail" data-peserta-code="' . $item->mou_peserta_code . '">
+                    <i class="fas fa-eye me-1"></i> Detail
+                </button>
+                <a href="' . $urlPrintPerorangan . '" target="_blank" class="btn btn-sm btn-danger ms-1">
+                    <i class="fas fa-file-pdf me-1"></i> Cetak PDF
+                </a>'
+            ];
+        });
+
+        return response()->json(['data' => $formattedData]);
+    }
+
+    // 5. Summary Stats Data
+    public function getSummaryStatsPem(Request $request)
+    {
+        $query = DB::table('company_mou_pemeriksaan_doc')
+            ->join('company_mou_peserta', 'company_mou_pemeriksaan_doc.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+            ->where('company_mou_peserta.company_mou_code', $request->mou_code);
+
+        if ($request->dokter_penginput && $request->dokter_penginput !== 'all') {
+            $query->where('company_mou_pemeriksaan_doc.dokter_penginput', $request->dokter_penginput);
+        }
+
+        $totalPemeriksaan = $query->count();
+        $totalDokter = $query->distinct('company_mou_pemeriksaan_doc.dokter_penginput')->count('company_mou_pemeriksaan_doc.dokter_penginput');
+
+        return response()->json([
+            'total' => $totalPemeriksaan,
+            'total_dokter' => $totalDokter
+        ]);
+    }
+
+    // 6. Detail Hasil Pemeriksaan Modal
+    public function getDetail(Request $request)
+    {
+        $detail = DB::table('company_mou_pemeriksaan_doc')
+            ->join('company_mou_peserta', 'company_mou_pemeriksaan_doc.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+            ->where('company_mou_pemeriksaan_doc.mou_peserta_code', $request->peserta_code)
+            ->first();
+
+        if (!$detail) {
+            return response()->json('<div class="alert alert-warning">Data hasil pemeriksaan tidak ditemukan.</div>', 404);
+        }
+
+        return response()->json("
+            <div class='row g-3'>
+                <div class='col-md-6'>
+                    <small class='text-muted d-block'>Nama Peserta</small>
+                    <strong>{$detail->mou_peserta_name}</strong>
+                </div>
+                <div class='col-md-6'>
+                    <small class='text-muted d-block'>NIP / NIK</small>
+                    <strong>{$detail->mou_peserta_nip} / {$detail->mou_peserta_nik}</strong>
+                </div>
+                <div class='col-md-6'>
+                    <small class='text-muted d-block'>Departemen</small>
+                    <strong>{$detail->mou_peserta_departemen}</strong>
+                </div>
+                <div class='col-md-6'>
+                    <small class='text-muted d-block'>Dokter Penginput</small>
+                    <strong>" . ($detail->dokter_penginput ?? '-') . "</strong>
+                </div>
+
+                <hr class='my-3'>
+
+                <div class='col-md-3'>
+                    <small class='text-muted d-block'>Tensi</small>
+                    <strong>" . ($detail->tensi ?? '-') . " mmHg</strong>
+                </div>
+                <div class='col-md-3'>
+                    <small class='text-muted d-block'>Nadi (HR)</small>
+                    <strong>" . ($detail->nadi_hr ?? '-') . " bpm</strong>
+                </div>
+                <div class='col-md-3'>
+                    <small class='text-muted d-block'>Suhu</small>
+                    <strong>" . ($detail->suhu ?? '-') . " °C</strong>
+                </div>
+                <div class='col-md-3'>
+                    <small class='text-muted d-block'>SpO2</small>
+                    <strong>" . ($detail->spo2 ?? '-') . " %</strong>
+                </div>
+                <div class='col-md-3'>
+                    <small class='text-muted d-block'>BB / TB</small>
+                    <strong>" . ($detail->berat_badan ?? '-') . " kg / " . ($detail->tinggi_badan ?? '-') . " cm</strong>
+                </div>
+                <div class='col-md-3'>
+                    <small class='text-muted d-block'>RR (Nafas)</small>
+                    <strong>" . ($detail->rr_nafas ?? '-') . " x/menit</strong>
+                </div>
+                <div class='col-md-6'>
+                    <small class='text-muted d-block'>Kesimpulan</small>
+                    <span class='badge bg-primary fs-6'>" . ($detail->kesimpulan ?? '-') . "</span>
+                </div>
+
+                <div class='col-md-12 mt-2'>
+                    <small class='text-muted d-block mb-1'>Catatan Dokter</small>
+                    <div class='p-3 bg-light rounded-2 border'>" . nl2br(e($detail->catatan_dokter ?? 'Tidak ada catatan.')) . "</div>
+                </div>
+            </div>
+        ");
+    }
+    // 2. Cetak Rekap PDF (Bisa Per Dokter / Semua Dokter)
+    public function printRekapPdf(Request $request)
+    {
+        $mouCode = $request->get('mou_code');
+        $dokterPenginput = $request->get('dokter_penginput');
+
+        $mouInfo = DB::table('company_mou')
+            ->join('master_company', 'company_mou.master_company_code', '=', 'master_company.master_company_code')
+            ->where('company_mou.company_mou_code', $mouCode)
+            ->select('company_mou.*', 'master_company.master_company_name')
+            ->first();
+
+        $query = DB::table('company_mou_pemeriksaan_doc')
+            ->join('company_mou_peserta', 'company_mou_pemeriksaan_doc.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+            ->where('company_mou_peserta.company_mou_code', $mouCode)
+            ->select('company_mou_pemeriksaan_doc.*', 'company_mou_peserta.mou_peserta_name', 'company_mou_peserta.mou_peserta_nik', 'company_mou_peserta.mou_peserta_nip', 'company_mou_peserta.mou_peserta_departemen');
+
+        if ($dokterPenginput && $dokterPenginput !== 'all') {
+            $query->where('company_mou_pemeriksaan_doc.dokter_penginput', $dokterPenginput);
+        }
+
+        $listPemeriksaan = $query->orderBy('company_mou_pemeriksaan_doc.created_at', 'desc')->get();
+
+        $pdf = Pdf::loadView('application.laporan.report.pdf-rekap-pemeriksaan', compact('mouInfo', 'listPemeriksaan', 'dokterPenginput'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->stream('Laporan_Rekap_Pemeriksaan_Dokter.pdf');
+    }
+
+    // 3. Cetak PDF Perorangan (Hasil Hasil Hasil Pemeriksaan Individu)
+    public function printPeroranganPdf($peserta_code)
+    {
+        $detail = DB::table('company_mou_pemeriksaan_doc')
+            ->join('company_mou_peserta', 'company_mou_pemeriksaan_doc.mou_peserta_code', '=', 'company_mou_peserta.mou_peserta_code')
+            ->join('company_mou', 'company_mou_peserta.company_mou_code', '=', 'company_mou.company_mou_code')
+            ->join('master_company', 'company_mou.master_company_code', '=', 'master_company.master_company_code')
+            ->where('company_mou_pemeriksaan_doc.mou_peserta_code', $peserta_code)
+            ->select('company_mou_pemeriksaan_doc.*', 'company_mou_peserta.*', 'master_company.master_company_name')
+            ->first();
+
+        if (!$detail) {
+            return abort(404, 'Data pemeriksaan tidak ditemukan.');
+        }
+
+        $pdf = Pdf::loadView('application.laporan.report.pdf-perorangan-pemeriksaan', compact('detail'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('Hasil_Pemeriksaan_' . $detail->mou_peserta_name . '.pdf');
     }
 }

@@ -82,6 +82,7 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('laporan/laporan-data-kehadiran', [ApplicationController::class, 'laporan_data_kehadiran'])->name('laporan_data_kehadiran');
     Route::get('laporan/laporan-data-omset', [ApplicationController::class, 'laporan_data_omset'])->name('laporan_data_omset');
     Route::get('laporan/laporan-pengisian-form', [ApplicationController::class, 'laporan_pengisian_form'])->name('laporan_pengisian_form');
+    Route::get('laporan/hasil-pemeriksaan-dokter', [ApplicationController::class, 'laporan_hasil_pemeriksaan_dokter'])->name('laporan_hasil_pemeriksaan_dokter');
 
     // Management Master Form
     Route::get('master-data/master-form', [MasterMcuFormController::class, 'index'])->name('forms.index');
@@ -398,10 +399,23 @@ Route::prefix('laporan')->name('laporan.')->group(function () {
     Route::get('/get-participant-detail', [ApplicationController::class, 'getParticipantDetail'])->name('get_participant_detail');
 });
 
+Route::prefix('laporan-pemeriksaan')->name('laporan.pemeriksaan.')->middleware(['auth'])->group(function () {
+    // Main View Page
+    // AJAX Cascading Dropdown & Data Processing
+    Route::get('/get-mou', [ApplicationController::class, 'getMou'])->name('get_mou');
+    Route::get('/get-dokter', [ApplicationController::class, 'getDokter'])->name('get_dokter');
+    Route::get('/get-data', [ApplicationController::class, 'getData'])->name('get_data');
+    Route::get('/get-summary-stats', [ApplicationController::class, 'getSummaryStats'])->name('get_summary_stats');
+    Route::get('/get-detail', [ApplicationController::class, 'getDetail'])->name('get_detail');
+    // Route Tambahan Cetak PDF
+    Route::get('/print-rekap-pdf', [ApplicationController::class, 'printRekapPdf'])->name('print_rekap_pdf');
+    Route::get('/print-perorangan-pdf/{peserta_code}', [ApplicationController::class, 'printPeroranganPdf'])->name('print_perorangan_pdf');
+});
+
 Route::prefix('pemeriksaan-dokter')->name('pemeriksaan.')->group(function () {
     Route::get('/get-mou', [PemeriksaanDokterController::class, 'getMou'])->name('get_mou');
     Route::get('/get-participants', [PemeriksaanDokterController::class, 'getParticipants'])->name('get_participants');
-    Route::get('/get-summary-stats', [PemeriksaanDokterController::class, 'getSummaryStats'])->name('get_summary_stats');
+    Route::get('/get-summary-stats', [PemeriksaanDokterController::class, 'getSummaryStatsPem'])->name('get_summary_stats');
     Route::get('/get-detail', [PemeriksaanDokterController::class, 'getDetail'])->name('get_detail');
     Route::post('/store', [PemeriksaanDokterController::class, 'store'])->name('store');
 });

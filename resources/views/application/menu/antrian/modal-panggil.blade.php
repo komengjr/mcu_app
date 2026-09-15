@@ -30,6 +30,9 @@
                 <select id="select_pos_pemeriksaan" class="form-select form-select-sm fw-bold border-primary">
                     <option value="Registrasi / Pendaftaran 1">Registrasi / Pendaftaran ( 1 )</option>
                     <option value="Registrasi / Pendaftaran 2">Registrasi / Pendaftaran ( 2 )</option>
+                    <option value="Ruang Pemeriksaan Dokter 1">Ruang Pemeriksaan Dokter ( 1 )</option>
+                    <option value="Ruang Pemeriksaan Dokter 2">Ruang Pemeriksaan Dokter ( 2 )</option>
+                    <option value="Ruang Pemeriksaan Dokter 3">Ruang Pemeriksaan Dokter ( 3 )</option>
                 </select>
             </div>
         </div>
@@ -150,7 +153,7 @@
                         btn.prop('disabled', true);
                         btn.addClass('btn-secondary').removeClass('btn-danger');
                         btn.attr('title', 'Sedang dipanggil di ' + posTerakhir);
-                        btn.find('.text-btn-panggil').text('Dipanggil di ' + (posTerakhir.includes('1') ? 'Pendaftaran 1' : 'Pendaftaran 2'));
+                        btn.find('.text-btn-panggil').text('Dipanggil di ' + posTerakhir);
                     } else {
                         btn.prop('disabled', false);
                         btn.addClass('btn-danger').removeClass('btn-secondary');

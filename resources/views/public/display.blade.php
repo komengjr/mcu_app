@@ -153,19 +153,22 @@
             margin-top: 1px;
         }
 
-        /* Container 2 Outlet Pendaftaran */
+        /* Container Dinamis Outlet Pemanggilan */
         .outlets-container {
             display: flex;
             gap: 0.85rem;
             flex: 1.15;
             min-height: 0;
+            overflow-x: auto;
+            flex-wrap: wrap;
         }
 
         .active-call-card {
             background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
             border: 3px solid var(--border-rose);
             box-shadow: 0 8px 25px rgba(244, 63, 94, 0.12);
-            flex: 1;
+            flex: 1 1 calc(33.33% - 0.6rem);
+            min-width: 220px;
             min-height: 0;
         }
 
@@ -173,16 +176,17 @@
             background: linear-gradient(90deg, #0284c7 0%, #0369a1 100%);
             color: #ffffff;
             font-weight: 800;
-            font-size: clamp(0.9rem, 1.1vw, 1.2rem);
-            padding: 5px 18px;
+            font-size: clamp(0.75rem, 0.9vw, 1rem);
+            padding: 4px 14px;
             border-radius: 50px;
             box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
             display: inline-block;
+            text-transform: uppercase;
         }
 
         .queue-number-huge {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2.5rem, 5.5vh, 4.5rem);
+            font-size: clamp(2rem, 4.5vh, 3.8rem);
             font-weight: 900;
             color: #0284c7;
             text-shadow: 2px 2px 0px #bae6fd;
@@ -190,7 +194,7 @@
         }
 
         .patient-name-text {
-            font-size: clamp(1rem, 1.8vh, 1.4rem);
+            font-size: clamp(0.9rem, 1.5vh, 1.2rem);
             font-weight: 800;
             color: #0f172a;
             white-space: nowrap;
@@ -369,36 +373,28 @@
                         </h6>
 
                         <div class="step-list">
-                            <div class="step-item">
-                                <span class="step-number">1</span>
+                            <div class="step-item"><span class="step-number">1</span>
                                 <div>Scan QR Code absensi menggunakan HP Anda.</div>
                             </div>
-                            <div class="step-item">
-                                <span class="step-number">2</span>
+                            <div class="step-item"><span class="step-number">2</span>
                                 <div>Halaman project perusahaan akan muncul di layar HP.</div>
                             </div>
-                            <div class="step-item">
-                                <span class="step-number">3</span>
+                            <div class="step-item"><span class="step-number">3</span>
                                 <div>Pilih dan masukkan <strong>Cabang Tujuan</strong> lokasi MCU.</div>
                             </div>
-                            <div class="step-item">
-                                <span class="step-number">4</span>
+                            <div class="step-item"><span class="step-number">4</span>
                                 <div>Masukkan <strong>NIP Pegawai</strong> yang telah terdaftar.</div>
                             </div>
-                            <div class="step-item">
-                                <span class="step-number">5</span>
+                            <div class="step-item"><span class="step-number">5</span>
                                 <div>Lakukan pengecekan data diri, jika benar klik lanjutkan.</div>
                             </div>
-                            <div class="step-item">
-                                <span class="step-number">6</span>
+                            <div class="step-item"><span class="step-number">6</span>
                                 <div>Lakukan <strong>Tanda Tangan Online</strong> untuk konfirmasi kehadiran.</div>
                             </div>
-                            <div class="step-item">
-                                <span class="step-number">7</span>
+                            <div class="step-item"><span class="step-number">7</span>
                                 <div>Setelah di-submit, Anda akan mendapatkan <strong>Nomor Antrian</strong>.</div>
                             </div>
-                            <div class="step-item">
-                                <span class="step-number">8</span>
+                            <div class="step-item"><span class="step-number">8</span>
                                 <div>Tunggu petugas memanggil nomor antrian Anda di layar display.</div>
                             </div>
                         </div>
@@ -406,60 +402,12 @@
                 </div>
             </section>
 
-            <!-- BAGIAN KANAN: DISPLAY ANTRIAN (2 OUTLET) & LIST -->
+            <!-- BAGIAN KANAN: DISPLAY ANTRIAN DINAMIS & LIST -->
             <section class="col-queue-system">
 
-                <!-- DUA KOTAK OUTLET PENDAFTARAN -->
-                <div class="outlets-container">
-
-                    <!-- OUTLET 1: PENDAFTARAN 1 -->
-                    <div class="card-custom active-call-card p-3 text-center justify-content-between">
-                        <div>
-                            <span class="badge bg-danger text-white fs-7 px-3 py-1 rounded-pill fw-bold shadow-sm">
-                                <i class="fas fa-bullhorn me-1"></i> DIPANGGIL SEKARANG
-                            </span>
-                        </div>
-
-                        <div class="my-auto py-1">
-                            <div class="pos-badge mb-2">
-                                PENDAFTARAN 1
-                            </div>
-
-                            <div id="pos1-queue-number" class="queue-number-huge my-1">
-                                ---
-                            </div>
-                        </div>
-
-                        <div class="pt-2 border-top border-secondary border-opacity-25">
-                            <div id="pos1-patient-name" class="patient-name-text mb-1">-</div>
-                            <div id="pos1-patient-nip" class="fs-7 text-primary fw-bold">NIP / NIK: -</div>
-                        </div>
-                    </div>
-
-                    <!-- OUTLET 2: PENDAFTARAN 2 -->
-                    <div class="card-custom active-call-card p-3 text-center justify-content-between">
-                        <div>
-                            <span class="badge bg-danger text-white fs-7 px-3 py-1 rounded-pill fw-bold shadow-sm">
-                                <i class="fas fa-bullhorn me-1"></i> DIPANGGIL SEKARANG
-                            </span>
-                        </div>
-
-                        <div class="my-auto py-1">
-                            <div class="pos-badge mb-2">
-                                PENDAFTARAN 2
-                            </div>
-
-                            <div id="pos2-queue-number" class="queue-number-huge my-1">
-                                ---
-                            </div>
-                        </div>
-
-                        <div class="pt-2 border-top border-secondary border-opacity-25">
-                            <div id="pos2-patient-name" class="patient-name-text mb-1">-</div>
-                            <div id="pos2-patient-nip" class="fs-7 text-primary fw-bold">NIP / NIK: -</div>
-                        </div>
-                    </div>
-
+                <!-- KOTAK OUTLET PEMANGGILAN (RENDER DINAMIS DARI JS) -->
+                <div class="outlets-container" id="outlets-render-container">
+                    <!-- Kartu outlet dipanggil akan dirender otomatis dari AJAX -->
                 </div>
 
                 <!-- TABEL SPLIT: PANGGILAN TERAKHIR & MENUNGGU -->
@@ -578,7 +526,7 @@
             window.speechSynthesis.onvoiceschanged = loadVoices;
         }
 
-        // Panggilan Suara
+        // Panggilan Suara TTS
         function playCallVoice(nomorAntrian, posName) {
             if (!audioAllowed) {
                 $('#audio-banner').fadeIn(200);
@@ -636,38 +584,116 @@
                 success: function(res) {
                     if (res.status === 'success') {
 
-                        // Update Pendaftaran 1 (Poli/Pos 1)
-                        if (res.pos1) {
-                            $('#pos1-queue-number').text(res.pos1.nomor_antrian);
-                            $('#pos1-patient-name').text(res.pos1.nama_peserta);
-                            $('#pos1-patient-nip').text('NIP / NIK: ' + res.pos1.nip);
+                        // 1. Render Outlet Cards Secara Dinamis dengan Fallback Properti JSON
+                        let activeOutlets = res.active_pos || res.active_outlets;
+                        let htmlOutlets = '';
+
+                        if (activeOutlets && activeOutlets.length > 0) {
+                            $.each(activeOutlets, function(idx, item) {
+                                let noAntrian = item.nomor_antrian || item.nomor || '---';
+                                let posName = item.nama_pos_pemeriksaan || item.pos_name || item.pos || 'Pos Examination';
+                                let namaPeserta = item.mou_peserta_name || item.nama_peserta || item.nama || '-';
+                                let nipPeserta = item.mou_peserta_nip || item.nip || '-';
+
+                                htmlOutlets += `
+                                    <div class="card-custom active-call-card p-3 text-center justify-content-between">
+                                        <div>
+                                            <span class="badge bg-danger text-white fs-7 px-3 py-1 rounded-pill fw-bold shadow-sm">
+                                                <i class="fas fa-bullhorn me-1"></i> DIPANGGIL SEKARANG
+                                            </span>
+                                        </div>
+
+                                        <div class="my-auto py-1">
+                                            <div class="pos-badge mb-2">
+                                                ${posName}
+                                            </div>
+
+                                            <div class="queue-number-huge my-1">
+                                                ${noAntrian}
+                                            </div>
+                                        </div>
+
+                                        <div class="pt-2 border-top border-secondary border-opacity-25">
+                                            <div class="patient-name-text mb-1">${namaPeserta}</div>
+                                            <div class="fs-7 text-primary fw-bold">NIP / NIK: ${nipPeserta}</div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        } else if (res.pos1 || res.pos2) {
+                            // Fallback jika backend masih mereturn pos1 & pos2
+                            let posItems = [{
+                                    defaultPos: 'Registrasi / Pendaftaran (1)',
+                                    data: res.pos1
+                                },
+                                {
+                                    defaultPos: 'Registrasi / Pendaftaran (2)',
+                                    data: res.pos2
+                                }
+                            ];
+
+                            $.each(posItems, function(i, p) {
+                                let d = p.data;
+                                let noAntrian = d ? (d.nomor_antrian || d.nomor || '---') : '---';
+                                let posName = d ? (d.nama_pos_pemeriksaan || d.pos_name || p.defaultPos) : p.defaultPos;
+                                let namaPeserta = d ? (d.mou_peserta_name || d.nama_peserta || '-') : '-';
+                                let nipPeserta = d ? (d.mou_peserta_nip || d.nip || '-') : '-';
+
+                                htmlOutlets += `
+                                    <div class="card-custom active-call-card p-3 text-center justify-content-between">
+                                        <div>
+                                            <span class="badge bg-danger text-white fs-7 px-3 py-1 rounded-pill fw-bold shadow-sm">
+                                                <i class="fas fa-bullhorn me-1"></i> DIPANGGIL SEKARANG
+                                            </span>
+                                        </div>
+
+                                        <div class="my-auto py-1">
+                                            <div class="pos-badge mb-2">
+                                                ${posName}
+                                            </div>
+
+                                            <div class="queue-number-huge my-1">
+                                                ${noAntrian}
+                                            </div>
+                                        </div>
+
+                                        <div class="pt-2 border-top border-secondary border-opacity-25">
+                                            <div class="patient-name-text mb-1">${namaPeserta}</div>
+                                            <div class="fs-7 text-primary fw-bold">NIP / NIK: ${nipPeserta}</div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
                         } else {
-                            $('#pos1-queue-number').text('---');
-                            $('#pos1-patient-name').text('-');
-                            $('#pos1-patient-nip').text('NIP / NIK: -');
+                            htmlOutlets = `
+                                <div class="card-custom active-call-card p-3 text-center justify-content-between w-100">
+                                    <div class="my-auto py-3">
+                                        <div class="pos-badge mb-2">RUANG PEMERIKSAAN / PENDAFTARAN</div>
+                                        <div class="queue-number-huge my-1">---</div>
+                                        <div class="patient-name-text mt-2 text-muted">Belum ada pemanggilan antrean saat ini</div>
+                                    </div>
+                                </div>
+                            `;
                         }
 
-                        // Update Pendaftaran 2 (Poli/Pos 2)
-                        if (res.pos2) {
-                            $('#pos2-queue-number').text(res.pos2.nomor_antrian);
-                            $('#pos2-patient-name').text(res.pos2.nama_peserta);
-                            $('#pos2-patient-nip').text('NIP / NIK: ' + res.pos2.nip);
-                        } else {
-                            $('#pos2-queue-number').text('---');
-                            $('#pos2-patient-name').text('-');
-                            $('#pos2-patient-nip').text('NIP / NIK: -');
-                        }
+                        $('#outlets-render-container').html(htmlOutlets);
 
-                        // Trigger Suara jika ada Panggilan Terbaru dari salah satu pos
+                        // 2. Trigger Suara jika ada Panggilan Terbaru dari salah satu pos
                         if (res.current) {
-                            let currentQueueKey = `${res.current.nomor_antrian}_${res.current.pos}_${res.current.panggilan_ke}`;
-                            if (lastQueueKey !== currentQueueKey) {
-                                lastQueueKey = currentQueueKey;
-                                playCallVoice(res.current.nomor_antrian, res.current.pos);
+                            let noAntrianCall = res.current.nomor_antrian || res.current.nomor;
+                            let posCall = res.current.nama_pos_pemeriksaan || res.current.pos;
+                            let panggilKe = res.current.panggilan_ke || '1';
+
+                            if (noAntrianCall && posCall) {
+                                let currentQueueKey = `${noAntrianCall}_${posCall}_${panggilKe}`;
+                                if (lastQueueKey !== currentQueueKey) {
+                                    lastQueueKey = currentQueueKey;
+                                    playCallVoice(noAntrianCall, posCall);
+                                }
                             }
                         }
 
-                        // List Panggilan Terakhir
+                        // 3. List Panggilan Terakhir
                         let htmlRecent = '';
                         if (res.recent && res.recent.length > 0) {
                             $.each(res.recent, function(i, item) {
@@ -678,10 +704,10 @@
 
                                 htmlRecent += `
                                     <tr>
-                                        <td class="fw-bold text-primary">${item.nomor_antrian}</td>
-                                        <td class="text-truncate fw-semibold" style="max-width: 120px;">${item.mou_peserta_name ? item.mou_peserta_name : '-'}</td>
-                                        <td><span class="badge bg-light text-dark border border-info px-2 py-1 fs-7">${item.nama_pos_pemeriksaan}</span></td>
-                                        <td><span class="badge ${badgeStatus} fs-7">${item.status_antrian}</span></td>
+                                        <td class="fw-bold text-primary">${item.nomor_antrian || item.nomor || '-'}</td>
+                                        <td class="text-truncate fw-semibold" style="max-width: 120px;">${item.mou_peserta_name || item.nama_peserta || '-'}</td>
+                                        <td><span class="badge bg-light text-dark border border-info px-2 py-1 fs-7">${item.nama_pos_pemeriksaan || item.pos || '-'}</span></td>
+                                        <td><span class="badge ${badgeStatus} fs-7">${item.status_antrian || '-'}</span></td>
                                     </tr>
                                 `;
                             });
@@ -690,15 +716,15 @@
                         }
                         $('#recent-calls-tbody').html(htmlRecent);
 
-                        // List Antrian Menunggu
+                        // 4. List Antrian Menunggu
                         let htmlWaiting = '';
                         if (res.waiting && res.waiting.length > 0) {
                             $.each(res.waiting, function(i, item) {
                                 htmlWaiting += `
                                     <tr>
-                                        <td class="fw-bold text-indigo" style="color: #6366f1;">${item.nomor_antrian}</td>
-                                        <td class="text-truncate fw-semibold" style="max-width: 130px;">${item.mou_peserta_name ? item.mou_peserta_name : '-'}</td>
-                                        <td class="text-truncate" style="max-width: 100px;">${item.mou_peserta_departemen ? item.mou_peserta_departemen : '-'}</td>
+                                        <td class="fw-bold text-indigo" style="color: #6366f1;">${item.nomor_antrian || item.nomor || '-'}</td>
+                                        <td class="text-truncate fw-semibold" style="max-width: 130px;">${item.mou_peserta_name || item.nama_peserta || '-'}</td>
+                                        <td class="text-truncate" style="max-width: 100px;">${item.mou_peserta_departemen || item.departemen || '-'}</td>
                                     </tr>
                                 `;
                             });

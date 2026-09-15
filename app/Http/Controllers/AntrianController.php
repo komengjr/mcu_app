@@ -42,7 +42,7 @@ class AntrianController extends Controller
      */
     public function getDisplayData($cabang, $code)
     {
-        // 1. Query dasar untuk reuse
+        // 1. Query dasar antrian aktif HARI INI
         $baseQuery = DB::table('log_antrian_peserta as log')
             ->leftJoin('company_mou_peserta as peserta', 'log.mou_peserta_code', '=', 'peserta.mou_peserta_code')
             ->select(
@@ -56,30 +56,65 @@ class AntrianController extends Controller
             )
             ->where('log.company_mou_code', $code)
             ->where('log.operator_user_id', $cabang)
+            ->whereDate('log.created_at', DB::raw('CURDATE()'))
             ->whereIn('log.status_antrian', ['Dipanggil', 'Sedang Diperiksa']);
 
-        // 2. Ambil panggilan aktif Registrasi / Pendaftaran 1
-        $pos1 = (clone $baseQuery)
-            ->where('log.nama_pos_pemeriksaan', 'Registrasi / Pendaftaran 1')
+        // Helper untuk formatting item pos agar aman dibaca JS (lengkap dengan semua alias)
+        $formatPos = function ($item) {
+            if (!$item) return null;
+
+            $nipDisplay = trim(($item->mou_peserta_nip ?? '-') . ' / ' . ($item->mou_peserta_nik ?? '-'), ' /');
+
+            return [
+                'nomor_antrian'        => $item->nomor_antrian,
+                'nama_peserta'         => $item->mou_peserta_name ?? '-',
+                'mou_peserta_name'     => $item->mou_peserta_name ?? '-',
+                'nip'                  => $nipDisplay,
+                'mou_peserta_nip'      => $item->mou_peserta_nip ?? '-',
+                'mou_peserta_nik'      => $item->mou_peserta_nik ?? '-',
+                'pos'                  => $item->nama_pos_pemeriksaan,
+                'nama_pos_pemeriksaan' => $item->nama_pos_pemeriksaan,
+                'panggilan_ke'         => $item->panggilan_ke,
+            ];
+        };
+
+        // 2. Ambil panggilan aktif Pos 1 (Registrasi / Pendaftaran 1)
+        $pos1Raw = (clone $baseQuery)
+            ->where(function ($q) {
+                $q->where('log.nama_pos_pemeriksaan', 'LIKE', '%Pendaftaran 1%')
+                    ->orWhere('log.nama_pos_pemeriksaan', 'LIKE', '%Registrasi 1%');
+            })
             ->orderBy('log.updated_at', 'desc')
             ->first();
 
-        // 3. Ambil panggilan aktif Registrasi / Pendaftaran 2
-        $pos2 = (clone $baseQuery)
-            ->where('log.nama_pos_pemeriksaan', 'Registrasi / Pendaftaran 2')
+        // 3. Ambil panggilan aktif Pos 2 (Registrasi / Pendaftaran 2)
+        $pos2Raw = (clone $baseQuery)
+            ->where(function ($q) {
+                $q->where('log.nama_pos_pemeriksaan', 'LIKE', '%Pendaftaran 2%')
+                    ->orWhere('log.nama_pos_pemeriksaan', 'LIKE', '%Registrasi 2%');
+            })
             ->orderBy('log.updated_at', 'desc')
             ->first();
 
-        // 4. Ambil panggilan paling terbaru secara keseluruhan (Untuk trigger suara TTS di frontend)
-        $current = DB::table('log_antrian_peserta as log')
-            ->select('log.nomor_antrian', 'log.nama_pos_pemeriksaan', 'log.panggilan_ke')
+        // Fallback: Jika penamaan di DB tidak pakai angka 1/2, ambil 2 antrian aktif teratas secara otomatis
+        if (!$pos1Raw && !$pos2Raw) {
+            $activeList = (clone $baseQuery)->orderBy('log.updated_at', 'desc')->get();
+            $pos1Raw = $activeList->get(0);
+            $pos2Raw = $activeList->get(1);
+        }
+
+        // 4. Ambil panggilan paling terbaru secara keseluruhan (Trigger suara TTS)
+        $currentRaw = DB::table('log_antrian_peserta as log')
+            ->leftJoin('company_mou_peserta as peserta', 'log.mou_peserta_code', '=', 'peserta.mou_peserta_code')
+            ->select('log.nomor_antrian', 'log.nama_pos_pemeriksaan', 'log.panggilan_ke', 'peserta.mou_peserta_name')
             ->where('log.company_mou_code', $code)
             ->where('log.operator_user_id', $cabang)
+            ->whereDate('log.created_at', DB::raw('CURDATE()'))
             ->where('log.status_antrian', 'Dipanggil')
             ->orderBy('log.updated_at', 'desc')
             ->first();
 
-        // 5. Ambil 5 Panggilan Terakhir
+        // 5. Ambil 5 Panggilan Terakhir Hari Ini
         $recentCalls = DB::table('log_antrian_peserta as log')
             ->leftJoin('company_mou_peserta as peserta', 'log.mou_peserta_code', '=', 'peserta.mou_peserta_code')
             ->select(
@@ -91,12 +126,13 @@ class AntrianController extends Controller
             )
             ->where('log.company_mou_code', $code)
             ->where('log.operator_user_id', $cabang)
+            ->whereDate('log.created_at', DB::raw('CURDATE()'))
             ->whereIn('log.status_antrian', ['Dipanggil', 'Sedang Diperiksa', 'Selesai'])
             ->orderBy('log.updated_at', 'desc')
             ->limit(5)
             ->get();
 
-        // 6. Ambil Antrian MENUNGGU
+        // 6. Ambil Antrian MENUNGGU Hari Ini
         $waitingCalls = DB::table('log_antrian_peserta as log')
             ->leftJoin('company_mou_peserta as peserta', 'log.mou_peserta_code', '=', 'peserta.mou_peserta_code')
             ->select(
@@ -107,12 +143,13 @@ class AntrianController extends Controller
             )
             ->where('log.company_mou_code', $code)
             ->where('log.operator_user_id', $cabang)
+            ->whereDate('log.created_at', DB::raw('CURDATE()'))
             ->where('log.status_antrian', 'Menunggu')
             ->orderBy('log.created_at', 'asc')
             ->limit(10)
             ->get();
 
-        // 7. Rekap Total Antrian Hari Ini Per Pos Pemeriksaan
+        // 7. Rekap Total Antrian Hari Ini Per Pos
         $posStats = DB::table('log_antrian_peserta')
             ->select('nama_pos_pemeriksaan', DB::raw('COUNT(*) as total'))
             ->where('company_mou_code', $code)
@@ -123,24 +160,14 @@ class AntrianController extends Controller
 
         return response()->json([
             'status'  => 'success',
-            'pos1'    => $pos1 ? [
-                'nomor_antrian' => $pos1->nomor_antrian,
-                'nama_peserta'  => $pos1->mou_peserta_name ?? '-',
-                'nip'           => ($pos1->mou_peserta_nip ?? '-') . ' / ' . ($pos1->mou_peserta_nik ?? '-'),
-                'pos'           => $pos1->nama_pos_pemeriksaan,
-                'panggilan_ke'  => $pos1->panggilan_ke,
-            ] : null,
-            'pos2'    => $pos2 ? [
-                'nomor_antrian' => $pos2->nomor_antrian,
-                'nama_peserta'  => $pos2->mou_peserta_name ?? '-',
-                'nip'           => ($pos2->mou_peserta_nip ?? '-') . ' / ' . ($pos2->mou_peserta_nik ?? '-'),
-                'pos'           => $pos2->nama_pos_pemeriksaan,
-                'panggilan_ke'  => $pos2->panggilan_ke,
-            ] : null,
-            'current' => $current ? [
-                'nomor_antrian' => $current->nomor_antrian,
-                'pos'           => $current->nama_pos_pemeriksaan,
-                'panggilan_ke'  => $current->panggilan_ke,
+            'pos1'    => $formatPos($pos1Raw),
+            'pos2'    => $formatPos($pos2Raw),
+            'current' => $currentRaw ? [
+                'nomor_antrian'        => $currentRaw->nomor_antrian,
+                'pos'                  => $currentRaw->nama_pos_pemeriksaan,
+                'nama_pos_pemeriksaan' => $currentRaw->nama_pos_pemeriksaan,
+                'panggilan_ke'         => $currentRaw->panggilan_ke,
+                'nama_peserta'         => $currentRaw->mou_peserta_name ?? '-',
             ] : null,
             'recent'  => $recentCalls,
             'waiting' => $waitingCalls,

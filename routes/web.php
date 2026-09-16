@@ -405,7 +405,7 @@ Route::prefix('laporan-pemeriksaan')->name('laporan.pemeriksaan.')->middleware([
     Route::get('/get-mou', [ApplicationController::class, 'getMou'])->name('get_mou');
     Route::get('/get-dokter', [ApplicationController::class, 'getDokter'])->name('get_dokter');
     Route::get('/get-data', [ApplicationController::class, 'getData'])->name('get_data');
-    Route::get('/get-summary-stats', [ApplicationController::class, 'getSummaryStats'])->name('get_summary_stats');
+    Route::get('/get-summary-stats', [ApplicationController::class, 'getSummaryStatsPem'])->name('get_summary_stats');
     Route::get('/get-detail', [ApplicationController::class, 'getDetail'])->name('get_detail');
     // Route Tambahan Cetak PDF
     Route::get('/print-rekap-pdf', [ApplicationController::class, 'printRekapPdf'])->name('print_rekap_pdf');
@@ -415,7 +415,7 @@ Route::prefix('laporan-pemeriksaan')->name('laporan.pemeriksaan.')->middleware([
 Route::prefix('pemeriksaan-dokter')->name('pemeriksaan.')->group(function () {
     Route::get('/get-mou', [PemeriksaanDokterController::class, 'getMou'])->name('get_mou');
     Route::get('/get-participants', [PemeriksaanDokterController::class, 'getParticipants'])->name('get_participants');
-    Route::get('/get-summary-stats', [PemeriksaanDokterController::class, 'getSummaryStatsPem'])->name('get_summary_stats');
+    Route::get('/get-summary-stats', [PemeriksaanDokterController::class, 'getSummaryStats'])->name('get_summary_stats');
     Route::get('/get-detail', [PemeriksaanDokterController::class, 'getDetail'])->name('get_detail');
     Route::post('/store', [PemeriksaanDokterController::class, 'store'])->name('store');
 });

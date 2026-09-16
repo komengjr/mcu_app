@@ -195,7 +195,7 @@
                     <td>{{ $row->master_cabang_name ?? '-' }}</td>
                     <td class="text-center">
                         @if ($row->log_kehadiran_pasien_sign)
-                        <img src="{{ $row->log_kehadiran_pasien_sign }}" class="img-ttd">
+                        <img src="{{ $row->log_kehadiran_pasien_sign }}" class="img-ttd"><br>
                         <span style="font-size: 7px;" class="text-muted">{{ date('d/m/Y H:i', strtotime($row->log_kehadiran_pasien_time)) }}</span>
                         @else
                         <span class="text-danger">Belum</span>

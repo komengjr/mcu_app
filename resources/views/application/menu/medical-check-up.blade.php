@@ -349,23 +349,29 @@
 <script>
     $(document).on("click", "#button-proses-check-up", function(e) {
         e.preventDefault();
-        var code = $(this).data("code");
-        $('#menu-mcu').html(
-            '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
-        );
+        const code = $(this).data("code");
+        const $targetDiv = $('#menu-mcu');
+
+        $targetDiv.html(`
+        <div class="d-flex justify-content-center my-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `);
+
         $.ajax({
             url: "{{ route('medical_check_up_detail') }}",
             type: "POST",
-            cache: false,
             data: {
                 "_token": "{{ csrf_token() }}",
                 "code": code
             },
-            dataType: 'html',
+            dataType: 'html'
         }).done(function(data) {
-            $('#menu-mcu').html(data);
+            $targetDiv.html(data);
         }).fail(function() {
-            $('#menu-mcu').html('eror');
+            $targetDiv.html('<div class="alert alert-danger">Gagal memuat data. Silakan coba lagi.</div>');
         });
     });
     $(document).on("click", "#button-add-peserta-mcu", function(e) {
@@ -704,48 +710,53 @@
 <script>
     $(document).on("click", "#button-cetak-data-kehadiran-peserta-mcu", function(e) {
         e.preventDefault();
-        var page_data = document.getElementById("page_data").value;
+
+        var page_data = $("#page_data").val();
         var code = $(this).data("code");
 
-        if (page_data == "") {
-            const Toast = Swal.mixin({
+        if (!page_data) {
+            Swal.mixin({
                 toast: true,
                 position: "top-end",
                 showConfirmButton: false,
                 timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            });
-            Toast.fire({
+                timerProgressBar: true
+            }).fire({
                 icon: "error",
                 title: "Pilih Page Dulu Guys"
             });
-        } else {
-            $('#report-kehadiran-mcu').html(
-                '<div class="spinner-border my-3" style="display: block; margin-left: auto; margin-right: auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
-            );
-            $.ajax({
-                url: "{{ route('medical_check_up_prosess_cetak_absensi_mcu') }}",
-                type: "POST",
-                cache: false,
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    "code": code,
-                    "page": page_data
-                },
-                dataType: 'html',
-            }).done(function(data) {
-                $('#report-kehadiran-mcu').html(
-                    '<iframe src="data:application/pdf;base64, ' +
-                    data +
-                    '" style="width:100%; height:533px;" frameborder="0"></iframe>');
-            }).fail(function() {
-                $('#report-kehadiran-mcu').html('eror');
-            });
+            return;
         }
+
+        $('#report-kehadiran-mcu').html(
+            '<div class="spinner-border my-3 style="display: block; margin: 0 auto;" role="status"><span class="visually-hidden">Loading...</span></div>'
+        );
+
+        $.ajax({
+            url: "{{ route('medical_check_up_prosess_cetak_absensi_mcu') }}",
+            type: "POST",
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code,
+                "page": page_data
+            },
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function(response) {
+                var blob = new Blob([response], {
+                    type: 'application/pdf'
+                });
+                var pdfUrl = URL.createObjectURL(blob);
+
+                $('#report-kehadiran-mcu').html(
+                    '<iframe src="' + pdfUrl + '" style="width:100%; height:533px;" frameborder="0"></iframe>'
+                );
+            },
+            error: function() {
+                $('#report-kehadiran-mcu').html('<div class="alert alert-danger">Gagal memuat PDF report.</div>');
+            }
+        });
     });
 </script>
 <script>

@@ -195,6 +195,14 @@
                         style="z-index: 1050;"
                         aria-labelledby="dropdownMenu-{{ $datas->company_mou_code }}">
                         <li>
+                            <button class="dropdown-item text-dark" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl" id="button-tambah-peserta-mcu" data-code="{{ $datas->company_mou_code }}">
+                                <i class="fas fa-user-edit text-dark me-2"></i> Tambah Peserta Baru
+                            </button>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
                             <button class="dropdown-item text-dark" data-bs-toggle="modal" data-bs-target="#modal-mcu-xl" id="button-monitoring-peserta-all-mcu" data-code="{{ $datas->company_mou_code }}">
                                 <i class="fas fa-map-marked-alt text-info me-2"></i> Monitoring Lokasi Peserta
                             </button>
@@ -347,6 +355,88 @@
 </script>
 
 <script>
+    $(document).on("click", "#button-tambah-peserta-mcu", function(e) {
+        e.preventDefault();
+
+        var code = $(this).data("code");
+        var modalTarget = $("#modal-mcu-xl");
+
+        // Set Loading state di dalam modal body
+        modalTarget.find('.modal-content').html(
+            '<div class="text-center my-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Memuat Form Peserta...</p></div>'
+        );
+
+        $.ajax({
+            url: "{{ route('medical_check_up_modal_tambah_peserta') }}",
+            type: "POST",
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "code": code
+            },
+            success: function(response) {
+                modalTarget.find('.modal-content').html(response);
+            },
+            error: function(xhr) {
+                modalTarget.find('.modal-content').html(
+                    '<div class="modal-body text-center text-danger">Gagal memuat form. Silakan coba lagi.</div>'
+                );
+            }
+        });
+    });
+    // 2. Submit Form Tambah Peserta via AJAX
+    $(document).on("submit", "#form-tambah-peserta-mcu", function(e) {
+        e.preventDefault();
+
+        var form = $(this);
+        var btnSimpan = $("#btn-simpan-peserta");
+        var originalBtnHtml = btnSimpan.html();
+
+        // Lock button
+        btnSimpan.prop("disabled", true).html('<i class="fas fa-spinner fa-spin me-1"></i> Menyimpan...');
+
+        $.ajax({
+            url: "{{ route('medical_check_up_modal_simpan_peserta') }}",
+            type: "POST",
+            data: form.serialize(),
+            dataType: "json",
+            success: function(response) {
+                btnSimpan.prop("disabled", false).html(originalBtnHtml);
+
+                if (response.status === 'success') {
+                    $("#modal-mcu-xl").modal("hide");
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(function() {
+                        // Reload DataTables / halaman jika ada
+                        if (typeof tablePeserta !== 'undefined') {
+                            tablePeserta.ajax.reload(null, false);
+                        } else {
+                            location.reload();
+                        }
+                    });
+                }
+            },
+            error: function(xhr) {
+                btnSimpan.prop("disabled", false).html(originalBtnHtml);
+
+                var errorMessage = "Terjadi kesalahan pada sistem.";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Simpan!',
+                    text: errorMessage
+                });
+            }
+        });
+    });
     $(document).on("click", "#button-proses-check-up", function(e) {
         e.preventDefault();
         const code = $(this).data("code");

@@ -149,6 +149,8 @@ Route::prefix('application')->group(function () {
     Route::get('monitoring-mcu/rekap-full/download-excel/{code}', [ApplicationController::class, 'monitoring_mcu_rekap_download_excel_code'])->name('monitoring_mcu_rekap_download_excel_code');
 
 
+    Route::post('medical-check-up/tambah-peserta-baru', [ApplicationController::class, 'medical_check_up_modal_tambah_peserta'])->name('medical_check_up_modal_tambah_peserta');
+    Route::post('medical-check-up/simpan-peserta-baru', [ApplicationController::class, 'medical_check_up_modal_simpan_peserta'])->name('medical_check_up_modal_simpan_peserta');
     Route::post('medical-check-up/detail', [ApplicationController::class, 'medical_check_up_detail'])->name('medical_check_up_detail');
     Route::get('medical-check-up/detail-data/{id}', [ApplicationController::class, 'medical_check_up_detail_data'])->name('medical_check_up_detail_data');
     Route::post('medical-check-up/add-peserta', [ApplicationController::class, 'medical_check_up_add_pesertal'])->name('medical_check_up_add_pesertal');

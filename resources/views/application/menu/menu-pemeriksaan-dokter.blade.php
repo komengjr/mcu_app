@@ -176,29 +176,33 @@
                     <!-- Input Vital Sign -->
                     <h6 class="fw-bold text-primary mb-3"><i class="fas fa-heartbeat me-1"></i>Tanda-Tanda Vital</h6>
                     <div class="row g-3 mb-4">
-                        <div class="col-md-4">
+                        <div class="col-md-3 col-sm-6">
                             <label class="form-label fw-semibold">Tinggi Badan (cm) <span class="text-danger">*</span></label>
                             <input type="number" step="0.1" class="form-control" name="tinggi_badan" id="inp_tinggi" placeholder="misal: 170" required>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3 col-sm-6">
                             <label class="form-label fw-semibold">Berat Badan (kg) <span class="text-danger">*</span></label>
                             <input type="number" step="0.1" class="form-control" name="berat_badan" id="inp_berat" placeholder="misal: 65.5" required>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3 col-sm-6">
                             <label class="form-label fw-semibold">Tekanan Darah (mmHg) <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="tensi" id="inp_tensi" placeholder="Contoh: 120/80" required>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3 col-sm-6">
                             <label class="form-label fw-semibold">Denyut Nadi (x/menit)</label>
                             <input type="number" class="form-control" name="nadi" id="inp_nadi" placeholder="80">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 col-sm-6">
                             <label class="form-label fw-semibold">Laju Pernapasan (x/menit)</label>
                             <input type="number" class="form-control" name="respirasi" id="inp_respirasi" placeholder="18">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 col-sm-6">
                             <label class="form-label fw-semibold">Suhu Tubuh (°C)</label>
                             <input type="number" step="0.1" class="form-control" name="suhu" id="inp_suhu" placeholder="36.5">
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <label class="form-label fw-semibold">SpO2 (%)</label>
+                            <input type="number" min="0" max="100" class="form-control" name="spo2" id="inp_spo2" placeholder="98">
                         </div>
                     </div>
 

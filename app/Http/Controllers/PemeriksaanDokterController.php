@@ -163,6 +163,7 @@ class PemeriksaanDokterController extends Controller
             'nadi'             => 'nullable|numeric',
             'respirasi'        => 'nullable|numeric',
             'suhu'             => 'nullable|numeric',
+            'spo2'             => 'nullable|numeric|between:0,100',
             'catatan_dokter'   => 'nullable|string',
             'kesimpulan'       => 'required|string',
         ]);
@@ -182,9 +183,10 @@ class PemeriksaanDokterController extends Controller
             'nadi_hr'          => $request->input('nadi'),
             'rr_nafas'         => $request->input('respirasi'),
             'suhu'             => $request->input('suhu'),
+            'spo2'             => $request->input('spo2'),
             'catatan_dokter'   => $request->input('catatan_dokter'),
             'kesimpulan'       => $request->input('kesimpulan'),
-            'pemeriksa'        => Auth::user()->fullname,
+            'pemeriksa'        => Auth::user()->fullname ?? Auth::user()->name,
             'dokter_penginput' => Auth::user()->fullname ?? Auth::user()->name,
             'updated_at'       => now(),
         ];

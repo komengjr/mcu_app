@@ -289,7 +289,7 @@ return ['label' => 'Prehipertensi', 'color' => '#b7791f', 'bg' => '#fefcbf'];
                                     </td>
                                     <td><strong>{{ $detail->nadi_hr ?? '-' }}</strong> <small>bpm</small></td>
                                     <td><strong>{{ $detail->suhu ?? '-' }}</strong> <small>°C</small></td>
-                                    <td><strong>{{ $detail->spo2 ?? '-' }}</strong> <small>%</small></td>
+                                    <td><strong>{{ $detail->rr_nafas ?? '-' }}</strong> <small>%</small></td>
                                     <td>
                                         <strong>{{ $detail->berat_badan ?? '-' }}</strong> <small>kg</small> / <strong>{{ $detail->tinggi_badan ?? '-' }}</strong> <small>cm</small>
                                         @if($bmiData)

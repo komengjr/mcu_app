@@ -44,7 +44,7 @@
                 <label for="filter_company" class="form-label fw-medium text-secondary">Pilih Perusahaan <span class="text-danger">*</span></label>
                 <select class="form-select" id="filter_company" name="master_company_code">
                     <option value="">-- Pilih Perusahaan --</option>
-                    @foreach($companies as $company)
+                    @foreach($companies as$company)
                     <option value="{{ $company->master_company_code }}">{{ $company->master_company_name }}</option>
                     @endforeach
                 </select>
@@ -147,6 +147,97 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Form Input/Edit Pemeriksaan -->
+<div class="modal fade" id="modalPemeriksaan" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title text-white"><i class="fas fa-user-md me-2"></i>Form Edit Pemeriksaan Fisik & Vital Sign</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="formInputPemeriksaan" class="d-flex flex-column" style="min-height: 0;">
+                @csrf
+                <input type="hidden" name="mou_peserta_code" id="modal_peserta_code">
+
+                <div class="modal-body p-4">
+                    <!-- Bio Peserta -->
+                    <div class="alert alert-primary bg-light-primary border-primary rounded-3 mb-3 p-3">
+                        <div class="row text-dark">
+                            <div class="col-md-6">
+                                <strong>Nama:</strong> <span id="bio_nama">-</span><br>
+                                <strong>NIP / NIK:</strong> <span id="bio_nip">-</span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Departemen:</strong> <span id="bio_dept">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Vital Sign -->
+                    <h6 class="fw-bold text-primary mb-3"><i class="fas fa-heartbeat me-1"></i>Tanda-Tanda Vital</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3 col-sm-6">
+                            <label class="form-label fw-semibold">Tinggi Badan (cm) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.1" class="form-control" name="tinggi_badan" id="inp_tinggi" placeholder="170" required>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <label class="form-label fw-semibold">Berat Badan (kg) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.1" class="form-control" name="berat_badan" id="inp_berat" placeholder="65.5" required>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <label class="form-label fw-semibold">Tekanan Darah (mmHg) <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="tensi" id="inp_tensi" placeholder="120/80" required>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <label class="form-label fw-semibold">Denyut Nadi (x/m)</label>
+                            <input type="number" class="form-control" name="nadi" id="inp_nadi" placeholder="80">
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <label class="form-label fw-semibold">Laju Pernapasan (x/m)</label>
+                            <input type="number" class="form-control" name="respirasi" id="inp_respirasi" placeholder="18">
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <label class="form-label fw-semibold">Suhu Tubuh (°C)</label>
+                            <input type="number" step="0.1" class="form-control" name="suhu" id="inp_suhu" placeholder="36.5">
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <label class="form-label fw-semibold">SpO2 (%)</label>
+                            <input type="number" min="0" max="100" class="form-control" name="spo2" id="inp_spo2" placeholder="98">
+                        </div>
+                    </div>
+
+                    <!-- Input Dokter -->
+                    <h6 class="fw-bold text-primary mb-3"><i class="fas fa-stethoscope me-1"></i>Catatan & Kesimpulan Medis</h6>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Catatan Fisik Tambahan</label>
+                            <textarea class="form-control" name="catatan_dokter" id="inp_catatan" rows="3" placeholder="Catatan kelainan / temuan fisik..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Kesimpulan Medis <span class="text-danger">*</span></label>
+                            <select class="form-select" name="kesimpulan" id="inp_kesimpulan" required>
+                                <option value="">-- Pilih Kesimpulan --</option>
+                                <option value="Fit">Fit (Sehat / Laik Kerja)</option>
+                                <option value="Fit with Note">Fit with Note (Laik Kerja dengan Catatan)</option>
+                                <option value="Temporary Unfit">Temporary Unfit (Tidak Laik Sementara)</option>
+                                <option value="Unfit">Unfit (Tidak Laik Kerja)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-top p-3">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary fw-bold" id="btnSavePemeriksaan">
+                        <i class="fas fa-save me-1"></i> Simpan Perubahan
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -259,7 +350,6 @@
             let mouCode = $('#filter_mou').val();
 
             if (dokterPenginput && mouCode) {
-                // Set Link URL Cetak Rekap PDF
                 let printRekapUrl = "{{ route('laporan.pemeriksaan.print_rekap_pdf') }}" + "?mou_code=" + mouCode + "&dokter_penginput=" + dokterPenginput;
                 $('#btn_print_rekap').attr('href', printRekapUrl);
 
@@ -284,7 +374,6 @@
                 </tr>
             `);
 
-            // Fetch Table Data via Native AJAX
             $.ajax({
                 url: "{{ route('laporan.pemeriksaan.get_data') }}",
                 type: "GET",
@@ -327,7 +416,6 @@
                 }
             });
 
-            // Fetch Stats Summary
             $.ajax({
                 url: "{{ route('laporan.pemeriksaan.get_summary_stats') }}",
                 type: "GET",
@@ -371,6 +459,77 @@
                 },
                 error: function() {
                     $('#modal_detail_body').html('<div class="alert alert-danger">Gagal memuat detail hasil pemeriksaan dokter.</div>');
+                }
+            });
+        });
+
+        // Event Transisi saat Tombol Edit diklik di dalam Modal Detail
+        $(document).on('click', '.btn-edit-pemeriksaan', function() {
+            let data = $(this).data('json');
+
+            if (!data) {
+                console.error('Data JSON tidak ditemukan pada tombol!');
+                return;
+            }
+
+            if (typeof data === 'string') {
+                data = JSON.parse(data);
+            }
+
+            // Populate data ke form modal
+            $('#modal_peserta_code').val(data.mou_peserta_code);
+            $('#bio_nama').text(data.mou_peserta_name || '-');
+            $('#bio_nip').text((data.mou_peserta_nip || '-') + ' / ' + (data.mou_peserta_nik || '-'));
+            $('#bio_dept').text(data.mou_peserta_departemen || '-');
+
+            $('#inp_tinggi').val(data.tinggi_badan);
+            $('#inp_berat').val(data.berat_badan);
+            $('#inp_tensi').val(data.tensi);
+            $('#inp_nadi').val(data.nadi_hr);
+            $('#inp_respirasi').val(data.rr_nafas);
+            $('#inp_suhu').val(data.suhu);
+            $('#inp_spo2').val(data.spo2);
+            $('#inp_catatan').val(data.catatan_dokter);
+            $('#inp_kesimpulan').val(data.kesimpulan);
+
+            // Penanganan Penutupan Modal Detail sebelum Buka Modal Edit Form
+            let $modalDetail = $('#modalDetailHasil');
+
+            if ($modalDetail.hasClass('show')) {
+                $modalDetail.one('hidden.bs.modal', function() {
+                    $('#modalPemeriksaan').modal('show');
+                });
+                $modalDetail.modal('hide');
+            } else {
+                $('#modalPemeriksaan').modal('show');
+            }
+        });
+
+        // Handling Submit Form Edit / Simpan Data
+        $('#formInputPemeriksaan').on('submit', function(e) {
+            e.preventDefault();
+
+            let btnSave = $('#btnSavePemeriksaan');
+            btnSave.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...');
+
+            $.ajax({
+                url: "{{ route('laporan.pemeriksaan.store') }}", // Sesuaikan dengan nama route store Anda
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    btnSave.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Simpan Perubahan');
+                    $('#modalPemeriksaan').modal('hide');
+
+                    // Refresh data tabel & statistik
+                    let mouCode = $('#filter_mou').val();
+                    let dokterPenginput = $('#filter_dokter').val();
+                    if (mouCode && dokterPenginput) {
+                        loadPemeriksaanData(mouCode, dokterPenginput);
+                    }
+                },
+                error: function(xhr) {
+                    btnSave.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Simpan Perubahan');
+                    alert('Gagal menyimpan data: ' + (xhr.responseJSON?.message || 'Terjadi kesalahan.'));
                 }
             });
         });

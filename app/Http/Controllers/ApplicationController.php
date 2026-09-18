@@ -4764,62 +4764,126 @@ class ApplicationController extends Controller
             return response()->json('<div class="alert alert-warning">Data hasil pemeriksaan tidak ditemukan.</div>', 404);
         }
 
+        // Wrap data dalam array/object yang bersih
+        $jsonData = e(json_encode([
+            'mou_peserta_code'       => $detail->mou_peserta_code,
+            'mou_peserta_name'       => $detail->mou_peserta_name,
+            'mou_peserta_nip'        => $detail->mou_peserta_nip ?? '-',
+            'mou_peserta_nik'        => $detail->mou_peserta_nik ?? '-',
+            'mou_peserta_departemen' => $detail->mou_peserta_departemen ?? '-',
+            'tinggi_badan'           => $detail->tinggi_badan,
+            'berat_badan'            => $detail->berat_badan,
+            'tensi'                  => $detail->tensi,
+            'nadi_hr'                => $detail->nadi_hr,
+            'rr_nafas'               => $detail->rr_nafas,
+            'suhu'                   => $detail->suhu,
+            'spo2'                   => $detail->spo2,
+            'catatan_dokter'         => $detail->catatan_dokter,
+            'kesimpulan'             => $detail->kesimpulan,
+        ]));
+
         return response()->json("
-            <div class='row g-3'>
-                <div class='col-md-6'>
-                    <small class='text-muted d-block'>Nama Peserta</small>
-                    <strong>{$detail->mou_peserta_name}</strong>
-                </div>
-                <div class='col-md-6'>
-                    <small class='text-muted d-block'>NIP / NIK</small>
-                    <strong>{$detail->mou_peserta_nip} / {$detail->mou_peserta_nik}</strong>
-                </div>
-                <div class='col-md-6'>
-                    <small class='text-muted d-block'>Departemen</small>
-                    <strong>{$detail->mou_peserta_departemen}</strong>
-                </div>
-                <div class='col-md-6'>
-                    <small class='text-muted d-block'>Dokter Penginput</small>
-                    <strong>" . ($detail->dokter_penginput ?? '-') . "</strong>
-                </div>
-
-                <hr class='my-3'>
-
-                <div class='col-md-3'>
-                    <small class='text-muted d-block'>Tensi</small>
-                    <strong>" . ($detail->tensi ?? '-') . " mmHg</strong>
-                </div>
-                <div class='col-md-3'>
-                    <small class='text-muted d-block'>Nadi (HR)</small>
-                    <strong>" . ($detail->nadi_hr ?? '-') . " bpm</strong>
-                </div>
-                <div class='col-md-3'>
-                    <small class='text-muted d-block'>Suhu</small>
-                    <strong>" . ($detail->suhu ?? '-') . " °C</strong>
-                </div>
-                <div class='col-md-3'>
-                    <small class='text-muted d-block'>SpO2</small>
-                    <strong>" . ($detail->spo2 ?? '-') . " %</strong>
-                </div>
-                <div class='col-md-3'>
-                    <small class='text-muted d-block'>BB / TB</small>
-                    <strong>" . ($detail->berat_badan ?? '-') . " kg / " . ($detail->tinggi_badan ?? '-') . " cm</strong>
-                </div>
-                <div class='col-md-3'>
-                    <small class='text-muted d-block'>RR (Nafas)</small>
-                    <strong>" . ($detail->rr_nafas ?? '-') . " x/menit</strong>
-                </div>
-                <div class='col-md-6'>
-                    <small class='text-muted d-block'>Kesimpulan</small>
-                    <span class='badge bg-primary fs-6'>" . ($detail->kesimpulan ?? '-') . "</span>
-                </div>
-
-                <div class='col-md-12 mt-2'>
-                    <small class='text-muted d-block mb-1'>Catatan Dokter</small>
-                    <div class='p-3 bg-light rounded-2 border'>" . nl2br(e($detail->catatan_dokter ?? 'Tidak ada catatan.')) . "</div>
-                </div>
+        <div class='row g-3'>
+            <div class='col-md-6'>
+                <small class='text-muted d-block'>Nama Peserta</small>
+                <strong>{$detail->mou_peserta_name}</strong>
             </div>
-        ");
+            <div class='col-md-6'>
+                <small class='text-muted d-block'>NIP / NIK</small>
+                <strong>" . ($detail->mou_peserta_nip ?? '-') . " / " . ($detail->mou_peserta_nik ?? '-') . "</strong>
+            </div>
+            <div class='col-md-6'>
+                <small class='text-muted d-block'>Departemen</small>
+                <strong>" . ($detail->mou_peserta_departemen ?? '-') . "</strong>
+            </div>
+            <div class='col-md-6'>
+                <small class='text-muted d-block'>Dokter Penginput</small>
+                <strong>" . ($detail->dokter_penginput ?? '-') . "</strong>
+            </div>
+
+            <hr class='my-3'>
+
+            <div class='col-md-3'>
+                <small class='text-muted d-block'>Tensi</small>
+                <strong>" . ($detail->tensi ?? '-') . " mmHg</strong>
+            </div>
+            <div class='col-md-3'>
+                <small class='text-muted d-block'>Nadi (HR)</small>
+                <strong>" . ($detail->nadi_hr ?? '-') . " bpm</strong>
+            </div>
+            <div class='col-md-3'>
+                <small class='text-muted d-block'>Suhu</small>
+                <strong>" . ($detail->suhu ?? '-') . " °C</strong>
+            </div>
+            <div class='col-md-3'>
+                <small class='text-muted d-block'>SpO2</small>
+                <strong>" . ($detail->spo2 ?? '-') . " %</strong>
+            </div>
+            <div class='col-md-3'>
+                <small class='text-muted d-block'>BB / TB</small>
+                <strong>" . ($detail->berat_badan ?? '-') . " kg / " . ($detail->tinggi_badan ?? '-') . " cm</strong>
+            </div>
+            <div class='col-md-3'>
+                <small class='text-muted d-block'>RR (Nafas)</small>
+                <strong>" . ($detail->rr_nafas ?? '-') . " x/menit</strong>
+            </div>
+            <div class='col-md-6'>
+                <small class='text-muted d-block'>Kesimpulan</small>
+                <span class='badge bg-primary fs-6'>" . ($detail->kesimpulan ?? '-') . "</span>
+            </div>
+
+            <div class='col-md-12 mt-2'>
+                <small class='text-muted d-block mb-1'>Catatan Dokter</small>
+                <div class='p-3 bg-light rounded-2 border'>" . nl2br(e($detail->catatan_dokter ?? 'Tidak ada catatan.')) . "</div>
+            </div>
+
+            <!-- Tombol Edit Data -->
+            <div class='col-12 text-end mt-3 pt-2 border-top'>
+                <button type='button' class='btn btn-warning text-dark fw-bold btn-edit-pemeriksaan' data-json='{$jsonData}'>
+                    <i class='fas fa-edit me-1'></i> Edit Data Pemeriksaan
+                </button>
+            </div>
+        </div>
+    ");
+    }
+    public function store(Request $request)
+    {
+        $request->validate([
+            'mou_peserta_code' => 'required',
+            'tinggi_badan'     => 'required|numeric',
+            'berat_badan'      => 'required|numeric',
+            'tensi'            => 'required|string',
+            'kesimpulan'       => 'required|string',
+        ]);
+
+        try {
+            DB::table('company_mou_pemeriksaan_doc')
+                ->updateOrInsert(
+                    ['mou_peserta_code' => $request->mou_peserta_code],
+                    [
+                        'tinggi_badan'   => $request->tinggi_badan,
+                        'berat_badan'    => $request->berat_badan,
+                        'tensi'          => $request->tensi,
+                        'nadi_hr'        => $request->nadi,
+                        'rr_nafas'       => $request->respirasi,
+                        'suhu'           => $request->suhu,
+                        'spo2'           => $request->spo2,
+                        'catatan_dokter' => $request->catatan_dokter,
+                        'kesimpulan'     => $request->kesimpulan,
+                        'updated_at'     => now(),
+                    ]
+                );
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Data hasil pemeriksaan berhasil diperbarui.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal menyimpan data: ' . $e->getMessage()
+            ], 500);
+        }
     }
     // 2. Cetak Rekap PDF (Bisa Per Dokter / Semua Dokter)
     public function printRekapPdf(Request $request)

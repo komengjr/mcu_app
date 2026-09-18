@@ -409,6 +409,7 @@ Route::prefix('laporan-pemeriksaan')->name('laporan.pemeriksaan.')->middleware([
     Route::get('/get-data', [ApplicationController::class, 'getData'])->name('get_data');
     Route::get('/get-summary-stats', [ApplicationController::class, 'getSummaryStatsPem'])->name('get_summary_stats');
     Route::get('/get-detail', [ApplicationController::class, 'getDetail'])->name('get_detail');
+    Route::post('/store', [ApplicationController::class, 'store'])->name('store');
     // Route Tambahan Cetak PDF
     Route::get('/print-rekap-pdf', [ApplicationController::class, 'printRekapPdf'])->name('print_rekap_pdf');
     Route::get('/print-perorangan-pdf/{peserta_code}', [ApplicationController::class, 'printPeroranganPdf'])->name('print_perorangan_pdf');

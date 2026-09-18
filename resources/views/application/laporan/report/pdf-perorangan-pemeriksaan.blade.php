@@ -283,7 +283,7 @@ return ['label' => 'Prehipertensi', 'color' => '#b7791f', 'bg' => '#fefcbf'];
                                         @if($jnc7)
                                         <br>
                                         <span class="status-badge" style="background-color: {{ $jnc7['bg'] }}; color: {{ $jnc7['color'] }}; border-color: {{ $jnc7['color'] }};">
-                                            {{ $jnc7['label'] }} (JNC 7)
+                                            {{ $jnc7['label'] }}
                                         </span>
                                         @endif
                                     </td>
@@ -316,7 +316,7 @@ return ['label' => 'Prehipertensi', 'color' => '#b7791f', 'bg' => '#fefcbf'];
                         <div class="footer-ttd">
                             <div class="ttd-box">
                                 <div class="ttd-date">
-                                    Dicetak pada: {{ date('d F Y') }}
+                                    <!-- Dicetak pada: {{ date('d F Y') }} -->
                                 </div>
                                 <div>Dokter Pemeriksa,</div>
                                 <div class="ttd-space"></div>

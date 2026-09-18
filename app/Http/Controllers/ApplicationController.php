@@ -1455,7 +1455,7 @@ class ApplicationController extends Controller
 
         try {
             // Generate Mou Peserta Code unik
-            $mou_peserta_code = $request->company_mou_code . date('YmdHis') . rand(100, 999);
+            $mou_peserta_code = $request->company_mou_code . date('His') . rand(100, 999);
 
             // 2. Insert HANYA ke tabel company_mou_peserta
             DB::table('company_mou_peserta')->insert([
@@ -4866,7 +4866,7 @@ class ApplicationController extends Controller
         }
 
         $pdf = Pdf::loadView('application.laporan.report.pdf-perorangan-pemeriksaan', compact('detail'))
-            ->setPaper('a4', 'portrait');
+            ->setPaper('a4', 'portrait')->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true]);
 
         return $pdf->stream('Hasil_Pemeriksaan_' . $detail->mou_peserta_name . '.pdf');
     }

@@ -84,6 +84,7 @@ Route::prefix('{akses}/application')->group(function () {
     Route::get('laporan/laporan-data-omset', [ApplicationController::class, 'laporan_data_omset'])->name('laporan_data_omset');
     Route::get('laporan/laporan-pengisian-form', [ApplicationController::class, 'laporan_pengisian_form'])->name('laporan_pengisian_form');
     Route::get('laporan/hasil-pemeriksaan-dokter', [ApplicationController::class, 'laporan_hasil_pemeriksaan_dokter'])->name('laporan_hasil_pemeriksaan_dokter');
+    Route::get('laporan/laporan-hasil-fisik-umum', [ApplicationController::class, 'laporan_hasil_fisik_umum'])->name('laporan_hasil_fisik_umum');
 
     // Management Master Form
     Route::get('master-data/master-form', [MasterMcuFormController::class, 'index'])->name('forms.index');
@@ -433,6 +434,20 @@ Route::middleware(['auth'])->prefix('pemeriksaan-fisik')->name('pemeriksaan_fisi
     Route::get('/get-detail', [PemeriksaanFisikController::class, 'getDetail'])->name('get_detail');
     Route::post('/store', [PemeriksaanFisikController::class, 'store'])->name('store');
 });
+
+use App\Http\Controllers\LaporanHasilFisikUmumController;
+
+Route::middleware(['auth'])->prefix('laporan/fisik-umum')->name('laporan.fisik_umum.')->group(function () {
+    Route::get('/get-mou', [LaporanHasilFisikUmumController::class, 'getMou'])->name('get_mou');
+    Route::get('/get-peserta', [LaporanHasilFisikUmumController::class, 'getPeserta'])->name('get_peserta');
+    Route::get('/get-data', [LaporanHasilFisikUmumController::class, 'getData'])->name('get_data');
+    Route::get('/get-summary-stats', [LaporanHasilFisikUmumController::class, 'getSummaryStats'])->name('get_summary_stats');
+    Route::get('/get-detail', [LaporanHasilFisikUmumController::class, 'getDetail'])->name('get_detail');
+    Route::post('/store', [LaporanHasilFisikUmumController::class, 'store'])->name('store');
+    Route::get('/print-rekap-pdf', [LaporanHasilFisikUmumController::class, 'printRekapPdf'])->name('print_rekap_pdf');
+    Route::get('/print-perorangan-pdf/{peserta_code}', [LaporanHasilFisikUmumController::class, 'printPeroranganPdf'])->name('print_perorangan_pdf');
+});
+
 Route::prefix('v3')->name('mcu.')->group(function () {
     Route::get('/display/{cabang}/{code}', [AntrianController::class, 'index'])->name('display');
     Route::get('/display-data/{cabang}/{code}', [AntrianController::class, 'getDisplayData'])->name('display.data');

@@ -361,7 +361,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-3">
-                <label class="form-label fs-7 fw-semibold mb-1">Pilih Status Odontogram:</label>
+                <label class="form-label fs--2 fw-semibold mb-1">Pilih Status Odontogram:</label>
                 <select class="form-select form-select-sm mb-3" id="sel_kode_gigi">
                     <option value="">-- Normal / Sehat --</option>
                     <option value="CAR">CAR - Karies / Berlubang</option>

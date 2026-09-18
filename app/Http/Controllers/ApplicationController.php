@@ -4950,4 +4950,17 @@ class ApplicationController extends Controller
 
         return $pdf->stream('Hasil_Pemeriksaan_' . $detail->mou_peserta_name . '.pdf');
     }
+    // LAPORAN HASIL FISIK
+    public function laporan_hasil_fisik_umum($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            // 1. Ambil daftar cabang dari tabel master_cabang
+            $companies = DB::table('master_company')
+                ->select('master_company_code', 'master_company_name')
+                ->get();
+            return view('application.laporan.laporan-hasil-fisik-umum', compact('companies'));
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
 }

@@ -1,6 +1,8 @@
 @extends('layouts.template')
 
 @section('base.css')
+<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.4/css/responsive.bootstrap5.css">
 <link href="{{ asset('vendors/choices/choices.min.css') }}" rel="stylesheet" />
 <style>
     .card-stat {
@@ -21,6 +23,19 @@
     .bg-light-primary {
         background-color: #cfe2ff;
         color: #084298;
+    }
+
+    /* Penyesuaian Scroll Modal */
+    #modalPemeriksaan .modal-body {
+        max-height: calc(100vh - 210px);
+        overflow-y: auto;
+    }
+
+    #modalPemeriksaan .modal-footer {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        background-color: #f8f9fa;
     }
 </style>
 @endsection
@@ -111,8 +126,23 @@
     </div>
 
     <div class="card-body p-4">
+        <!-- Filter Spesifik DataTables: Filter Tanggal Periksa -->
+        <div class="row mb-3 align-items-end">
+            <div class="col-md-4">
+                <label for="filter_tgl_periksa" class="form-label fw-medium text-secondary fs--1">
+                    <i class="fas fa-calendar-alt me-1"></i>Filter Tanggal Periksa
+                </label>
+                <div class="input-group input-group-sm">
+                    <input type="date" id="filter_tgl_periksa" class="form-control">
+                    <button class="btn btn-outline-secondary" type="button" id="btn_reset_tgl" title="Reset Tanggal">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="table-responsive">
-            <table id="table_hasil_pemeriksaan" class="table table-striped table-bordered align-middle w-100">
+            <table id="table_hasil_pemeriksaan" class="table table-striped table-bordered dt-responsive nowrap align-middle w-100">
                 <thead class="table-light">
                     <tr>
                         <th width="5%" class="text-center">No</th>
@@ -124,9 +154,7 @@
                         <th width="18%" class="text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Processed via AJAX Native -->
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>
@@ -245,10 +273,16 @@
 
 @section('base.js')
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
+<script src="https://cdn.datatables.net/responsive/3.0.4/js/dataTables.responsive.js"></script>
+<script src="https://cdn.datatables.net/responsive/3.0.4/js/responsive.bootstrap5.js"></script>
 <script src="{{ asset('vendors/choices/choices.min.js') }}"></script>
 
 <script>
     $(document).ready(function() {
+        let tableDataTables = null;
+
         let companyChoices = new Choices('#filter_company', {
             searchEnabled: true,
             itemSelectText: ''
@@ -359,63 +393,95 @@
             }
         });
 
+        // 4. Filter Tambahan Tanggal Periksa
+        $('#filter_tgl_periksa').on('change', function() {
+            if (tableDataTables) {
+                tableDataTables.ajax.reload();
+            }
+        });
+
+        $('#btn_reset_tgl').on('click', function() {
+            $('#filter_tgl_periksa').val('');
+            if (tableDataTables) {
+                tableDataTables.ajax.reload();
+            }
+        });
+
         function loadPemeriksaanData(mouCode, dokterPenginput) {
             $('#stats_container').removeClass('d-none');
             $('#content_container').removeClass('d-none');
 
-            let tableBody = $('#table_hasil_pemeriksaan tbody');
-            tableBody.html(`
-                <tr>
-                    <td colspan="7" class="text-center py-4">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </td>
-                </tr>
-            `);
+            if ($.fn.DataTable.isDataTable('#table_hasil_pemeriksaan')) {
+                $('#table_hasil_pemeriksaan').DataTable().destroy();
+            }
 
-            $.ajax({
-                url: "{{ route('laporan.pemeriksaan.get_data') }}",
-                type: "GET",
-                data: {
-                    mou_code: mouCode,
-                    dokter_penginput: dokterPenginput
-                },
-                success: function(response) {
-                    tableBody.empty();
-
-                    if (!response.data || response.data.length === 0) {
-                        tableBody.html(`
-                            <tr>
-                                <td colspan="7" class="text-center text-muted py-3">Tidak ada data pemeriksaan ditemukan.</td>
-                            </tr>
-                        `);
-                        return;
+            tableDataTables = $('#table_hasil_pemeriksaan').DataTable({
+                processing: true,
+                serverSide: false,
+                language: {
+                    search: "Cari Pasien / NIP / NIK:",
+                    searchPlaceholder: "Nama Pasien, NIP, NIK...",
+                    lengthMenu: "Tampilkan _MENU_ data",
+                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ pemeriksaan",
+                    infoEmpty: "Tidak ada data pemeriksaan",
+                    infoFiltered: "(disaring dari _MAX_ total data)",
+                    zeroRecords: "Data hasil pemeriksaan tidak ditemukan",
+                    paginate: {
+                        first: "Awal",
+                        last: "Akhir",
+                        next: "Lanjut",
+                        previous: "Kembali"
                     }
-
-                    $.each(response.data, function(index, item) {
-                        tableBody.append(`
-                            <tr>
-                                <td class="text-center">${item.no}</td>
-                                <td>${item.nip_nik}</td>
-                                <td>${item.nama_pasien}</td>
-                                <td>${item.tgl_pemeriksaan}</td>
-                                <td>${item.dokter_penginput}</td>
-                                <td class="text-center">${item.kesimpulan}</td>
-                                <td class="text-center">${item.action}</td>
-                            </tr>
-                        `);
-                    });
                 },
-                error: function() {
-                    tableBody.html(`
-                        <tr>
-                            <td colspan="7" class="text-center text-danger py-3">Gagal mengambil data pemeriksaan.</td>
-                        </tr>
-                    `);
-                }
+                ajax: {
+                    url: "{{ route('laporan.pemeriksaan.get_data') }}",
+                    type: "GET",
+                    data: function(d) {
+                        d.mou_code = mouCode;
+                        d.dokter_penginput = dokterPenginput;
+                        d.tgl_pemeriksaan = $('#filter_tgl_periksa').val(); // Kirim filter tanggal ke backend
+                    }
+                },
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'nip_nik',
+                        name: 'nip_nik'
+                    },
+                    {
+                        data: 'nama_pasien',
+                        name: 'nama_pasien',
+                        className: 'fw-semibold'
+                    },
+                    {
+                        data: 'tgl_pemeriksaan',
+                        name: 'tgl_pemeriksaan'
+                    },
+                    {
+                        data: 'dokter_penginput',
+                        name: 'dokter_penginput'
+                    },
+                    {
+                        data: 'kesimpulan',
+                        name: 'kesimpulan',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    }
+                ]
             });
 
+            // Summary Stats
             $.ajax({
                 url: "{{ route('laporan.pemeriksaan.get_summary_stats') }}",
                 type: "GET",
@@ -433,6 +499,10 @@
         function resetTableAndStats() {
             $('#stats_container').addClass('d-none');
             $('#content_container').addClass('d-none');
+            if ($.fn.DataTable.isDataTable('#table_hasil_pemeriksaan')) {
+                $('#table_hasil_pemeriksaan').DataTable().destroy();
+                $('#table_hasil_pemeriksaan tbody').empty();
+            }
         }
 
         // View Detail Modal Callback
@@ -513,18 +583,16 @@
             btnSave.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...');
 
             $.ajax({
-                url: "{{ route('laporan.pemeriksaan.store') }}", // Sesuaikan dengan nama route store Anda
+                url: "{{ route('laporan.pemeriksaan.store') }}",
                 type: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
                     btnSave.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Simpan Perubahan');
                     $('#modalPemeriksaan').modal('hide');
 
-                    // Refresh data tabel & statistik
-                    let mouCode = $('#filter_mou').val();
-                    let dokterPenginput = $('#filter_dokter').val();
-                    if (mouCode && dokterPenginput) {
-                        loadPemeriksaanData(mouCode, dokterPenginput);
+                    // Reload DataTables tanpa reset pagination
+                    if (tableDataTables) {
+                        tableDataTables.ajax.reload(null, false);
                     }
                 },
                 error: function(xhr) {

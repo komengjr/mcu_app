@@ -3073,6 +3073,18 @@ class ApplicationController extends Controller
             return Redirect::to('dashboard/home');
         }
     }
+    // PEMERIKSAAN FISIK UMUM
+    public function menu_pemeriksaan_fisik_umum($akses)
+    {
+        if ($this->url_akses($akses) == true) {
+            // Query disesuaikan ke tabel master_company
+            $companies = DB::table('master_company')
+                ->get();
+            return view('application.menu.menu-pemeriksaan-fisik-umum', compact('companies'));
+        } else {
+            return Redirect::to('dashboard/home');
+        }
+    }
     // COMPANY MASTER
     public function master_company($akses)
     {
@@ -4695,6 +4707,10 @@ class ApplicationController extends Controller
             $query->where('company_mou_pemeriksaan_doc.dokter_penginput', $request->dokter_penginput);
         }
 
+        if ($request->tgl_pemeriksaan) {
+            $query->whereDate('company_mou_pemeriksaan_doc.created_at', $request->tgl_pemeriksaan);
+        }
+
         $data = $query->orderBy('company_mou_pemeriksaan_doc.created_at', 'desc')->get();
 
         $formattedData = $data->map(function ($item, $index) {
@@ -4713,19 +4729,19 @@ class ApplicationController extends Controller
             $urlPrintPerorangan = route('laporan.pemeriksaan.print_perorangan_pdf', $item->mou_peserta_code);
 
             return [
-                'no' => $index + 1,
+                'DT_RowIndex' => $index + 1, // Ubah 'no' menjadi 'DT_RowIndex'
                 'nip_nik' => ($item->mou_peserta_nip ?? '-') . ' / ' . ($item->mou_peserta_nik ?? '-'),
                 'nama_pasien' => $item->mou_peserta_name,
                 'tgl_pemeriksaan' => date('d/m/Y H:i', strtotime($item->created_at)),
                 'dokter_penginput' => $item->dokter_penginput ?? '-',
                 'kesimpulan' => $badge,
                 'action' => '
-                <button class="btn btn-sm btn-info btn-view-detail" data-peserta-code="' . $item->mou_peserta_code . '">
-                    <i class="fas fa-eye me-1"></i> Detail
-                </button>
-                <a href="' . $urlPrintPerorangan . '" target="_blank" class="btn btn-sm btn-danger ms-1">
-                    <i class="fas fa-file-pdf me-1"></i> Cetak PDF
-                </a>'
+            <button class="btn btn-sm btn-info btn-view-detail" data-peserta-code="' . $item->mou_peserta_code . '">
+                <i class="fas fa-eye me-1"></i> Detail
+            </button>
+            <a href="' . $urlPrintPerorangan . '" target="_blank" class="btn btn-sm btn-danger ms-1">
+                <i class="fas fa-file-pdf me-1"></i> Cetak PDF
+            </a>'
             ];
         });
 

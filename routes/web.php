@@ -67,6 +67,7 @@ Route::prefix('{akses}/application')->group(function () {
 
     Route::get('upload-data-omset', [ApplicationController::class, 'upload_data_omset'])->name('upload_data_omset');
     Route::get('menu/pemeriksaan-dokter', [ApplicationController::class, 'menu_pemeriksaan_dokter'])->name('menu_pemeriksaan_dokter');
+    Route::get('menu/pemeriksaan-fisik-umum', [ApplicationController::class, 'menu_pemeriksaan_fisik_umum'])->name('menu_pemeriksaan_fisik_umum');
 
 
     Route::get('master-company', [ApplicationController::class, 'master_company'])->name('master_company');
@@ -421,6 +422,16 @@ Route::prefix('pemeriksaan-dokter')->name('pemeriksaan.')->group(function () {
     Route::get('/get-summary-stats', [PemeriksaanDokterController::class, 'getSummaryStats'])->name('get_summary_stats');
     Route::get('/get-detail', [PemeriksaanDokterController::class, 'getDetail'])->name('get_detail');
     Route::post('/store', [PemeriksaanDokterController::class, 'store'])->name('store');
+});
+
+use App\Http\Controllers\PemeriksaanFisikController;
+
+Route::middleware(['auth'])->prefix('pemeriksaan-fisik')->name('pemeriksaan_fisik.')->group(function () {
+    Route::get('/get-mou', [PemeriksaanFisikController::class, 'getMou'])->name('get_mou');
+    Route::get('/get-participants', [PemeriksaanFisikController::class, 'getParticipants'])->name('get_participants');
+    Route::get('/get-summary-stats', [PemeriksaanFisikController::class, 'getSummaryStats'])->name('get_summary_stats');
+    Route::get('/get-detail', [PemeriksaanFisikController::class, 'getDetail'])->name('get_detail');
+    Route::post('/store', [PemeriksaanFisikController::class, 'store'])->name('store');
 });
 Route::prefix('v3')->name('mcu.')->group(function () {
     Route::get('/display/{cabang}/{code}', [AntrianController::class, 'index'])->name('display');

@@ -64,7 +64,7 @@
                 <label for="filter_company" class="form-label fw-medium text-secondary">Pilih Perusahaan <span class="text-danger">*</span></label>
                 <select class="form-select" id="filter_company" name="company_code">
                     <option value="">-- Pilih Perusahaan --</option>
-                    @foreach($companies as $company)
+                    @foreach($companies as$company)
                     <option value="{{ $company->master_company_code }}">{{ $company->master_company_name }}</option>
                     @endforeach
                 </select>
@@ -131,12 +131,13 @@
             <table id="table_peserta" class="table table-striped table-bordered dt-responsive nowrap w-100">
                 <thead class="table-light">
                     <tr>
-                        <th width="5%">No</th>
+                        <th width="5%" class="text-center">No</th>
                         <th>NIP / NIK</th>
                         <th>Nama Peserta</th>
                         <th>Departemen</th>
-                        <th>Status Periksa</th>
-                        <th width="12%">Aksi</th>
+                        <th>Dokter Penginput</th>
+                        <th class="text-center">Status Periksa</th>
+                        <th width="12%" class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -190,19 +191,19 @@
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <label class="form-label fw-semibold">Denyut Nadi (x/menit)</label>
-                            <input type="number" class="form-control" name="nadi" id="inp_nadi" placeholder="80">
+                            <input type="number" class="form-control" name="nadi" id="inp_nadi" placeholder="80" required>
                         </div>
                         <div class="col-md-4 col-sm-6">
                             <label class="form-label fw-semibold">Laju Pernapasan (x/menit)</label>
-                            <input type="number" class="form-control" name="respirasi" id="inp_respirasi" placeholder="18">
+                            <input type="number" class="form-control" name="respirasi" id="inp_respirasi" placeholder="18" required>
                         </div>
                         <div class="col-md-4 col-sm-6">
                             <label class="form-label fw-semibold">Suhu Tubuh (°C)</label>
-                            <input type="number" step="0.1" class="form-control" name="suhu" id="inp_suhu" placeholder="36.5">
+                            <input type="number" step="0.1" class="form-control" name="suhu" id="inp_suhu" placeholder="36.5" required>
                         </div>
                         <div class="col-md-4 col-sm-6">
                             <label class="form-label fw-semibold">SpO2 (%)</label>
-                            <input type="number" min="0" max="100" class="form-control" name="spo2" id="inp_spo2" placeholder="98">
+                            <input type="number" min="0" max="100" class="form-control" name="spo2" id="inp_spo2" placeholder="98" required>
                         </div>
                     </div>
 
@@ -316,6 +317,21 @@
             $('#table_peserta').DataTable({
                 processing: true,
                 serverSide: true,
+                language: {
+                    search: "Cari Peserta:",
+                    searchPlaceholder: "Nama, NIK, NIP, Departemen...",
+                    lengthMenu: "Tampilkan _MENU_ data",
+                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ peserta",
+                    infoEmpty: "Tidak ada data",
+                    infoFiltered: "(disaring dari _MAX_ total data)",
+                    zeroRecords: "Data peserta tidak ditemukan",
+                    paginate: {
+                        first: "Awal",
+                        last: "Akhir",
+                        next: "Lanjut",
+                        previous: "Kembali"
+                    }
+                },
                 ajax: {
                     url: "{{ route('pemeriksaan.get_participants') }}",
                     type: "GET",
@@ -327,7 +343,8 @@
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,
-                        searchable: false
+                        searchable: false,
+                        className: 'text-center'
                     },
                     {
                         data: 'nip_nik',
@@ -335,14 +352,15 @@
                     },
                     {
                         data: 'mou_peserta_name',
-                        name: 'mou_peserta_name'
+                        name: 'mou_peserta_name',
+                        className: 'fw-semibold'
                     },
                     {
                         data: 'mou_peserta_departemen',
                         name: 'mou_peserta_departemen'
                     },
                     {
-                        data: 'dokter_penginput', // Kolom Dokter Penginput
+                        data: 'dokter_penginput',
                         name: 'dokter_penginput',
                         orderable: true,
                         searchable: true,
@@ -356,13 +374,15 @@
                         data: 'status_badge',
                         name: 'status_badge',
                         orderable: false,
-                        searchable: false
+                        searchable: false,
+                        className: 'text-center'
                     },
                     {
                         data: 'action',
                         name: 'action',
                         orderable: false,
-                        searchable: false
+                        searchable: false,
+                        className: 'text-center'
                     }
                 ]
             });
@@ -385,6 +405,10 @@
         function resetTableAndStats() {
             $('#stats_container').addClass('d-none');
             $('#content_container').addClass('d-none');
+            if ($.fn.DataTable.isDataTable('#table_peserta')) {
+                $('#table_peserta').DataTable().destroy();
+                $('#table_peserta tbody').empty();
+            }
         }
 
         // 3. Open Modal & Load Existing Data
@@ -412,6 +436,7 @@
                         $('#inp_respirasi').val(res.pemeriksaan.respirasi ?? res.pemeriksaan.rr_nafas);
                         $('#inp_suhu').val(res.pemeriksaan.suhu);
                         $('#inp_catatan').val(res.pemeriksaan.catatan_dokter);
+                        $('#inp_spo2').val(res.pemeriksaan.spo2);
                         $('#inp_kesimpulan').val(res.pemeriksaan.kesimpulan);
                     }
 
@@ -435,8 +460,24 @@
                     btnSave.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Simpan Pemeriksaan');
                     if (res.status === 'success') {
                         $('#modalPemeriksaan').modal('hide');
-                        $('#table_peserta').DataTable().ajax.reload(null, false);
-                        loadPesertaData($('#filter_mou').val());
+                        if ($.fn.DataTable.isDataTable('#table_peserta')) {
+                            $('#table_peserta').DataTable().ajax.reload(null, false);
+                        }
+
+                        // Refetch statistik angka
+                        $.ajax({
+                            url: "{{ route('pemeriksaan.get_summary_stats') }}",
+                            type: "GET",
+                            data: {
+                                mou_code: $('#filter_mou').val()
+                            },
+                            success: function(res) {
+                                $('#stat_total').text(res.total);
+                                $('#stat_sudah').text(res.sudah);
+                                $('#stat_belum').text(res.belum);
+                            }
+                        });
+
                         alert(res.message);
                     }
                 },

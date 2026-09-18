@@ -158,7 +158,7 @@
         /* Tanda Tangan Fixed Bottom dengan Kotak Resmi */
         .ttd-section {
             position: fixed;
-            bottom: 30px;
+            bottom: 10px;
             right: 4mm;
             width: 330px;
             border: 1px solid #fca5a5;
@@ -169,7 +169,7 @@
         }
 
         .ttd-space {
-            height: 65px;
+            height: 35px;
             /* Ruang kosong untuk tanda tangan fisik / cap */
         }
 

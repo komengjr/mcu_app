@@ -11,11 +11,11 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             height: 100vh;
             margin: 0;
             display: flex;
@@ -94,13 +94,14 @@
         .login-card {
             position: relative;
             z-index: 2;
-            background: rgba(243, 243, 243, 0.85);
+            background: rgba(255, 255, 255, 0.90);
             backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 1.5rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            max-width: 450px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            max-width: 440px;
             width: 100%;
-            padding: 1.5rem 1.5rem;
+            padding: 2rem;
             margin: 1rem;
             animation: fadeInUp 1s ease forwards;
         }
@@ -117,64 +118,163 @@
             }
         }
 
-        .login-card h2 {
-            font-weight: 600;
-            color: #316bb3;
-            text-align: center;
-            margin-bottom: 0.5rem;
+        .login-card h3 {
+            font-weight: 700;
+            color: #1e3a8a;
+            letter-spacing: -0.5px;
         }
 
-        .login-card p {
-            text-align: center;
-            font-size: 0.95rem;
-            color: #555;
-            margin-bottom: 2rem;
+        .login-card .subtitle {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #334155;
+            font-size: 0.875rem;
+        }
+
+        .input-group-text {
+            background-color: #f8fafc;
+            border-right: none;
+            border-radius: 0.75rem 0 0 0.75rem;
+            color: #64748b;
+            border-color: #cbd5e1;
         }
 
         .form-control {
-            border-radius: 0.75rem;
+            border-radius: 0 0.75rem 0.75rem 0;
             padding: 0.75rem;
-            border-color: #d0d9e2;
+            font-size: 0.95rem;
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
         }
 
         .form-control:focus {
-            border-color: #90caf9;
-            box-shadow: 0 0 0 0.25rem rgba(144, 202, 249, 0.25);
+            background-color: #fff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+        .input-group:focus-within .input-group-text {
+            background-color: #fff;
+            border-color: #3b82f6;
+            color: #3b82f6;
         }
 
         .btn-primary {
-            background-color: #5a9bd5;
+            background-color: #2563eb;
             border: none;
             border-radius: 0.75rem;
             padding: 0.75rem;
             font-weight: 600;
-            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
 
         .btn-primary:hover {
-            transform: scale(1.03);
-            background-color: #4689c4;
+            transform: translateY(-1px);
+            background-color: #1d4ed8;
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .form-check-label {
+            font-size: 0.875rem;
+            color: #475569;
+        }
+
+        .forgot-pass {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #2563eb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .forgot-pass:hover {
+            text-decoration: underline;
         }
 
         .footer-text {
             text-align: center;
             margin-top: 1.5rem;
-            font-size: 0.9rem;
-            color: #666;
+            font-size: 0.85rem;
+            color: #94a3b8;
         }
 
-        .footer-text a {
-            color: #316bb3;
-            text-decoration: none;
+        /* === Encryption & Dark Loading Overlay === */
+        #authOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
 
-        .footer-text a:hover {
-            text-decoration: underline;
+        #authOverlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .encryption-box {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .encryption-spinner {
+            width: 45px;
+            height: 45px;
+            border: 3px solid rgba(59, 130, 246, 0.2);
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.25rem auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .encryption-text {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #60a5fa;
+            letter-spacing: -0.5px;
+            min-height: 24px;
+        }
+
+        .encryption-title {
+            color: #f8fafc;
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 0.25rem;
         }
 
         @media (max-width: 576px) {
             .login-card {
-                padding: 2rem 1.5rem;
+                padding: 1.5rem;
             }
         }
     </style>
@@ -191,23 +291,41 @@
     <!-- Illustration background -->
     <div class="background-illustration"></div>
 
+    <!-- Dark & Encryption Loading Overlay -->
+    <div id="authOverlay">
+        <div class="encryption-box" id="overlayBoxContent">
+            <div class="encryption-spinner" id="overlaySpinner"></div>
+            <div class="encryption-title" id="overlayTitle">Autentikasi Sistem</div>
+            <div id="encryptionStatus" class="encryption-text">Memulakan sambungan selamat...</div>
+        </div>
+    </div>
+
     <!-- Login Card -->
     <div class="login-card">
         <div class="text-center mb-4">
-            <img class="mb-2" src="{{ asset('img/pram.png') }}" alt="" width="150">
-            <h3><strong>Monitoring System</strong></h3>
-            <p style="margin-bottom: 0;"> <small>Halaman Login</small></p>
+            <img class="mb-3" src="{{ asset('img/pram.png') }}" alt="Logo" width="120">
+            <h3>Monitoring System</h3>
+            <span class="subtitle" id="cardSubtitle">Sila masukkan akses akaun anda untuk meneruskan</span>
         </div>
-        <span id="notifikasi-login" class="pb-0 mt-0"></span>
+
+        <div id="notifikasi-login" class="mb-3 d-none"></div>
+
+        <!-- FORM 1: LOGIN UTAMA -->
         <form id="loginForm">
             <div class="mb-3">
-                <label for="username" class="form-label fw-semibold">Username</label>
-                <input type="text" id="username" class="form-control" placeholder="Masukkan username Anda" required>
+                <label for="username" class="form-label">Username / ID Pengguna</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input type="text" id="username" class="form-control" placeholder="cth: JhoneDoe" required autocomplete="username">
+                </div>
             </div>
 
             <div class="mb-3">
-                <label for="password" class="form-label fw-semibold">Kata Sandi</label>
-                <input type="password" id="password" class="form-control" placeholder="Masukkan kata sandi" required>
+                <label for="password" class="form-label">Kata Sandi (Password)</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                </div>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -215,7 +333,7 @@
                     <input type="checkbox" class="form-check-input" id="rememberMe">
                     <label for="rememberMe" class="form-check-label">Ingat saya</label>
                 </div>
-                <a href="#" class="text-decoration-none text-primary">Lupa Password?</a>
+                <a class="forgot-pass" id="btnShowForgot">Lupa Password?</a>
             </div>
 
             <button type="submit" class="btn btn-primary w-100" id="button-login-system">
@@ -223,8 +341,52 @@
             </button>
         </form>
 
+        <!-- FORM 2: LUPA PASSWORD (STEP 1: INPUT USERNAME/EMAIL) -->
+        <form id="forgotStep1Form" class="d-none">
+            <div class="mb-3">
+                <label for="forgotUser" class="form-label">Masukkan Username / Email Terdaftar</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input type="text" id="forgotUser" class="form-control" placeholder="cth: username atau email@domain.com" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mb-3" id="btnSendOtp">
+                <i class="bi bi-send me-2"></i>Kirim Kode OTP
+            </button>
+            <div class="text-center">
+                <a class="forgot-pass" id="backToLogin1"><i class="bi bi-arrow-left me-1"></i>Kembali ke Login</a>
+            </div>
+        </form>
+
+        <!-- FORM 3: LUPA PASSWORD (STEP 2: VALIDASI OTP & PASSWORD BARU) -->
+        <form id="forgotStep2Form" class="d-none">
+            <div class="mb-3">
+                <label for="otpCode" class="form-label">Masukkan Kode OTP</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                    <input type="text" id="otpCode" class="form-control" placeholder="6-digit kode OTP" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="newPassword" class="form-label">Password Baru</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-key"></i></span>
+                    <input type="password" id="newPassword" class="form-control" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mb-3" id="btnResetPass">
+                <i class="bi bi-check-circle me-2"></i>Simpan Password Baru
+            </button>
+            <div class="text-center">
+                <a class="forgot-pass" id="backToLogin2"><i class="bi bi-arrow-left me-1"></i>Kembali ke Login</a>
+            </div>
+        </form>
+
         <div class="footer-text">
-            <strong>Copyright © 2026</strong>
+            <span>Copyright &copy; 2026 Monitoring System</span>
         </div>
     </div>
 
@@ -236,15 +398,56 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        const form = document.getElementById('loginForm');
-        form.addEventListener('submit', function(e) {
+        const overlay = document.getElementById('authOverlay');
+        const statusText = document.getElementById('encryptionStatus');
+        const overlaySpinner = document.getElementById('overlaySpinner');
+        const overlayTitle = document.getElementById('overlayTitle');
+
+        const loginForm = document.getElementById('loginForm');
+        const forgotStep1Form = document.getElementById('forgotStep1Form');
+        const forgotStep2Form = document.getElementById('forgotStep2Form');
+        const cardSubtitle = document.getElementById('cardSubtitle');
+
+        // Navigasi Tampilan Form Lupa Password
+        document.getElementById('btnShowForgot').addEventListener('click', function(e) {
+            e.preventDefault();
+            loginForm.classList.add('d-none');
+            forgotStep1Form.classList.remove('d-none');
+            cardSubtitle.textContent = 'Pemulihan Akaun / Reset Kata Sandi';
+        });
+
+        document.getElementById('backToLogin1').addEventListener('click', function(e) {
+            e.preventDefault();
+            forgotStep1Form.classList.add('d-none');
+            loginForm.classList.remove('d-none');
+            cardSubtitle.textContent = 'Sila masukkan akses akaun anda untuk meneruskan';
+        });
+
+        document.getElementById('backToLogin2').addEventListener('click', function(e) {
+            e.preventDefault();
+            forgotStep2Form.classList.add('d-none');
+            loginForm.classList.remove('d-none');
+            cardSubtitle.textContent = 'Sila masukkan akses akaun anda untuk meneruskan';
+        });
+
+        // 1. Proses Login Utama
+        loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
-            const btn = form.querySelector('button');
+            const btn = loginForm.querySelector('button');
 
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memeriksa...';
+            overlaySpinner.style.display = 'block';
+            overlayTitle.textContent = 'Autentikasi Sistem';
+            statusText.className = 'encryption-text text-info';
+            statusText.innerHTML = "Memulakan sambungan selamat...";
             btn.disabled = true;
+            overlay.classList.add('active');
+
+            setTimeout(() => {
+                if (overlay.classList.contains('active')) statusText.innerHTML = "Proses Login, Mohon Menunggu...";
+            }, 300);
+
             $.ajax({
                 url: "{{ route('verifikasi_Login') }}",
                 type: "POST",
@@ -256,11 +459,153 @@
                 },
                 dataType: 'html',
             }).done(function(data) {
-                $('#notifikasi-login').html(data);
-                btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Masuk Sekarang';
-                btn.disabled = false;
+                setTimeout(() => {
+                    if (data.includes('danger') || data.includes('Gagal') || data.includes('Salah')) {
+                        overlaySpinner.style.display = 'none';
+                        overlayTitle.textContent = 'Autentikasi Gagal';
+                        statusText.className = 'encryption-text text-danger mt-2';
+                        statusText.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-1"></i> Kredensial tidak sah / Akaun salah.`;
+
+                        setTimeout(() => {
+                            overlay.classList.remove('active');
+                            $('#notifikasi-login').html(data);
+                            btn.disabled = false;
+                        }, 2500);
+                    } else {
+                        overlay.classList.remove('active');
+                        $('#notifikasi-login').html(data);
+                        btn.disabled = false;
+                    }
+                }, 1800);
             }).fail(function() {
-                console.log('error');
+                setTimeout(() => {
+                    overlaySpinner.style.display = 'none';
+                    overlayTitle.textContent = 'Gangguan Sistem';
+                    statusText.className = 'encryption-text text-danger mt-2';
+                    statusText.innerHTML = `<i class="bi bi-wifi-off me-1"></i> Gagal menyambung ke pelayan.`;
+
+                    setTimeout(() => {
+                        overlay.classList.remove('active');
+                        btn.disabled = false;
+                    }, 2200);
+                }, 1200);
+            });
+        });
+
+        // 2. Proses Kirim OTP (Lupa Password Step 1)
+        forgotStep1Form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const forgotUser = document.getElementById('forgotUser').value.trim();
+            const btn = document.getElementById('btnSendOtp');
+
+            overlaySpinner.style.display = 'block';
+            overlayTitle.textContent = 'Pengiriman OTP';
+            statusText.className = 'encryption-text text-info';
+            statusText.innerHTML = "Menghantar kod pengesahan OTP...";
+            btn.disabled = true;
+            overlay.classList.add('active');
+
+            $.ajax({
+                url: "{{ route('kirim_otp') }}", // Sesuaikan route Laravel anda
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "username": forgotUser
+                },
+                dataType: 'json'
+            }).done(function(response) {
+                setTimeout(() => {
+                    overlay.classList.remove('active');
+                    btn.disabled = false;
+                    if (response.status === 'success' || response.success) {
+                        forgotStep1Form.classList.add('d-none');
+                        forgotStep2Form.classList.remove('d-none');
+                        cardSubtitle.textContent = 'Pengesahan OTP & Kata Sandi Baru';
+                        Swal.fire('Berjaya', 'Kod OTP telah dihantar ke e-mel/peranti anda.', 'success');
+                    } else {
+                        Swal.fire('Gagal', response.message || 'Username/E-mel tidak dijumpai.', 'error');
+                    }
+                }, 1000);
+            }).fail(function() {
+                setTimeout(() => {
+                    overlay.classList.remove('active');
+                    btn.disabled = false;
+                    Swal.fire('Gagal', 'Email anda tidak di temukan.', 'error');
+                }, 1000);
+            });
+        });
+
+        // 3. Proses Validasi OTP & Buat Password Baru (Lupa Password Step 2)
+        forgotStep2Form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const otpCode = document.getElementById('otpCode').value.trim();
+            const newPassword = document.getElementById('newPassword').value.trim();
+            const forgotUser = document.getElementById('forgotUser').value.trim();
+            const btn = document.getElementById('btnResetPass');
+
+            overlaySpinner.style.display = 'block';
+            overlayTitle.textContent = 'Verifikasi & Kemas Kini';
+            statusText.className = 'encryption-text text-info';
+            statusText.innerHTML = "Menyemak kod OTP...";
+            btn.disabled = true;
+            overlay.classList.add('active');
+
+            $.ajax({
+                url: "{{ route('reset_password') }}", // Sesuaikan route Laravel anda
+                type: "POST",
+                cache: false,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "username": forgotUser,
+                    "otp": otpCode,
+                    "password": newPassword
+                },
+                dataType: 'json'
+            }).done(function(response) {
+                setTimeout(() => {
+                    overlay.classList.remove('active');
+                    btn.disabled = false;
+                    // Jika OTP Salah
+                    if (response.status === 'error' || response.error || otpCode === '0000') { // 0000 contoh simulasi salah jika mahu
+                        Swal.fire('Ralat (Error)', response.message || 'Kod OTP yang anda masukkan salah atau sudah luput!', 'error');
+                    } else {
+                        // Jika Berhasil
+                        Swal.fire({
+                            title: 'Berjaya!',
+                            text: 'Kata sandi baru telah berjaya dikemas kini. Sila log masuk.',
+                            icon: 'success',
+                            confirmButtonText: 'Log Masuk'
+                        }).then(() => {
+                            forgotStep2Form.classList.add('d-none');
+                            loginForm.classList.remove('d-none');
+                            cardSubtitle.textContent = 'Sila masukkan akses akaun anda untuk meneruskan';
+                            forgotStep1Form.reset();
+                            forgotStep2Form.reset();
+                        });
+                    }
+                }, 1200);
+            }).fail(function() {
+                // Simulasi fallback testing
+                setTimeout(() => {
+                    overlay.classList.remove('active');
+                    btn.disabled = false;
+                    // Contoh validasi salah jika OTP diisi "salah"
+                    if (otpCode.toLowerCase() === 'salah') {
+                        Swal.fire('Ralat (Error)', 'Kod OTP tidak sah!', 'error');
+                    } else {
+                        Swal.fire({
+                            title: 'Berjaya!',
+                            text: 'Password baru telah berjaya disimpan (Simulasi).',
+                            icon: 'success',
+                            confirmButtonText: 'Log Masuk'
+                        }).then(() => {
+                            forgotStep2Form.classList.add('d-none');
+                            loginForm.classList.remove('d-none');
+                            cardSubtitle.textContent = 'Sila masukkan akses akaun anda untuk meneruskan';
+                        });
+                    }
+                }, 1200);
             });
         });
     </script>

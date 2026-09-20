@@ -43,6 +43,9 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('marketing/login', 'masrketing_login')->name('masrketing_login');
     Route::post('marketing/verifikasi-login', 'verifikasi_masrketing_login')->name('verifikasi_masrketing_login');
 });
+// Route baru untuk Lupa Password & OTP
+Route::post('/kirim-otp', [AuthController::class, 'kirimOtp'])->name('kirim_otp');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('reset_password');
 
 Route::prefix('dashboard')->group(function () {
     Route::get('home', [dashboardController::class, 'index'])->name('dashboard.home');

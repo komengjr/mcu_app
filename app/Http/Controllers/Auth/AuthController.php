@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
 use Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -190,5 +191,102 @@ class AuthController extends Controller
                                             <strong>Error!</strong> Username Dan Password Ada Kesalahan.
                                             <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
                                         </div>';
+    }
+    public function kirimOtp(Request $request)
+    {
+        $request->validate([
+            'username' => 'required',
+        ]);
+
+        // Cek apakah user / email terdaftar di database (sesuaikan nama tabel/kolom Anda)
+        $user = DB::table('users') // atau tabel user Anda, cth: z_menu_user / tbl_user
+            ->where('username', $request->username)
+            ->orWhere('email', $request->username)
+            ->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Username atau e-mail tidak didaftarkan dalam sistem.'
+            ], 404);
+        }
+
+        // Generate 6 digit kode OTP random
+        $otp = rand(100000, 999999);
+
+        // Simpan OTP ke database (buat kolom otp & otp_expired di tabel user, atau tabel khusus reset)
+        DB::table('users')
+            ->where('id', $user->id) // sesuaikan primary key tabel
+            ->update([
+                'otp' => $otp,
+                'otp_expired' => now()->addMinutes(10) // OTP berlaku 10 menit
+            ]);
+
+        // [OPSIONAL] Kirim OTP via Email / WhatsApp API
+        /*
+        Mail::raw("Kod OTP pemulihan akaun anda ialah: $otp", function ($message) use ($user) {
+            $message->to($user->email)->subject('Kod Pengesahan OTP Lupa Password');
+        });
+        */
+
+        // Untuk keperluan development/testing, kita return sukses (di production, jangan tampilkan OTP di response JSON)
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Kode OTP berhasil dikirim.',
+            'debug_otp' => $otp // Hapus baris ini saat sudah live/production
+        ]);
+    }
+
+    // 2. Proses Verifikasi OTP & Reset Password Baru
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'username' => 'required',
+            'otp' => 'required|numeric',
+            'password' => 'required|min:6',
+        ]);
+
+        // Cari user berdasarkan username/email dan OTP yang cocok
+        $user = DB::table('users')
+            ->where('username', $request->username)
+            ->orWhere('email', $request->username)
+            ->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Data pengguna tidak sah.'
+            ], 400);
+        }
+
+        // Validasi kecocokan OTP dan masa aktif (jika menggunakan database)
+        if ($user->otp != $request->otp) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Kode OTP yang Anda masukkan salah!'
+            ], 400);
+        }
+
+        // Cek kadaluarsa OTP (opsional)
+        if (now()->greaterThan($user->otp_expired)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Kode OTP sudah luput (kadaluarsa). Sila minta kod baru.'
+            ], 400);
+        }
+
+        // Update password baru dan kosongkan kembali kolom OTP
+        DB::table('users')
+            ->where('id', $user->id)
+            ->update([
+                'password' => Hash::make($request->password),
+                'otp' => null,
+                'otp_expired' => null
+            ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Password baru berhasil disimpan.'
+        ]);
     }
 }

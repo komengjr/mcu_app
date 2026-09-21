@@ -262,7 +262,7 @@ return ['label' => 'Prehipertensi', 'color' => '#b7791f', 'bg' => '#fefcbf'];
                                 <td>{{ $detail->mou_peserta_departemen ?? '-' }}</td>
                                 <td class="label">Tanggal Input</td>
                                 <td>:</td>
-                                <td>{{ $detail->created_at ?? '-' }}</td>
+                                <td>{{ $detail->created_at ?? '' }}</td>
                             </tr>
                         </table>
 

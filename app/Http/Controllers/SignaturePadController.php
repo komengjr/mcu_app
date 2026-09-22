@@ -463,64 +463,81 @@ class SignaturePadController extends Controller
             $latestLogs[trim($log->master_pemeriksaan_code)] = $log->status_antrian;
         }
 
-        // 2. Ambil seluruh list kode pemeriksaan peserta dari log_pemeriksaan_pasien
-        // (Atau sesuaikan nama tabel relasi pemeriksaan peserta Anda)
-        $allPemeriksaan = DB::table('log_pemeriksaan_pasien')
+        // 2. Ambil seluruh list kode pemeriksaan peserta beserta data log_pemeriksaan_pasien
+        $pemeriksaanRecords = DB::table('log_pemeriksaan_pasien')
             ->where('mou_peserta_code', $userCode)
-            ->pluck('master_pemeriksaan_code')
-            ->toArray();
+            ->get();
 
-        // Jika dari log_pemeriksaan_pasien juga belum ada, gabungkan dengan key dari log_pemanggilan_pos
-        $allCodes = array_unique(array_merge($allPemeriksaan, array_keys($latestLogs)));
+        $allPemeriksaanCodes = [];
+        $pemeriksaanData = [];
+        foreach ($pemeriksaanRecords as $rec) {
+            $code = trim($rec->master_pemeriksaan_code);
+            $allPemeriksaanCodes[] = $code;
+            $pemeriksaanData[$code] = [
+                'status' => $rec->log_pemeriksaan_status,
+                'waktu_selesai' => $rec->created_at
+            ];
+        }
 
-        $statusHtml = [];
+        $allCodes = array_unique(array_merge($allPemeriksaanCodes, array_keys($latestLogs)));
+
+        $statusData = [];
         foreach ($allCodes as $code) {
             $cleanCode = trim($code);
             if (empty($cleanCode)) continue;
 
-            // Jika log di-delete, $status otomatis kembali ke 'Menunggu'
+            $isCompletedDb = isset($pemeriksaanData[$cleanCode]) && $pemeriksaanData[$cleanCode]['status'] == 1;
+            $waktuSelesai = $isCompletedDb ? $pemeriksaanData[$cleanCode]['waktu_selesai'] : null;
+
             $status = $latestLogs[$cleanCode] ?? 'Menunggu';
 
+            if ($isCompletedDb) {
+                $status = 'Selesai';
+            }
+
+            $timelineClass = '';
+            $dotIcon = '<i class="fas fa-clock"></i>';
+
+            if ($status == 'Selesai') {
+                $timelineClass = 'item-completed';
+                $dotIcon = '<i class="fas fa-check"></i>';
+            } elseif ($status == 'Dipanggil' || $status == 'Sedang Diperiksa') {
+                $timelineClass = 'item-active';
+                $dotIcon = '<i class="fas fa-spinner fa-spin"></i>';
+            }
+
+            // Render Badge Status Antrian dengan string yang aman
             switch ($status) {
                 case 'Dipanggil':
-                    $badge = '<span class="badge bg-warning text-dark px-2 py-1"><i class="fas fa-bullhorn me-1"></i> Dipanggil</span>';
+                    $badge = '<span class="badge bg-warning text-white px-2 py-1"><i class="fas fa-bullhorn me-1"></i> Dipanggil</span>';
                     break;
-
                 case 'Sedang Diperiksa':
                     $badge = '<span class="badge bg-info text-white px-2 py-1"><i class="fas fa-user-md me-1"></i> Diperiksa</span>';
                     break;
-
                 case 'Selesai':
-                    $badge = '<span class="badge bg-success px-2 py-1"><i class="fas fa-check-circle me-1"></i> Selesai</span>';
+                    $formattedTime = $waktuSelesai ? date('H:i', strtotime($waktuSelesai)) : date('H:i');
+                    $badge = '<span class="badge bg-success px-2 py-1"><i class="fas fa-check-circle me-1"></i> Selesai <span class="fw-light ms-1">(' . $formattedTime . ')</span></span>';
                     break;
-
                 case 'Lewat/Skip':
-                    $badge = '
-                    <div class="d-flex flex-column align-items-center gap-1">
-                        <span class="badge bg-secondary px-2 py-1"><i class="fas fa-forward me-1"></i> Di-skip</span>
-                        <button type="button" class="btn btn-xs btn-outline-warning rounded-pill py-0 px-2 mt-1" style="font-size: 0.65rem;" onclick="resetAntrianMenunggu(\'' . $cleanCode . '\', \'' . $userCode . '\')">
-                            <i class="fas fa-undo me-1"></i> Kembalikan
-                        </button>
-                    </div>';
+                    $badge = '<div class="d-inline-flex align-items-center gap-1"><span class="badge bg-secondary px-2 py-1"><i class="fas fa-forward me-1"></i> Di-skip</span><button type="button" class="btn btn-xs btn-outline-warning rounded-pill py-0 px-2" style="font-size: 0.65rem;" onclick="resetAntrianMenunggu(\'' . $cleanCode . '\', \'' . $userCode . '\')"><i class="fas fa-undo me-1"></i> Kembalikan</button></div>';
                     break;
-
-                default: // Menunggu / Log Dihapus
-                    $badge = '
-                    <div class="d-flex flex-column align-items-center gap-1">
-                        <span class="badge bg-light text-muted border px-2 py-1"><i class="fas fa-clock me-1"></i> Menunggu</span>
-                        <button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0 px-2 mt-1" style="font-size: 0.65rem;" onclick="cekAntrianDipanggil(\'' . $cleanCode . '\', \'' . $userCode . '\')">
-                            <i class="fas fa-search me-1"></i> Cek Antrian
-                        </button>
-                    </div>';
+                default:
+                    $badge = '<div class="d-inline-flex align-items-center gap-1"><span class="badge bg-light text-muted border px-2 py-1"><i class="fas fa-clock me-1"></i> Menunggu</span><button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0 px-2" style="font-size: 0.65rem;" onclick="cekAntrianDipanggil(\'' . $cleanCode . '\', \'' . $userCode . '\')"><i class="fas fa-search me-1"></i> Cek</button></div>';
                     break;
             }
 
-            $statusHtml[$cleanCode] = $badge;
+            $statusData[$cleanCode] = [
+                'badge'          => $badge,
+                'timeline_class' => $timelineClass,
+                'dot_icon'       => $dotIcon,
+                'is_completed'   => ($status == 'Selesai' || $isCompletedDb),
+                'waktu_selesai'  => $waktuSelesai ? date('H:i', strtotime($waktuSelesai)) : null
+            ];
         }
 
         return response()->json([
             'status' => 'success',
-            'data'   => $statusHtml
+            'data'   => $statusData
         ]);
     }
     public function cekAntrianDipanggil(Request $request)

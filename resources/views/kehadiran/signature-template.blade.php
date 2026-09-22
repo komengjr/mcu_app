@@ -180,11 +180,9 @@
             background: #ffffff;
             border-radius: 0 24px 24px 0;
             padding: 2px;
-            /* Tebal Border */
             background-image: linear-gradient(135deg, #FF3355 0%, #E60026 50%, rgba(200, 0, 34, 0.2) 100%);
         }
 
-        /* Container Dalam Panel Kanan */
         .right-panel-content {
             background: #ffffff;
             border-radius: 0 22px 22px 0;
@@ -281,12 +279,65 @@
             padding: 6px 18px;
             transition: all 0.2s ease;
         }
+
+        /* ===============================================*/
+        /* STYLING LOADING OVERLAY GELAP                   */
+        /* ===============================================*/
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(6px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility: 0.3s ease;
+        }
+
+        #loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #FF3355;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
     <script src="{{ asset('asset/js/signature.js') }}"></script>
 </head>
 
 
 <body>
+
+    <!-- Loading Overlay Gelap -->
+    <div id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <h5 class="text-white fw-bold mb-1">Memproses Data...</h5>
+        <p class="text-white-50 fs--1 mb-0">Mohon tunggu sebentar, tanda tangan sedang disimpan.</p>
+    </div>
 
     <!-- ===============================================-->
     <!--    Main Content-->
@@ -363,7 +414,7 @@
                                                 <p class="text-500 fs--1">Verifikasi identitas dan sertakan tanda tangan digital Anda.</p>
                                             </div>
 
-                                            <form method="POST" action="{{ route('signaturepad.update') }}">
+                                            <form id="form-konfirmasi" method="POST" action="{{ route('signaturepad.update') }}">
                                                 @csrf
                                                 <input type="text" name="token" value="{{ $data->log_kehadiran_pasien_token }}" hidden>
 
@@ -423,7 +474,7 @@
                                                     <!-- Submit Button -->
                                                     <div class="col-12 mt-4">
                                                         <button class="btn btn-vibrant-red w-100" id="button-submit-selesai" type="submit" name="submit" style="display: none;">
-                                                            <span class="fas fa-paper-plane me-2"></span> Selesaikan Registrasi
+                                                            <span class="fas fa-paper-plane me-2"></span> Simpan Data
                                                         </button>
                                                     </div>
                                                 </div>
@@ -491,6 +542,18 @@
             $('#signature64').html('');
             $("#button-submit-selesai").fadeOut();
             $("#save").removeClass('btn-primary').addClass('btn-outline-primary');
+        });
+
+        // Trigger Loading Overlay on Form Submit
+        $('#form-konfirmasi').on('submit', function(e) {
+            // Validasi tambahan jika checkbox belum dicentang / tanda tangan kosong
+            if (signaturePad.isEmpty()) {
+                e.preventDefault();
+                alert("Silakan masukkan tanda tangan terlebih dahulu.");
+                return;
+            }
+            // Munculkan animasi loading gelap
+            $('#loading-overlay').addClass('active');
         });
     </script>
 

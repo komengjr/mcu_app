@@ -4165,43 +4165,75 @@ class ApplicationController extends Controller
     }
     public function laporan_rekap_mcu_pilih_data(Request $request)
     {
+        $companyMouCode = $request->perusahaan;
+
+        // 1. Informasi Perusahaan & MoU
         $data = DB::table('company_mou')
             ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
-            ->where('company_mou.company_mou_code', $request->perusahaan)
+            ->where('company_mou.company_mou_code', $companyMouCode)
             ->first();
-        $cab = DB::table('log_lokasi_pasien')
-            ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
-            ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
-            ->where('company_mou_peserta.company_mou_code', $request->perusahaan)->orderBy('master_cabang.id_master_cabang', 'ASC')->get()->unique('master_cabang_city');
-        $cabang = DB::table('log_lokasi_pasien')
-            ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
-            ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
-            ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'master_cabang.master_cabang_code')
-            ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
-            ->where('company_mou_peserta.company_mou_code', $request->perusahaan)
-            ->get()
-            ->unique('lokasi_cabang');
-        $totalpeserta = DB::table('company_mou_peserta')->where('company_mou_code', $request->perusahaan)->count();
+
+        if (!$data) {
+            return '<span class="badge bg-danger">Data MoU Project tidak ditemukan.</span>';
+        }
+
+        $totalpeserta = DB::table('company_mou_peserta')->where('company_mou_code', $companyMouCode)->count();
+
         $totalmcu = DB::table('log_lokasi_pasien')
             ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
-            ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
-            ->where('company_mou_peserta.company_mou_code', $request->perusahaan)
+            ->where('company_mou_peserta.company_mou_code', $companyMouCode)
             ->count();
 
-        $group = DB::table('log_lokasi_pasien')
+        // 2. Ambil Group Cabang
+        $group = DB::table('group_cabang')
+            ->join('group_cabang_detail', 'group_cabang_detail.group_cabang_code', '=', 'group_cabang.group_cabang_code')
+            ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'group_cabang_detail.master_cabang_code')
+            ->join('log_lokasi_pasien', 'log_lokasi_pasien.lokasi_cabang', '=', 'master_cabang.master_cabang_code')
+            ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
+            ->where('company_mou_peserta.company_mou_code', $companyMouCode)
+            ->select('group_cabang.group_cabang_code', 'group_cabang.group_cabang_name')
+            ->distinct()
+            ->get();
+
+        // 3. Ambil seluruh data peserta dan mapping status untuk menghindari query di loop blade
+        $allPeserta = DB::table('log_lokasi_pasien')
             ->join('company_mou_peserta', 'company_mou_peserta.mou_peserta_code', '=', 'log_lokasi_pasien.mou_peserta_code')
             ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
             ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'master_cabang.master_cabang_code')
-            ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
-            ->where('company_mou_peserta.company_mou_code', $request->perusahaan)
-            ->get()->unique('group_cabang_code');
+            ->where('company_mou_peserta.company_mou_code', $companyMouCode)
+            ->select(
+                'log_lokasi_pasien.*',
+                'company_mou_peserta.*',
+                'master_cabang.master_cabang_code',
+                'master_cabang.master_cabang_name',
+                'master_cabang.id_master_cabang',
+                'group_cabang_detail.group_cabang_code'
+            )
+            ->get();
+
+        // Mapping status pengiriman & konsultasi ke array key-value agar instan
+        $pesertaCodes = $allPeserta->pluck('mou_peserta_code')->toArray();
+
+        $pengirimanMap = DB::table('log_pengiriman_pasien')
+            ->whereIn('mou_peserta_code', $pesertaCodes)
+            ->pluck('mou_peserta_code')
+            ->flip()
+            ->toArray();
+
+        $konsultasiMap = DB::table('log_konsultasi_pasien')
+            ->whereIn('mou_peserta_code', $pesertaCodes)
+            ->pluck('mou_peserta_code')
+            ->flip()
+            ->toArray();
+
         return view('application.laporan.rekap-mcu.detail-rekap-mcu', [
-            'data' => $data,
-            'cabang' => $cabang,
-            'cab' => $cab,
-            'totalpeserta' => $totalpeserta,
-            'totalmcu' => $totalmcu,
-            'group' => $group,
+            'data'          => $data,
+            'totalpeserta'  => $totalpeserta,
+            'totalmcu'      => $totalmcu,
+            'group'         => $group,
+            'allPeserta'    => $allPeserta,
+            'pengirimanMap' => $pengirimanMap,
+            'konsultasiMap' => $konsultasiMap,
         ]);
     }
     public function laporan_rekap_mcu_kehadiran_peserta_mcu(Request $request)

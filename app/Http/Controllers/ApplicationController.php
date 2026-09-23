@@ -4945,7 +4945,12 @@ class ApplicationController extends Controller
             ->join('company_mou', 'company_mou_peserta.company_mou_code', '=', 'company_mou.company_mou_code')
             ->join('master_company', 'company_mou.master_company_code', '=', 'master_company.master_company_code')
             ->where('company_mou_pemeriksaan_doc.mou_peserta_code', $peserta_code)
-            ->select('company_mou_pemeriksaan_doc.*', 'company_mou_peserta.*', 'master_company.master_company_name')
+            ->select(
+                'company_mou_pemeriksaan_doc.*',
+                'company_mou_pemeriksaan_doc.created_at as tgl_pemeriksa', // Menambahkan alias tgl_pemeriksa
+                'company_mou_peserta.*',
+                'master_company.master_company_name'
+            )
             ->first();
 
         if (!$detail) {

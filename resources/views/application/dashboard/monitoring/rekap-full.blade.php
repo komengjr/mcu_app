@@ -120,6 +120,24 @@
         }
 
         function renderTableCabang(cabangList) {
+            // Cek apakah ada minimal satu data yang bernilai aktif/melakukan (bukan null, kosong, atau 'belum')
+            let hasExecutive = cabangList.some(c => c.summary_cabang_executive !== null && c.summary_cabang_executive !== '' && c.summary_cabang_executive !== undefined);
+            let hasPersentasi = cabangList.some(c => c.summary_cabang_pesentasi !== null && c.summary_cabang_pesentasi !== '' && c.summary_cabang_pesentasi !== undefined);
+            let hasHealthyTalk = cabangList.some(c => c.summary_cabang_ht !== null && c.summary_cabang_ht !== '' && c.summary_cabang_ht !== undefined);
+
+            // 1. Render Header Tabel secara Dinamis
+            let headerHtml = `
+                <tr>
+                    <th>Wilayah</th>
+                    <th>Nama Cabang</th>
+                    <th>Peserta Check In</th>
+                    ${hasExecutive ? '<th>Executive</th>' : ''}
+                    ${hasPersentasi ? '<th>Persentasi</th>' : ''}
+                    ${hasHealthyTalk ? '<th>Healthy Talk</th>' : ''}
+                </tr>`;
+            $('#table-cabang thead').html(headerHtml);
+
+            // 2. Render Isi Baris Data secara Dinamis sesuai kolom yang aktif
             let rows = '';
             cabangList.forEach(c => {
                 rows += `
@@ -127,12 +145,13 @@
                         <td>${c.group_cabang_name}</td>
                         <td>${c.master_cabang_name}</td>
                         <td>${c.total_checkin} Peserta</td>
-                        <td>${getBadge(c.summary_cabang_executive)}</td>
-                        <td>${getBadge(c.summary_cabang_pesentasi)}</td>
-                        <td>${getBadge(c.summary_cabang_ht)}</td>
+                        ${hasExecutive ? `<td>${getBadge(c.summary_cabang_executive)}</td>` : ''}
+                        ${hasPersentasi ? `<td>${getBadge(c.summary_cabang_pesentasi)}</td>` : ''}
+                        ${hasHealthyTalk ? `<td>${getBadge(c.summary_cabang_ht)}</td>` : ''}
                     </tr>`;
             });
 
+            // 3. Re-inisialisasi DataTable
             if ($.fn.DataTable.isDataTable('#table-cabang')) {
                 $('#table-cabang').DataTable().destroy();
             }
@@ -142,6 +161,14 @@
                 pageLength: 5,
                 stateSave: true
             });
+        }
+
+        // Fungsi helper untuk badge status
+        function getBadge(val) {
+            if (val === 1 || val === '1') return '<span class="badge bg-primary">Done</span>';
+            if (val === 0 || val === '0') return '<span class="badge bg-warning">Skip</span>';
+            if (val && val !== '') return `<span class="badge bg-info">${val}</span>`;
+            return '<span class="text-muted">-</span>';
         }
 
         function renderGroupsPeserta(groups) {

@@ -41,12 +41,16 @@
                 <div class="row g-3">
                     <div class="col-md-12">
                         <div class="card border border-danger">
-                            <div class="echart-pie-chart-example p-3" style="min-height: 360px;"></div>
+                            <div class="card-header bg-light py-2">
+                                <h6 class="mb-0 text-700 fw-bold"><i class="fas fa-chart-bar me-1"></i> Grafik Jumlah Peserta per Wilayah</h6>
+                            </div>
+                            <!-- Container Chart -->
+                            <div class="echart-pie-chart-example p-3" style="min-height: 380px;"></div>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="card p-2 border border-danger">
-                            <h6 class="fw-semi-bold text-uppercase">Informasi Cabang</h6>
+                            <h6 class="fw-semi-bold text-uppercase mb-2">Informasi Cabang</h6>
                             <table id="table-cabang" class="table table-bordered table-striped fs--1 mb-0 w-100">
                                 <thead class="bg-200 text-900">
                                     <tr>
@@ -227,7 +231,6 @@
 
             $('#container-group-peserta').html(html);
 
-            // Inisialisasi DataTables untuk tiap tabel dalam Accordion
             groups.forEach(group => {
                 group.cabang_list.forEach(cabang => {
                     let id = `#data-${cabang.id_master_cabang}`;
@@ -242,36 +245,100 @@
             });
         }
 
+        // Render Modern Bar Chart (Grafik Batang)
+        // Render Modern Bar Chart dengan Warna Berbeda Tiap Wilayah
         function renderChart(chartData) {
-            var $pieChartEl = document.querySelector('.echart-pie-chart-example');
-            if ($pieChartEl) {
-                var existingChart = window.echarts.getInstanceByDom($pieChartEl);
+            var $chartEl = document.querySelector('.echart-pie-chart-example');
+            if ($chartEl) {
+                var existingChart = window.echarts.getInstanceByDom($chartEl);
                 if (existingChart) existingChart.dispose();
 
-                var chart = window.echarts.init($pieChartEl);
-                var colors = ['#2c7be5', '#e63757', '#6e84a3', '#f5803e', '#00d27a', '#27bcfd', '#39afd1'];
+                var chart = window.echarts.init($chartEl);
 
-                var seriesData = chartData.map((g, i) => ({
-                    value: g.total,
-                    name: g.group_cabang_name,
-                    itemStyle: {
-                        color: colors[i % colors.length]
-                    }
-                }));
+                var categories = chartData.map(g => g.group_cabang_name);
+                var values = chartData.map(g => g.total);
 
-                chart.setOption({
+                // Daftar palet warna modern yang berbeda untuk setiap batang
+                var colorPalette = [
+                    ['#2c7be5', '#66b0ff'], // Biru
+                    ['#e63757', '#f2788f'], // Merah
+                    ['#00d27a', '#3ee99b'], // Hijau
+                    ['#f5803e', '#f9ab7c'], // Oranye
+                    ['#6e84a3', '#9dafcb'], // Abu-abu / Slate
+                    ['#27bcfd', '#6cd4fd'], // Cyan
+                    ['#727cf5', '#9b9ff9']  // Indigo
+                ];
+
+                var seriesData = chartData.map((g, i) => {
+                    var colors = colorPalette[i % colorPalette.length];
+                    return {
+                        value: g.total,
+                        itemStyle: {
+                            color: new window.echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: colors[0] }, // Warna atas
+                                { offset: 1, color: colors[1] }  // Warna bawah (gradasi)
+                            ]),
+                            borderRadius: [6, 6, 0, 0] // Sudut atas melengkung
+                        }
+                    };
+                });
+
+                var option = {
                     tooltip: {
-                        trigger: 'item'
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        },
+                        formatter: function(params) {
+                            return params[0].name + '<br/>Jumlah Peserta: <b>' + params[0].value + '</b>';
+                        }
                     },
-                    legend: {
-                        left: 'left'
+                    grid: {
+                        top: '15%',
+                        bottom: '20%',
+                        left: '10%',
+                        right: '5%'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: categories,
+                        axisLabel: {
+                            interval: 0,
+                            rotate: categories.length > 4 ? 25 : 0,
+                            textStyle: {
+                                fontSize: 11
+                            }
+                        },
+                        axisTick: {
+                            alignWithLabel: true
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: 'Jumlah Peserta',
+                        nameTextStyle: {
+                            padding: [0, 0, 0, 30]
+                        }
                     },
                     series: [{
-                        type: 'pie',
-                        radius: window.innerWidth < 530 ? '45%' : '60%',
-                        center: ['50%', '55%'],
-                        data: seriesData
+                        data: seriesData,
+                        type: 'bar',
+                        barWidth: '45%',
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: '{c}',
+                            fontSize: 11,
+                            fontWeight: 'bold',
+                            color: '#5e6e82'
+                        }
                     }]
+                };
+
+                chart.setOption(option);
+
+                window.addEventListener('resize', function () {
+                    chart.resize();
                 });
             }
         }

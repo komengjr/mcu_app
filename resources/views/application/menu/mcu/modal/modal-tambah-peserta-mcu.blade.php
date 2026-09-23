@@ -17,6 +17,17 @@
             </div>
         </div>
 
+        <!-- Pilih Paket MCU (Agreement Name) -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Pilih Paket MCU <span class="text-danger">*</span></label>
+            <select name="mou_agreement_code" class="form-select" required>
+                <option value="">-- Pilih Paket MCU --</option>
+                @foreach($paket_mcu as $paket)
+                <option value="{{ $paket->mou_agreement_code }}">{{ $paket->mou_agreement_name }}</option>
+                @endforeach
+            </select>
+        </div>
+
         <!-- Form Rows (Standard Vertical Layout) -->
         <div class="mb-3">
             <label class="form-label fw-bold">NIP / ID Karyawan <span class="text-danger">*</span></label>
@@ -45,7 +56,7 @@
 
             <div class="col-md-6 mb-3">
                 <label class="form-label fw-bold">Tanggal Lahir (TTL) <span class="text-danger">*</span></label>
-                <input type="date" name="mou_peserta_ttl" class="form-control" required >
+                <input type="date" name="mou_peserta_ttl" class="form-control" required>
             </div>
         </div>
 

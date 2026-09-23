@@ -1414,13 +1414,19 @@ class ApplicationController extends Controller
         // Ambil daftar cabang/lokasi MCU untuk dropdown
         $cabang = DB::table('master_cabang')->where('master_cabang_status', 1)->get();
 
-        return view('application.menu.mcu.modal.modal-tambah-peserta-mcu', compact('mou_code', 'cabang'));
+        // Ambil daftar paket MCU (agreement) berdasarkan company_mou_code
+        $paket_mcu = DB::table('company_mou_agreement')
+            ->where('company_mou_code', $mou_code)
+            ->get();
+
+        return view('application.menu.mcu.modal.modal-tambah-peserta-mcu', compact('mou_code', 'cabang', 'paket_mcu'));
     }
     public function medical_check_up_modal_simpan_peserta(Request $request)
     {
         // 1. Validasi Input + Cek Duplikasi NIP berdasarkan company_mou_code
         $validator = Validator::make($request->all(), [
             'company_mou_code'     => 'required|string',
+            'mou_agreement_code'   => 'required|string', // Validasi paket MCU wajib dipilih
             'mou_peserta_nip'      => [
                 'required',
                 'string',
@@ -1437,12 +1443,13 @@ class ApplicationController extends Controller
             'mou_peserta_email'      => 'nullable|email',
             'mou_peserta_no_hp'      => 'nullable|string',
         ], [
-            'mou_peserta_nip.unique'   => 'NIP sudah terdaftar pada MoU Perusahaan ini!',
-            'mou_peserta_nip.required'  => 'NIP wajib diisi.',
-            'mou_peserta_nik.required'  => 'NIK wajib diisi.',
-            'mou_peserta_name.required' => 'Nama peserta wajib diisi.',
-            'mou_peserta_ttl.required'  => 'Tempat, Tanggal Lahir (TTL) wajib diisi.',
-            'mou_peserta_jk.required'   => 'Jenis Kelamin wajib dipilih.',
+            'mou_peserta_nip.unique'        => 'NIP sudah terdaftar pada MoU Perusahaan ini!',
+            'mou_peserta_nip.required'      => 'NIP wajib diisi.',
+            'mou_agreement_code.required'   => 'Paket MCU wajib dipilih.',
+            'mou_peserta_nik.required'      => 'NIK wajib diisi.',
+            'mou_peserta_name.required'     => 'Nama peserta wajib diisi.',
+            'mou_peserta_ttl.required'      => 'Tempat, Tanggal Lahir (TTL) wajib diisi.',
+            'mou_peserta_jk.required'       => 'Jenis Kelamin wajib dipilih.',
             'mou_peserta_departemen.required' => 'Departemen wajib diisi.',
         ]);
 
@@ -1457,22 +1464,22 @@ class ApplicationController extends Controller
             // Generate Mou Peserta Code unik
             $mou_peserta_code = $request->company_mou_code . date('His') . rand(100, 999);
 
-            // 2. Insert HANYA ke tabel company_mou_peserta
+            // 2. Insert ke tabel company_mou_peserta beserta mou_agreement_code
             DB::table('company_mou_peserta')->insert([
-                'mou_peserta_code'    => $mou_peserta_code,
-                'company_mou_code'    => $request->company_mou_code,
-                'mou_peserta_nik'     => $request->mou_peserta_nik,
-                'mou_peserta_nip'     => $request->mou_peserta_nip,
-                'mou_peserta_name'    => $request->mou_peserta_name,
-                'mou_peserta_no_hp'   => $request->mou_peserta_no_hp,
-                'mou_peserta_email'   => $request->mou_peserta_email,
-                'mou_peserta_ttl'     => $request->mou_peserta_ttl,
-                'mou_peserta_jk'      => $request->mou_peserta_jk,
+                'mou_peserta_code'       => $mou_peserta_code,
+                'company_mou_code'       => $request->company_mou_code,
+                'mou_agreement_code'     => $request->mou_agreement_code, // Disimpan di sini
+                'mou_peserta_nik'        => $request->mou_peserta_nik,
+                'mou_peserta_nip'        => $request->mou_peserta_nip,
+                'mou_peserta_name'       => $request->mou_peserta_name,
+                'mou_peserta_no_hp'      => $request->mou_peserta_no_hp,
+                'mou_peserta_email'      => $request->mou_peserta_email,
+                'mou_peserta_ttl'        => $request->mou_peserta_ttl,
+                'mou_peserta_jk'         => $request->mou_peserta_jk,
                 'mou_peserta_departemen' => $request->mou_peserta_departemen,
-                'mou_agreement_code' => $request->mou_agreement_code ?? null,
-                'mou_peserta_status'  => 1,
-                'created_at'          => now(),
-                'updated_at'          => now(),
+                'mou_peserta_status'     => 1,
+                'created_at'             => now(),
+                'updated_at'             => now(),
             ]);
 
             return response()->json([

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\McuExport;
 use App\Exports\PesertaMcuExport;
+use App\Exports\RekapPemeriksaanExport;
 use App\Imports\PasienImport;
 use App\Imports\PesertaAllImport;
 use App\Imports\PesertaImport;
@@ -4993,6 +4994,27 @@ class ApplicationController extends Controller
             ->setPaper('a4', 'portrait')->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true]);
 
         return $pdf->stream('Hasil_Pemeriksaan_' . $detail->mou_peserta_name . '.pdf');
+    }
+    public function downloadExcel(Request $request)
+    {
+        $mouCode = $request->query('mou_code');
+        $dokterPenginput = $request->query('dokter_penginput');
+
+        // Validasi parameter filter dasar
+        if (!$mouCode || !$dokterPenginput) {
+            return redirect()->back()->with('error', 'Parameter filter perusahaan/MoU dan dokter belum lengkap.');
+        }
+
+        // Nama file yang akan di-download
+        $fileName = 'Rekap_Hasil_Pemeriksaan_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        // Opsi A: Menggunakan package Maatwebsite Excel dengan passing parameter ke Class Export
+        return Excel::download(new RekapPemeriksaanExport($mouCode, $dokterPenginput), $fileName);
+
+        /*
+        | Opsi B: Jika ingin query langsung sederhana (tanpa class export terpisah,
+        | misal diexport sebagai CSV / custom collection, sesuaikan kebutuhan project Anda)
+        */
     }
     // LAPORAN HASIL FISIK
     public function laporan_hasil_fisik_umum($akses)

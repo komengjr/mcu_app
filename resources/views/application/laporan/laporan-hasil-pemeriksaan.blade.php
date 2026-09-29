@@ -119,10 +119,15 @@
     <div class="card-header bg-white border-bottom pt-3 pb-3 d-flex justify-content-between align-items-center">
         <h5 class="fw-semibold text-dark mb-0"><i class="fas fa-list me-2"></i>Daftar Hasil Pemeriksaan</h5>
 
-        <!-- Tombol Cetak PDF Rekap -->
-        <a id="btn_print_rekap" href="#" target="_blank" class="btn btn-sm btn-outline-danger">
-            <i class="fas fa-file-pdf me-1"></i> Cetak Rekap PDF
-        </a>
+        <!-- Tombol Aksi Export (PDF & Excel) -->
+        <div class="d-flex gap-2">
+            <a id="btn_print_rekap" href="#" target="_blank" class="btn btn-sm btn-outline-danger">
+                <i class="fas fa-file-pdf me-1"></i> Cetak Rekap PDF
+            </a>
+            <a id="btn_download_excel" href="#" target="_blank" class="btn btn-sm btn-outline-success">
+                <i class="fas fa-file-excel me-1"></i> Download Excel
+            </a>
+        </div>
     </div>
 
     <div class="card-body p-4">
@@ -378,7 +383,7 @@
             }
         });
 
-        // 3. Filter Dokter -> Load Data & Set Print URL
+        // 3. Filter Dokter -> Load Data & Set Print/Excel URL
         $('#filter_dokter').on('change', function() {
             let dokterPenginput = $(this).val();
             let mouCode = $('#filter_mou').val();
@@ -386,6 +391,9 @@
             if (dokterPenginput && mouCode) {
                 let printRekapUrl = "{{ route('laporan.pemeriksaan.print_rekap_pdf') }}" + "?mou_code=" + mouCode + "&dokter_penginput=" + dokterPenginput;
                 $('#btn_print_rekap').attr('href', printRekapUrl);
+
+                let downloadExcelUrl = "{{ route('laporan.pemeriksaan.download_excel') }}" + "?mou_code=" + mouCode + "&dokter_penginput=" + dokterPenginput;
+                $('#btn_download_excel').attr('href', downloadExcelUrl);
 
                 loadPemeriksaanData(mouCode, dokterPenginput);
             } else {
@@ -439,7 +447,7 @@
                     data: function(d) {
                         d.mou_code = mouCode;
                         d.dokter_penginput = dokterPenginput;
-                        d.tgl_pemeriksaan = $('#filter_tgl_periksa').val(); // Kirim filter tanggal ke backend
+                        d.tgl_pemeriksaan = $('#filter_tgl_periksa').val();
                     }
                 },
                 columns: [{

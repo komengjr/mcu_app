@@ -418,6 +418,7 @@ Route::prefix('laporan-pemeriksaan')->name('laporan.pemeriksaan.')->middleware([
     // Route Tambahan Cetak PDF
     Route::get('/print-rekap-pdf', [ApplicationController::class, 'printRekapPdf'])->name('print_rekap_pdf');
     Route::get('/print-perorangan-pdf/{peserta_code}', [ApplicationController::class, 'printPeroranganPdf'])->name('print_perorangan_pdf');
+    Route::get('/download-excel', [ApplicationController::class, 'downloadExcel'])->name('download_excel');
 });
 
 Route::prefix('pemeriksaan-dokter')->name('pemeriksaan.')->group(function () {

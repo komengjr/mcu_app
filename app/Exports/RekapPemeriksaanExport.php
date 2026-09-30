@@ -121,9 +121,9 @@ class RekapPemeriksaanExport implements FromCollection, WithHeadings, WithMappin
                 } elseif (($sys >= 120 && $sys <= 139) || ($dia >= 80 && $dia <= 89)) {
                     $klasifikasiTensi = 'Prehipertensi';
                 } elseif (($sys >= 140 && $sys <= 159) || ($dia >= 90 && $dia <= 99)) {
-                    $klasifikasiTensi = 'Hipertensi Stage 1';
+                    $klasifikasiTensi = 'Hipertensi Stadium 1';
                 } elseif ($sys >= 160 || $dia >= 100) {
-                    $klasifikasiTensi = 'Hipertensi Stage 2';
+                    $klasifikasiTensi = 'Hipertensi Stadium 2';
                 } else {
                     $klasifikasiTensi = 'Periksa Kembali';
                 }

@@ -64,9 +64,12 @@ class RekapPemeriksaanExport implements FromCollection, WithHeadings, WithMappin
             'Dokter Penginput',
             'Berat Badan (kg)',
             'Tinggi Badan (cm)',
+            'Nilai BMI',
+            'Status BMI (WHO Asia Pasifik)',
             'RR Nafas (x/m)',
             'Suhu (°C)',
             'Tensi (mmHg)',
+            'Klasifikasi Tensi (JNC 7)',
             'Nadi / HR (x/m)',
             'SpO2 (%)',
             'Catatan Dokter',
@@ -79,6 +82,56 @@ class RekapPemeriksaanExport implements FromCollection, WithHeadings, WithMappin
         static $no = 0;
         $no++;
 
+        // Hitung BMI & Status BMI (Standar WHO Asia Pasifik)
+        $berat = floatval($row->berat_badan ?? 0);
+        $tinggiCm = floatval($row->tinggi_badan ?? 0);
+        $bmiStr = '-';
+        $statusBmi = '-';
+
+        if ($berat > 0 && $tinggiCm > 0) {
+            $tinggiM = $tinggiCm / 100;
+            $bmi = $berat / ($tinggiM * $tinggiM);
+            $bmiStr = number_format($bmi, 2, '.', '');
+
+            // Kategori WHO Asia Pasifik
+            if ($bmi < 18.5) {
+                $statusBmi = 'Underweight (Kurus)';
+            } elseif ($bmi >= 18.5 && $bmi <= 22.9) {
+                $statusBmi = 'Normal';
+            } elseif ($bmi >= 23.0 && $bmi <= 24.9) {
+                $statusBmi = 'Overweight (Berisiko)';
+            } elseif ($bmi >= 25.0 && $bmi <= 29.9) {
+                $statusBmi = 'Obese I (Obesitas I)';
+            } else {
+                $statusBmi = 'Obese II (Obesitas II)';
+            }
+        }
+
+        // Klasifikasi Tekanan Darah JNC 7
+        $klasifikasiTensi = '-';
+        if (!empty($row->tensi)) {
+            // Asumsi format tensi umum: "120/80" atau menggunakan pemisah spasi/strip
+            $tensiClean = trim($row->tensi);
+            if (preg_match('/(\d+)\D+(\d+)/', $tensiClean, $matches)) {
+                $sys = intval($matches[1]);
+                $dia = intval($matches[2]);
+
+                if ($sys < 120 && $dia < 80) {
+                    $klasifikasiTensi = 'Normal';
+                } elseif (($sys >= 120 && $sys <= 139) || ($dia >= 80 && $dia <= 89)) {
+                    $klasifikasiTensi = 'Prehipertensi';
+                } elseif (($sys >= 140 && $sys <= 159) || ($dia >= 90 && $dia <= 99)) {
+                    $klasifikasiTensi = 'Hipertensi Stage 1';
+                } elseif ($sys >= 160 || $dia >= 100) {
+                    $klasifikasiTensi = 'Hipertensi Stage 2';
+                } else {
+                    $klasifikasiTensi = 'Periksa Kembali';
+                }
+            } else {
+                $klasifikasiTensi = $row->tensi; // Jika format teks bebas
+            }
+        }
+
         return [
             $no,
             ($row->mou_peserta_nip ?? '-') . ' / ' . ($row->mou_peserta_nik ?? '-'),
@@ -87,9 +140,12 @@ class RekapPemeriksaanExport implements FromCollection, WithHeadings, WithMappin
             $row->dokter_penginput ?? '-',
             $row->berat_badan ?? '-',
             $row->tinggi_badan ?? '-',
+            $bmiStr,
+            $statusBmi,
             $row->rr_nafas ?? '-',
             $row->suhu ?? '-',
             $row->tensi ?? '-',
+            $klasifikasiTensi,
             $row->nadi_hr ?? '-',
             $row->spo2 ?? '-',
             $row->catatan_dokter ?? '-',

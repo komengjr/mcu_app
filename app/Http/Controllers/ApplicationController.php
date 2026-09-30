@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\McuExport;
+use App\Exports\ParticipantFormExport;
 use App\Exports\PesertaMcuExport;
 use App\Exports\RekapPemeriksaanExport;
 use App\Imports\PasienImport;
@@ -4699,6 +4700,24 @@ class ApplicationController extends Controller
         }
 
         return response()->json($html);
+    }
+    public function exportExcelForm(Request $request)
+    {
+        $request->validate([
+            'company_mou_code' => 'required|string',
+            'form_code'        => 'required|string',
+            'status'           => 'required|in:sudah,belum'
+        ]);
+
+        $mouCode  = $request->company_mou_code;
+        $formCode = $request->form_code;
+        $status   = $request->status;
+
+        // Membuat nama file yang dinamis berdasarkan status dan waktu unduh
+        $fileName = 'Laporan_Form_MCU_' . strtoupper($status) . '_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        // Menjalankan proses download menggunakan class ParticipantFormExport
+        return Excel::download(new ParticipantFormExport($mouCode, $formCode, $status), $fileName);
     }
     // LAPORAN HASIL PEMERIKSAAN
     public function laporan_hasil_pemeriksaan_dokter($akses)

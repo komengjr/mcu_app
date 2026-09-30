@@ -121,7 +121,7 @@
 
 <!-- Main Content Tables -->
 <div id="content_container" class="card shadow-sm border-0 rounded-3 d-none">
-    <div class="card-header bg-white border-bottom pt-3 pb-3">
+    <div class="card-header bg-white border-bottom pt-3 pb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
         <!-- Pilihan Tampilan Menggunakan Button Group -->
         <div class="btn-group" role="group" aria-label="Status Pengisian Form">
             <button type="button" class="btn btn-outline-success active fw-bold" id="btn-sudah">
@@ -129,6 +129,13 @@
             </button>
             <button type="button" class="btn btn-outline-danger fw-bold" id="btn-belum">
                 <i class="fas fa-exclamation-circle me-1"></i> Belum Mengisi Form (<span id="badge_count_belum">0</span>)
+            </button>
+        </div>
+
+        <!-- Tombol Download Excel -->
+        <div>
+            <button type="button" class="btn btn-success fw-bold" id="btn-export-excel">
+                <i class="fas fa-file-excel me-1"></i> Download Excel
             </button>
         </div>
     </div>
@@ -480,6 +487,20 @@
                 }
             });
         });
+    });
+    // Tombol Export Excel Handler
+    $('#btn-export-excel').on('click', function() {
+        let mouCode = $('#filter_mou').val();
+        let formCode = $('#filter_form').val();
+        let status = $('#btn-sudah').hasClass('active') ? 'sudah' : 'belum';
+
+        if (!mouCode || !formCode) {
+            alert('Silakan pilih Perusahaan, MoU, dan Formulir MCU terlebih dahulu!');
+            return;
+        }
+
+        let exportUrl = "{{ route('laporan.export_excel') }}?company_mou_code=" + encodeURIComponent(mouCode) + "&form_code=" + encodeURIComponent(formCode) + "&status=" + encodeURIComponent(status);
+        window.location.href = exportUrl;
     });
 </script>
 @endsection

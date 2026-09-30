@@ -404,6 +404,7 @@ Route::prefix('laporan')->name('laporan.')->group(function () {
     Route::get('/get-summary-stats', [ApplicationController::class, 'getSummaryStats'])->name('get_summary_stats');
     Route::get('/get-participants', [ApplicationController::class, 'getParticipants'])->name('get_participants');
     Route::get('/get-participant-detail', [ApplicationController::class, 'getParticipantDetail'])->name('get_participant_detail');
+    Route::get('/export-excel-form', [ApplicationController::class, 'exportExcelForm'])->name('export_excel');
 });
 
 Route::prefix('laporan-pemeriksaan')->name('laporan.pemeriksaan.')->middleware(['auth'])->group(function () {

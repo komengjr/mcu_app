@@ -10,8 +10,14 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class ParticipantFormExport implements FromCollection, WithHeadings, WithMapping, WithTitle
+class ParticipantFormExport implements FromCollection, WithHeadings, WithMapping, WithTitle, WithStyles, WithEvents
 {
     protected $mouCode;
     protected $formCode;
@@ -54,7 +60,6 @@ class ParticipantFormExport implements FromCollection, WithHeadings, WithMapping
 
     public function headings(): array
     {
-        // Heading dasar profil peserta
         $headings = [
             'No',
             'NIP / NIK',
@@ -63,7 +68,6 @@ class ParticipantFormExport implements FromCollection, WithHeadings, WithMapping
             $this->status == 'sudah' ? 'Status Pengisian' : 'No HP / Email'
         ];
 
-        // Tambahkan label pertanyaan dari mcu_form_items sebagai kolom dinamis
         foreach ($this->formItems as $item) {
             $label = $item->item_label;
             if (!empty($item->unit)) {
@@ -89,12 +93,8 @@ class ParticipantFormExport implements FromCollection, WithHeadings, WithMapping
                 ->first();
         }
 
-        // Data JSON jawaban peserta (biasanya disimpan sebagai array/key-value berdasarkan id_mcu_form_item atau label)
-        // Sesuaikan key array di bawah ini jika struktur JSON Anda menggunakan ID item (misal: $answers[$item->id_mcu_form_item])
-        // atau menggunakan nama label/field. Di sini diasumsikan menggunakan ID item atau key form item.
         $answersData = $answerRecord ? (array) $answerRecord->answers_data : [];
 
-        // Baris dasar data peserta
         $rowMap = [
             $index,
             $row->nip_nik ?? '-',
@@ -103,14 +103,9 @@ class ParticipantFormExport implements FromCollection, WithHeadings, WithMapping
             $this->status == 'sudah' ? 'Selesai Mengisi' : ($row->mou_peserta_phone ?? $row->mou_peserta_email ?? '-')
         ];
 
-        // Masukkan jawaban dinamis berdasarkan urutan pertanyaan item form
         foreach ($this->formItems as $item) {
-            // Cek apakah key disimpan berdasarkan id_mcu_form_item atau string key lainnya di dalam JSON
-            // Contoh umum: $answersData[$item->id_mcu_form_item] atau $answersData['item_' . $item->id_mcu_form_item]
-            // Sesuaikan key di bawah ini dengan struktur penyimpanan JSON answers_data Anda saat form disubmit.
             $ansValue = '-';
 
-            // Mencoba beberapa kemungkinan struktur key JSON yang sering digunakan
             if (isset($answersData[$item->id_mcu_form_item])) {
                 $ansValue = $answersData[$item->id_mcu_form_item];
             } elseif (isset($answersData['item_' . $item->id_mcu_form_item])) {
@@ -119,9 +114,15 @@ class ParticipantFormExport implements FromCollection, WithHeadings, WithMapping
                 $ansValue = $answersData[$item->item_label];
             }
 
-            // Jika jawaban berupa array (misalnya checkbox), ubah menjadi string koma
+            // Jika jawaban berupa array (misalnya checkbox)
             if (is_array($ansValue)) {
+                $ansValue = array_map(function ($val) {
+                    return ucwords(str_replace('_', ' ', $val));
+                }, $ansValue);
                 $ansValue = implode(', ', $ansValue);
+            } elseif (!empty($ansValue) && $ansValue !== '-') {
+                // Menghilangkan underscore (_) dan merapikan teks
+                $ansValue = ucwords(str_replace('_', ' ', (string) $ansValue));
             }
 
             $rowMap[] = $ansValue !== '' && $ansValue !== null ? $ansValue : '-';
@@ -133,5 +134,44 @@ class ParticipantFormExport implements FromCollection, WithHeadings, WithMapping
     public function title(): string
     {
         return 'Laporan ' . ucfirst($this->status);
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        // Styling untuk baris Header (Baris 1)
+        return [
+            1 => [
+                'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFF']],
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['argb' => '0D6EFD'] // Warna latar belakang biru primary (bisa disesuaikan)
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                    'wrapText' => true, // Wrap text pada header
+                ]
+            ],
+        ];
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $sheet = $event->sheet->getDelegate();
+
+                // Set tinggi baris header agar teks yang di-wrap terlihat dengan baik
+                $sheet->getRowDimension(1)->setRowHeight(30);
+
+                // Mengatur auto-size untuk kolom agar rapi, dan wrap text untuk keseluruhan isi tabel jika diperlukan
+                $highestColumn = $sheet->getHighestColumn();
+                $highestRow = $sheet->getHighestRow();
+
+                for ($col = 'A'; $col <= $highestColumn; $col++) {
+                    $sheet->getColumnDimension($col)->setAutoSize(true);
+                }
+            },
+        ];
     }
 }

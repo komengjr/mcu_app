@@ -97,7 +97,7 @@ class ParticipantFormExport implements FromCollection, WithHeadings, WithMapping
 
         $rowMap = [
             $index,
-            $row->nip_nik ?? '-',
+            $row->mou_peserta_nip ?? '-',
             $row->mou_peserta_name ?? '-',
             $row->mou_peserta_departemen ?? '-',
             $this->status == 'sudah' ? 'Selesai Mengisi' : ($row->mou_peserta_phone ?? $row->mou_peserta_email ?? '-')

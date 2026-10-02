@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class SignaturePadController extends Controller
+class SignaturePadControllers extends Controller
 {
     public function index()
     {

@@ -101,7 +101,7 @@ class SignaturePadController extends Controller
         if ($data) {
             $log = DB::table('log_kehadiran_pasien')->where('mou_peserta_code', $data->mou_peserta_code)->first();
             if ($log) {
-                return view('kehadiran.template-sign', ['data' => $data, 'cabang' => $cabang, 'token' => $log->log_kehadiran_pasien_token]);
+                return view('kehadiran.template-signs', ['data' => $data, 'cabang' => $cabang, 'token' => $log->log_kehadiran_pasien_token]);
             } else {
                 $token = str::uuid() . '-' . Str::random(45);
                 DB::table('log_kehadiran_pasien')->insert([
@@ -143,8 +143,19 @@ class SignaturePadController extends Controller
 
         $mouCode = $peserta->company_mou_code;
 
-        // 2. Transaksi Database untuk memastikan nomor antrian konsisten (tidak ada bentrok/duplicate)
+        // 2. Transaksi Database untuk memastikan konsistensi data
         DB::transaction(function () use ($request, $mouCode) {
+
+            // Update data diri peserta (No HP, Email, TTL, Jenis Kelamin)
+            DB::table('company_mou_peserta')
+                ->where('mou_peserta_code', $request->peserta)
+                ->update([
+                    'mou_peserta_no_hp'     => $request->mou_peserta_no_hp,
+                    'mou_peserta_email'     => $request->mou_peserta_email,
+                    'mou_peserta_ttl'       => $request->mou_peserta_ttl,
+                    'mou_peserta_jk'        => $request->mou_peserta_jk,
+                    'updated_at'            => now(),
+                ]);
 
             // Update tanda tangan / absensi kehadiran
             DB::table('log_kehadiran_pasien')->where('log_kehadiran_pasien_token', $request->token)->update([
@@ -172,21 +183,16 @@ class SignaturePadController extends Controller
                 ->first();
 
             if ($existingLog) {
-                // Jika sudah pernah punya, gunakan nomor antrian yang sudah ada
                 $nomorAntrian = $existingLog->nomor_antrian;
             } else {
-                // Hitung urutan terakhir berdasarkan company_mou_code
                 $lastQueueCount = DB::table('log_antrian_peserta')
                     ->where('company_mou_code', $mouCode)
                     ->distinct('mou_peserta_code')
                     ->count('mou_peserta_code');
 
                 $nextNumber = $lastQueueCount + 1;
-
-                // Format Nomor Antrian (Contoh: MCU-001, MCU-002)
                 $nomorAntrian = 'MCU-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-                // Insert log antrian awal saat peserta selesai sign/check-in
                 DB::table('log_antrian_peserta')->insert([
                     'log_antrian_code'     => 'LOG-' . Str::upper(Str::random(10)),
                     'company_mou_code'     => $mouCode,

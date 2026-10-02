@@ -41,8 +41,8 @@
     <link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/south-street/jquery-ui.css" rel="stylesheet">
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="https://keith-wood.name/js/jquery.signature.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://keith-wood.name/css/jquery.signature.css">
+    <!-- <script type="text/javascript" src="https://keith-wood.name/js/jquery.signature.js"></script> -->
+    <!-- <link rel="stylesheet" type="text/css" href="https://keith-wood.name/css/jquery.signature.css"> -->
     <link href="{{ asset('vendors/choices/choices.min.css') }}" rel="stylesheet" />
 
     <script>
@@ -266,6 +266,7 @@
     <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
     <script src="{{ asset('vendors/choices/choices.min.js') }}"></script>
     <script src="{{ asset('asset/notifications/js/notifications.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         new window.Choices(document.querySelector(".js-choice"));
@@ -310,6 +311,76 @@
                 });
             }
         });
+    </script>
+    <script>
+        // Pastikan SweetAlert2 sudah ter-load di layout utama Anda
+        if (typeof Swal === 'undefined') {
+            // Fallback jika SweetAlert belum ada di layout utama
+            let script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+            document.head.appendChild(script);
+        }
+
+        document.addEventListener('click', function(e) {
+            // Cek jika yang diklik adalah link terms atau privacy policy
+            if (e.target && (e.target.id === 'show-terms' || e.target.id === 'show-privacy')) {
+                e.preventDefault();
+                showTermsPolicyMCU();
+            }
+        });
+
+        // Handle perubahan checkbox secara AJAX-safe
+        document.addEventListener('change', function(e) {
+            if (e.target && e.target.id === 'card-register-checkbox') {
+                const btnSetuju = document.getElementById('btn-setuju');
+                if (e.target.checked) {
+                    // Munculkan popup penjelasan MCU dulu saat dicentang
+                    showTermsPolicyMCU();
+                } else {
+                    if (btnSetuju) {
+                        btnSetuju.classList.add('disabled');
+                        btnSetuju.style.pointerEvents = 'none';
+                    }
+                }
+            }
+        });
+
+        function showTermsPolicyMCU() {
+            Swal.fire({
+                title: '<strong>Ketentuan & Kebijakan Absensi MCU</strong>',
+                html: `
+                <div style="text-align: left; max-height: 250px; overflow-y: auto; font-size: 14px; padding: 5px;">
+                    <p><strong>Informasi Penting:</strong> Form ini merupakan <strong>Absensi Kehadiran Medical Check-Up (MCU) Perusahaan</strong>.</p>
+                    <p>Dengan memberikan persetujuan, Anda menyatakan bahwa:</p>
+                    <ul>
+                        <li>Data diri yang tertera di atas adalah benar dan sesuai.</li>
+                        <li>Kehadiran pada kegiatan MCU ini dicatat sebagai agenda resmi perusahaan.</li>
+                        <li>Hasil pemeriksaan kesehatan bersifat rahasia dan dikelola sesuai prosedur medis perusahaan.</li>
+                        <li>Anda bersedia mengikuti seluruh alur pemeriksaan MCU dari awal hingga selesai.</li>
+                    </ul>
+                </div>
+            `,
+                icon: 'info',
+                confirmButtonText: 'Saya Mengerti & Setuju',
+                confirmButtonColor: '#dc3545',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const checkbox = document.getElementById('card-register-checkbox');
+                    const btnSetuju = document.getElementById('btn-setuju');
+
+                    if (checkbox) checkbox.checked = true;
+                    if (btnSetuju) {
+                        btnSetuju.classList.remove('disabled');
+                        btnSetuju.style.pointerEvents = 'auto';
+                    }
+                } else {
+                    // Jika dibatalkan/ditutup, uncheck kembali
+                    const checkbox = document.getElementById('card-register-checkbox');
+                    if (checkbox) checkbox.checked = false;
+                }
+            });
+        }
     </script>
 </body>
 

@@ -185,23 +185,48 @@
                             <label class="form-label fw-semibold">Berat Badan (kg) <span class="text-danger">*</span></label>
                             <input type="number" step="0.1" class="form-control" name="berat_badan" id="inp_berat" placeholder="misal: 65.5" required>
                         </div>
+                        <!-- Status BMI (Input Manual / Dropdown) -->
+                        <div class="col-md-6 col-sm-12">
+                            <label class="form-label fw-semibold">Status BMI (WHO Asia-Pasifik)</label>
+                            <select class="form-select" name="status_bmi" id="inp_status_bmi">
+                                <option value="">-- Pilih / Otomatis Terisi --</option>
+                                <option value="Underweight (Kurus)">Underweight (Kurus)</option>
+                                <option value="Normal">Normal</option>
+                                <option value="Overweight (Berlebih)">Overweight (Berlebih)</option>
+                                <option value="Obese I (Beresiko)">Obese I (Beresiko)</option>
+                                <option value="Obese II (Obesitas)">Obese II (Obesitas)</option>
+                            </select>
+                        </div>
+
                         <div class="col-md-3 col-sm-6">
                             <label class="form-label fw-semibold">Tekanan Darah (mmHg) <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="tensi" id="inp_tensi" placeholder="Contoh: 120/80" required>
                         </div>
+                        <!-- Status Tensi (Input Manual / Dropdown) -->
+                        <div class="col-md-3 col-sm-6">
+                            <label class="form-label fw-semibold">Klasifikasi Tensi (JNC 7)</label>
+                            <select class="form-select" name="status_tensi" id="inp_status_tensi">
+                                <option value="">-- Pilih / Otomatis Terisi --</option>
+                                <option value="Normal">Normal</option>
+                                <option value="Prehypertension">Prehypertension</option>
+                                <option value="Hypertension Stage 1">Hypertension Stage 1</option>
+                                <option value="Hypertension Stage 2">Hypertension Stage 2</option>
+                            </select>
+                        </div>
+
                         <div class="col-md-3 col-sm-6">
                             <label class="form-label fw-semibold">Denyut Nadi (x/menit)</label>
                             <input type="number" class="form-control" name="nadi" id="inp_nadi" placeholder="80" required>
                         </div>
-                        <div class="col-md-4 col-sm-6">
+                        <div class="col-md-3 col-sm-6">
                             <label class="form-label fw-semibold">Laju Pernapasan (x/menit)</label>
                             <input type="number" class="form-control" name="respirasi" id="inp_respirasi" placeholder="18" required>
                         </div>
-                        <div class="col-md-4 col-sm-6">
+                        <div class="col-md-6 col-sm-6">
                             <label class="form-label fw-semibold">Suhu Tubuh (°C)</label>
                             <input type="number" step="0.1" class="form-control" name="suhu" id="inp_suhu" placeholder="36.5" required>
                         </div>
-                        <div class="col-md-4 col-sm-6">
+                        <div class="col-md-6 col-sm-6">
                             <label class="form-label fw-semibold">SpO2 (%)</label>
                             <input type="number" min="0" max="100" class="form-control" name="spo2" id="inp_spo2" placeholder="98" required>
                         </div>
@@ -412,6 +437,68 @@
         }
 
         // 3. Open Modal & Load Existing Data
+        // Fungsi saran otomatis BMI (WHO Asia-Pasifik)
+        function saranBmiOtomatis() {
+            let tinggi = parseFloat($('#inp_tinggi').val());
+            let berat = parseFloat($('#inp_berat').val());
+
+            if (tinggi > 0 && berat > 0) {
+                let tinggiMeter = tinggi / 100;
+                let bmi = berat / (tinggiMeter * tinggiMeter);
+                let status = '';
+
+                if (bmi < 18.5) {
+                    status = 'Underweight (Kurus)';
+                } else if (bmi >= 18.5 && bmi <= 22.9) {
+                    status = 'Normal';
+                } else if (bmi >= 23.0 && bmi <= 24.9) {
+                    status = 'Overweight (Berlebih)';
+                } else if (bmi >= 25.0 && bmi <= 29.9) {
+                    status = 'Obese I (Beresiko)';
+                } else {
+                    status = 'Obese II (Obesitas)';
+                }
+
+                $('#inp_status_bmi').val(status);
+            }
+        }
+
+        // Fungsi saran otomatis Tensi (JNC 7)
+        function saranTensiOtomatis() {
+            let tensiVal = $('#inp_tensi').val().trim();
+            if (tensiVal.includes('/')) {
+                let parts = tensiVal.split('/');
+                let systolic = parseInt(parts[0]);
+                let diastolic = parseInt(parts[1]);
+
+                if (!isNaN(systolic) && !isNaN(diastolic)) {
+                    let status = '';
+
+                    if (systolic < 120 && diastolic < 80) {
+                        status = 'Normal';
+                    } else if ((systolic >= 120 && systolic <= 139) || (diastolic >= 80 && diastolic <= 89)) {
+                        status = 'Prehypertension';
+                    } else if ((systolic >= 140 && systolic <= 159) || (diastolic >= 90 && diastolic <= 99)) {
+                        status = 'Hypertension Stage 1';
+                    } else if (systolic >= 160 || diastolic >= 100) {
+                        status = 'Hypertension Stage 2';
+                    }
+
+                    $('#inp_status_tensi').val(status);
+                }
+            }
+        }
+
+        // Jalankan saran otomatis saat tinggi/berat/tensi diketik
+        $(document).on('input', '#inp_tinggi, #inp_berat', function() {
+            saranBmiOtomatis();
+        });
+
+        $(document).on('input', '#inp_tensi', function() {
+            saranTensiOtomatis();
+        });
+
+        // Event klik tombol untuk memunculkan modal & mengisi data
         $(document).on('click', '.btn-input-pemeriksaan', function() {
             let pesertaCode = $(this).data('peserta-code');
             $('#formInputPemeriksaan')[0].reset();
@@ -438,6 +525,10 @@
                         $('#inp_catatan').val(res.pemeriksaan.catatan_dokter);
                         $('#inp_spo2').val(res.pemeriksaan.spo2);
                         $('#inp_kesimpulan').val(res.pemeriksaan.kesimpulan);
+
+                        // Isi nilai status jika sudah ada di database
+                        $('#inp_status_bmi').val(res.pemeriksaan.status_bmi);
+                        $('#inp_status_tensi').val(res.pemeriksaan.status_tensi);
                     }
 
                     $('#modalPemeriksaan').modal('show');

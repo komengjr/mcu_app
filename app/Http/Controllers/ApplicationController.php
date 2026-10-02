@@ -4839,7 +4839,7 @@ class ApplicationController extends Controller
             return response()->json('<div class="alert alert-warning">Data hasil pemeriksaan tidak ditemukan.</div>', 404);
         }
 
-        // Wrap data dalam array/object yang bersih
+        // Wrap data dalam array/object yang bersih (ditambahkan status_bmi & status_tensi)
         $jsonData = e(json_encode([
             'mou_peserta_code'       => $detail->mou_peserta_code,
             'mou_peserta_name'       => $detail->mou_peserta_name,
@@ -4855,6 +4855,8 @@ class ApplicationController extends Controller
             'spo2'                   => $detail->spo2,
             'catatan_dokter'         => $detail->catatan_dokter,
             'kesimpulan'             => $detail->kesimpulan,
+            'status_bmi'             => $detail->status_bmi ?? '-',
+            'status_tensi'           => $detail->status_tensi ?? '-',
         ]));
 
         return response()->json("
@@ -4881,6 +4883,7 @@ class ApplicationController extends Controller
             <div class='col-md-3'>
                 <small class='text-muted d-block'>Tensi</small>
                 <strong>" . ($detail->tensi ?? '-') . " mmHg</strong>
+                <span class='badge bg-warning text-dark d-inline-block mt-1'>" . ($detail->status_tensi ?? '-') . "</span>
             </div>
             <div class='col-md-3'>
                 <small class='text-muted d-block'>Nadi (HR)</small>
@@ -4897,6 +4900,7 @@ class ApplicationController extends Controller
             <div class='col-md-3'>
                 <small class='text-muted d-block'>BB / TB</small>
                 <strong>" . ($detail->berat_badan ?? '-') . " kg / " . ($detail->tinggi_badan ?? '-') . " cm</strong>
+                <span class='badge bg-info text-dark d-inline-block mt-1'>BMI: " . ($detail->status_bmi ?? '-') . "</span>
             </div>
             <div class='col-md-3'>
                 <small class='text-muted d-block'>RR (Nafas)</small>
@@ -4929,6 +4933,8 @@ class ApplicationController extends Controller
             'berat_badan'      => 'required|numeric',
             'tensi'            => 'required|string',
             'kesimpulan'       => 'required|string',
+            'status_bmi'       => 'nullable|string', // Validasi untuk status BMI
+            'status_tensi'     => 'nullable|string', // Validasi untuk status tensi
         ]);
 
         try {
@@ -4945,7 +4951,10 @@ class ApplicationController extends Controller
                         'spo2'           => $request->spo2,
                         'catatan_dokter' => $request->catatan_dokter,
                         'kesimpulan'     => $request->kesimpulan,
+                        'status_bmi'     => $request->status_bmi,   // Disimpan ke database
+                        'status_tensi'   => $request->status_tensi, // Disimpan ke database
                         'updated_at'     => now(),
+                        // 'created_at' => now(), // Uncomment jika tabel Anda memerlukan created_at saat insert baru
                     ]
                 );
 

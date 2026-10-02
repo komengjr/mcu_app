@@ -18,9 +18,11 @@ class CompanyMouPemeriksaanDoc extends Migration
             $table->string('mou_peserta_code')->unique();
             $table->decimal('berat_badan', 5, 2)->nullable();
             $table->decimal('tinggi_badan', 5, 2)->nullable();
+            $table->string('status_bmi')->nullable();
             $table->integer('rr_nafas')->nullable();
             $table->decimal('suhu', 4, 2)->nullable();
             $table->string('tensi')->nullable();
+            $table->string('status_tensi')->nullable();
             $table->integer('nadi_hr')->nullable();
             $table->integer('spo2')->nullable();
 

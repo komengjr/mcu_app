@@ -33,7 +33,7 @@ class RekapPemeriksaanExport implements FromCollection, WithHeadings, WithMappin
             $query->where('doc.dokter_penginput', $this->dokterPenginput);
         }
 
-        // Pilih kolom yang ingin ditampilkan
+        // Pilih kolom yang ingin ditampilkan (termasuk status_bmi dan status_tensi dari database)
         $query->select(
             'peserta.mou_peserta_nip',
             'peserta.mou_peserta_nik',
@@ -42,9 +42,11 @@ class RekapPemeriksaanExport implements FromCollection, WithHeadings, WithMappin
             'doc.dokter_penginput',
             'doc.berat_badan',
             'doc.tinggi_badan',
+            'doc.status_bmi',
             'doc.rr_nafas',
             'doc.suhu',
             'doc.tensi',
+            'doc.status_tensi',
             'doc.nadi_hr',
             'doc.spo2',
             'doc.catatan_dokter',
@@ -82,55 +84,20 @@ class RekapPemeriksaanExport implements FromCollection, WithHeadings, WithMappin
         static $no = 0;
         $no++;
 
-        // Hitung BMI & Status BMI (Standar WHO Asia Pasifik)
+        // Hitung Nilai BMI saja (jika berat & tinggi tersedia)
         $berat = floatval($row->berat_badan ?? 0);
         $tinggiCm = floatval($row->tinggi_badan ?? 0);
         $bmiStr = '-';
-        $statusBmi = '-';
 
         if ($berat > 0 && $tinggiCm > 0) {
             $tinggiM = $tinggiCm / 100;
             $bmi = $berat / ($tinggiM * $tinggiM);
             $bmiStr = number_format($bmi, 2, '.', '');
-
-            // Kategori WHO Asia Pasifik
-            if ($bmi < 18.5) {
-                $statusBmi = 'Underweight (Kurus)';
-            } elseif ($bmi >= 18.5 && $bmi <= 22.9) {
-                $statusBmi = 'Normal';
-            } elseif ($bmi >= 23.0 && $bmi <= 24.9) {
-                $statusBmi = 'Overweight (Berisiko)';
-            } elseif ($bmi >= 25.0 && $bmi <= 29.9) {
-                $statusBmi = 'Obese I (Obesitas I)';
-            } else {
-                $statusBmi = 'Obese II (Obesitas II)';
-            }
         }
 
-        // Klasifikasi Tekanan Darah JNC 7
-        $klasifikasiTensi = '-';
-        if (!empty($row->tensi)) {
-            // Asumsi format tensi umum: "120/80" atau menggunakan pemisah spasi/strip
-            $tensiClean = trim($row->tensi);
-            if (preg_match('/(\d+)\D+(\d+)/', $tensiClean, $matches)) {
-                $sys = intval($matches[1]);
-                $dia = intval($matches[2]);
-
-                if ($sys < 120 && $dia < 80) {
-                    $klasifikasiTensi = 'Normal';
-                } elseif (($sys >= 120 && $sys <= 139) || ($dia >= 80 && $dia <= 89)) {
-                    $klasifikasiTensi = 'Prehipertensi';
-                } elseif (($sys >= 140 && $sys <= 159) || ($dia >= 90 && $dia <= 99)) {
-                    $klasifikasiTensi = 'Hipertensi Stadium 1';
-                } elseif ($sys >= 160 || $dia >= 100) {
-                    $klasifikasiTensi = 'Hipertensi Stadium 2';
-                } else {
-                    $klasifikasiTensi = 'Periksa Kembali';
-                }
-            } else {
-                $klasifikasiTensi = $row->tensi; // Jika format teks bebas
-            }
-        }
+        // Ambil Status BMI dan Status Tensi langsung dari database
+        $statusBmi = $row->status_bmi ?? '-';
+        $klasifikasiTensi = $row->status_tensi ?? '-';
 
         return [
             $no,

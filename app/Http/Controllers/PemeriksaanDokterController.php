@@ -159,7 +159,9 @@ class PemeriksaanDokterController extends Controller
             'mou_peserta_code' => 'required',
             'tinggi_badan'     => 'required|numeric',
             'berat_badan'      => 'required|numeric',
+            'status_bmi'       => 'nullable|string', // Validasi status bmi
             'tensi'            => 'required|string',
+            'status_tensi'     => 'nullable|string', // Validasi status tensi
             'nadi'             => 'nullable|numeric',
             'respirasi'        => 'nullable|numeric',
             'suhu'             => 'nullable|numeric',
@@ -179,7 +181,9 @@ class PemeriksaanDokterController extends Controller
         $payload = [
             'tinggi_badan'     => $request->input('tinggi_badan'),
             'berat_badan'      => $request->input('berat_badan'),
+            'status_bmi'       => $request->input('status_bmi'),     // Disimpan ke database
             'tensi'            => $request->input('tensi'),
+            'status_tensi'     => $request->input('status_tensi'),   // Disimpan ke database
             'nadi_hr'          => $request->input('nadi'),
             'rr_nafas'         => $request->input('respirasi'),
             'suhu'             => $request->input('suhu'),

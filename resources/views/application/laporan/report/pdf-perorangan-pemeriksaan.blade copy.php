@@ -1,5 +1,5 @@
 @php
-// Mapping warna background & teks berdasarkan status dari database (opsional, sebagai fallback)
+// Mapping warna background & teks berdasarkan status dari database (opsional, sebagai fallback jika tidak disimpan di DB)
 function getStatusStyle($label) {
 $l = strtolower(trim($label ?? ''));
 if (str_contains($l, 'stadium 2') || str_contains($l, 'obese ii')) {
@@ -14,11 +14,15 @@ return ['color' => '#2f855a', 'bg' => '#f0fff4'];
 }
 
 // Ambil langsung dari data row table database
+// Sesuaikan nama kolom database Anda (misal: status_tensi / status_jnc7, dan status_bmi / bmi_status)
 $tensiLabel = $detail->status_tensi ?? null;
 $bmiLabel = $detail->status_bmi ?? null;
 
-// DIPERBAIKI: Mengganti tanda '+' yang salah menjadi 'array_merge' agar tidak error
-$jnc7 = $tensiLabel ? array_merge(['label' => $tensiLabel], getStatusStyle($tensiLabel)) : null;
+$jnc7 = $tensiLabel ? ['label' => $tensiLabel, + getStatusStyle($tensiLabel)] : null;
+// Jika di database label dan warna disimpan terpisah, Anda bisa langsung pakai:
+// $jnc7 = $detail->status_tensi ? ['label' => $detail->status_tensi, 'color' => $detail->tensi_color ?? '#2f855a', 'bg' => $detail->tensi_bg ?? '#f0fff4'] : null;
+// $bmiData = $detail->status_bmi ? ['label' => $detail->status_bmi, 'color' => $detail->bmi_color ?? '#2f855a', 'bg' => $detail->bmi_bg ?? '#f0fff4'] : null;
+
 $bmiData = $bmiLabel ? array_merge(['label' => $bmiLabel], getStatusStyle($bmiLabel)) : null;
 @endphp
 <!DOCTYPE html>

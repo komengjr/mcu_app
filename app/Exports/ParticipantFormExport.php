@@ -36,7 +36,6 @@ class ParticipantFormExport implements FromCollection, WithHeadings, WithMapping
             ->orderBy('sort_order', 'asc')
             ->get() : collect();
     }
-
     public function collection()
     {
         $form = McuForm::where('form_code', $this->formCode)->first();
@@ -57,7 +56,6 @@ class ParticipantFormExport implements FromCollection, WithHeadings, WithMapping
 
         return $query->get();
     }
-
     public function headings(): array
     {
         $headings = [
@@ -78,7 +76,6 @@ class ParticipantFormExport implements FromCollection, WithHeadings, WithMapping
 
         return $headings;
     }
-
     public function map($row): array
     {
         static $index = 0;
@@ -130,12 +127,10 @@ class ParticipantFormExport implements FromCollection, WithHeadings, WithMapping
 
         return $rowMap;
     }
-
     public function title(): string
     {
         return 'Laporan ' . ucfirst($this->status);
     }
-
     public function styles(Worksheet $sheet)
     {
         // Styling untuk baris Header (Baris 1)
@@ -154,7 +149,6 @@ class ParticipantFormExport implements FromCollection, WithHeadings, WithMapping
             ],
         ];
     }
-
     public function registerEvents(): array
     {
         return [

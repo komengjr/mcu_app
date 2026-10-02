@@ -188,7 +188,18 @@
                     <td class="text-center">{{ $startNo + $index }}</td>
                     <td>{{ $row->mou_peserta_nip ?? '-' }}</td>
                     <td><strong>{{ $row->mou_peserta_name }}</strong></td>
-                    <td class="text-center">{{ $row->mou_peserta_jk == 'L' ? 'Laki-Laki' : 'Perempuan' }}</td>
+
+                    {{-- Bagian Update Jenis Kelamin --}}
+                    <td class="text-center">
+                        @if (strtoupper($row->mou_peserta_jk) == 'L')
+                            Laki-laki
+                        @elseif (strtoupper($row->mou_peserta_jk) == 'P')
+                            Perempuan
+                        @else
+                            -
+                        @endif
+                    </td>
+
                     <td>{{ $row->mou_peserta_email ?? '-' }}</td>
                     <td>{{ $row->mou_peserta_no_hp ?? '-' }}</td>
                     <td>{{ $row->mou_peserta_departemen ?? '-' }}</td>

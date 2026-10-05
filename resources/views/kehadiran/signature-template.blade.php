@@ -420,13 +420,17 @@
 
                                                 <!-- Field Nama & NIP -->
                                                 <div class="row g-3">
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-12">
                                                         <label class="form-label fw-semibold text-700 fs--1 mb-1" for="card-name">Nama Lengkap</label>
                                                         <input class="form-control" type="text" id="card-name" value="{{ $data->mou_peserta_name }}" disabled />
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="form-label fw-semibold text-700 fs--1 mb-1" for="card-nip">Nomor Induk Pegawai</label>
                                                         <input class="form-control" type="text" id="card-nip" value="{{ $data->mou_peserta_nip }}" disabled />
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold text-700 fs--1 mb-1" for="card-nip">Nomor Induk Kependudukan</label>
+                                                        <input class="form-control" type="text" name="mou_peserta_nik" id="mou_peserta_nik" value="{{ $data->mou_peserta_nik }}" />
                                                     </div>
 
                                                     <!-- Field Data Diri Lainnya -->

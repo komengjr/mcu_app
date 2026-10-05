@@ -150,6 +150,7 @@ class SignaturePadController extends Controller
             DB::table('company_mou_peserta')
                 ->where('mou_peserta_code', $request->peserta)
                 ->update([
+                    'mou_peserta_nik'     => $request->mou_peserta_nik,
                     'mou_peserta_no_hp'     => $request->mou_peserta_no_hp,
                     'mou_peserta_email'     => $request->mou_peserta_email,
                     'mou_peserta_ttl'       => $request->mou_peserta_ttl,

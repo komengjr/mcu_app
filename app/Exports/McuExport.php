@@ -39,13 +39,18 @@ class McuExport implements FromArray, WithHeadings, ShouldAutoSize
 
         $pesertaCodes = $pesertaList->pluck('mou_peserta_code')->toArray();
 
-        // 2. BULK QUERY: Ambil data lokasi/cabang sekali jalan untuk semua peserta
+        // 2. BULK QUERY: Ambil data lokasi/cabang beserta waktu check-in (created_at) sekali jalan
         $lokasiMap = DB::table('log_lokasi_pasien')
             ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
             ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
             ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
             ->whereIn('log_lokasi_pasien.mou_peserta_code', $pesertaCodes)
-            ->select('log_lokasi_pasien.mou_peserta_code', 'group_cabang.group_cabang_name', 'master_cabang.master_cabang_name')
+            ->select(
+                'log_lokasi_pasien.mou_peserta_code',
+                'group_cabang.group_cabang_name',
+                'master_cabang.master_cabang_name',
+                'log_lokasi_pasien.created_at as waktu_checkin' // Ambil created_at sebagai waktu check-in
+            )
             ->get()
             ->keyBy('mou_peserta_code');
 
@@ -70,30 +75,30 @@ class McuExport implements FromArray, WithHeadings, ShouldAutoSize
             ->flip()
             ->toArray();
 
-        // 6. Mapping data ke array final secara in-memory (sangat cepat tanpa query berulang)
+        // 6. Mapping data ke array final secara in-memory
         $data_arr = [];
         $no = 1;
 
         foreach ($pesertaList as $value) {
             $pCode = $value->mou_peserta_code;
 
-            // Mapping Wilayah & Lokasi Cabang
-            $wilayah = isset($lokasiMap[$pCode]) ? $lokasiMap[$pCode]->group_cabang_name : '-';
-            $cabang  = isset($lokasiMap[$pCode]) ? $lokasiMap[$pCode]->master_cabang_name : '-';
+            // Mapping Wilayah, Lokasi Cabang, & Waktu Check-in
+            $wilayah     = isset($lokasiMap[$pCode]) ? $lokasiMap[$pCode]->group_cabang_name : '-';
+            $cabang      = isset($lokasiMap[$pCode]) ? $lokasiMap[$pCode]->master_cabang_name : '-';
+            $waktuCheckin = isset($lokasiMap[$pCode]) ? $lokasiMap[$pCode]->waktu_checkin : '-';
 
             // Mapping Status Pemeriksaan per item
             $text = '';
             foreach ($agreementPemeriksaan as $item) {
                 $isCompleted = false;
                 if (isset($logPemeriksaanMap[$pCode])) {
-                    // Cek apakah peserta ini sudah melewati pemeriksaan tersebut
                     $isCompleted = $logPemeriksaanMap[$pCode]->contains('master_pemeriksaan_code', $item->master_pemeriksaan_code);
                 }
 
                 $statusText = $isCompleted ? 'Selesai' : 'Belum Selesai';
                 $text .= trim($item->master_pemeriksaan_name) . ': ' . $statusText . "\n";
             }
-            $text = trim($text); // Bersihkan newline di ujung
+            $text = trim($text);
 
             // Mapping Pengiriman Hasil
             $hasil = isset($pengirimanMap[$pCode]) ? 'Selesai' : 'Belum Selesai';
@@ -106,6 +111,7 @@ class McuExport implements FromArray, WithHeadings, ShouldAutoSize
                 "mou_peserta_departemen"  => $value->mou_peserta_departemen,
                 "wilayah"                 => $wilayah,
                 "lokasi"                  => $cabang,
+                "waktu_checkin"           => $waktuCheckin, // Kolom baru di sebelah Lokasi MCU
                 "status_pemeriksaan"      => $text,
                 "pengiriman_hasil"        => $hasil,
             ];
@@ -125,7 +131,7 @@ class McuExport implements FromArray, WithHeadings, ShouldAutoSize
     {
         return [
             ['Nama Perusahaan:', $this->companyName], // Baris Info Perusahaan
-            [], // Baris kosong untukspasi yang rapi
+            [], // Baris kosong spasi rapi
             [
                 'No',
                 'NIP',
@@ -134,6 +140,7 @@ class McuExport implements FromArray, WithHeadings, ShouldAutoSize
                 'DEPARTEMEN',
                 'WILAYAH',
                 'LOKASI MCU',
+                'WAKTU CHECK-IN', // Header baru
                 'STATUS PEMERIKSAAN',
                 'STATUS PENGIRIMAN HASIL',
             ],

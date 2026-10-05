@@ -4285,15 +4285,67 @@ class ApplicationController extends Controller
     }
     public function laporan_rekap_mcu_kehadiran_peserta_mcu_export_data(Request $request)
     {
+        $code = $request->code;
+
+        // 1. Ambil data utama perusahaan & MOU
+        $data = DB::table('company_mou')
+            ->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
+            ->where('company_mou.company_mou_code', $code)
+            ->first();
+
+        if (!$data) {
+            abort(404, 'Data MCU tidak ditemukan.');
+        }
+
+        // 2. Ambil daftar pemeriksaan unik
         $pemeriksaan = DB::table('company_mou_agreement_sub')
             ->join('master_pemeriksaan', 'master_pemeriksaan.master_pemeriksaan_code', '=', 'company_mou_agreement_sub.master_pemeriksaan_code')
             ->join('company_mou_agreement', 'company_mou_agreement.mou_agreement_code', '=', 'company_mou_agreement_sub.mou_agreement_code')
-            ->where('company_mou_agreement.company_mou_code', $request->code)->get()->unique('master_pemeriksaan_code');
-        $peserta = DB::table('company_mou_peserta')->join('company_mou', 'company_mou.company_mou_code', '=', 'company_mou_peserta.company_mou_code')
-            ->where('company_mou_peserta.company_mou_code', $request->code)->get();
-        $data = DB::table('company_mou')->join('master_company', 'master_company.master_company_code', '=', 'company_mou.master_company_code')
-            ->where('company_mou.company_mou_code', $request->code)->first();
-        return view('application.laporan.rekap-mcu.data-full-peserta-mcu', ['data' => $data, 'pem' => $pemeriksaan, 'peserta' => $peserta]);
+            ->where('company_mou_agreement.company_mou_code', $code)
+            ->select('master_pemeriksaan.master_pemeriksaan_code', 'master_pemeriksaan.master_pemeriksaan_name')
+            ->get()
+            ->unique('master_pemeriksaan_code');
+
+        // 3. Ambil seluruh peserta
+        $peserta = DB::table('company_mou_peserta')
+            ->where('company_mou_code', $code)
+            ->get();
+
+        $pesertaCodes = $peserta->pluck('mou_peserta_code')->toArray();
+
+        // 4. BULK QUERY: Ambil data lokasi semua peserta sekaligus dan jadikan map berdasarkan peserta_code
+        $lokasiMap = [];
+        if (!empty($pesertaCodes)) {
+            $lokasiMap = DB::table('log_lokasi_pasien')
+                ->join('master_cabang', 'master_cabang.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+                ->join('group_cabang_detail', 'group_cabang_detail.master_cabang_code', '=', 'log_lokasi_pasien.lokasi_cabang')
+                ->join('group_cabang', 'group_cabang.group_cabang_code', '=', 'group_cabang_detail.group_cabang_code')
+                ->whereIn('log_lokasi_pasien.mou_peserta_code', $pesertaCodes)
+                ->select(
+                    'log_lokasi_pasien.mou_peserta_code',
+                    'group_cabang.group_cabang_name',
+                    'master_cabang.master_cabang_name'
+                )
+                ->get()
+                ->keyBy('mou_peserta_code');
+        }
+
+        // 5. BULK QUERY: Ambil seluruh status pemeriksaan pasien sekaligus dan kelompokkan berdasarkan peserta_code
+        $statusMap = [];
+        if (!empty($pesertaCodes)) {
+            $statusMap = DB::table('log_pemeriksaan_pasien')
+                ->whereIn('mou_peserta_code', $pesertaCodes)
+                ->get()
+                ->groupBy('mou_peserta_code');
+        }
+
+        return view('application.laporan.rekap-mcu.data-full-peserta-mcu', [
+            'data'        => $data,
+            'pem'         => $pemeriksaan,
+            'peserta'     => $peserta,
+            'lokasiMap'   => $lokasiMap,
+            'statusMap'   => $statusMap
+        ]);
     }
     // LAPORAN DATA KEHADIRAN
     public function laporan_data_kehadiran($akses)

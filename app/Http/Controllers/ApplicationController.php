@@ -3614,6 +3614,58 @@ class ApplicationController extends Controller
             ], 500);
         }
     }
+    public function hapus_peserta_double(Request $request)
+    {
+        $companyMouCode = $request->code;
+
+        // Ambil semua peserta berdasarkan company_mou_code
+        $pesertaList = DB::table('company_mou_peserta')
+            ->where('company_mou_code', $companyMouCode)
+            ->get();
+
+        // Kelompokkan berdasarkan kombinasi NAMA dan NIP
+        $grouped = $pesertaList->groupBy(function ($item) {
+            // Menggabungkan nama dan nip sebagai kunci unik (ubah ke lowercase agar tidak case-sensitive)
+            return strtolower(trim($item->mou_peserta_name)) . '_' . trim($item->mou_peserta_nip);
+        });
+
+        $deletedCount = 0;
+        $skippedCount = 0;
+
+        foreach ($grouped as $key => $items) {
+            // Jika dalam satu kombinasi Nama & NIP ada lebih dari 1 data (double)
+            if ($items->count() > 1) {
+                // Urutkan berdasarkan id_mou_peserta secara ascending (ambil yang pertama/lama)
+                $sortedItems = $items->sortBy('id_mou_peserta');
+
+                // Ambil data pertama untuk dipertahankan, sisanya kandidat untuk dihapus
+                $duplicates = $sortedItems->skip(1);
+
+                foreach ($duplicates as $dup) {
+                    // Cek apakah peserta duplikat ini ada di tabel log_lokasi_pasien
+                    $adaLog = DB::table('log_lokasi_pasien')
+                        ->where('mou_peserta_code', $dup->mou_peserta_code)
+                        ->exists();
+
+                    if ($adaLog) {
+                        // Jika sudah ada di log_lokasi_pasien, JANGAN DIHAPUS
+                        $skippedCount++;
+                    } else {
+                        // Aman untuk dihapus
+                        DB::table('company_mou_peserta')
+                            ->where('mou_peserta_code', $dup->mou_peserta_code)
+                            ->delete();
+                        $deletedCount++;
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => "Berhasil menghapus $deletedCount data peserta double (berdasarkan Nama & NIP). $skippedCount data dilewati karena sudah memiliki riwayat di log lokasi pasien."
+        ]);
+    }
 
     // AGREEMENT PERUSAHAAN
     public function agreement_perusahaan($akses)

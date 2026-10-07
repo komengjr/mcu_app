@@ -15,33 +15,10 @@
                     <div class="col-sm-auto">
                         <button class="btn btn-danger btn-sm" id="button-sinkron-nip-nik"
                             data-code="{{ $data->company_mou_code }}">Sinkron NIK -> NIP</button>
-                        {{-- <div class="row gx-2 align-items-center">
-                                <div class="col-auto">
-                                    <form class="row gx-2">
-                                        <div class="col-auto"><small>Sort by:</small></div>
-                                        <div class="col-auto">
-                                            <select class="form-select form-select-sm" aria-label="Bulk actions">
-                                                <option selected="">Best Match</option>
-                                                <option value="Refund">Newest</option>
-                                                <option value="Delete">Price</option>
-                                            </select>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="col-auto pe-0">
-                                    <a class="text-600 px-1" href="../../../app/e-commerce/product/product-list.html"
-                                        data-bs-toggle="tooltip" data-bs-placement="top" title=""
-                                        data-bs-original-title="Product List" aria-label="Product List"><svg
-                                            class="svg-inline--fa fa-list-ul fa-w-16" aria-hidden="true" focusable="false"
-                                            data-prefix="fas" data-icon="list-ul" role="img"
-                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
-                                            <path fill="currentColor"
-                                                d="M48 48a48 48 0 1 0 48 48 48 48 0 0 0-48-48zm0 160a48 48 0 1 0 48 48 48 48 0 0 0-48-48zm0 160a48 48 0 1 0 48 48 48 48 0 0 0-48-48zm448 16H176a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0-320H176a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16V80a16 16 0 0 0-16-16zm0 160H176a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16z">
-                                            </path>
-                                        </svg>
-                                    </a>
-                                </div>
-                            </div> --}}
+                        <button class="btn btn-warning btn-sm" id="button-hapus-double"
+                            data-code="{{ $data->company_mou_code }}">
+                            <span class="fas fa-user-slash me-1"></span> Hapus Peserta Double
+                        </button>
                     </div>
                 </div>
             </div>
@@ -129,5 +106,31 @@
 <script>
     new DataTable('#data-v3', {
         responsive: true
+    });
+
+    // Script untuk tombol Hapus Peserta Double
+    $(document).on('click', '#button-hapus-double', function() {
+        let code = $(this).data('code');
+
+        if (confirm('Yakin ingin menghapus peserta yang double? Peserta yang sudah memiliki data transaksi/log lokasi tidak akan dihapus.')) {
+            $.ajax({
+                url: "{{ route('mou.peserta.hapus_double') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    code: code
+                },
+                beforeSend: function() {
+                    // Opsional: tampilkan loading
+                },
+                success: function(response) {
+                    alert(response.message);
+                    location.reload(); // Reload halaman untuk memperbarui tabel
+                },
+                error: function(xhr) {
+                    alert('Terjadi kesalahan saat menghapus data double.');
+                }
+            });
+        }
     });
 </script>

@@ -256,6 +256,8 @@ Route::prefix('application')->group(function () {
     Route::post('mou-company/add/form-pemeriksaan', [ApplicationController::class, 'mou_company_add_form_pemeriksaan'])->name('mou_company_add_form_pemeriksaan');
     Route::post('mou-company/save/form-pemeriksaan', [ApplicationController::class, 'mou_company_save_form_pemeriksaan'])->name('mou_company_save_form_pemeriksaan');
 
+    Route::post('mou-company/hapus-peserta-double', [ApplicationController::class, 'hapus_peserta_double'])->name('mou.peserta.hapus_double');
+
     // AGREMENT
     Route::post('agreement-perusahaan/add', [ApplicationController::class, 'agreement_perusahaan_add'])->name('agreement_perusahaan_add');
     Route::post('agreement-perusahaan/save', [ApplicationController::class, 'agreement_perusahaan_save'])->name('agreement_perusahaan_save');

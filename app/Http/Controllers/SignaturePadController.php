@@ -101,7 +101,7 @@ class SignaturePadController extends Controller
         if ($data) {
             $log = DB::table('log_kehadiran_pasien')->where('mou_peserta_code', $data->mou_peserta_code)->first();
             if ($log) {
-                return view('kehadiran.template-signs', ['data' => $data, 'cabang' => $cabang, 'token' => $log->log_kehadiran_pasien_token]);
+                return view('kehadiran.template-sign', ['data' => $data, 'cabang' => $cabang, 'token' => $log->log_kehadiran_pasien_token]);
             } else {
                 $token = str::uuid() . '-' . Str::random(45);
                 DB::table('log_kehadiran_pasien')->insert([

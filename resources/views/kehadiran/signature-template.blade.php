@@ -429,7 +429,8 @@
                                                         <input class="form-control" type="text" id="card-nip" value="{{ $data->mou_peserta_nip }}" disabled />
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <label class="form-label fw-semibold text-700 fs--1 mb-1" for="card-nip">Nomor Induk Kependudukan</label>
+                                                        <label class="form-label fw-semibold text-700 fs--1 mb-1" for="mou_peserta_nik">Nomor Induk Kependudukan</label>
+                                                        <!-- Atribut required di HTML dihapus agar validasi ditangani sepenuhnya oleh Swal -->
                                                         <input class="form-control" type="text" name="mou_peserta_nik" id="mou_peserta_nik" value="{{ $data->mou_peserta_nik }}" />
                                                     </div>
 
@@ -441,7 +442,7 @@
 
                                                     <div class="col-md-6">
                                                         <label class="form-label fw-semibold text-700 fs--1 mb-1" for="mou_peserta_email">Alamat Email</label>
-                                                        <input class="form-control" type="email" id="mou_peserta_email" name="mou_peserta_email" value="{{ $data->mou_peserta_email }}" placeholder="Contoh: email@domain.com" />
+                                                        <input class="form-control" type="text" id="mou_peserta_email" name="mou_peserta_email" value="{{ $data->mou_peserta_email }}" placeholder="Contoh: email@domain.com" />
                                                     </div>
 
                                                     <!-- Input TTL dengan Trigger SweetAlert -->
@@ -489,7 +490,7 @@
                                                     <!-- Agreement Checkbox dengan Popup SweetAlert Syarat & Ketentuan -->
                                                     <div class="col-12 mt-3">
                                                         <div class="form-check d-flex align-items-center">
-                                                            <input class="form-check-input mt-0" type="checkbox" id="card-register-checkbox" required />
+                                                            <input class="form-check-input mt-0" type="checkbox" id="card-register-checkbox" />
                                                             <label class="form-label mb-0 ms-2 fs--1 text-600" for="card-register-checkbox">
                                                                 Saya menyetujui <a href="javascript:void(0);" id="btn-syarat-ketentuan" class="text-danger fw-semibold text-decoration-underline">syarat & ketentuan</a> yang berlaku.
                                                             </label>
@@ -502,7 +503,7 @@
 
                                                     <!-- Submit Button -->
                                                     <div class="col-12 mt-4">
-                                                        <button class="btn btn-vibrant-red w-100" id="button-submit-selesai" type="submit" name="submit" style="display: none;">
+                                                        <button class="btn btn-vibrant-red w-100" id="button-submit-selesai" type="submit" name="submit_btn" style="display: none;">
                                                             <span class="fas fa-paper-plane me-2"></span> Simpan Data
                                                         </button>
                                                     </div>
@@ -557,7 +558,12 @@
 
         saveButton.addEventListener('click', function(event) {
             if (signaturePad.isEmpty()) {
-                alert("Silakan masukan tanda tangan terlebih dahulu.");
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan',
+                    text: 'Silakan masukan tanda tangan terlebih dahulu.',
+                    confirmButtonColor: '#E60026'
+                });
                 return;
             }
             var data = signaturePad.toDataURL('image/png');
@@ -573,16 +579,94 @@
             $("#save").removeClass('btn-primary').addClass('btn-outline-primary');
         });
 
-        // Trigger Loading Overlay on Form Submit
+        // Trigger Loading Overlay & Validasi Swal pada Form Submit
         $('#form-konfirmasi').on('submit', function(e) {
-            // Validasi tambahan jika checkbox belum dicentang / tanda tangan kosong
-            if (signaturePad.isEmpty()) {
-                e.preventDefault();
-                alert("Silakan masukkan tanda tangan terlebih dahulu.");
+            e.preventDefault(); // Mencegah submit default HTML
+
+            // Validasi NIK
+            if ($('#mou_peserta_nik').val().trim() === '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Data Belum Lengkap',
+                    text: 'Nomor Induk Kependudukan (NIK) wajib diisi!',
+                    confirmButtonColor: '#E60026'
+                });
+                $('#mou_peserta_nik').focus();
                 return;
             }
-            // Munculkan animasi loading gelap
+
+            // Validasi No HP
+            if ($('#mou_peserta_no_hp').val().trim() === '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Data Belum Lengkap',
+                    text: 'Nomor Handphone / WhatsApp wajib diisi!',
+                    confirmButtonColor: '#E60026'
+                });
+                $('#mou_peserta_no_hp').focus();
+                return;
+            }
+
+            // Validasi Email
+            if ($('#mou_peserta_email').val().trim() === '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Data Belum Lengkap',
+                    text: 'Alamat Email wajib diisi!',
+                    confirmButtonColor: '#E60026'
+                });
+                $('#mou_peserta_email').focus();
+                return;
+            }
+
+            // Validasi TTL
+            if ($('#mou_peserta_ttl').val().trim() === '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Data Belum Lengkap',
+                    text: 'Tempat, Tanggal Lahir wajib diisi!',
+                    confirmButtonColor: '#E60026'
+                });
+                return;
+            }
+
+            // Validasi Jenis Kelamin
+            if ($('#mou_peserta_jk').val() === null || $('#mou_peserta_jk').val() === '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Data Belum Lengkap',
+                    text: 'Silakan pilih Jenis Kelamin terlebih dahulu!',
+                    confirmButtonColor: '#E60026'
+                });
+                $('#mou_peserta_jk').focus();
+                return;
+            }
+
+            // Validasi Tanda Tangan
+            if (signaturePad.isEmpty()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Tanda Tangan Kosong',
+                    text: 'Silakan masukkan tanda tangan terlebih dahulu dan klik "Lock Signature".',
+                    confirmButtonColor: '#E60026'
+                });
+                return;
+            }
+
+            // Validasi Checkbox Syarat & Ketentuan
+            if (!$('#card-register-checkbox').is(':checked')) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Persetujuan Diperlukan',
+                    text: 'Anda harus menyetujui syarat & ketentuan yang berlaku!',
+                    confirmButtonColor: '#E60026'
+                });
+                return;
+            }
+
+            // Jika semua validasi lolos, aktifkan loading overlay dan kirim form secara aman
             $('#loading-overlay').addClass('active');
+            $('#form-konfirmasi')[0].submit();
         });
     </script>
     <script>
@@ -605,16 +689,14 @@
 
                 Swal.fire({
                     title: '<strong>Form Tempat & Tanggal Lahir</strong>',
-                    html: `
-                    <div class="text-start mb-3">
-                        <label class="form-label fw-semibold fs--1">Tempat Lahir</label>
-                        <input type="text" id="swal-input-tempat" class="form-control" placeholder="Contoh: Jakarta" value="${defaultPlace}">
-                    </div>
-                    <div class="text-start">
-                        <label class="form-label fw-semibold fs--1">Tanggal Lahir</label>
-                        <input type="date" id="swal-input-tanggal" class="form-control" value="${defaultDate}">
-                    </div>
-                `,
+                    html: '<div class="text-start mb-3">' +
+                        '<label class="form-label fw-semibold fs--1">Tempat Lahir</label>' +
+                        '<input type="text" id="swal-input-tempat" class="form-control" placeholder="Contoh: Jakarta" value="' + defaultPlace + '">' +
+                        '</div>' +
+                        '<div class="text-start">' +
+                        '<label class="form-label fw-semibold fs--1">Tanggal Lahir</label>' +
+                        '<input type="date" id="swal-input-tanggal" class="form-control" value="' + defaultDate + '">' +
+                        '</div>',
                     showCancelButton: true,
                     confirmButtonText: 'Simpan',
                     cancelButtonText: 'Batal',
@@ -635,7 +717,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         const data = result.value;
-                        ttlInput.value = `${data.tempat}, ${data.tanggal}`;
+                        ttlInput.value = data.tempat + ', ' + data.tanggal;
                     }
                 });
             });
@@ -647,24 +729,15 @@
             function showSyaratKetentuanModal() {
                 Swal.fire({
                     title: '<span class="text-danger fw-bold">Ketentuan Resmi Absensi & Pelaksanaan MCU</span>',
-                    html: `
-                    <div class="text-start fs--1 text-600 lh-lg" style="max-height: 250px; overflow-y: auto; padding-right: 5px;">
-                        <p><strong>1. Kehadiran & Validitas Data:</strong><br>
-                        Peserta wajib memastikan kebenaran data diri, nomor kontak, serta menandatangani kehadiran lembar digital Medical Check Up (MCU) ini sesuai dengan jadwal perusahaan.</p>
-
-                        <p><strong>2. Kerahasiaan Medis:</strong><br>
-                        Seluruh hasil pemeriksaan laboratorium dan penunjang medis dijamin kerahasiaannya dan hanya akan dilaporkan kepada instansi/perusahaan terkait dalam bentuk rekapitulasi kesehatan kerja.</p>
-
-                        <p><strong>3. Komitmen Pelayanan:</strong><br>
-                        Dengan melakukan <em>check-in</em> dan membubuhkan tanda tangan digital, peserta menyatakan bersedia mengikuti seluruh rangkaian alur pemeriksaan pos medis yang ditentukan.</p>
-                    </div>
-                    <div class="form-check text-start mt-3 pt-2 border-top">
-                        <input class="form-check-input" type="checkbox" id="swal-agree-check" ${checkboxAgreement.checked ? 'checked' : ''}>
-                        <label class="form-check-label fw-bold text-700 fs--1" for="swal-agree-check">
-                            Saya telah membaca, memahami, dan menyetujui seluruh ketentuan di atas.
-                        </label>
-                    </div>
-                `,
+                    html: '<div class="text-start fs--1 text-600 lh-lg" style="max-height: 250px; overflow-y: auto; padding-right: 5px;">' +
+                        '<p><strong>1. Kehadiran & Validitas Data:</strong><br>Peserta wajib memastikan kebenaran data diri, nomor kontak, serta menandatangani kehadiran lembar digital Medical Check Up (MCU) ini sesuai dengan jadwal perusahaan.</p>' +
+                        '<p><strong>2. Kerahasiaan Medis:</strong><br>Seluruh hasil pemeriksaan laboratorium dan penunjang medis dijamin kerahasiaannya dan hanya akan dilaporkan kepada instansi/perusahaan terkait dalam bentuk rekapitulasi kesehatan kerja.</p>' +
+                        '<p><strong>3. Komitmen Pelayanan:</strong><br>Dengan melakukan <em>check-in</em> dan membubuhkan tanda tangan digital, peserta menyatakan bersedia mengikuti seluruh rangkaian alur pemeriksaan pos medis yang ditentukan.</p>' +
+                        '</div>' +
+                        '<div class="form-check text-start mt-3 pt-2 border-top">' +
+                        '<input class="form-check-input" type="checkbox" id="swal-agree-check" ' + (checkboxAgreement.checked ? 'checked' : '') + '>' +
+                        '<label class="form-check-label fw-bold text-700 fs--1" for="swal-agree-check">Saya telah membaca, memahami, dan menyetujui seluruh ketentuan di atas.</label>' +
+                        '</div>',
                     confirmButtonText: 'Konfirmasi & Setuju',
                     confirmButtonColor: '#E60026',
                     focusConfirm: false,
@@ -677,20 +750,18 @@
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        checkboxAgreement.checked = true; // Otomatis centang checkbox utama di form
+                        checkboxAgreement.checked = true;
                     } else {
-                        checkboxAgreement.checked = false; // Batalkan jika user menutup / batal
+                        checkboxAgreement.checked = false;
                     }
                 });
             }
 
-            // Ketika kotak centang utama diklik, cegah langsung centang, lalu tampilkan SweetAlert
             checkboxAgreement.addEventListener('click', function(e) {
-                e.preventDefault(); // Mencegah checkbox langsung ter-centang sebelum modal dikonfirmasi
+                e.preventDefault();
                 showSyaratKetentuanModal();
             });
 
-            // Ketika teks "syarat & ketentuan" diklik
             btnSyaratKetentuan.addEventListener('click', function(e) {
                 e.preventDefault();
                 showSyaratKetentuanModal();

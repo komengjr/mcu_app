@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 // use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+
 class UserMain extends Model
 {
     use HasFactory, Notifiable;
@@ -16,7 +17,15 @@ class UserMain extends Model
      * @var array
      */
     protected $fillable = [
-        'userid','fullname','username', 'email', 'number_handphone', 'password', 'access_code', 'access_status','remember_token'
+        'userid',
+        'fullname',
+        'username',
+        'email',
+        'number_handphone',
+        'password',
+        'access_code',
+        'access_status',
+        'remember_token'
     ];
 
     /**
@@ -36,4 +45,12 @@ class UserMain extends Model
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function staff()
+    {
+        return $this->belongsTo(MarketingStaff::class, 'userid', 'nik');
+    }
+    public function masterAccess()
+    {
+        return $this->belongsTo(MasterAccess::class, 'access_code', 'master_access_code');
+    }
 }

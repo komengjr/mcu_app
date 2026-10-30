@@ -24,6 +24,7 @@ class CreateUserMainsTable extends Migration
             $table->string('password');
             $table->string('access_cabang');
             $table->string('access_code');
+            $table->string('access_login');
             $table->boolean('access_status');
             $table->rememberToken();
             $table->timestamps();

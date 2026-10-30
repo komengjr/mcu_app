@@ -116,6 +116,32 @@
 
     <!-- Table Container tanpa Padding Kiri & Kanan (px-0) agar Full Width -->
     <div class="card-body px-0 py-3">
+
+        <!-- Form Filter Data -->
+        <div class="row px-3 mb-3 gx-2 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label fs--1 fw-bold">Tanggal Awal</label>
+                <input type="date" id="filter_start_date" class="form-control form-control-sm">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fs--1 fw-bold">Tanggal Akhir</label>
+                <input type="date" id="filter_end_date" class="form-control form-control-sm">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fs--1 fw-bold">Cari Nama / No Reg</label>
+                <input type="text" id="filter_name_reg" class="form-control form-control-sm" placeholder="Masukkan nama / registrasi...">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fs--1 fw-bold">Cari Nama Rujukan</label>
+                <input type="text" id="filter_rujukan" class="form-control form-control-sm" placeholder="Masukkan nama rujukan...">
+            </div>
+            <div class="col-md-2 d-flex gap-1">
+                <button id="btn_filter" class="btn btn-sm btn-primary w-100"><i class="fas fa-search me-1"></i> Filter</button>
+                <button id="btn_reset" class="btn btn-sm btn-outline-secondary"><i class="fas fa-sync-alt"></i></button>
+            </div>
+        </div>
+        <!-- End Form Filter -->
+
         <div class="table-responsive">
             <table id="example" class="table table-custom align-middle fs--1 w-100 mb-0">
                 <thead>
@@ -160,43 +186,62 @@
 <script>
     $(document).ready(function() {
         var table = $('#example').DataTable({
+            processing: true,
+            serverSide: true, // Mengaktifkan Server-Side Processing
             responsive: true,
+            searching: false, // Mematikan kolom search default karena menggunakan filter kustom
             ajax: {
                 url: "{{ route('master_upload_hasil_pemeriksaan_get_data') }}",
                 type: "GET",
-                dataSrc: "data"
+                data: function(d) {
+                    // Mengirim nilai filter ke Controller
+                    d.start_date = $('#filter_start_date').val();
+                    d.end_date = $('#filter_end_date').val();
+                    d.search_name_reg = $('#filter_name_reg').val();
+                    d.search_rujukan = $('#filter_rujukan').val();
+                }
             },
             language: {
                 processing: '<div class="spinner-border text-danger my-3" role="status"><span class="visually-hidden">Loading...</span></div>'
             },
             columns: [{
                     data: 'no',
-                    className: 'ps-3'
+                    className: 'ps-3',
+                    orderable: false,
+                    searchable: false
                 },
                 {
-                    data: 'rujukan'
+                    data: 'rujukan',
+                    orderable: false
                 },
                 {
-                    data: 'nama_reg'
+                    data: 'nama_reg',
+                    orderable: false
                 },
                 {
-                    data: 'jk'
+                    data: 'jk',
+                    orderable: false
                 },
                 {
-                    data: 'tgl_lahir'
+                    data: 'tgl_lahir',
+                    orderable: false
                 },
                 {
-                    data: 'pemeriksaan'
+                    data: 'pemeriksaan',
+                    orderable: false
                 },
                 {
-                    data: 'sample'
+                    data: 'sample',
+                    orderable: false
                 },
                 {
-                    data: 'proses'
+                    data: 'proses',
+                    orderable: false
                 },
                 {
                     data: 'status',
-                    className: 'text-center'
+                    className: 'text-center',
+                    orderable: false
                 },
                 {
                     data: 'action',
@@ -211,6 +256,20 @@
                     return new bootstrap.Tooltip(tooltipTriggerEl);
                 });
             }
+        });
+
+        // Trigger pencarian saat tombol filter diklik
+        $('#btn_filter').click(function() {
+            table.ajax.reload();
+        });
+
+        // Trigger reset filter
+        $('#btn_reset').click(function() {
+            $('#filter_start_date').val('');
+            $('#filter_end_date').val('');
+            $('#filter_name_reg').val('');
+            $('#filter_rujukan').val('');
+            table.ajax.reload();
         });
 
         // Event Edit Pasien Modal Loader
@@ -258,7 +317,7 @@
                             timer: 1500,
                             showConfirmButton: false
                         });
-                        $('#example').DataTable().ajax.reload();
+                        $('#example').DataTable().ajax.reload(null, false); // Reload tabel tanpa reset halaman
                     } else {
                         Swal.fire('Error', res.message, 'error');
                     }
@@ -421,8 +480,8 @@
                                 showConfirmButton: false
                             });
 
-                            // 3. Refresh data tabel DataTables
-                            $('#example').DataTable().ajax.reload();
+                            // 3. Refresh data tabel DataTables (tanpa mereset pagination ke halaman 1)
+                            $('#example').DataTable().ajax.reload(null, false);
                         } else {
                             swalWithBootstrapButtons.fire({
                                 title: "Cancelled",

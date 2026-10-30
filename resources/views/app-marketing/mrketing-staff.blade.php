@@ -1,95 +1,155 @@
 @extends('layouts.marketing')
 
 @section('content')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 text-gray-800">Master Data Staff Marketing</h1>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambahStaff">
-            + Tambah Staff
-        </button>
+<div class="d-sm-flex align-items-center justify-content-between bg-white p-3 p-md-4 shadow-sm rounded mb-3" style="border-left: 4px solid #4e73df;">
+    <!-- Bagian Judul dan Breadcrumb -->
+    <div class="mb-3 mb-sm-0">
+        <h1 class="h3 mb-1 text-gray-800 font-weight-bold">
+            <i class="fas fa-users-cog text-primary me-2"></i>Master Data Staff Marketing
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small bg-transparent p-0">
+                <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Marketing</a></li>
+                <li class="breadcrumb-item active font-weight-bold text-primary" aria-current="page">Data Staff</li>
+            </ol>
+        </nav>
     </div>
 
-    <!-- Alert Notifikasi AJAX -->
-    <div id="alertContainer"></div>
+    <!-- Bagian Tombol Aksi -->
+    <div>
+        <button type="button" class="btn btn-primary shadow-sm px-3 py-2" data-bs-toggle="modal" data-bs-target="#modalTambahStaff">
+            <i class="fas fa-plus fa-sm text-white-50 me-1"></i> Tambah Staff Baru
+        </button>
+    </div>
+</div>
 
-    <!-- Card Table -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar Staff & Target Bulan Ini</h6>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped align-middle" id="tableMarketingStaff" width="100%" cellspacing="0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Cabang</th>
-                            <th>NIK</th>
-                            <th>Nama Staff</th>
-                            <th>Jabatan</th>
-                            <th>Target Omset</th>
-                            <th>Komisi (%)</th>
-                            <th>Tier Insentif</th>
-                            <th>Status</th>
-                            <th class="text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($staffs as $staff)
-                        @php
-                        $currentTarget = $staff->targets->first();
-                        @endphp
-                        <tr id="row-{{ $staff->id }}">
-                            <td>
-                                @if($staff->cabang)
-                                <strong>{{ $staff->cabang->nama_cabang }}</strong><br>
-                                <small class="badge bg-secondary">{{ $staff->cabang->kode_cabang }}</small>
-                                @else
-                                <span class="text-muted">-</span>
-                                @endif
-                            </td>
-                            <td>{{ $staff->nik }}</td>
-                            <td>
-                                <strong>{{ $staff->nama_lengkap }}</strong><br>
-                                <small class="text-muted">{{ $staff->email }}</small>
-                            </td>
-                            <td><span class="badge bg-secondary">{{ $staff->jabatan }}</span></td>
-                            <td class="col-target-omset">
-                                {{ $currentTarget ? 'Rp ' . number_format($currentTarget->target_omset, 0, ',', '.') : '-' }}
-                            </td>
-                            <td class="col-komisi">
-                                {{ $currentTarget ? $currentTarget->persentase_komisi . '%' : '-' }}
-                            </td>
-                            <td class="col-tier">
-                                @if($currentTarget)
-                                <span class="badge bg-info text-dark">{{ $currentTarget->tier_insentif }}</span>
-                                @else
-                                <span class="badge bg-light text-dark">Belum Set</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($staff->status_aktif == 'Aktif')
-                                <span class="badge bg-success">Aktif</span>
-                                @else
-                                <span class="badge bg-danger">Nonaktif</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-success btn-atur-target"
-                                    data-id="{{ $staff->id }}"
-                                    data-nama="{{ $staff->nama_lengkap }}"
-                                    data-bs-toggle="modal" data-bs-target="#modalAturTarget">
-                                    Set Target
-                                </button>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+<!-- Alert Notifikasi AJAX -->
+<div id="alertContainer"></div>
+
+<!-- Filter Pencarian -->
+<div class="card shadow mb-3">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label text-muted small mb-1">Cari Nama Staff</label>
+                <input type="text" id="searchNama" class="form-control" placeholder="Ketik nama staff...">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label text-muted small mb-1">Filter Cabang</label>
+                <select id="searchCabang" class="form-select">
+                    <option value="">Semua Cabang</option>
+                    @foreach($cabangs as$c)
+                    <option value="{{ $c->nama_cabang }}">{{ $c->nama_cabang }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label text-muted small mb-1">Filter Jabatan</label>
+                <select id="searchJabatan" class="form-select">
+                    <option value="">Semua Jabatan</option>
+                    <option value="Direktur Marketing">Direktur Marketing</option>
+                    <option value="Kepala Cabang">Kepala Cabang</option>
+                    <option value="Manager Marketing">Manager Marketing</option>
+                    <option value="Supervisor Marketing">Supervisor Marketing</option>
+                    <option value="Marketing Dokter">Marketing Dokter</option>
+                    <option value="Marketing Perusahaan">Marketing Perusahaan</option>
+                    <option value="Marketing Komunikasi">Marketing Komunikasi</option>
+                    <option value="Marketing Rujukan">Marketing Rujukan</option>
+                </select>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Data Staff Cards -->
+<div class="row g-3" id="staffCardContainer">
+    @php
+    $activeStaffs = $staffs->where('status_aktif', 'Aktif');$inactiveStaffs = $staffs->where('status_aktif', '!=', 'Aktif');$sortedStaffs = $activeStaffs->merge($inactiveStaffs);
+    @endphp
+
+    @foreach($sortedStaffs as$staff)
+    @php
+    $latestPenilaian = $staff->penilaians ? $staff->penilaians->first() : null;
+    $cabangName = $staff->cabang ? $staff->cabang->nama_cabang : '';
+    $isAktif =$staff->status_aktif == 'Aktif';
+    @endphp
+
+    <div class="col-md-6 col-lg-4 mb-4 staff-card"
+        data-nama="{{ strtolower($staff->nama_lengkap) }}"
+        data-cabang="{{ $cabangName }}"
+        data-jabatan="{{ $staff->jabatan }}"
+        id="card-{{ $staff->id }}">
+
+        <div class="card shadow h-100 {{ $isAktif ? 'border-left-primary' : 'border-left-secondary bg-light' }}"
+            style="{{ !$isAktif ? 'opacity: 0.65; filter: grayscale(80%);' : '' }}">
+
+            <div class="card-body">
+                <!-- Header Card: Avatar & Nama -->
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode($staff->nama_lengkap) }}&background=random&color=fff" class="rounded-circle me-3" width="60" height="60" alt="Avatar">
+                    <div>
+                        <h5 class="card-title mb-0 font-weight-bold {{ $isAktif ? 'text-gray-800' : 'text-muted' }}">{{ $staff->nama_lengkap }}</h5>
+                        <small class="text-muted">{{ $staff->nik }}</small>
+                    </div>
+                </div>
+
+                <!-- Badges Jabatan & Status -->
+                <div class="mb-3">
+                    <span class="badge {{ $isAktif ? 'bg-primary' : 'bg-secondary' }}">{{ $staff->jabatan }}</span>
+                    @if($isAktif)
+                    <span class="badge bg-success">Aktif</span>
+                    @else
+                    <span class="badge bg-danger">Nonaktif</span>
+                    @endif
+                </div>
+
+                <hr>
+
+                <!-- Detail Data Staf -->
+                <div class="row text-sm mb-2">
+                    <div class="col-5 text-muted">Cabang:</div>
+                    <div class="col-7 font-weight-bold">
+                        @if($staff->cabang)
+                        {{ $staff->cabang->nama_cabang }} <br><small class="text-muted">({{ $staff->cabang->kode_cabang }})</small>
+                        @else
+                        -
+                        @endif
+                    </div>
+                </div>
+                <div class="row text-sm mb-2">
+                    <div class="col-5 text-muted">Email:</div>
+                    <div class="col-7 font-weight-bold text-truncate" title="{{ $staff->email }}">{{ $staff->email }}</div>
+                </div>
+
+                <!-- Point Penilaian KPI -->
+                <div class="row text-sm mb-2">
+                    <div class="col-5 text-muted">Skor KPI:</div>
+                    <div class="col-7 font-weight-bold {{ $latestPenilaian && $latestPenilaian->total_skor_akhir >= 75 ? 'text-success' : ($latestPenilaian ? 'text-danger' : 'text-muted') }}">
+                        {{ $latestPenilaian ? number_format($latestPenilaian->total_skor_akhir, 2) . '%' : '-' }}
+                    </div>
+                </div>
+                <div class="row text-sm mb-1">
+                    <div class="col-5 text-muted">Predikat:</div>
+                    <div class="col-7 font-weight-bold">
+                        @if($latestPenilaian)
+                        @php
+                        $badgeColor = 'bg-danger';
+                        if ($latestPenilaian->predikat == 'Sangat Baik')$badgeColor = 'bg-success';
+                        elseif ($latestPenilaian->predikat == 'Baik')$badgeColor = 'bg-primary';
+                        elseif ($latestPenilaian->predikat == 'Cukup')$badgeColor = 'bg-warning text-dark';
+                        @endphp
+                        <span class="badge {{ $badgeColor }}">{{ $latestPenilaian->predikat }}</span>
+                        @else
+                        <span class="badge bg-light text-dark border">Belum Evaluasi</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endforeach
 </div>
 
 <!-- Modal Tambah Staff -->
@@ -99,7 +159,7 @@
             <form id="formTambahStaff">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title">Tambah Staff Marketing</h5>
+                    <h5 class="modal-title font-weight-bold">Tambah Staff Marketing</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -111,9 +171,9 @@
                             <label class="form-label">Cabang / Unit</label>
                             <select name="kode_cabang" class="form-select" required>
                                 <option value="" selected disabled>-- Pilih Cabang --</option>
-                                @foreach($cabangs as $c)
+                                @foreach($cabangs as$c)
                                 <option value="{{ $c->kode_cabang }}">
-                                    {{ $c->nama_cabang }} ({{ $c->kode_cabang }}) {{ $c->kota ? '- ' . $c->kota : '' }}
+                                    {{ $c->nama_cabang }} ({{$c->kode_cabang }}) {{ $c->kota ? '- ' . $c->kota : '' }}
                                 </option>
                                 @endforeach
                             </select>
@@ -162,72 +222,40 @@
         </div>
     </div>
 </div>
-
-<!-- Modal Atur Target Bulanan -->
-<div class="modal fade" id="modalAturTarget" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="formAturTarget">
-                @csrf
-                <input type="hidden" name="marketing_staff_id" id="targetStaffId">
-                <div class="modal-header">
-                    <h5 class="modal-title">Set Target Bulanan: <span id="targetNamaStaff" class="text-primary"></span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="modalTargetErrorAlert" class="alert alert-danger d-none">
-                        <ul class="mb-0" id="errorTargetList"></ul>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Bulan</label>
-                            <select name="bulan" class="form-select" required>
-                                @foreach([1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'] as $num => $namaBulan)
-                                <option value="{{ $num }}" {{ date('n') == $num ? 'selected' : '' }}>{{ $namaBulan }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Tahun</label>
-                            <input type="number" name="tahun" class="form-control" value="{{ date('Y') }}" required>
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label">Target Omset (Rp)</label>
-                            <input type="number" name="target_omset" class="form-control" step="1000" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Komisi Insentif (%)</label>
-                            <input type="number" name="persentase_komisi" class="form-control" step="0.01" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Tier Insentif</label>
-                            <select name="tier_insentif" class="form-select">
-                                <option value="Tier 1">Tier 1</option>
-                                <option value="Tier 2">Tier 2</option>
-                                <option value="Tier 3">Tier 3</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" id="btnSimpanTarget" class="btn btn-success">Simpan Target</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 @endsection
 
 @section('base.js')
-<!-- DATATABLES JS -->
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script>
     $(document).ready(function() {
-        let dataTable = $('#tableMarketingStaff').DataTable();
 
-        // 1. Submit Tambah Staff via AJAX
+        // --- FUNGSI FILTER PENCARIAN (NAMA, CABANG, JABATAN) ---
+        function filterStaffCards() {
+            let filterNama = $('#searchNama').val().toLowerCase();
+            let filterCabang = $('#searchCabang').val();
+            let filterJabatan = $('#searchJabatan').val();
+
+            $('.staff-card').each(function() {
+                let namaStaff = $(this).data('nama');
+                let cabangStaff = $(this).data('cabang');
+                let jabatanStaff = $(this).data('jabatan');
+
+                let cocokNama = namaStaff.includes(filterNama);
+                let cocokCabang = filterCabang === "" || cabangStaff === filterCabang;
+                let cocokJabatan = filterJabatan === "" || jabatanStaff === filterJabatan;
+
+                if (cocokNama && cocokCabang && cocokJabatan) {
+                    $(this).fadeIn(300);
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+
+        $('#searchNama').on('keyup', filterStaffCards);
+        $('#searchCabang, #searchJabatan').on('change', filterStaffCards);
+
+
+        // --- SUBMIT TAMBAH STAFF VIA AJAX ---
         $(document).on('submit', '#formTambahStaff', function(e) {
             e.preventDefault();
             let form = $(this);
@@ -246,23 +274,51 @@
                     if (response.success) {
                         let staff = response.data;
 
-                        let cabangHtml = staff.cabang ?
-                            `<strong>${staff.cabang.nama_cabang}</strong><br><small class="badge bg-secondary">${staff.cabang.kode_cabang}</small>` :
-                            `<span class="text-muted">-</span>`;
+                        let namaCabang = staff.cabang ? staff.cabang.nama_cabang : '';
+                        let infoCabang = staff.cabang ? `${staff.cabang.nama_cabang} <br><small class="text-muted">(${staff.cabang.kode_cabang})</small>` : '-';
+                        let avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.nama_lengkap)}&background=random&color=fff`;
 
-                        let rowNode = dataTable.row.add([
-                            cabangHtml,
-                            staff.nik,
-                            `<strong>${staff.nama_lengkap}</strong><br><small class="text-muted">${staff.email}</small>`,
-                            `<span class="badge bg-secondary">${staff.jabatan}</span>`,
-                            '-',
-                            '-',
-                            `<span class="badge bg-light text-dark">Belum Set</span>`,
-                            `<span class="badge bg-success">Aktif</span>`,
-                            `<button type="button" class="btn btn-sm btn-success btn-atur-target" data-id="${staff.id}" data-nama="${staff.nama_lengkap}" data-bs-toggle="modal" data-bs-target="#modalAturTarget">Set Target</button>`
-                        ]).draw(false).node();
+                        let cardHtml = `
+                        <div class="col-md-6 col-lg-4 mb-4 staff-card" style="display:none;" data-nama="${staff.nama_lengkap.toLowerCase()}" data-cabang="${namaCabang}" data-jabatan="${staff.jabatan}" id="card-${staff.id}">
+                            <div class="card shadow h-100 border-left-primary">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <img src="${avatarUrl}" class="rounded-circle me-3" width="60" height="60" alt="Avatar">
+                                        <div>
+                                            <h5 class="card-title mb-0 font-weight-bold text-gray-800">${staff.nama_lengkap}</h5>
+                                            <small class="text-muted">${staff.nik}</small>
+                                        </div>
+                                    </div>
 
-                        $(rowNode).attr('id', 'row-' + staff.id);
+                                    <div class="mb-3">
+                                        <span class="badge bg-primary">${staff.jabatan}</span>
+                                        <span class="badge bg-success">Aktif</span>
+                                    </div>
+                                    <hr>
+                                    <div class="row text-sm mb-2">
+                                        <div class="col-5 text-muted">Cabang:</div>
+                                        <div class="col-7 font-weight-bold">${infoCabang}</div>
+                                    </div>
+                                    <div class="row text-sm mb-2">
+                                        <div class="col-5 text-muted">Email:</div>
+                                        <div class="col-7 font-weight-bold text-truncate" title="${staff.email}">${staff.email}</div>
+                                    </div>
+                                    <div class="row text-sm mb-2">
+                                        <div class="col-5 text-muted">Skor KPI:</div>
+                                        <div class="col-7 font-weight-bold text-muted">-</div>
+                                    </div>
+                                    <div class="row text-sm mb-1">
+                                        <div class="col-5 text-muted">Predikat:</div>
+                                        <div class="col-7 font-weight-bold">
+                                            <span class="badge bg-light text-dark border">Belum Evaluasi</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+
+                        let newElement = $(cardHtml).prependTo('#staffCardContainer');
+                        newElement.fadeIn(500);
 
                         form[0].reset();
                         $('#modalTambahStaff').modal('hide');
@@ -278,60 +334,10 @@
             });
         });
 
-        // 2. Set Data Modal Target Bulanan
-        $(document).on('click', '.btn-atur-target', function() {
-            let id = $(this).data('id');
-            let nama = $(this).data('nama');
-            $('#targetStaffId').val(id);
-            $('#targetNamaStaff').text(nama);
-        });
-
-        // 3. Submit Target Bulanan via AJAX
-        $(document).on('submit', '#formAturTarget', function(e) {
-            e.preventDefault();
-            let form = $(this);
-            let btnSimpan = $('#btnSimpanTarget');
-            let staffId = $('#targetStaffId').val();
-
-            btnSimpan.prop('disabled', true).text('Menyimpan...');
-            $('#modalTargetErrorAlert').addClass('d-none');
-            $('#errorTargetList').empty();
-
-            $.ajax({
-                url: "{{ route('marketing-target.store') }}",
-                type: "POST",
-                data: form.serialize(),
-                dataType: "json",
-                success: function(response) {
-                    if (response.success) {
-                        let target = response.data;
-                        let targetOmsetFormatted = 'Rp ' + parseFloat(target.target_omset).toLocaleString('id-ID');
-
-                        let currentMonth = new Date().getMonth() + 1;
-                        if (parseInt(target.bulan) === currentMonth) {
-                            let row = $('#row-' + staffId);
-                            row.find('.col-target-omset').text(targetOmsetFormatted);
-                            row.find('.col-komisi').text(target.persentase_komisi + '%');
-                            row.find('.col-tier').html(`<span class="badge bg-info text-dark">${target.tier_insentif}</span>`);
-                        }
-
-                        form[0].reset();
-                        $('#modalAturTarget').modal('hide');
-                        showAlert(response.message);
-                    }
-                },
-                error: function(xhr) {
-                    handleError(xhr, '#modalTargetErrorAlert', '#errorTargetList');
-                },
-                complete: function() {
-                    btnSimpan.prop('disabled', false).text('Simpan Target');
-                }
-            });
-        });
-
+        // --- FUNGSI ALERT & ERROR HANDLER ---
         function showAlert(msg) {
             $('#alertContainer').html(`
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
                 ${msg}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>

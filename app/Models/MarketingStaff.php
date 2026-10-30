@@ -35,4 +35,8 @@ class MarketingStaff extends Model
     {
         return $this->hasMany(MarketingTarget::class, 'marketing_staff_id');
     }
+    public function penilaians()
+    {
+        return $this->hasMany(MarketingPenilaianStaff::class, 'marketing_staff_id');
+    }
 }

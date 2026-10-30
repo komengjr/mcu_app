@@ -3984,27 +3984,83 @@ class ApplicationController extends Controller
     }
     public function master_upload_hasil_pemeriksaan_get_data(Request $request)
     {
-        $pasienList = DB::table('monitoring_hasil_pasien')
+        // 1. Base Query
+        $query = DB::table('monitoring_hasil_pasien')
             ->select('user_mains.fullname', 'monitoring_hasil_pasien.*')
-            ->join('user_mains', 'user_mains.userid', '=', 'monitoring_hasil_pasien.monitoring_hasil_pasien_user')
-            ->orderBy('created_at', 'desc')
+            ->join('user_mains', 'user_mains.userid', '=', 'monitoring_hasil_pasien.monitoring_hasil_pasien_user');
+
+        // 2. Cek status filter yang dikirim dari DataTables
+        $hasDateFilter = $request->filled('start_date') && $request->filled('end_date');
+        $hasTextFilter = $request->filled('search_name_reg') || $request->filled('search_rujukan');
+
+        // 3. Logika Filter Tanggal & Data Awal (Hari Ini)
+        if ($hasDateFilter) {
+            // Jika user memilih filter tanggal
+            $query->whereBetween('monitoring_hasil_pasien.created_at', [
+                $request->start_date . ' 00:00:00',
+                $request->end_date . ' 23:59:59'
+            ]);
+        } elseif (!$hasTextFilter) {
+            // JIKA TIDAK ADA FILTER SAMA SEKALI (Saat halaman pertama kali diload)
+            // Set otomatis hanya menampilkan data hari ini
+            $today = date('Y-m-d');
+            $query->whereBetween('monitoring_hasil_pasien.created_at', [
+                $today . ' 00:00:00',
+                $today . ' 23:59:59'
+            ]);
+        }
+
+        // 4. Filter Nama Pasien atau No Registrasi
+        if ($request->filled('search_name_reg')) {
+            $searchNameReg = $request->search_name_reg;
+            $query->where(function ($q) use ($searchNameReg) {
+                $q->where('monitoring_hasil_pasien.monitoring_hasil_pasien_nama', 'like', "%{$searchNameReg}%")
+                    ->orWhere('monitoring_hasil_pasien.monitoring_hasil_pasien_reg', 'like', "%{$searchNameReg}%");
+            });
+        }
+
+        // 5. Filter Nama Rujukan (Berdasarkan fullname dari table user_mains)
+        if ($request->filled('search_rujukan')) {
+            $query->where('user_mains.fullname', 'like', "%{$request->search_rujukan}%");
+        }
+
+        // Hitung total data (setelah query terfilter) untuk pagination DataTables
+        $recordsTotal = DB::table('monitoring_hasil_pasien')->count(); // Total semua data mentah di database
+        $recordsFiltered = $query->count(); // Total data yang sesuai dengan pencarian/kondisi saat ini
+
+        // 6. Setup Pagination DataTables (Hanya load per halaman)
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 10);
+        if ($length == -1) {
+            $length = $recordsFiltered;
+        }
+
+        $pasienList = $query->orderBy('monitoring_hasil_pasien.created_at', 'desc')
+            ->offset($start)
+            ->limit($length)
             ->get();
 
+        // 7. Ambil relasi (Pemeriksaan & Kurir) HANYA untuk data yang tampil di halaman ini
         $pasienCodes = $pasienList->pluck('monitoring_hasil_pasien_code')->toArray();
+        $pemeriksaanGrouped = collect();
+        $kurirGrouped = collect();
 
-        $pemeriksaanGrouped = DB::table('monitoring_hasil_pemeriksaan')
-            ->join('master_test', 'master_test.master_test_code', '=', 'monitoring_hasil_pemeriksaan.master_test_code')
-            ->whereIn('monitoring_hasil_pasien_code', $pasienCodes)
-            ->get()
-            ->groupBy('monitoring_hasil_pasien_code');
+        if (!empty($pasienCodes)) {
+            $pemeriksaanGrouped = DB::table('monitoring_hasil_pemeriksaan')
+                ->join('master_test', 'master_test.master_test_code', '=', 'monitoring_hasil_pemeriksaan.master_test_code')
+                ->whereIn('monitoring_hasil_pasien_code', $pasienCodes)
+                ->get()
+                ->groupBy('monitoring_hasil_pasien_code');
 
-        $kurirGrouped = DB::table('monitoring_hasil_kurir')
-            ->whereIn('monitoring_hasil_pasien_code', $pasienCodes)
-            ->get()
-            ->keyBy('monitoring_hasil_pasien_code');
+            $kurirGrouped = DB::table('monitoring_hasil_kurir')
+                ->whereIn('monitoring_hasil_pasien_code', $pasienCodes)
+                ->get()
+                ->keyBy('monitoring_hasil_pasien_code');
+        }
 
+        // 8. Formatting Data HTML
         $formattedData = [];
-        $no = 1;
+        $no = $start + 1;
 
         foreach ($pasienList as $item) {
             $rujukan = '<div class="fw-bold text-dark"><i class="fas fa-user-circle text-primary me-1"></i>' . e($item->fullname) . '</div><small class="badge bg-soft-primary text-primary mt-1"><i class="far fa-clock me-1"></i>' . date("d-m-Y H:i", strtotime($item->created_at)) . '</small>';
@@ -4048,33 +4104,37 @@ class ApplicationController extends Controller
                 $statusBadge = '<span class="badge bg-success shadow-sm"><i class="fas fa-check-double me-1"></i>Order Selesai</span>';
             }
 
-            // Action Buttons: Detail & Edit
-            // Action Buttons: Detail & Edit (Model Kotak dengan Icon & Teks)
             $btnAction = '
-                <div class="d-flex justify-content-center gap-1" role="group">
-                    <button class="btn btn-primary btn-sm rounded-1 px-2 py-1" id="button-detail-order-pasien" data-code="' . e($item->monitoring_hasil_pasien_code) . '" data-bs-toggle="modal" data-bs-target="#modal-mcu" title="Detail Order">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn btn-warning btn-sm text-dark rounded-1 px-2 py-1" id="button-edit-pasien" data-code="' . e($item->monitoring_hasil_pasien_code) . '" data-bs-toggle="modal" data-bs-target="#modal-mcu" title="Edit Data Pasien">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                </div>';
+            <div class="d-flex justify-content-center gap-1" role="group">
+                <button class="btn btn-primary btn-sm rounded-1 px-2 py-1" id="button-detail-order-pasien" data-code="' . e($item->monitoring_hasil_pasien_code) . '" data-bs-toggle="modal" data-bs-target="#modal-mcu" title="Detail Order">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-warning btn-sm text-dark rounded-1 px-2 py-1" id="button-edit-pasien" data-code="' . e($item->monitoring_hasil_pasien_code) . '" data-bs-toggle="modal" data-bs-target="#modal-mcu" title="Edit Data Pasien">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </div>';
 
             $formattedData[] = [
-                'no'           => '<span class="fw-bold text-secondary">' . $no++ . '</span>',
-                'rujukan'      => $rujukan,
-                'nama_reg'     => $namaReg,
-                'jk'           => $jk,
-                'tgl_lahir'    => $tglLahir,
-                'pemeriksaan'  => $htmlPemeriksaan,
-                'sample'       => $htmlSample,
-                'proses'       => $tglPeriksa,
-                'status'       => $statusBadge,
-                'action'       => $btnAction,
+                'no'          => '<span class="fw-bold text-secondary">' . $no++ . '</span>',
+                'rujukan'     => $rujukan,
+                'nama_reg'    => $namaReg,
+                'jk'          => $jk,
+                'tgl_lahir'   => $tglLahir,
+                'pemeriksaan' => $htmlPemeriksaan,
+                'sample'      => $htmlSample,
+                'proses'      => $tglPeriksa,
+                'status'      => $statusBadge,
+                'action'      => $btnAction,
             ];
         }
 
-        return response()->json(['data' => $formattedData]);
+        // 9. Return JSON sesuai format DataTables
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $formattedData
+        ]);
     }
     // Method Form Modal Edit Pasien
     public function editPasien(Request $request)
